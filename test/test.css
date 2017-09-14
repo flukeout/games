@@ -68,11 +68,11 @@ body {
   top: 20%;
   background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/wind-blowing-face_1f32c.png);
   background-size: cover;
-  transition: left 3s, opacity 2s;
+  transition: transform 3s, opacity 2s;
   opacity: 0;
 }
 
 #wind.hai {
-  left: -20px;
+  transform: translateX(380px);
   opacity: 1;
 }

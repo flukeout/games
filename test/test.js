@@ -65,13 +65,12 @@
         objectsToRender.splice(objectsToRender.indexOf(element), 1);
       });
 
-      setTimeout(run, 10);
+      setTimeout(run, 0);
     })();
 
     var fakeBox = document.querySelector('#fake-box');
     document.addEventListener('mousemove', function (e) {
-      fakeBox.style.left = (e.clientX - fakeBox.clientWidth / 2) + 'px';
-      fakeBox.style.top = (e.clientY - fakeBox.clientHeight / 2) + 'px';
+      fakeBox.style.transform = 'translate(' + (e.clientX - fakeBox.clientWidth / 2) + 'px' + ',' + (e.clientY - fakeBox.clientHeight / 2) + 'px)';
     });
 
     fakeBox.addEventListener('click', function (e) {
