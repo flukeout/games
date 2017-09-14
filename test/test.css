@@ -29,11 +29,21 @@ body {
   position: absolute;
   width: 50px;
   height: 50px;
-  background: rgba(50, 50, 200, 1);
+  /*background: rgba(50, 50, 200, 1);*/
   cursor: pointer;
   z-index: 50;
+  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/kissing-face_1f617.png);
+  background-size: cover;
+}
+
+.real-box.flip {
+  transform: scaleX(-1);
 }
 
 .real-box:hover {
-  background: rgba(200, 50, 50, 1);
+  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png);
+}
+
+.real-box:active {
+  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/astonished-face_1f632.png);
 }

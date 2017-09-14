@@ -17,7 +17,6 @@
       var height = rect.height;
       var x = rect.left + width / 2;
       var y = rect.top + height / 2;
-      console.log(x, y, width, height);
       var object = Bodies.rectangle(x, y, width, height, { isStatic: static });
       element.physics = object;
       return object;
@@ -49,12 +48,14 @@
       var realBox = fakeBox.cloneNode(true);
       realBox.id = '';
       realBox.classList.add('real-box');
+
+      if (Math.random() > 0.5) realBox.classList.add('flip');
+
       document.body.appendChild(realBox);
       objectsToRender.push(realBox);
       World.add(engine.world, [turnDOMElementIntoPhysicsObject(realBox)]);
 
       realBox.onclick = function (e) {
-        console.log('go');
         Matter.Body.applyForce(realBox.physics, realBox.physics.position, {
           x: (Math.random() - 0.5) * 0.1,
           y: -(Math.random()) * 0.3
