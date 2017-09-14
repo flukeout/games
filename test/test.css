@@ -1,0 +1,39 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: rgb(5, 5, 50);
+}
+
+#ground {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: 12px;
+  background: green;
+}
+
+#fake-box {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: rgba(50, 50, 200, 0.5);
+  cursor: pointer;
+}
+
+.real-box {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: rgba(50, 50, 200, 1);
+  cursor: pointer;
+  z-index: 50;
+}
+
+.real-box:hover {
+  background: rgba(200, 50, 50, 1);
+}
