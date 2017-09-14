@@ -50,7 +50,9 @@
       objectsToRender.forEach(function (element) {
         var x = (element.physics.position.x - element.clientWidth / 2);
         var y = (element.physics.position.y - element.clientHeight / 2);
-        object.style.transform = 'translateX('+ x + ') translateY(' + y + ')';
+        var angle = object.physics.angle;
+        object.style.transform = 'translateX('+ x + ') translateY(' + y + ') rotate(' + angle + 'rad)';
+        
 
         if (element.physics.position.y > window.innerHeight + 100) {
           removalList.push(element);
