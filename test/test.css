@@ -51,3 +51,20 @@ body {
 .real-box:active {
   background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/astonished-face_1f632.png);
 }
+
+#wind {
+  position: absolute;
+  height: 400px;
+  width: 400px;
+  left: -400px;
+  top: 20%;
+  background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/wind-blowing-face_1f32c.png);
+  background-size: cover;
+  transition: left 3s, opacity 2s;
+  opacity: 0;
+}
+
+#wind.hai {
+  left: -20px;
+  opacity: 1;
+}

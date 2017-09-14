@@ -9,6 +9,7 @@
         world = engine.world;
 
     var objectsToRender = [];
+    var realBoxes = [];
 
     function turnDOMElementIntoPhysicsObject(element) {
       var static = element.hasAttribute('data-static') ? element.getAttribute('data-static') : false;
@@ -59,9 +60,44 @@
         Matter.Body.applyForce(realBox.physics, realBox.physics.position, {
           x: (Math.random() - 0.5) * 0.1,
           y: -(Math.random()) * 0.3
-        })
+        });
       };
+
+      realBoxes.push(realBox);
     });
+
+    var wind = document.querySelector('#wind');
+
+    function randomWind () {
+      var windInterval;
+
+      function windHai () {
+        wind.classList.add('hai');
+        windInterval = setInterval(function () {
+          realBoxes.forEach(function (realBox) {
+            Matter.Body.applyForce(realBox.physics, realBox.physics.position, {
+              x: 0.01,
+              y: 0
+            });
+          });
+        }, 100);
+
+        setTimeout(windBai, Math.random() * 5000 + 1000);
+      }
+
+      function windBai () {
+        wind.classList.remove('hai');
+        setTimeout(function () {
+          clearInterval(windInterval);
+          randomWind();
+        }, 2000);
+      }
+
+      setTimeout(windHai, Math.random() * 3000 + 1000);
+    }
+
+    randomWind();
+
   });
 
 })();
