@@ -65,7 +65,7 @@
         objectsToRender.splice(objectsToRender.indexOf(element), 1);
       });
 
-      setTimeout(run, 0);
+      requestAnimationFrame(run);
     })();
 
     var fakeBox = document.querySelector('#fake-box');
