@@ -108,9 +108,13 @@
     });
 
     var wind = document.querySelector('#wind');
+    var windTimeout = null;
+    var useWind = false;
 
     function randomWind () {
       var windInterval;
+
+      if (!useWind) return;
 
       function windHai () {
         wind.classList.add('hai');
@@ -132,12 +136,28 @@
           clearInterval(windInterval);
           randomWind();
         }, 2000);
+
+        windTimeout = null;
       }
 
-      setTimeout(windHai, Math.random() * 3000 + 1000);
+      windTimeout = setTimeout(windHai, Math.random() * 3000 + 1000);
     }
 
-    randomWind();
+    var controller = {
+      wind: false
+    };
+
+    var gui = new dat.GUI();
+    gui.add(controller, 'wind').onChange(function (value) {
+      useWind = value;
+      if (value === true && !windTimeout) {
+        randomWind();
+      }
+
+      if (value === false && windTimeout !== null) {
+        clearTimeout(windTimeout);
+      }
+    });
 
   });
 
