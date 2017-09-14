@@ -20,13 +20,13 @@
       var y = rect.top + height / 2;
       var object = Bodies.rectangle(x, y, width, height, { isStatic: static });
       element.physics = object;
-      resetElementPosition(element);
+      if (!static) resetElementPosition(element);
       return object;
     }
 
     // After we add a physics element to the simulation, we need to strip its original CSS positioning
     // and let the engine handle it all via it's own X,Y coords.
-    function resetElementPosition(element){
+    function resetElementPosition(element) {
       element.style.top = 0;
       element.style.left = 0;
       element.style.bottom = "";
@@ -50,9 +50,9 @@
       objectsToRender.forEach(function (element) {
         var x = (element.physics.position.x - element.clientWidth / 2);
         var y = (element.physics.position.y - element.clientHeight / 2);
-        var angle = object.physics.angle;
-        object.style.transform = 'translateX('+ x + ') translateY(' + y + ') rotate(' + angle + 'rad)';
-        
+        var angle = element.physics.angle;
+
+        element.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';        
 
         if (element.physics.position.y > window.innerHeight + 100) {
           removalList.push(element);
@@ -138,7 +138,7 @@
       setTimeout(windHai, Math.random() * 3000 + 1000);
     }
 
-    // randomWind();
+    randomWind();
 
   });
 

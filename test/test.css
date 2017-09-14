@@ -17,6 +17,10 @@ body {
   background: green;
 }
 
+[data-physics] {
+  will-change: transform;
+}
+
 #fake-box {
   position: absolute;
   width: 50px;
