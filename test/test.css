@@ -44,6 +44,10 @@ body {
   transform: scaleX(-1);
 }
 
+.real-box.hide {
+  visibility: hidden;
+}
+
 .real-box:hover {
   background-image: url(https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/40/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png);
 }

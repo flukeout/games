@@ -25,18 +25,37 @@
 
     Array.prototype.slice.call(document.querySelectorAll('[data-physics]')).forEach(function (element) {
       var object = turnDOMElementIntoPhysicsObject(element);
-      objectsToRender.push(element);
+      if (element.getAttribute('data-static') !== "true") {
+        objectsToRender.push(element);  
+      }
       World.add(engine.world, [object]);
     });
 
 
     (function run() {
-      window.requestAnimationFrame(run);
       Engine.update(engine, 1000 / 60);
-      objectsToRender.forEach(function (object) {
-        object.style.left = (object.physics.position.x - object.clientWidth / 2) + 'px';
-        object.style.top = (object.physics.position.y - object.clientHeight / 2) + 'px';
+
+      var removalList = [];
+
+      objectsToRender.forEach(function (element) {
+        var x = (element.physics.position.x - element.clientWidth / 2);
+        var y = (element.physics.position.y - element.clientHeight / 2);
+        // element.style.left = x + 'px';
+        // element.style.top = y + 'px';
+        element.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+        if (element.physics.position.y > window.innerHeight + 100) {
+          removalList.push(element);
+        }
       });
+
+      removalList.forEach(function (element) {
+        element.parentNode.removeChild(element);
+        World.remove(engine.world, element.physics);
+        objectsToRender.splice(objectsToRender.indexOf(element), 1);
+      });
+
+      setTimeout(run, 10);
     })();
 
     var fakeBox = document.querySelector('#fake-box');
@@ -52,9 +71,22 @@
 
       if (Math.random() > 0.5) realBox.classList.add('flip');
 
+      realBox.classList.add('hide');
       document.body.appendChild(realBox);
+
       objectsToRender.push(realBox);
       World.add(engine.world, [turnDOMElementIntoPhysicsObject(realBox)]);
+
+      realBox.physics.render.visible = false;
+
+      realBox.style.left = 0;
+      realBox.style.top = 0;
+
+      var x = (realBox.physics.position.x - realBox.clientWidth / 2);
+      var y = (realBox.physics.position.y - realBox.clientHeight / 2);
+      realBox.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+      realBox.classList.remove('hide');
 
       realBox.onclick = function (e) {
         Matter.Body.applyForce(realBox.physics, realBox.physics.position, {
