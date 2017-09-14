@@ -20,7 +20,17 @@
       var y = rect.top + height / 2;
       var object = Bodies.rectangle(x, y, width, height, { isStatic: static });
       element.physics = object;
+      resetElementPosition(element);
       return object;
+    }
+
+    // After we add a physics element to the simulation, we need to strip its original CSS positioning
+    // and let the engine handle it all via it's own X,Y coords.
+    function resetElementPosition(element){
+      element.style.top = 0;
+      element.style.left = 0;
+      element.style.bottom = "";
+      element.style.right = "";
     }
 
     Array.prototype.slice.call(document.querySelectorAll('[data-physics]')).forEach(function (element) {
@@ -31,8 +41,8 @@
       World.add(engine.world, [object]);
     });
 
-
     (function run() {
+      // TODO - should we base the engine update tick based on elapsed time since last frame?
       Engine.update(engine, 1000 / 60);
 
       var removalList = [];
@@ -40,9 +50,7 @@
       objectsToRender.forEach(function (element) {
         var x = (element.physics.position.x - element.clientWidth / 2);
         var y = (element.physics.position.y - element.clientHeight / 2);
-        // element.style.left = x + 'px';
-        // element.style.top = y + 'px';
-        element.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+        object.style.transform = 'translateX('+ x + ') translateY(' + y + ')';
 
         if (element.physics.position.y > window.innerHeight + 100) {
           removalList.push(element);
@@ -128,7 +136,7 @@
       setTimeout(windHai, Math.random() * 3000 + 1000);
     }
 
-    randomWind();
+    // randomWind();
 
   });
 
