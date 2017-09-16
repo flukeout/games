@@ -34,7 +34,7 @@ canvas {
   left: 50px;
   background: red;
   transform-origin: center center;
-  transform: scaleX(2) scaleY(1) rotate(10deg);
+  transform:  rotate(10deg) scaleX(2) scaleY(1);
 }
 
 #orange {

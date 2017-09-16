@@ -32,18 +32,14 @@ function getElementProperties(element){
 
   var scale = Math.sqrt(a*a + b*b);
 
+  var scaleX = Math.sqrt(a*a + c*c);
+  var scaleY = Math.sqrt(b*b + d*d);
   // If there is a uniform scale, lets multiply the height and width by it
   // We could also do this after the fact by modifying the object after instantiation
   // matter.js gives us scaleX and scaleY modifiers
-  height = height * scale.toFixed(2);
-  width = width * scale.toFixed(2);
+  height = height * scaleY.toFixed(2);
+  width = width * scaleX.toFixed(2);
 
-
-  // arc sin, convert from radians to degrees, round
-  var sin = b/scale;
-  // next line works for 30deg but not 130deg (returns 50);
-  // var angle = Math.round(Math.asin(sin) * (180/Math.PI));
-  // var angle = Math.round(Math.atan2(b, a) * (180/Math.PI));
   var angle = Math.atan2(b, a); //angle in rad
 
   console.log('Height:   ' + x);
