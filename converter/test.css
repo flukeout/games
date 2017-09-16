@@ -4,6 +4,16 @@ html, body {
   padding: 0;
   margin: 0;
   overflow: hidden;
+  background: rgb(5, 5, 50);
+}
+
+.sandbox {
+  position: absolute;
+  top: 5vh;
+  bottom: 5vh;
+  left: 5vh;
+  right: 5vh;
+  background: #222;
 }
 
 canvas {
@@ -11,12 +21,8 @@ canvas {
   z-index: 0;
   opacity: .3;
   pointer-events: none;
-  top: 0;
-  left: 0;
-}
-
-body {
-  background: rgb(5, 5, 50);
+  top: 5vh;
+  left: 5vh;
 }
 
 #red {

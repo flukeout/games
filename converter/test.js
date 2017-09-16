@@ -1,11 +1,12 @@
 (function () {
 
-  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
+
     var Engine = Matter.Engine,
         World = Matter.World,
         Bodies = Matter.Bodies,
         Render = Matter.Render,
-          Runner = Matter.Runner;
+        Runner = Matter.Runner;
 
     var engine = Engine.create(),
         world = engine.world;
@@ -13,34 +14,32 @@
     var objectsToRender = [];
     var realBoxes = [];
 
-  // create renderer
+    var sBox = document.querySelector(".sandbox");
+    var sBoxDim = sBox.getBoundingClientRect();
+
+    // create renderer
     var render = Render.create({
-        element: document.body,
-        engine: engine,
-        options: {
-            width: 1000,
-            height: 1000,
-            showVelocity: true,
-            showAngleIndicator: true
-        }
+      element: document.body,
+      engine: engine,
+      options: {
+        width: sBoxDim.width,
+        height: sBoxDim.height,
+        showVelocity: true,
+        showAngleIndicator: true
+      }
     });
 
     Render.run(render);
 
-
     function turnDOMElementIntoPhysicsObject(element) {
       var static = element.hasAttribute('data-static') ? element.getAttribute('data-static') : false;
-
 
       var props = getElementProperties(element);
 
       var object = Bodies.rectangle(props.x, props.y, props.width, props.height, {
-          isStatic: static,
-          angle: props.angle,
+        isStatic: static,
+        angle: props.angle,
       });
-
-
-      // Matter.Body.scale(object, 1, 1.5);
 
       element.physics = object;
 
@@ -91,7 +90,5 @@
 
       requestAnimationFrame(run);
     })();
-
   });
-
 })();
