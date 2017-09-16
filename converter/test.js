@@ -56,7 +56,7 @@
       element.style.right = "";
     }
 
-    Array.prototype.slice.call(document.querySelectorAll('[data-physics]')).forEach(function (element) {
+    Array.prototype.slice.call(document.querySelectorAll('.sandbox [data-physics]')).forEach(function (element) {
       var object = turnDOMElementIntoPhysicsObject(element);
       if (element.getAttribute('data-static') !== "true") {
         objectsToRender.push(element);
