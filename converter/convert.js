@@ -42,18 +42,22 @@ function getElementProperties(element){
 
   var angle = Math.atan2(b, a); //angle in rad
 
-  console.log('Height:   ' + x);
-  console.log('Width:    ' + y);
-  console.log('X:        ' + x);
-  console.log('Y:        ' + y);
-  console.log('Scale:    ' + scale);
-  console.log('Rotation: ' + (angle * (180/3.14159)));
+  var borderRadius = Number(styles.borderRadius.match(/\d+/)) || 0;
+
+  console.log('Height:        ' + x);
+  console.log('Width:         ' + y);
+  console.log('X:             ' + x);
+  console.log('Y:             ' + y);
+  console.log('Scale:         ' + scale);
+  console.log('Rotation:      ' + (angle * (180/3.14159)));
+  console.log('Border Radius: ' + borderRadius);
 
   return {
-    height: height, // Height
-    width: width,   // Width
-    x: x,           // X (center)
-    y: y,           // Y (center)
-    angle: angle    // Angle in radians
+    height: height,               // Height
+    width: width,                 // Width
+    x: x,                         // X (center)
+    y: y,                         // Y (center)
+    angle: angle,                  // Angle in radians
+    borderRadius: borderRadius    // Radius in px
   }
 }

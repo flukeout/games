@@ -36,10 +36,16 @@
 
       var props = getElementProperties(element);
 
-      var object = Bodies.rectangle(props.x, props.y, props.width, props.height, {
+      var options = {
         isStatic: static,
         angle: props.angle,
-      });
+      };
+
+      // The existence of "chamfer" at all on the option object will cause it to round corners a little (bug in matter?).
+      // So, only apply it when necessary.
+      if (props.borderRadius > 0) options.chamfer = { radius: props.borderRadius };
+
+      var object = Bodies.rectangle(props.x, props.y, props.width, props.height, options);
 
       element.physics = object;
 
