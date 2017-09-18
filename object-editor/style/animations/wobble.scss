@@ -1,0 +1,7 @@
+@keyframes wobble {
+  0% {transform: translateX(0)}
+  25% {transform: translateX(#{$distance}px)}
+  50% {transform: translateX(0)}
+  75% {transform: translateX(#{$distance}px)}
+  100% {transform: translateX(0)}
+}
