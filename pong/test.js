@@ -36,6 +36,33 @@
       }
     });
 
+    addWalls(World, sBoxDim.width, sBoxDim.height);
+
+    // Adds 4 walls to the World to surround it
+    function addWalls(World, width, height){
+
+      var thickness = 100;
+      // x, y, width, height
+
+      // Top
+      var bounds = Bodies.rectangle(width/2, -50, width, thickness, { isStatic: true });
+      World.add(engine.world, bounds);
+
+      // Left
+      var bounds = Bodies.rectangle(0 - thickness/2, height/2, thickness, height, { isStatic: true });
+      World.add(engine.world, bounds);
+
+      // Right
+      var bounds = Bodies.rectangle(width + thickness/2, height/2, thickness, height, { isStatic: true });
+      World.add(engine.world, bounds);
+
+      // Bottom
+      var bounds = Bodies.rectangle(width/2, height + 50, width, thickness, { isStatic: true });
+      World.add(engine.world, bounds);
+
+    }
+
+
     // Bounds for collision detection
     // This keeps it inside the world DIV / area
     world.bounds.min.x = 0;
@@ -48,18 +75,6 @@
 
     Render.run(render);
 
-    // Bottom
-    var bounds = Bodies.rectangle(0 + sBoxDim.width/2, sBoxDim.height + 50, sBoxDim.width, 100, { isStatic: true });
-    World.add(engine.world, bounds);
-
-    var bounds = Bodies.rectangle(0 + sBoxDim.width/2, -50, sBoxDim.width, 100, { isStatic: true });
-    World.add(engine.world, bounds);
-
-    var bounds = Bodies.rectangle(0, sBoxDim.height/2, 20, sBoxDim.height, { isStatic: true });
-    World.add(engine.world, bounds);
-
-    var bounds = Bodies.rectangle(sBoxDim.width, sBoxDim.height/2, 20, sBoxDim.height, { isStatic: true });
-    World.add(engine.world, bounds);
 
 
     function turnDOMElementIntoPhysicsObject(element) {
