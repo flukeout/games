@@ -2,7 +2,9 @@ var controller = {
   up: false,
   down: false,
   left: false,
-  right: false
+  right: false,
+  a: false,
+  b: false
 }
 
 
@@ -23,6 +25,16 @@ function keyAction(e, actionType){
     actionType = false;
   }
 
+  console.log(e.keyCode);
+  if(e.keyCode == 83) {
+    controller.b = actionType;
+  }
+
+  if(e.keyCode == 65) {
+    controller.a = actionType;
+  }
+
+
   if(e.keyCode == 38) {
     controller.up = actionType;
   }
@@ -31,11 +43,11 @@ function keyAction(e, actionType){
     controller.down = actionType;
   }
 
-  if(e.keyCode == 37 || e.keyCode == 65) {
+  if(e.keyCode == 37) {
     controller.left = actionType;
   }
 
-  if(e.keyCode == 39 || e.keyCode == 68) {
+  if(e.keyCode == 39) {
     controller.right = actionType;
   }
 }
