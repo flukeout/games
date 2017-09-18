@@ -2,6 +2,10 @@
 
     document.addEventListener('DOMContentLoaded', function () {
 
+      setTimeout(function(){
+        document.querySelector(".world").style.transform = "rotateX(40deg)";
+      },1000);
+
     var Engine = Matter.Engine,
         World = Matter.World,
         Bodies = Matter.Bodies,
@@ -203,12 +207,20 @@
           var y = element.physics.position.y;
 
 
-          if(y < 400) {
+          if(y < 425) {
             Matter.Body.applyForce(element.physics, element.physics.position, {
               x: 0,
               y : .005
             })
           }
+
+          if(y > 525) {
+            Matter.Body.applyForce(element.physics, element.physics.position, {
+              x: 0,
+              y : -.005
+            })
+          }
+
 
           if(controller.a) {
             Matter.Body.setAngularVelocity(element.physics, .2);

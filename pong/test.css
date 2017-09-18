@@ -8,13 +8,24 @@ html, body {
   perspective: 1200px;
 }
 
+p {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: rgba(255,255,255,.4);
+  margin: 0;
+  padding: 15px;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  text-align: center;
+}
+
 .world {
   width: 400px;
   height: 90vh;
   margin: 5vh auto 0 auto;
-
+  transition: transform 1s ease-out;
   position: relative;
-/*  transform: rotateX(40deg);*/
   outline: solid 20px white;
   box-sizing: border-box;
 }
@@ -32,6 +43,7 @@ canvas {
   height: 40px;
   bottom: 100px;
   left: 100px;
+  opacity: 0;
 }
 
 
