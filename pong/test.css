@@ -22,7 +22,7 @@ p {
 
 .world {
   width: 400px;
-  height: 90vh;
+  height: 600px;
   margin: 5vh auto 0 auto;
   transition: transform 1s ease-out;
   position: relative;
@@ -52,9 +52,17 @@ canvas {
   position: absolute;
   width: 100px;
   height: 20px;
-  bottom: 100px;
+
   left: 100px;
-  transform: rotate(1deg);
+}
+
+.paddle.one {
+  bottom: 100px;
+
+}
+
+.paddle.two {
+    top: 100px;
 }
 
 .ball {

@@ -207,18 +207,38 @@
           var y = element.physics.position.y;
 
 
-          if(y < 425) {
-            Matter.Body.applyForce(element.physics, element.physics.position, {
-              x: 0,
-              y : .005
-            })
+          if(element.classList.contains("one")) {
+            if(y < 425) {
+              Matter.Body.applyForce(element.physics, element.physics.position, {
+                x: 0,
+                y : .005
+              })
+            }
+
+            if(y > 525) {
+              Matter.Body.applyForce(element.physics, element.physics.position, {
+                x: 0,
+                y : -.005
+              })
+            }
+
           }
 
-          if(y > 525) {
-            Matter.Body.applyForce(element.physics, element.physics.position, {
-              x: 0,
-              y : -.005
-            })
+          if(element.classList.contains("two")) {
+            if(y < 75) {
+              Matter.Body.applyForce(element.physics, element.physics.position, {
+                x: 0,
+                y : .005
+              })
+            }
+
+            if(y > 125) {
+              Matter.Body.applyForce(element.physics, element.physics.position, {
+                x: 0,
+                y : -.005
+              })
+            }
+
           }
 
 
