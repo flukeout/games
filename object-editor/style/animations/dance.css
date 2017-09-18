@@ -1,0 +1,14 @@
+@keyframes dance {
+  0% {
+    transform: scaleY(0.9) skew(0deg); }
+  25% {
+    transform: scaleY(1.1) skew(5deg); }
+  50% {
+    transform: scaleY(0.9) skew(0deg); }
+  75% {
+    transform: scaleY(1.1) skew(-5deg); }
+  100% {
+    transform: scaleY(0.9) skew(0deg); } }
+
+.dance {
+  transform-origin: bottom !important; }

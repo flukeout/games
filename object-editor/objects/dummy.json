@@ -1,0 +1,18 @@
+{
+  "name": "Dummy",
+  "version": "0.1",
+  "states": {
+    "state1": "State 1",
+    "state2": "State 2"
+  },
+  "animations": {
+    "state1": {
+      "wobble": {
+        "enabled": true,
+        "duration": 1.005,
+        "distance": 50
+      }
+    },
+    "state2": {}
+  }
+}

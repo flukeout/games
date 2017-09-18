@@ -1,0 +1,16 @@
+{
+  "name": "object-editor",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "browser-sync": "2.18.13",
+    "gulp": "3.9.1",
+    "gulp-sass": "3.1.0"
+  },
+  "devDependencies": {
+    "gulp-directory-map": "0.1.3"
+  }
+}
