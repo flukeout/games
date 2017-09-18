@@ -203,6 +203,13 @@
           var y = element.physics.position.y;
 
 
+          if(y < 400) {
+            Matter.Body.applyForce(element.physics, element.physics.position, {
+              x: 0,
+              y : .005
+            })
+          }
+
           if(controller.a) {
             Matter.Body.setAngularVelocity(element.physics, .2);
           }

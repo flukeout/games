@@ -4,22 +4,24 @@ html, body {
   padding: 0;
   margin: 0;
   overflow: hidden;
-  background: rgb(5, 5, 50);
-/*  perspective: 1200px;*/
+  background: black;
+  perspective: 1200px;
 }
 
 .world {
   width: 400px;
   height: 90vh;
   margin: 5vh auto 0 auto;
-  background: #222;
+
   position: relative;
 /*  transform: rotateX(40deg);*/
+  outline: solid 20px white;
+  box-sizing: border-box;
 }
 
 canvas {
   position: absolute;
-  opacity: .3;
+  opacity: 0;
   pointer-events: none;
 }
 
