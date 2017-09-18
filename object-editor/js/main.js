@@ -1,5 +1,7 @@
 (function () {
 
+  var animationTimingFunctions = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'step-start', 'step-end'];
+
   function getXHR(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -129,7 +131,10 @@
           var transform = document.createElement('div');
           transform.classList.add('transform');
           transform.classList.add(animationName);
-          transform.style.animation = animationName + ' ' + properties.duration + 's' + ' linear infinite';
+          transform.style.animation = animationName + ' ' + [
+            properties.duration + 's',
+            properties.timing,
+            (properties.iteration === -1 ? 'infinite' : properties.iteration)].join(' ');
           lastTransform.appendChild(transform);
           lastTransform = transform;
         });
@@ -175,12 +180,25 @@
 
     Object.keys(animationDefinitions).forEach(function (animationName) {
       var folder = animationsFolder.addFolder(animationName);
-      animationsModel[animationName] = {};
-      animationsModel[animationName].enabled = false;
+      animationsModel[animationName] = {
+        enabled: false,
+        iteration: -1,
+        timing: 'linear'
+      };
 
       folder.add(animationsModel[animationName], 'enabled').onChange(function (value) {
         if (value) object.classList.add(animationName);
         else object.classList.remove(animationName);
+        saveAnimationState();
+        changeAnimation(animationsModel);
+      }).listen();
+
+      folder.add(animationsModel[animationName], 'iteration', -1, 100).step(1).onChange(function (value) {
+        saveAnimationState();
+        changeAnimation(animationsModel);
+      }).listen();
+
+      folder.add(animationsModel[animationName], 'timing', animationTimingFunctions).onChange(function (value) {
         saveAnimationState();
         changeAnimation(animationsModel);
       }).listen();
