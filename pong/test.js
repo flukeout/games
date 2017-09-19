@@ -84,7 +84,7 @@
 
 
       if(element.classList.contains("controller")) {
-        console.log("controller",element);
+
         var object = Bodies.rectangle(props.x, props.y, props.width, props.height, {
           isStatic: false,
           isSensor: true,
@@ -177,7 +177,6 @@
       Engine.update(engine, 1000 / 60);
 
       var removalList = [];
-
 
       objectsToRender.forEach(function (element) {
         var x = (element.physics.position.x - element.clientWidth / 2);
