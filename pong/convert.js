@@ -75,3 +75,37 @@ function getElementProperties(element){
     bodyType : bodyType
   }
 }
+
+
+
+function createPhysicsForElement(element, options) {
+
+  var props = getElementProperties(element);
+
+  var finalOptions = {
+    isStatic: element.hasAttribute('data-static') ? element.getAttribute('data-static') : false,
+    angle: props.angle
+  }
+
+  // Add options that are passed in
+  Object.assign(finalOptions, options);
+
+  var physics = false;
+
+  if(props.bodyType == "rectangle") {
+    physics = Bodies.rectangle(props.x, props.y, props.width, props.height, finalOptions);
+  }
+
+  if(props.bodyType == "circle") {
+    physics = Bodies.circle(props.x, props.y, props.width/2, finalOptions);
+  }
+
+  // if (!finalOptions.isStatic) resetElementPosition(element);
+  resetElementPosition(element);
+
+  if(physics){
+    return physics;
+  }
+}
+
+

@@ -12,6 +12,7 @@ p {
   position: absolute;
   top: 0;
   width: 100%;
+  font-size: 40px;
   color: rgba(255,255,255,.4);
   margin: 0;
   padding: 15px;
@@ -21,12 +22,13 @@ p {
 }
 
 .world {
-  width: 400px;
-  height: 600px;
-  margin: 5vh auto 0 auto;
+  width: 800px;
+  height: 500px;
   transition: transform 1s ease-out;
-  position: relative;
-  outline: solid 20px white;
+  position: absolute;
+  top: calc(50vh - 250px);
+  left: calc(50vw - 400px);
+  outline: solid 20px rgba(255,255,255,.1);
   box-sizing: border-box;
 }
 
@@ -50,19 +52,18 @@ canvas {
 .paddle {
   background: white;
   position: absolute;
-  width: 100px;
-  height: 20px;
-
-  left: 100px;
+  width: 20px;
+  height: 100px;
+  top: calc(50% - 50px);
 }
 
 .paddle.one {
-  bottom: 100px;
+  left: 50px;
 
 }
 
 .paddle.two {
-    top: 100px;
+  right: 50px;
 }
 
 .ball {
@@ -72,10 +73,39 @@ canvas {
   height: 30px;
   left: 100px;
   top: 100px;
-
   border-radius: 15px;
 }
 
 [data-physics] {
   will-change: transform;
+}
+
+.endzone {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  width: 50px;
+
+}
+
+.endzone.one {
+  left: 0;
+  background: rgba(0,0,255,1);
+  opacity: .2;
+}
+
+.endzone.two {
+  right: 0;
+  background: rgba(255,0,0,1);
+  opacity: .15;
+}
+
+.endzone-hit {
+  animation: endzoneHit .2s ease-out;
+}
+
+@keyframes endzoneHit {
+  0% {
+    opacity: .5;
+  }
 }
