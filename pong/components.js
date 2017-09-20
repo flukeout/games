@@ -14,6 +14,39 @@ function createObject(options){
       restitution: 1
     },
 
+    inputComponents: [],
+
+    actions: [],
+
+    addInputComponent: function(inputComponent) {
+      this.inputComponents.push(inputComponent);
+      inputComponent.register(this.actions);
+    },
+
+    updateActionsFromInputComponents: function () {
+      // Prepare a queue to mixdown actions received from inputs
+      var actionsQueue = [];
+      
+      // Store the action changes from each input component
+      for (var i = 0; i < this.inputComponents.length; ++i) {
+        actionsQueue.push(this.inputComponents[i].update());
+      }
+
+      // For each action, see if any of the input components registered anything
+      for (action in this.actions) {
+
+        // Reset
+        this.actions[action] = 0;
+        for (var i = 0; i < actionsQueue.length; ++i) {
+          if (action in actionsQueue[i]) {
+
+            // If it's already set to something, don't set it back to 0
+            this.actions[action] = this.actions[action] || actionsQueue[i][action];
+          }
+        }
+      }
+    },
+
     lightUp : function(){
       this.element.classList.add("endzone-hit");
 
@@ -26,11 +59,6 @@ function createObject(options){
     },
 
     init : function(){
-
-      for(var k in options){
-        this[k] = options[k];
-      }
-
       // Add physicsOptions from options
       if(options.physicsOptions) {
         Object.assign(this.physicsOptions, options.physicsOptions);
@@ -45,11 +73,22 @@ function createObject(options){
       this.width = this.element.getBoundingClientRect().width;
       this.height = this.element.getBoundingClientRect().height;
 
+      var actions = this.actions;
+      this.actions = {};
+      for (var i = 0; i < actions.length; ++i) {
+        this.actions[actions[i]] = 0;
+      }
+
       // Add it to the World
       World.add(engine.world, [this.physics]);
 
       objectsToRender.push(this);
     }
+  }
+
+
+  for(var k in options){
+    object[k] = options[k];
   }
 
   object.init();

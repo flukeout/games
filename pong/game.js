@@ -98,10 +98,6 @@ function addWalls(World, width, height){
   // TODO - should we base the engine update tick based on elapsed time since last frame?
   Engine.update(engine, 1000 / 60);
 
-  checkControllers();
-
-
-
   objectsToRender.forEach(function (obj) {
 
     var el = obj.element;
