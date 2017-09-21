@@ -1,0 +1,135 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: black;
+  perspective: 1200px;
+}
+
+p {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  font-size: 40px;
+  font-weight: bold;
+  color: rgba(255,255,255,1);
+  text-transform: uppercase;
+  margin: 0;
+  padding: 15px;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+
+.tilt-wrapper {
+  position: absolute;
+  top: calc(50vh - 275px);
+  left: calc(50vw - 400px);
+  box-sizing: border-box;
+}
+
+.world {
+  width: 800px;
+  height: 500px;
+  position: absolute;
+  outline: solid 20px rgba(255,255,255,.2);
+  box-sizing: border-box;
+  border-top: solid 4px #222;
+}
+
+.light-up {
+  animation: lightup .25s ease-out;
+}
+
+@keyframes lightup {
+  15% {
+    outline: solid 20px rgba(255,255,255,.4);
+  }
+}
+
+
+canvas {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.controller {
+  background: orange;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  bottom: 100px;
+  left: 100px;
+  opacity: 0;
+}
+
+
+.paddle {
+  background: white;
+  position: absolute;
+  width: 20px;
+  height: 100px;
+  top: calc(50% - 50px);
+}
+
+.paddle.one {
+  left: 50px;
+
+}
+
+.paddle.two {
+  right: 50px;
+}
+
+.ball {
+  background: white;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  left: calc(50% - 15px);
+  top: 100px;
+  border-radius: 15px;
+}
+
+[data-physics] {
+  will-change: transform;
+}
+
+.endzone {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  width: 5px;
+  background: white;
+  opacity: 0;
+}
+
+.endzone.one {
+  left: 0;
+}
+
+.endzone.two {
+  right: 0;
+}
+
+.terrain {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  width: 50%;
+  transition: width .25s ease-out;
+}
+
+.terrain.one {
+  left: 0;
+  background: #772424;
+}
+
+.terrain.two {
+  right: 0;
+  background: #1871a8;
+}
