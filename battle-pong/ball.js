@@ -10,9 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     launch : function(x,y){
       Matter.Body.applyForce(this.physics, this.physics.position, {x: x,y:y});
-    },
-    hit : function(){
-      playSound("hit");
     }
   });
 
