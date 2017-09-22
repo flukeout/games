@@ -4,6 +4,11 @@ var sounds = {
     timeout : 260,
     waiting : false
   },
+  "swish2" : {
+    url : "sounds/swish.wav",
+    timeout : 260,
+    waiting : false
+  },
   "hit" : {
     url : "sounds/hit2.mp3",
     volume : 1
