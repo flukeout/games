@@ -153,6 +153,7 @@ function addWalls(World, width, height){
 (function run() {
 
   // TODO - should we base the engine update tick based on elapsed time since last frame?
+
   Engine.update(engine, 1000 / 60);
 
   checkControllers();
@@ -167,6 +168,10 @@ function addWalls(World, width, height){
       var rotateX = 5 * deltaY/250 + 20 ;
       var rotateY = -5 * deltaX/400;
 
+      if(obj.gotHit) {
+        obj.resolveHit();
+      }
+
       tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
     }
 
@@ -175,6 +180,7 @@ function addWalls(World, width, height){
     var x = physics.position.x - obj.width / 2;
     var y = physics.position.y - obj.height / 2;
     var angle = physics.angle;
+
     el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
 
     if(obj.update){
@@ -194,11 +200,11 @@ function addWalls(World, width, height){
 })();
 
 
+
+
 // Collision manager
 Events.on(engine, 'collisionStart', function(event) {
   var pairs = event.pairs;
-
-
 
   for (var i = 0, j = pairs.length; i != j; ++i) {
     var pair = pairs[i];
@@ -213,7 +219,6 @@ Events.on(engine, 'collisionStart', function(event) {
       }
     }
 
-
     if(!objA){
       objA = {};
     }
@@ -221,10 +226,9 @@ Events.on(engine, 'collisionStart', function(event) {
       objB = {};
     }
 
-    // if(objA && objB){
-      collisionManager(objA,objB);
-    // }
+    collisionManager(objA,objB);
   }
+
 });
 
 
@@ -250,9 +254,9 @@ function collisionManager(a,b){
   var scored = false;
 
   if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.one") < 0 && selectors.indexOf(".endzone.two") < 0) {
-    playSound("hit");
+    var index = selectors.indexOf(".ball");
+    objects[index].hit();
   }
-
 
   if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.one") > -1) {
     game.playerScored(1);

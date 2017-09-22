@@ -51,10 +51,6 @@ var update = function(){
     }
   }
 
-  // if(this.controller.a && this.controller.b) {
-  //   this.physics.angle = 0;
-  // } else {
-
   if(this.controller.a) {
     Matter.Body.setAngularVelocity(this.physics, .2);
     playSound("swish");
@@ -64,8 +60,6 @@ var update = function(){
     Matter.Body.setAngularVelocity(this.physics, -.2);
     playSound("swish");
   }
-  // }
-
 
   if(this.controller.up) {
     Matter.Body.applyForce(this.physics, this.physics.position, {
