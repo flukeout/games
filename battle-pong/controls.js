@@ -74,6 +74,10 @@ function keyAction(e, actionType, controllerId){
     controllers[controllerId].b = actionType;
   }
 
+  if(e.keyCode == 68) {
+    controllers[controllerId].a = actionType;
+  }
+
   if(e.keyCode == 65) {
     controllers[controllerId].a = actionType;
   }
