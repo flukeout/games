@@ -40,6 +40,8 @@ function loadSound(name){
 function playSound(name, options){
   var sound = sounds[name];
   var soundVolume = sounds[name].volume || 1;
+  var panValue = sounds[name].pan || 0;
+
 
   if(sound.timeout) {
     if(sound.waiting == false) {
@@ -54,11 +56,19 @@ function playSound(name, options){
 
 
   var buffer = sound.buffer;
+
   if(buffer){
     var source = soundContext.createBufferSource();
     source.buffer = buffer;
 
+    var panNode = soundContext.createStereoPanner();
     var volume = soundContext.createGain();
+
+    if(options.pan) {
+      panNode.pan.value = options.pan;
+    } else {
+      panNode.pan.value = panValue;
+    }
 
     if(options) {
       if(options.volume) {
@@ -68,7 +78,8 @@ function playSound(name, options){
       volume.gain.value = soundVolume;
     }
 
-    volume.connect(soundContext.destination);
+    panNode.connect(soundContext.destination);
+    volume.connect(panNode);
     source.connect(volume);
     source.start(0);
   }

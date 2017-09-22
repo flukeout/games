@@ -37,7 +37,9 @@ document.addEventListener('DOMContentLoaded', function () {
         percentage = .2;
       }
 
-      playSound("hit", { volume: percentage });
+      var pan = .8 * (-400 + this.physics.position.x) / 400;
+
+      playSound("hit", { volume: percentage, pan : pan });
     }
 
   });
