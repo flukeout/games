@@ -247,14 +247,10 @@ function collisionManager(a,b){
   selectors.push(a.selector);
   selectors.push(b.selector);
 
-  console.log(a);
-
   var scored = false;
 
   if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.one") < 0 && selectors.indexOf(".endzone.two") < 0) {
     playSound("hit");
-    console.log("hit");
-    console.log("=====");
   }
 
 

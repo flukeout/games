@@ -31,7 +31,6 @@ function loadSound(name){
   request.onload = function() {
     soundContext.decodeAudioData(request.response, function(newBuffer) {
       sound.buffer = newBuffer;
-      console.log("got it");
     });
   }
 
