@@ -5,8 +5,8 @@ var sounds = {
     waiting : false
   },
   "hit" : {
-    url : "sounds/hit.wav",
-    volume : .05
+    url : "sounds/hit2.mp3",
+    volume : 1
   }
 };
 

@@ -27,14 +27,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
       var totalDelta = deltaX + deltaY;
 
-      var percentage = totalDelta / 40; // Volume percentage
+      var percentage = totalDelta / 20; // Volume percentage
 
       if(percentage > 1) {
         percentage = 1;
       }
 
-      if(percentage < .2) {
-        percentage = .2;
+      if(percentage < .5) {
+        percentage = .5;
       }
 
       var pan = .8 * (-400 + this.physics.position.x) / 400;
