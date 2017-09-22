@@ -38,6 +38,8 @@ function loadSound(name){
 }
 
 function playSound(name, options){
+  var options = options || {};
+
   var sound = sounds[name];
   var soundVolume = sounds[name].volume || 1;
   var panValue = sounds[name].pan || 0;
