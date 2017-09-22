@@ -57,10 +57,12 @@ var update = function(){
 
   if(this.controller.a) {
     Matter.Body.setAngularVelocity(this.physics, .2);
+    playSound("swish");
   }
 
   if(this.controller.b) {
     Matter.Body.setAngularVelocity(this.physics, -.2);
+    playSound("swish");
   }
   // }
 

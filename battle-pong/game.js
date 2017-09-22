@@ -41,7 +41,6 @@ var game =  {
       return;
     }
 
-    console.log(document.querySelector(".world"));
     document.querySelector(".world").classList.add("light-up");
 
     setTimeout(function(){
@@ -129,20 +128,20 @@ function addWalls(World, width, height){
   var thickness = 100;
 
   // Top
-  var bounds = Bodies.rectangle(width/2, -50, width, thickness, { isStatic: true });
-  World.add(engine.world, bounds);
+  var topWall = Bodies.rectangle(width/2, -50, width, thickness, { isStatic: true });
+  World.add(engine.world, topWall);
 
   // Left
-  var bounds = Bodies.rectangle(0 - thickness/2, height/2, thickness, height, { isStatic: true });
-  World.add(engine.world, bounds);
+  var leftWall = Bodies.rectangle(0 - thickness/2, height/2, thickness, height, { isStatic: true });
+  World.add(engine.world, leftWall);
 
   // Right
-  var bounds = Bodies.rectangle(width + thickness/2, height/2, thickness, height, { isStatic: true });
-  World.add(engine.world, bounds);
+  var rightWall = Bodies.rectangle(width + thickness/2, height/2, thickness, height, { isStatic: true });
+  World.add(engine.world, rightWall);
 
   // Bottom
-  var bounds = Bodies.rectangle(width/2, height + 50, width, thickness, { isStatic: true });
-  World.add(engine.world, bounds);
+  var bottomWall = Bodies.rectangle(width/2, height + 50, width, thickness, { isStatic: true });
+  World.add(engine.world, bottomWall);
 
 }
 
@@ -199,6 +198,8 @@ function addWalls(World, width, height){
 Events.on(engine, 'collisionStart', function(event) {
   var pairs = event.pairs;
 
+
+
   for (var i = 0, j = pairs.length; i != j; ++i) {
     var pair = pairs[i];
     var objA, objB;
@@ -212,9 +213,17 @@ Events.on(engine, 'collisionStart', function(event) {
       }
     }
 
-    if(objA && objB){
-      collisionManager(objA,objB);
+
+    if(!objA){
+      objA = {};
     }
+    if(!objB){
+      objB = {};
+    }
+
+    // if(objA && objB){
+      collisionManager(objA,objB);
+    // }
   }
 });
 
@@ -238,7 +247,16 @@ function collisionManager(a,b){
   selectors.push(a.selector);
   selectors.push(b.selector);
 
+  console.log(a);
+
   var scored = false;
+
+  if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.one") < 0 && selectors.indexOf(".endzone.two") < 0) {
+    playSound("hit");
+    console.log("hit");
+    console.log("=====");
+  }
+
 
   if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.one") > -1) {
     game.playerScored(1);
