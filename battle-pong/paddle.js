@@ -51,19 +51,23 @@ var update = function(){
     }
   }
 
-  // if(this.controller.a && this.controller.b) {
-  //   this.physics.angle = 0;
-  // } else {
-
   if(this.controller.a) {
     Matter.Body.setAngularVelocity(this.physics, .2);
+    if(this.player == 0) {
+      playSound("swish");
+    } else {
+      playSound("swish2");
+    }
   }
 
   if(this.controller.b) {
     Matter.Body.setAngularVelocity(this.physics, -.2);
+    if(this.player == 0) {
+      playSound("swish");
+    } else {
+      playSound("swish2");
+    }
   }
-  // }
-
 
   if(this.controller.up) {
     Matter.Body.applyForce(this.physics, this.physics.position, {
