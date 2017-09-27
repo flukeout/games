@@ -68,6 +68,8 @@ function createPaddle(options) {
     physicsOptions : {
       frictionAir: 0.1
     },
+    maxX: false,
+    minX: false,
     actions: [
       // for buttons
       'spinClockwise','spinCounterClockwise','up','down','left','right',
@@ -87,33 +89,45 @@ function createPaddle(options) {
     update(){
       this.updateActionsFromInputComponents();
 
-      var diagonalRatio = .851;
-      var x = 0
-      var y = 0;
+
+      // We want to calculate a movement angle based on
+      // the directional inputs.
+      var xDelta = 0
+      var yDelta = 0;
+
+      if(this.actions.up)     yDelta++;
+      if(this.actions.down)   yDelta--;
+      if(this.actions.left)   xDelta--;
+      if(this.actions.right)  xDelta++;
+
+      var angleRad = Math.atan2(xDelta,yDelta);
+
+      // Only move if there is an input
+      if(xDelta != 0 || yDelta != 0) {
+        var xForce = Math.sin(angleRad) * maxForce;
+        var yForce = Math.cos(angleRad) * -maxForce;  // Have to reverse Y axis
+        this.force(xForce, yForce);
+      }
 
       if(this.actions.spinClockwise)          this.spin(.2);
       if(this.actions.spinCounterClockwise)   this.spin(-.2);
 
-      if(this.actions.up)                     y++;
-      if(this.actions.down)                   y--;
-      if(this.actions.left)                   x--;
-      if(this.actions.right)                  x++;
-
-      var angleRad = Math.atan2(x,y);
-
-      if(x == 0 && y == 0) {
-
-      } else {
-        var xForce = Math.sin(angleRad) * maxForce;
-        var yForce = Math.cos(angleRad) * -maxForce;
-        this.force(xForce, yForce);
-      }
-
+      // Analog actions
       if(this.actions.moveX)                  this.force(maxForce* this.actions.moveX, 0);
       if(this.actions.moveY)                  this.force(0, maxForce * this.actions.moveY);
       if(this.actions.spin)                   this.spin(this.actions.spin * .2);
+
+      // Movement bounds - keep the paddle in its zone
+      if(this.physics.position.x > this.maxX && this.maxX) {
+        this.force(-maxForce * 1.25, 0);
+      }
+
+      if(this.physics.position.x < this.minX && this.minX) {
+        this.force(-maxForce * 1.25, 0);
+      }
+
     }
-  })
+  });
 }
 
 
@@ -132,4 +146,3 @@ function connectGamepad(newGamepad) {
 window.addEventListener('gamepadconnected', function (e) {
   connectGamepad(e.gamepad);
 });
-
