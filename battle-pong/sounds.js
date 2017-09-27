@@ -9,6 +9,10 @@ var sounds = {
     timeout : 260,
     waiting : false
   },
+  "score" : {
+    url : "sounds/score2.wav",
+    volume:  .1
+  },
   "hit" : {
     url : "sounds/hit2.mp3",
     volume : 1
@@ -19,13 +23,11 @@ var sounds = {
 var soundContext = new AudioContext();
 
 for(var key in sounds) {
-
   loadSound(key);
 }
 
 function loadSound(name){
   var sound = sounds[name];
-
   var url = sound.url;
   var buffer = sound.buffer;
 
@@ -43,51 +45,51 @@ function loadSound(name){
 }
 
 function playSound(name, options){
-  var options = options || {};
 
   var sound = sounds[name];
-  var soundVolume = sounds[name].volume || 1;
-  var panValue = sounds[name].pan || 0;
+
+  var soundOptions = {
+    volume: sounds[name].volume || 1,
+    pan: sounds[name].pan || 0,
+    timeout: sounds[name].timeout || false
+  }
+
+  for(var k in options){
+    if(soundOptions[k]) {
+      soundOptions[k] = options[k];
+    }
+  }
+
+  var sound = sounds[name];
+  var buffer = sound.buffer;
+
+  if(!buffer){ return; }
 
 
-  if(sound.timeout) {
+  var source = soundContext.createBufferSource();
+  source.buffer = buffer;
+
+  // If there is a timeout
+  if(soundOptions.timeout) {
     if(sound.waiting == false) {
       sound.waiting = true;
       setTimeout(function(){
         sound.waiting = false;
-      },sound.timeout);
+      }, soundOptions.timeout);
     } else {
       return;
     }
   }
 
+  var panNode = soundContext.createStereoPanner();
+  panNode.pan.value = soundOptions.pan;
 
-  var buffer = sound.buffer;
+  var volume = soundContext.createGain();
+  volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
 
-  if(buffer){
-    var source = soundContext.createBufferSource();
-    source.buffer = buffer;
+  panNode.connect(soundContext.destination);
+  volume.connect(panNode);
+  source.connect(volume);
+  source.start(0);
 
-    var panNode = soundContext.createStereoPanner();
-    var volume = soundContext.createGain();
-
-    if(options.pan) {
-      panNode.pan.value = options.pan;
-    } else {
-      panNode.pan.value = panValue;
-    }
-
-    if(options) {
-      if(options.volume) {
-        volume.gain.value = soundVolume * options.volume;
-      }
-    } else {
-      volume.gain.value = soundVolume;
-    }
-
-    panNode.connect(soundContext.destination);
-    volume.connect(panNode);
-    source.connect(volume);
-    source.start(0);
-  }
 }

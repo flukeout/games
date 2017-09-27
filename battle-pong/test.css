@@ -37,7 +37,7 @@ p {
   position: absolute;
   outline: solid 20px rgba(255,255,255,.2);
   box-sizing: border-box;
-  border-top: solid 4px #222;
+  border: solid 2px #222;
 }
 
 .light-up {
@@ -67,7 +67,6 @@ canvas {
   opacity: 0;
 }
 
-
 .paddle {
   background: white;
   position: absolute;
@@ -78,7 +77,6 @@ canvas {
 
 .paddle.one {
   left: 50px;
-
 }
 
 .paddle.two {
@@ -126,7 +124,7 @@ canvas {
 
 .terrain.one {
   left: 0;
-  background: #772424;
+  background: #8c2919;
 }
 
 .terrain.two {
