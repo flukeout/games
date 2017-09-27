@@ -104,9 +104,9 @@ function createPaddle(options) {
       if(x == 0 && y == 0) {
 
       } else {
-        var xD = Math.sin(angleRad) * maxForce;
-        var yD = Math.cos(angleRad) * maxForce;
-        this.force(xD, -yD);
+        var xForce = Math.sin(angleRad) * maxForce;
+        var yForce = Math.cos(angleRad) * -maxForce;
+        this.force(xForce, yForce);
       }
 
       if(this.actions.moveX)                  this.force(maxForce* this.actions.moveX, 0);

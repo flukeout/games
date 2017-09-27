@@ -10,7 +10,7 @@ var sounds = {
     waiting : false
   },
   "score" : {
-    url : "sounds/score2.wav",
+    url : "sounds/score.mp3",
     volume:  .1
   },
   "hit" : {

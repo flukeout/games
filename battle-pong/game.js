@@ -23,8 +23,8 @@ var game =  {
     },100);
   },
   updateBounds : function(){
-    // paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
-    // paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
+    paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
+    paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
   },
   gameOver : function() {
     this.mode = "off";
@@ -41,9 +41,7 @@ var game =  {
       return;
     }
 
-    playSound("score",{
-        volume: 1
-    });
+    playSound("score");
 
     document.querySelector(".world").classList.add("light-up");
 
