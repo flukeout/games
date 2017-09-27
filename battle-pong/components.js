@@ -14,6 +14,40 @@ function createObject(options){
       restitution: 1
     },
 
+    inputComponents: [],
+
+    actions: [],
+
+    addInputComponent: function(inputComponent) {
+      this.inputComponents.push(inputComponent);
+      inputComponent.register(this.actions);
+    },
+
+    updateActionsFromInputComponents: function () {
+
+      // Prepare a queue to mixdown actions received from inputs
+      var actionsQueue = [];
+
+      // Store the action changes from each input component
+      for (var i = 0; i < this.inputComponents.length; ++i) {
+        actionsQueue.push(this.inputComponents[i].update());
+      }
+
+      // For each action, see if any of the input components registered anything
+      for (action in this.actions) {
+
+        // Reset
+        this.actions[action] = 0;
+        for (var i = 0; i < actionsQueue.length; ++i) {
+          if (action in actionsQueue[i]) {
+
+            // If it's already set to something, don't set it back to 0
+            this.actions[action] = this.actions[action] || actionsQueue[i][action];
+          }
+        }
+      }
+    },
+
     lightUp : function(){
       this.element.classList.add("endzone-hit");
 
@@ -41,6 +75,12 @@ function createObject(options){
 
       // Create the physics simulation
       this.physics = createPhysicsForElement(this.element, this.physicsOptions);
+
+      var actions = this.actions;
+      this.actions = {};
+      for (var i = 0; i < actions.length; ++i) {
+        this.actions[actions[i]] = 0;
+      }
 
       this.width = this.element.getBoundingClientRect().width;
       this.height = this.element.getBoundingClientRect().height;

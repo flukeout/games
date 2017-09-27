@@ -1,16 +1,18 @@
+// TODO
+// * Make the options volume a 'factor' of the default sound volume, not an absolute value?
+// * Remove the timeout stuff? Should just move it to the object that calls it?
+// * That would allow us to not have two hit sounds...
+
 var sounds = {
   "swish" : {
     url : "sounds/swish.wav",
-    timeout : 260,
-    waiting : false
   },
-  "swish2" : {
-    url : "sounds/swish.wav",
-    timeout : 260,
-    waiting : false
+  "score" : {
+    url : "sounds/score.mp3",
+    volume:  .1
   },
   "hit" : {
-    url : "sounds/hit2.mp3",
+    url : "sounds/hit.mp3",
     volume : 1
   }
 };
@@ -19,13 +21,11 @@ var sounds = {
 var soundContext = new AudioContext();
 
 for(var key in sounds) {
-
   loadSound(key);
 }
 
 function loadSound(name){
   var sound = sounds[name];
-
   var url = sound.url;
   var buffer = sound.buffer;
 
@@ -43,51 +43,51 @@ function loadSound(name){
 }
 
 function playSound(name, options){
-  var options = options || {};
 
   var sound = sounds[name];
-  var soundVolume = sounds[name].volume || 1;
-  var panValue = sounds[name].pan || 0;
 
+  var soundOptions = {
+    volume: sounds[name].volume || 1,
+    pan: sounds[name].pan || 0,
+    timeout: sounds[name].timeout || false
+  }
 
-  if(sound.timeout) {
-    if(sound.waiting == false) {
-      sound.waiting = true;
-      setTimeout(function(){
-        sound.waiting = false;
-      },sound.timeout);
-    } else {
-      return;
+  for(var k in options){
+    if(soundOptions[k]) {
+      soundOptions[k] = options[k];
     }
   }
 
-
+  var sound = sounds[name];
   var buffer = sound.buffer;
 
-  if(buffer){
-    var source = soundContext.createBufferSource();
-    source.buffer = buffer;
+  if(!buffer){ return; }
 
-    var panNode = soundContext.createStereoPanner();
-    var volume = soundContext.createGain();
 
-    if(options.pan) {
-      panNode.pan.value = options.pan;
-    } else {
-      panNode.pan.value = panValue;
-    }
+  var source = soundContext.createBufferSource();
+  source.buffer = buffer;
 
-    if(options) {
-      if(options.volume) {
-        volume.gain.value = soundVolume * options.volume;
-      }
-    } else {
-      volume.gain.value = soundVolume;
-    }
+  // If there is a timeout
+  // if(soundOptions.timeout) {
+  //   if(sound.waiting == false) {
+  //     sound.waiting = true;
+  //     setTimeout(function(){
+  //       sound.waiting = false;
+  //     }, soundOptions.timeout);
+  //   } else {
+  //     return;
+  //   }
+  // }
 
-    panNode.connect(soundContext.destination);
-    volume.connect(panNode);
-    source.connect(volume);
-    source.start(0);
-  }
+  var panNode = soundContext.createStereoPanner();
+  panNode.pan.value = soundOptions.pan;
+
+  var volume = soundContext.createGain();
+  volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
+
+  panNode.connect(soundContext.destination);
+  volume.connect(panNode);
+  source.connect(volume);
+  source.start(0);
+
 }
