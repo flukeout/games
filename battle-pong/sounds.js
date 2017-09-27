@@ -1,20 +1,18 @@
+// TODO
+// * Make the options volume a 'factor' of the default sound volume, not an absolute value?
+// * Remove the timeout stuff? Should just move it to the object that calls it?
+// * That would allow us to not have two hit sounds...
+
 var sounds = {
   "swish" : {
     url : "sounds/swish.wav",
-    timeout : 260,
-    waiting : false
-  },
-  "swish2" : {
-    url : "sounds/swish.wav",
-    timeout : 260,
-    waiting : false
   },
   "score" : {
     url : "sounds/score.mp3",
     volume:  .1
   },
   "hit" : {
-    url : "sounds/hit2.mp3",
+    url : "sounds/hit.mp3",
     volume : 1
   }
 };
@@ -70,16 +68,16 @@ function playSound(name, options){
   source.buffer = buffer;
 
   // If there is a timeout
-  if(soundOptions.timeout) {
-    if(sound.waiting == false) {
-      sound.waiting = true;
-      setTimeout(function(){
-        sound.waiting = false;
-      }, soundOptions.timeout);
-    } else {
-      return;
-    }
-  }
+  // if(soundOptions.timeout) {
+  //   if(sound.waiting == false) {
+  //     sound.waiting = true;
+  //     setTimeout(function(){
+  //       sound.waiting = false;
+  //     }, soundOptions.timeout);
+  //   } else {
+  //     return;
+  //   }
+  // }
 
   var panNode = soundContext.createStereoPanner();
   panNode.pan.value = soundOptions.pan;

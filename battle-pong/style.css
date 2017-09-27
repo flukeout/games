@@ -37,7 +37,6 @@ p {
   position: absolute;
   outline: solid 20px rgba(255,255,255,.2);
   box-sizing: border-box;
-  border: solid 2px #222;
 }
 
 .light-up {

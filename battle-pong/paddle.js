@@ -70,6 +70,8 @@ function createPaddle(options) {
     },
     maxX: false,
     minX: false,
+    swishTimeout: false,  // Keeps track of the swish soudn timeout
+    swishTimeoutMS : 260, // Delay between playing the swish sound
     actions: [
       // for buttons
       'spinClockwise','spinCounterClockwise','up','down','left','right',
@@ -85,6 +87,14 @@ function createPaddle(options) {
     },
     spin: function (v) {
       Matter.Body.setAngularVelocity(this.physics, v);
+
+      if(!this.swishTimeout) {
+        playSound("swish");
+        var that = this;
+        this.swishTimeout = setTimeout(function(){
+          that.swishTimeout = false;
+        }, this.swishTimeoutMS);
+      }
     },
     update(){
       this.updateActionsFromInputComponents();

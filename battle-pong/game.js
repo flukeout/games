@@ -25,8 +25,14 @@ var game =  {
   updateBounds : function(){
     paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
     paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
+
+    document.querySelector(".terrain.one").style.width = this.terrainLine + "%";
+    document.querySelector(".terrain.two").style.width = (100-this.terrainLine) + "%";
   },
   gameOver : function() {
+    paddleOne.maxX = false;
+    paddleTwo.minX = false;
+
     this.mode = "off";
     if(this.terrainLine == 100) {
       document.querySelector(".score-display").innerHTML = "&larr; RED WINS";
@@ -35,7 +41,6 @@ var game =  {
     }
   },
   playerScored : function(player){
-
 
     if(this.mode === "off") {
       return;
@@ -55,8 +60,6 @@ var game =  {
       this.terrainLine = this.terrainLine + this.terrainChange;
     }
 
-    document.querySelector(".terrain.one").style.width = this.terrainLine + "%";
-    document.querySelector(".terrain.two").style.width = (100-this.terrainLine) + "%";
     this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
@@ -131,18 +134,22 @@ function addWalls(World, width, height){
 
   // Top
   var topWall = Bodies.rectangle(width/2, -50, width, thickness, { isStatic: true });
+  topWall.friction = 0;
   World.add(engine.world, topWall);
 
   // Left
-  var leftWall = Bodies.rectangle(0 - thickness/2, height/2, thickness, height, { isStatic: true });
+  var leftWall = Bodies.rectangle(0 - thickness/2, height/2, thickness, height, { isStatic: true, friction: 0 });
+  leftWall.friction = 0;
   World.add(engine.world, leftWall);
 
   // Right
-  var rightWall = Bodies.rectangle(width + thickness/2, height/2, thickness, height, { isStatic: true });
+  var rightWall = Bodies.rectangle(width + thickness/2, height/2, thickness, height, { isStatic: true, friction: 0 });
+  rightWall.friction = 0;
   World.add(engine.world, rightWall);
 
   // Bottom
-  var bottomWall = Bodies.rectangle(width/2, height + 50, width, thickness, { isStatic: true });
+  var bottomWall = Bodies.rectangle(width/2, height + 50, width, thickness, { isStatic: true, friction: 0 });
+  bottomWall.friction = 0;
   World.add(engine.world, bottomWall);
 
 }
