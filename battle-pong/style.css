@@ -23,7 +23,6 @@ p {
   text-align: center;
 }
 
-
 .tilt-wrapper {
   position: absolute;
   top: calc(50vh - 275px);
@@ -36,18 +35,31 @@ p {
   height: 500px;
   position: absolute;
   outline: solid 20px rgba(255,255,255,.2);
+  outline: solid 20px #222;
   box-sizing: border-box;
 }
 
-.light-up {
-  animation: lightup .25s ease-out;
+.light-up-blue {
+  animation: lightupBlue 1s ease-out;
 }
 
-@keyframes lightup {
-  15% {
-    outline: solid 20px rgba(255,255,255,.4);
+@keyframes lightupBlue {
+  5% {
+    background: #1871a8;
   }
 }
+
+
+.light-up-red {
+  animation: lightupRed 1s ease-out;
+}
+
+@keyframes lightupRed {
+  5% {
+    background: #8c2919;
+  }
+}
+
 
 
 canvas {
