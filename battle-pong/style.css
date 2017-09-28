@@ -37,6 +37,7 @@ p {
   outline: solid 20px rgba(255,255,255,.2);
   outline: solid 20px #222;
   box-sizing: border-box;
+  transform-style: preserve-3d;
 }
 
 .light-up-blue {
@@ -141,4 +142,110 @@ canvas {
 .terrain.two {
   right: 0;
   background: #1871a8;
+}
+
+
+.speed {
+  background: white;
+  /*  border-radius: 5px;*/
+}
+
+.blank-particle {
+  position: absolute;
+  display: none;
+  top: 0:
+  left: 0;
+  height: 15px;
+  width: 15px;
+}
+
+.puff {
+  background: rgba(255,255,255,.4);
+  background: #555;
+  z-index: 5;
+}
+
+
+.blast-line {
+  transform-origin: top;
+  z-index: 4;
+}
+
+
+.underblast {
+  z-index: 2;
+  position: absolute;
+  border-radius: 50%;
+}
+
+
+
+.boom {
+  position: absolute;
+  z-index: 99999999;
+  opacity: 1;
+  transform-style: preserve-3d;
+}
+
+.boom .body {
+  animation: boom .5s ease-out;
+  animation-fill-mode: forward;
+  width: 100%;
+  height: 100%;
+  background: #ffb806;
+  opacity: 0;
+}
+
+.boom .shock {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  animation: shock .5s ease-out;
+  animation-fill-mode: forward;
+  background: white;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+
+@keyframes boom {
+  0% {
+    transform: scale(.95) translateZ(0);
+    opacity: 1;
+    background: white;
+  }
+  30% {
+    background: #ffb806;
+  }
+  40% {
+    transform: scale(1) translateZ(4px);
+    opacity: 1;
+    background: #ffb806;
+    animation-timing-function: ease-in;
+  }
+  80% {
+    background: #727272;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(.75) translateZ(20px);
+  }
+}
+
+@keyframes shock {
+  0% {
+    transform: scale(.95);
+    opacity: .4;
+    background: white;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+.underblast {
+  z-index: 2;
+  position: absolute;
+  border-radius: 50%;
 }

@@ -47,6 +47,8 @@ var game =  {
       return;
     }
 
+    makeExplosion(ball.physics.position.x,ball.physics.position.y, 75);
+
     playSound("score");
 
     var lightupEl = document.querySelector("body");
@@ -208,8 +210,6 @@ function addWalls(options){
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 
   Engine.update(engine, 1000 / 60);
-
-  // checkControllers();
 
   objectsToRender.forEach(function (obj) {
 

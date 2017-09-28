@@ -1,6 +1,5 @@
 // The ball
 
-
 document.addEventListener('DOMContentLoaded', function () {
 
   var ball = createObject({
@@ -9,14 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
       frictionAir: 0.00001,
       restitution: 1
     },
-
     launch : function(x,y){
       Matter.Body.applyForce(this.physics, this.physics.position, {x: x,y:y});
     }
   });
 
   ball.launch(0, .02);
-
 });
-
-
