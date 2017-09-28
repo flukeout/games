@@ -48,17 +48,6 @@ function createObject(options){
       }
     },
 
-    lightUp : function(){
-      this.element.classList.add("endzone-hit");
-
-      setTimeout(function(el) {
-        return function() {
-          el.classList.remove("endzone-hit");
-        };
-      }(this.element), 200);
-
-    },
-
     init : function(){
 
       for(var k in options){

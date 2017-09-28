@@ -40,6 +40,7 @@ var game =  {
       document.querySelector(".score-display").innerHTML = "&rarr; BLUE WINS";
     }
   },
+  flashTimeout : false,
   playerScored : function(player){
 
     if(this.mode === "off") {
@@ -48,11 +49,32 @@ var game =  {
 
     playSound("score");
 
-    document.querySelector(".world").classList.add("light-up");
+    var lightupEl = document.querySelector("body");
+    var width = lightupEl.getBoundingClientRect().width;
+    console.log(width);
 
-    setTimeout(function(){
-      document.querySelector(".world").classList.remove("light-up");
-    },250);
+    if(this.flashTimeout) {
+      clearTimeout(this.flashTimeout);
+      this.flashTimeout = false;
+      lightupEl.classList.remove("light-up-red");
+      lightupEl.classList.remove("light-up-blue");
+      lightupEl.style.width = width;
+    }
+
+    if(player == 2) {
+      lightupEl.classList.add("light-up-red");
+    } else {
+      lightupEl.classList.add("light-up-blue");
+    }
+
+    var that = this;
+    this.flashTimeout = setTimeout(function(){
+      lightupEl.classList.remove("light-up-red");
+      lightupEl.classList.remove("light-up-blue");
+      that.flashTimeout = false;
+    }, 1000);
+
+
 
     if(player === 1) {
       this.terrainLine = this.terrainLine - this.terrainChange;
@@ -91,7 +113,13 @@ function setupRenderer(worldSelector){
   game.boardWidth = sBoxDim.width;
   game.start();
 
-  addWalls(World, sBoxDim.width, sBoxDim.height);
+  addWalls({
+    world: World,
+    width: sBoxDim.width,
+    height: sBoxDim.height,
+    sides : ["top","right","bottom","left"]
+  });
+
   // Create a renderer
   var render = Render.create({
     element: document.querySelector(worldSelector),
@@ -110,7 +138,7 @@ function setupRenderer(worldSelector){
   world.bounds.max.y = sBoxDim.height;
   world.gravity.y = 0;
 
-  Render.run(render);
+  // Render.run(render); // TODO - since this is for debugging only, we should make it a flag
 }
 
 var Engine = Matter.Engine,
@@ -128,29 +156,45 @@ var objectsToRender = [];
 
 
 // Adds 4 walls to the World to surround it
-function addWalls(World, width, height){
+function addWalls(options){
+
+  var width = options.width;
+  var height = options.height;
+  var world = options.world;
+  var sides = options.sides;
 
   var thickness = 100;
 
-  // Top
-  var topWall = Bodies.rectangle(width/2, -50, width, thickness, { isStatic: true });
-  topWall.friction = 0;
-  World.add(engine.world, topWall);
+  for(var i = 0; i < sides.length; i++) {
+    var side = sides[i];
+    var x, y, wallWidth, wallHeight;
 
-  // Left
-  var leftWall = Bodies.rectangle(0 - thickness/2, height/2, thickness, height, { isStatic: true, friction: 0 });
-  leftWall.friction = 0;
-  World.add(engine.world, leftWall);
+    if(side == "top") {
+      x = width / 2;
+      y = -thickness/2;
+      wallWidth = width;
+      wallHeight = thickness;
+    } else if (side == "left") {
+      x = -thickness/2;
+      y = height/2;
+      wallWidth = thickness;
+      wallHeight = height;
+    } else if (side == "right") {
+      x = width + thickness/2;
+      y = height/2;
+      wallWidth = thickness;
+      wallHeight = height;
+    } else if (side == "bottom") {
+      x = width / 2;
+      y = height + thickness / 2;
+      wallWidth = width;
+      wallHeight = thickness;
+    }
 
-  // Right
-  var rightWall = Bodies.rectangle(width + thickness/2, height/2, thickness, height, { isStatic: true, friction: 0 });
-  rightWall.friction = 0;
-  World.add(engine.world, rightWall);
-
-  // Bottom
-  var bottomWall = Bodies.rectangle(width/2, height + 50, width, thickness, { isStatic: true, friction: 0 });
-  bottomWall.friction = 0;
-  World.add(engine.world, bottomWall);
+    var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, { isStatic: true });
+    wall.friction = options.friction || 0;
+    world.add(engine.world, wall);
+  }
 
 }
 
@@ -277,13 +321,4 @@ function collisionManager(a,b){
     scored = true;
   }
 
-  if(scored){
-    for(var i = 0; i < selectors.length; i++) {
-      var selector = selectors[i];
-      if(selector.indexOf("endzone") > -1){
-        var endzone = objects[i];
-        endzone.lightUp();
-      }
-    }
-  }
 }
