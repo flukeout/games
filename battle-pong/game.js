@@ -53,7 +53,6 @@ var game =  {
 
     var lightupEl = document.querySelector("body");
     var width = lightupEl.getBoundingClientRect().width;
-    console.log(width);
 
     if(this.flashTimeout) {
       clearTimeout(this.flashTimeout);
