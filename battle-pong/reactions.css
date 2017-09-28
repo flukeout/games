@@ -1,0 +1,59 @@
+.reaction-container {
+  position: fixed;
+  bottom: 10px;
+}
+
+.reaction-container .emoji {
+  width: 200px;
+  height: 200px;
+  background-size: cover;
+  background-position: bottom;
+  transition: transform .25s linear;
+}
+
+.reaction-container.one {
+  left: 0;
+}
+
+.reaction-container.two {
+  right: 0;
+}
+
+.reaction-container.one .emoji {
+  transform: translateX(-200px) scaleX(-1);
+}
+
+.reaction-container.two .emoji {
+  transform: translateX(200px);
+}
+
+.reaction-container.one.show .emoji {
+  transform: translateX(0px) scaleX(-1);
+}
+
+.reaction-container.two.show .emoji {
+  transform: translateX(0px);
+}
+
+.reaction-container .words {
+  position: absolute;
+  bottom: 0;
+  transform: translateY(500px);
+  transition: transform .5s linear;
+  color: white;
+  font-family: 'Open Sans';
+  font-size: 30px;
+}
+
+.reaction-container .words.pink-n-yellow {
+  font-weight: bold;
+  font-family: 'Impact';
+  color: hotpink;
+  text-shadow: 2px 2px 0px gold, -2px 2px 0px gold, -2px -2px 0px gold, 2px -2px 0px gold;
+}
+
+.reaction-container .words.thick-n-white {
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+}
