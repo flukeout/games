@@ -76,7 +76,13 @@ var game =  {
       that.flashTimeout = false;
     }, 1000);
 
+    var xForce = Math.abs(ball.physics.velocity.x);
+    var xForceRatio = xForce / 15;
+    if(xForceRatio > 1) {
+      xForceRatio = 1;
+    }
 
+    this.terrainChange = 5 + (xForceRatio * 10);
 
     if(player === 1) {
       this.terrainLine = this.terrainLine - this.terrainChange;
@@ -84,7 +90,7 @@ var game =  {
       this.terrainLine = this.terrainLine + this.terrainChange;
     }
 
-    this.updateBounds();
+
 
     for(var i = 0; i < 10; i++) {
       var options = {
@@ -112,7 +118,14 @@ var game =  {
 
     }
 
+    if(this.terrainLine > 100) {
+      this.terrainLine = 100;
+    } else if(this.terrainLine < 0) {
+      this.terrainLine = 0;
+    }
 
+
+    this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
       this.gameOver();

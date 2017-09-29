@@ -27,7 +27,6 @@ p {
   position: absolute;
   top: calc(50vh - 275px);
   left: calc(50vw - 400px);
-  box-sizing: border-box;
 }
 
 .world {
