@@ -133,6 +133,12 @@ var game =  {
       this.terrainLine = this.terrainLine + this.terrainChange;
     }
 
+    if(this.terrainLine > 100) {
+      this.terrainLine = 100;
+    } else if(this.terrainLine < 0) {
+      this.terrainLine = 0;
+    }
+
     this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
@@ -164,13 +170,6 @@ var game =  {
       options.x = options.x - options.width / 2;
       makeParticle(options);
     }
-
-    if(this.terrainLine > 100) {
-      this.terrainLine = 100;
-    } else if(this.terrainLine < 0) {
-      this.terrainLine = 0;
-    }
-
   }
 }
 
