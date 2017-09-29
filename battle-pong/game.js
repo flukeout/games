@@ -2,6 +2,39 @@
 var worldEl;
 var tiltEl;
 
+// Do a cool <title>
+
+var position = 0;
+var direction = "up";
+
+setInterval(function(){
+
+  var titleString = "|";
+
+  for(var i = 0; i < 7; i++) {
+    if(i == position) {
+      titleString = titleString + "\u2022";
+    } else {
+      titleString = titleString + "\u00A0";
+    }
+  }
+  titleString = titleString + "|";
+
+  document.title = titleString;
+
+  if(direction == "up") {
+    position++;
+    if(position > 5) {
+      direction = "down";
+    }
+  } else {
+    position--;
+    if(position < 1) {
+      direction = "up";
+    }
+  }
+}, 250);
+
 var game =  {
   score : {
     player1: 0,
