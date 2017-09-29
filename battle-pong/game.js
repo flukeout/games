@@ -109,6 +109,10 @@ var game =  {
       that.flashTimeout = false;
     }, 1000);
 
+
+    // Check horizontal velocity of the ball
+    // the faster it hits an endzone the more that
+    // player wins.
     var xForce = Math.abs(ball.physics.velocity.x);
     var xForceRatio = xForce / 15;
     if(xForceRatio > 1) {
@@ -116,15 +120,26 @@ var game =  {
     }
 
     this.terrainChange = 5 + (xForceRatio * 10);
+    document.querySelector(".score-display").innerHTML = this.terrainChange.toFixed(1) + "%";
 
+    setTimeout(function(){
+      document.querySelector(".score-display").innerHTML = "";
+    }, 500);
+
+    // Move the terrain line accordingly
     if(player === 1) {
       this.terrainLine = this.terrainLine - this.terrainChange;
     } else {
       this.terrainLine = this.terrainLine + this.terrainChange;
     }
 
+    this.updateBounds();
 
+    if(this.terrainLine === 100 || this.terrainLine === 0) {
+      this.gameOver();
+    }
 
+    // Add red or blue particles when the terrain line moves
     for(var i = 0; i < 10; i++) {
       var options = {
         x : this.terrainLine/100 * 800,
@@ -148,7 +163,6 @@ var game =  {
       options.width = options.height;
       options.x = options.x - options.width / 2;
       makeParticle(options);
-
     }
 
     if(this.terrainLine > 100) {
@@ -157,12 +171,6 @@ var game =  {
       this.terrainLine = 0;
     }
 
-
-    this.updateBounds();
-
-    if(this.terrainLine === 100 || this.terrainLine === 0) {
-      this.gameOver();
-    }
   }
 }
 
@@ -303,22 +311,28 @@ var tick = 0;
 
       tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
 
-      tick++;
-      if(tick > 4) {
-        var options = {
-          x : ball.physics.position.x - 3,
-          y : ball.physics.position.y - 3,
-          o : .5,
-          oV : -.01,
-          height: 6,
-          width: 6,
-          lifespan : 100,
-          className : "speed"
+      if(ball.physics.speed > 8) {
+
+        tick++;
+        if(tick > 4) {
+          var options = {
+            x : ball.physics.position.x - 3,
+            y : ball.physics.position.y - 3,
+            o : .5,
+            oV : -.01,
+            height: 6,
+            width: 6,
+            lifespan : 100,
+            className : "speed"
+          }
+
+          makeParticle(options);
+          tick = 0;
         }
 
-        makeParticle(options);
-        tick = 0;
+
       }
+
     }
 
     var el = obj.element;
