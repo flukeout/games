@@ -7,6 +7,10 @@ var sounds = {
   "swish" : {
     url : "sounds/swish.wav",
   },
+  "boom" : {
+    url : "sounds/boom.wav",
+    volume : .3
+  },
   "score" : {
     url : "sounds/score.mp3",
     volume:  .1

@@ -3,9 +3,8 @@
 
 function makeExplosion(xposition, yposition, size){
 
-  // playSound("boom");
+  playSound("boom");
   // shakeScreen();
-
   // Adds the orange blast
 
   var blastOffset = (size - 20) / 2;

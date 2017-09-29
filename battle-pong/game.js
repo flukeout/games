@@ -49,7 +49,7 @@ var game =  {
 
     makeExplosion(ball.physics.position.x,ball.physics.position.y, 75);
 
-    playSound("score");
+    // playSound("score");
 
     var lightupEl = document.querySelector("body");
     var width = lightupEl.getBoundingClientRect().width;
