@@ -42,24 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
       var pan = .8 * (-400 + this.physics.position.x) / 400;
 
       playSound("hit", { volume: percentage, pan : pan });
-
-      // for(var i = 0; i < 10; i++) {
-      //
-      //   var options = {
-      //     x : ball.physics.position.x,
-      //     y : ball.physics.position.y,
-      //     angle : getRandom(0,359),
-      //     speed : getRandom(1,2),
-      //     zRv : getRandom(0,3),
-      //     // oV : -.01,
-      //     height: 5,
-      //     width: 5,
-      //     gravity : 0,
-      //     lifespan : 100,
-      //     className : "speed"
-      //   }
-      //   makeParticle(options);
-      // }
     }
 
   });

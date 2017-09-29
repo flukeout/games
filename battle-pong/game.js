@@ -28,6 +28,7 @@ var game =  {
 
     document.querySelector(".terrain.one").style.width = this.terrainLine + "%";
     document.querySelector(".terrain.two").style.width = (100-this.terrainLine) + "%";
+
   },
   gameOver : function() {
     paddleOne.maxX = false;
@@ -84,6 +85,34 @@ var game =  {
     }
 
     this.updateBounds();
+
+    for(var i = 0; i < 10; i++) {
+      var options = {
+        x : this.terrainLine/100 * 800,
+        y : getRandom(20,460),
+        zRv : getRandom(-2,2),
+        scaleV : -.01,
+        height: getRandom(15,25),
+        lifespan : 100
+      }
+
+      if(player === 1) {
+        options.xV = getRandom(-1, -3);
+        options.xVa = .03;
+        options.className = "blue-chunk";
+      } else {
+        options.xV = getRandom(1, 3);
+        options.xVa = -.03;
+        options.className = "red-chunk";
+      }
+
+      options.width = options.height;
+      options.x = options.x - options.width / 2;
+      makeParticle(options);
+
+    }
+
+
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
       this.gameOver();
@@ -204,6 +233,8 @@ function addWalls(options){
 // This keeps it inside the world DIV / area
 
 // The main game engine, moves things around
+var tick = 0;
+
 (function run() {
 
   // TODO - should we base the engine update tick based on elapsed time since last frame?
@@ -225,6 +256,23 @@ function addWalls(options){
       }
 
       tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
+
+      tick++;
+      if(tick > 4) {
+        var options = {
+          x : ball.physics.position.x - 3,
+          y : ball.physics.position.y - 3,
+          o : .5,
+          oV : -.01,
+          height: 6,
+          width: 6,
+          lifespan : 100,
+          className : "speed"
+        }
+
+        makeParticle(options);
+        tick = 0;
+      }
     }
 
     var el = obj.element;

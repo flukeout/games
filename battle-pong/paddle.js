@@ -133,7 +133,7 @@ function createPaddle(options) {
       }
 
       if(this.physics.position.x < this.minX && this.minX) {
-        this.force(-maxForce * 1.25, 0);
+        this.force(maxForce * 1.25, 0);
       }
 
     }

@@ -162,5 +162,5 @@ function drawParticles(){
 
 
 function getRandom(min, max){
-  return Math.round(min + Math.random() * (max-min));
+  return min + Math.random() * (max-min);
 }

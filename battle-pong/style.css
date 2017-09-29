@@ -139,6 +139,14 @@ canvas {
   background: #8c2919;
 }
 
+.red-chunk {
+  background: #8c2919;
+}
+
+.blue-chunk {
+  background: #1871a8;
+}
+
 .terrain.two {
   right: 0;
   background: #1871a8;
@@ -147,7 +155,17 @@ canvas {
 
 .speed {
   background: white;
-  /*  border-radius: 5px;*/
+  border-radius: 5px;
+}
+
+.blue {
+  background: #1871a8;
+  border-radius: 5px;
+}
+
+.red {
+  background: #8c2919;
+  border-radius: 5px;
 }
 
 .blank-particle {
