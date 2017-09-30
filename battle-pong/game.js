@@ -146,9 +146,11 @@ var game =  {
         scaleV : -.02,
         height: getRandom(25,maxSize),
         lifespan: 100,
-        xV : getRandom(modifier * 15, modifier * 20)
+        xV : getRandom(modifier * 15, modifier * 20),
+        minX : 0
       }
 
+      options.maxX = 800 - options.height;
       options.x = this.terrainLine/100 * 800 - (modifier * options.height),
       options.xV = options.xV - ((options.height / maxSize) * options.xV * .5);
       options.xVa = -options.xV / 40;

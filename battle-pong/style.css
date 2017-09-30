@@ -132,6 +132,18 @@ canvas {
   top: 0;
   width: 50%;
   transition: width .25s ease-out;
+
+}
+
+.terrain.two:after {
+ content:"";
+ width: 0px;
+ border-left: dashed 2px rgba(255,255,255,.2);
+/* background: rgba(255,255,255,.3);*/
+ position:absolute;
+ left: 0px;
+ top: -10%;
+ height: 120%;
 }
 
 .terrain.one {
@@ -181,7 +193,7 @@ canvas {
   color: rgba(255,255,255,.7);
 }
 
-.blue {
+/*.blue {
   background: #1871a8;
   border-radius: 5px;
 }
@@ -190,7 +202,7 @@ canvas {
   background: #8c2919;
   border-radius: 5px;
 }
-
+*/
 .blank-particle {
   position: absolute;
   display: none;

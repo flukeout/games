@@ -28,6 +28,9 @@ function makeParticle(options){
     x :     options.x || 0,
     xV :    options.xV || 0,
     xVa :   options.xVa || 0,
+    maxX :  options.maxX || false,
+    minX :  options.minX || false,
+
     y :     options.y || 0,
     yV :    options.yV || 0,
     yVa :   options.yVa || 0,
@@ -129,6 +132,17 @@ function makeParticle(options){
     p.y = p.y + p.yV;
     p.xV = p.xV + p.xVa;
     p.yV = p.yV + p.yVa;
+
+    if(p.xV < 0 && p.x < p.minX) {
+      p.xV = p.xV * -1; //Bounce
+      p.xVa = p.xVa * -1; //Bounce
+    }
+
+    if(p.xV > 0 && p.x > p.maxX) {
+      p.xV = p.xV * -1; //Bounce
+      p.xVa = p.xVa * -1; //Bounce
+    }
+
 
     p.o = p.o + p.oV;
 
