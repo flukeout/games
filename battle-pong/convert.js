@@ -80,6 +80,9 @@ function getElementProperties(element){
 
 function createPhysicsForElement(element, options) {
 
+  var guid = getRandom(0,9999999);
+
+
   var props = getElementProperties(element);
 
   var finalOptions = {
@@ -99,6 +102,8 @@ function createPhysicsForElement(element, options) {
   if(props.bodyType == "circle") {
     physics = Bodies.circle(props.x, props.y, props.width/2, finalOptions);
   }
+
+  physics.guid = guid;
 
   // if (!finalOptions.isStatic) resetElementPosition(element);
   resetElementPosition(element);

@@ -1,4 +1,3 @@
-
 var paddleKeyboardActionMapping = {
   "up": "up",
   "down": "down",
@@ -25,27 +24,13 @@ var paddleGamepadActionMapping = {
   }
 };
 
-var paddleOne;
-var paddleTwo;
 
+var paddles = []; // Keeps an array of paddles for connecting to controllers
 
-document.addEventListener('DOMContentLoaded', function () {
+function connectPaddlesToControls(){
 
-
-  paddles = [
-    createPaddle({
-      selector: ".paddle.one",
-      player: 0
-    }),
-    createPaddle({
-      selector: ".paddle.two",
-      player: 1
-    })
-  ];
-
-
-  paddleOne = paddles[0];
-  paddleTwo = paddles[1];
+  paddles[0] = paddleOne;
+  paddles[1] = paddleTwo
 
   // Let the first paddle use the keyboard regardless
   paddleOne.addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
@@ -54,10 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
   for (var i = 0; i < gamepads.length && i < 2; ++i) {
     connectGamepad(gamepads[i]);
   }
+}
 
-});
-
-var paddles;
 
 function createPaddle(options) {
   var maxForce = 0.004;
@@ -143,7 +126,6 @@ function createPaddle(options) {
 
 // See what gamepads are up for grabs
 var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-
 
 var connectedGamePads = 0;
 

@@ -48,6 +48,8 @@ function makeParticle(options){
     scaleV : options.scaleV || 0,
     scaleVa : options.scaleVa || 0,
 
+    text : options.text || false,
+
     speed : options.speed || false,
     speedA : options.speedA || 0,
     angle : options.angle || false,
@@ -94,6 +96,11 @@ function makeParticle(options){
   particle.el.classList.add(particle.className);
   particle.el.style.background = particle.color;
 
+  if(particle.text) {
+    particle.el.innerText = options.text;
+  }
+
+
   particle.move = function(){
     var p = this;
 
@@ -109,6 +116,7 @@ function makeParticle(options){
       p.el.removeAttribute("style");
       p.el.classList.remove(p.className);
       p.el.style.display = "none";
+      p.el.innerText = "";
 
       for(var i = 0; i < particles.length; i++){
         if(p == particles[i]){
@@ -126,6 +134,20 @@ function makeParticle(options){
 
     // If the particle opacity drops below 0 and won't get above 0, get rid of it
     if(p.o <= 0 && p.oV <= 0) {
+      p.lifespan = 0;
+    }
+
+    if(p.xV < 0 && p.xVa < 0) {
+      p.xVa = 0;
+      p.xV = 0;
+    } else if (p.xV > 0 && p.xVa > 0) {
+      p.xVa = 0;
+      p.xV = 0;
+    }
+
+
+
+    if(p.scale <= 0 && p.scaleV <= 0) {
       p.lifespan = 0;
     }
 
@@ -150,14 +172,12 @@ function makeParticle(options){
 
 
 // Animation loop for the Particle Effects
-drawParticles();
 
 function drawParticles(){
   for(var i = 0; i < particles.length; i++){
     var p = particles[i];
     p.move();
   }
-  requestAnimationFrame(drawParticles);
 }
 
 

@@ -8,7 +8,7 @@ html, body {
   perspective: 1200px;
 }
 
-p {
+.score-display {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -27,6 +27,7 @@ p {
   position: absolute;
   top: calc(50vh - 275px);
   left: calc(50vw - 400px);
+  transform-style: preserve-3d;
 }
 
 .world {
@@ -36,7 +37,6 @@ p {
   outline: solid 20px rgba(255,255,255,.2);
   outline: solid 20px #222;
   box-sizing: border-box;
-  transform-style: preserve-3d;
 }
 
 .light-up-blue {
@@ -48,7 +48,6 @@ p {
     background: #1871a8;
   }
 }
-
 
 .light-up-red {
   animation: lightupRed 1s ease-out;
@@ -84,6 +83,7 @@ canvas {
   width: 20px;
   height: 100px;
   top: calc(50% - 50px);
+  z-index: 999999;
 }
 
 .paddle.one {
@@ -102,6 +102,7 @@ canvas {
   left: calc(50% - 15px);
   top: 100px;
   border-radius: 15px;
+  z-index: 9999999;
 }
 
 [data-physics] {
@@ -139,11 +140,30 @@ canvas {
 }
 
 .red-chunk {
+  z-index: 1;
   background: #8c2919;
+/*  background: #1871a8;*/
+/*  animation: redToBlue 1s ease-out;*/
+/*  background: black;*/
+}
+
+@keyframes redToBlue {
+  0% {
+    background: #8c2919;
+  }
+
+  50% {
+    background: #8c2919;
+  }
+  100% {
+    background: #1871a8;
+  }
 }
 
 .blue-chunk {
+  z-index: 1;
   background: #1871a8;
+/*  background: black;*/
 }
 
 .terrain.two {
@@ -151,10 +171,14 @@ canvas {
   background: #1871a8;
 }
 
-
 .speed {
-  background: white;
-  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  font-size: 30px;
+  font-family: sans-serif;
+  text-shadow: 0 2px 0 rgba(0,0,0,.2);
+  color: rgba(255,255,255,.7);
 }
 
 .blue {
@@ -170,7 +194,7 @@ canvas {
 .blank-particle {
   position: absolute;
   display: none;
-  top: 0:
+  top: 0;
   left: 0;
   height: 15px;
   width: 15px;
@@ -199,7 +223,7 @@ canvas {
 
 .boom {
   position: absolute;
-  z-index: 99999999;
+  z-index: 999;
   opacity: 1;
   transform-style: preserve-3d;
 }
@@ -266,3 +290,48 @@ canvas {
   position: absolute;
   border-radius: 50%;
 }
+
+
+.message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  z-index: 9999;
+  transform-style: preserve-3d;
+}
+
+.message .body {
+  color: white;
+  white-space: nowrap;
+  z-index: 3;
+  padding: 5px 0;
+  position: absolute;
+  font-size: 35px;
+  opacity: .9;
+  top: 0;
+  left: -130px;
+  text-align: center;
+  width: 260px;
+  font-weight: bold;
+  font-family: sans-serif;
+  transform: translateY(-25px) translateX(10px) translateZ(20px) rotateX(-45deg);
+  animation: messagePop 2s ease-out;
+  animation-fill-mode: forwards;
+  text-transform: uppercase;
+  text-shadow: 0px 2px 0 rgba(0,0,0,.2);
+}
+
+@keyframes messagePop {
+  0% {
+    transform: translateY(-25px) translateX(10px) translateZ(10px) rotateX(-45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-25px) translateX(10px) translateZ(100px) rotateX(-55deg);
+    opacity: 0;
+  }
+}
+
+
