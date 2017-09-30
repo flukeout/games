@@ -10,12 +10,19 @@ var game =  {
   terrainChange : 5,
   mode : "off", // on - game on, off - game over (refresh browser to restart)
   boardWidth : 0,
+  terrainHeight: 0,
   runLoopStarted : false,
+  terrainOne : "",
+  terrainTwo: "",
   restartTimeoutMS: 3500, //time before the game restarts
   init: function(){
 
     var world = document.querySelector(".world");
     this.boardWidth = world.getBoundingClientRect().width;
+    this.boardHeight = world.getBoundingClientRect().height;
+
+    this.terrainOne = document.querySelector(".terrain.one");
+    this.terrainTwo = document.querySelector(".terrain.two");
 
     run();
 
@@ -38,13 +45,14 @@ var game =  {
     });
   },
 
-
+  // Updates the terrain and the paddle movement
+  // restrictions.
   updateBounds : function(){
     paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
     paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
 
-    document.querySelector(".terrain.one").style.width = this.terrainLine + "%";
-    document.querySelector(".terrain.two").style.width = (100-this.terrainLine) + "%";
+    this.terrainOne.style.width = this.terrainLine + "%";
+    this.terrainTwo.style.width = (100-this.terrainLine) + "%";
   },
 
   gameOver : function() {

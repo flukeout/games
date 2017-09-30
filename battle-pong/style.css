@@ -6,6 +6,11 @@ html, body {
   overflow: hidden;
   background: black;
   perspective: 1200px;
+
+}
+
+.shake-wrapper {
+  transform-style: preserve-3d;
 }
 
 .score-display {
@@ -38,9 +43,6 @@ html, body {
   outline: solid 20px #222;
   box-sizing: border-box;
 }
-
-
-
 
 canvas {
   position: absolute;

@@ -11,12 +11,14 @@ function createBall(){
     },
     gotHit : false,
     gotPaddleHit : false,
+    wordSpeed : 12,
     phrases : [
       "BOOOOOM",
       "THHHHHWAP",
-      "POW",
-      "OH-SHIT",
-      "UWOT",
+      "BA-DOOOM",
+      "BLAM!!!",
+      "FWOOOSH",
+      "WHAAAAAAM",
       "o=={===>"
     ],
     wordInProgress : false,
@@ -27,9 +29,16 @@ function createBall(){
     frameTick: 0,
     resolvePaddleHitFlag : false,
 
-    // Checks the speed of the ball right after a paddle hit
+    // After a paddle hit, we want to check if the ball is going
+    // fast enough, and if the hit imparted it with more speed.
+    // If so, we'll draw out a word.
     checkSpeed: function(){
-      if(this.physics.speed > 10 && !this.wordInProgress) {
+
+      if(this.speedWhenHit > this.physics.speed) {
+        return;
+      }
+
+      if(this.physics.speed > this.wordSpeed && !this.wordInProgress) {
         this.startWord();
       }
     },
@@ -53,8 +62,12 @@ function createBall(){
     },
 
     resolvePaddleHit: function(){
+
+
       this.checkSpeed();
       this.resolvePaddleHitFlag = false;
+
+
     },
 
 
@@ -115,6 +128,8 @@ function createBall(){
     },
 
     paddleHit : function(){
+      this.speedWhenHit = JSON.parse(JSON.stringify(this.physics.speed));
+      this.angleWhenHit = Math.atan2(this.physics.velocity.x,this.physics.velocity.y) * 180/Math.PI;
       this.gotPaddleHit = true;
     },
 

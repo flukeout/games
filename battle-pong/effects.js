@@ -102,12 +102,12 @@ function shakeScreen(){
       }
     }`;
 
-  document.querySelector(".world").style.animation = "shake-one .2s ease-out";
+  document.querySelector(".shake-wrapper").style.animation = "shake-one .2s ease-out";
 
   setTimeout(function(styleTag,shakeEl) {
     return function(){
       styleTag.remove();
-      document.querySelector.style.animation = "";
+      document.querySelector(".shake-wrapper").style.animation = "";
     };
   }(styleTag),250);
 
