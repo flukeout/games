@@ -4,7 +4,8 @@
 function makeExplosion(xposition, yposition, size){
 
   playSound("boom");
-  // shakeScreen();
+  shakeScreen();
+
   // Adds the orange blast
 
   var blastOffset = (size - 20) / 2;
@@ -76,4 +77,38 @@ function makeExplosion(xposition, yposition, size){
     options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
     makeParticle(options);
   }
+}
+
+
+
+function shakeScreen(){
+
+  var styleTag = document.createElement("style");
+  document.head.appendChild(styleTag);
+
+  styleTag.innerHTML = `
+    @keyframes shake-one {
+      0% {
+        transform: translateX(`+ getRandom(-20,-10)+ `px) translateY(`+ getRandom(-20,-10)+ `px);
+      }
+      25% {
+        transform: translateX(`+ getRandom(10,15)+ `px) translateY(`+ getRandom(10,15)+ `px) rotate(`+getRandom(1,4)+`deg);
+      }
+      50% {
+        transform: translateX(`+ getRandom(-10,-5)+ `px) translateY(`+ getRandom(-10,-5)+ `px);
+      }
+      75% {
+        transform: translateX(`+ getRandom(5,10)+ `px) translateY(`+ getRandom(5,10)+ `px) rotate(`+getRandom(-1,-3)+`deg);
+      }
+    }`;
+
+  document.querySelector(".world").style.animation = "shake-one .2s ease-out";
+
+  setTimeout(function(styleTag,shakeEl) {
+    return function(){
+      styleTag.remove();
+      document.querySelector.style.animation = "";
+    };
+  }(styleTag),250);
+
 }

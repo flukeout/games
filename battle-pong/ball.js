@@ -69,7 +69,6 @@ function createBall(){
       //   this.wordString = this.wordString.split("").reverse().join("");
       //   console.log(this.wordString);
       // }
-
     },
 
     drawLetter : function(){
@@ -80,7 +79,7 @@ function createBall(){
         movementAngle = movementAngle - 360;
       }
 
-      if(this.frameTick > 2) {
+      if(this.frameTick > 1) {
         var options = {
           x : this.physics.position.x - 15,
           y : this.physics.position.y - 15,
@@ -91,8 +90,8 @@ function createBall(){
           width: 30,
           scaleV : -.002,
           zR: movementAngle - 90,
-          angle : -movementAngle,
-          speed: .2,
+          // angle : -movementAngle,
+          // speed: .2,
           lifespan : 100,
           className : "speed",
           text : this.wordString.charAt(this.letterIndex)
@@ -108,8 +107,6 @@ function createBall(){
       }
 
       this.frameTick++;
-
-
     },
 
     hit : function(){

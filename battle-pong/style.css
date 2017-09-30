@@ -39,25 +39,6 @@ html, body {
   box-sizing: border-box;
 }
 
-.light-up-blue {
-  animation: lightupBlue 1s ease-out;
-}
-
-@keyframes lightupBlue {
-  5% {
-    background: #1871a8;
-  }
-}
-
-.light-up-red {
-  animation: lightupRed 1s ease-out;
-}
-
-@keyframes lightupRed {
-  5% {
-    background: #8c2919;
-  }
-}
 
 
 
@@ -139,7 +120,6 @@ canvas {
  content:"";
  width: 0px;
  border-left: dashed 2px rgba(255,255,255,.2);
-/* background: rgba(255,255,255,.3);*/
  position:absolute;
  left: 0px;
  top: -10%;
@@ -149,38 +129,39 @@ canvas {
 .terrain.one {
   left: 0;
   background: #8c2919;
+  background: #ac4d9d;
 }
 
 .red-chunk {
   z-index: 1;
-  background: #8c2919;
-/*  background: #1871a8;*/
-/*  animation: redToBlue 1s ease-out;*/
-/*  background: black;*/
+  background: #ac4d9d;
 }
 
-@keyframes redToBlue {
-  0% {
-    background: #8c2919;
-  }
-
-  50% {
-    background: #8c2919;
-  }
-  100% {
-    background: #1871a8;
-  }
+.terrain.two {
+  background: #4cbd94;
+  background: #3faa7f;
+  right: 0;
 }
 
 .blue-chunk {
   z-index: 1;
-  background: #1871a8;
-/*  background: black;*/
+  background: #3faa7f;
 }
 
-.terrain.two {
-  right: 0;
-  background: #1871a8;
+.light-up-red {
+  animation: lightupRed 1s ease-out;
+}
+
+@keyframes lightupRed {
+  5% { background: #ac4d9d; }
+}
+
+.light-up-blue {
+  animation: lightupBlue 1s ease-out;
+}
+
+@keyframes lightupBlue {
+  5% { background: #3faa7f; }
 }
 
 .speed {
@@ -345,5 +326,3 @@ canvas {
     opacity: 0;
   }
 }
-
-
