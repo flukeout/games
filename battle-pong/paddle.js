@@ -18,9 +18,9 @@ var paddleGamepadActionMapping = {
     "bumperRight": "spinClockwise"
   },
   axes: {
-    "leftX": "moveX",
-    "leftY": "moveY",
-    "rightX": "spin"
+    // "leftX": "moveX",
+    // "leftY": "moveY",
+    // "rightX": "spin"
   }
 };
 
@@ -53,6 +53,7 @@ function createPaddle(options) {
     },
     maxX: false,
     minX: false,
+
     tempHeight : 0,
     swishTimeout: false,  // Keeps track of the swish soudn timeout
     swishTimeoutMS : 260, // Delay between playing the swish sound
@@ -81,42 +82,52 @@ function createPaddle(options) {
         }, this.swishTimeoutMS);
       }
     },
-    powerup(){
-      // TODO - this is how we could change the size of the paddles.
-      // Set the angle to 0, then apply Scale x & y,
-      // Then return the angle back to the previous angle
+    changeHeight(type){
+      var modifier = .05;
+      if(type == "shrink"){
+        modifier = modifier * -1;
+      }
 
       var angle = JSON.parse(JSON.stringify(this.physics.angle));
       Matter.Body.setAngle(this.physics, 0);
-      Matter.Body.scale(this.physics, 1, 1.5, this.physics.position);
+      Matter.Body.scale(this.physics, 1, 1 + modifier, this.physics.position);
       Matter.Body.setAngle(this.physics, angle);
-      paddleOne.physics.mass = 2;
+      this.physics.mass = 2;
 
-      this.height = this.height * 1.5;
+      this.height = this.height + this.height * modifier;
 
       this.element.style.height = this.height + "px";
 
+    },
+
+    powerup(){
+
+      this.targetHeight = this.height * 1.5;
+      this.element.classList.add("powerup-hit");
+
       var that = this;
       setTimeout(function(){
-        that.resetPowerup();
+        that.targetHeight = that.targetHeight * 1/1.5;
       }, 5500);
 
     },
 
-    resetPowerup(){
-      var angle = JSON.parse(JSON.stringify(this.physics.angle));
-      Matter.Body.setAngle(this.physics, 0);
-      Matter.Body.scale(this.physics, 1, 1 * (1/1.5), this.physics.position);
-      Matter.Body.setAngle(this.physics, angle);
-      this.physics.mass = 2;
-
-      this.height = this.height * 1/1.5;
-      this.element.style.height = this.height+ "px";
-
-      hasPowerup = false;
-
-    },
     update(){
+      if(this.height < this.targetHeight) {
+        this.changeHeight("grow");
+        if(this.height > this.targetHeight) {
+          this.height = this.targetHeight;
+        }
+      } else if (this.height > this.targetHeight) {
+        this.changeHeight("shrink");
+        if(this.height < this.targetHeight) {
+          this.height = this.targetHeight;
+        }
+
+      }
+
+
+
       this.updateActionsFromInputComponents();
 
       // We want to calculate a movement angle based on
@@ -167,6 +178,8 @@ var connectedGamePads = 0;
 
 function connectGamepad(newGamepad) {
   // Start from the last paddle and work backwards
+  console.log(paddles);
+  console.log(paddles.length - connectedGamePads - 1);
   paddles[paddles.length - connectedGamePads - 1].addInputComponent(createGamepadInputComponent(newGamepad, paddleGamepadActionMapping));
   ++connectedGamePads;
 }

@@ -85,6 +85,16 @@ canvas {
   right: 50px;
 }
 
+.paddle.powerup-hit {
+  animation: powerupHit .5s ease-out;
+}
+
+@keyframes powerupHit {
+  0% {
+    background: #ffb806;
+  }
+}
+
 .ball {
   background: white;
   position: absolute;
@@ -342,15 +352,17 @@ canvas {
 
 }
 
-
 .powerup .shadow {
-  background: rgba(0,0,0,.2);
+  background-image: url(star-shadow.svg);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: .2;
   width: 40px;
   height: 40px;
   position: absolute;
   top: -5px;
   left: -5px;
-  border-radius: 50%;
   animation: powerupAppear .2s ease-out;
 }
 

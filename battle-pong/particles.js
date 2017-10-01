@@ -134,13 +134,13 @@ function makeParticle(options){
     p.yV = p.yV + p.yVa;
 
     if(p.xV < 0 && p.x < p.minX) {
-      p.xV = p.xV * -1; //Bounce
-      p.xVa = p.xVa * -1; //Bounce
+      // p.xV = p.xV * -1; //Bounce
+      // p.xVa = p.xVa * -1; //Bounce
     }
 
     if(p.xV > 0 && p.x > p.maxX) {
-      p.xV = p.xV * -1; //Bounce
-      p.xVa = p.xVa * -1; //Bounce
+      // p.xV = p.xV * -1; //Bounce
+      // p.xVa = p.xVa * -1; //Bounce
     }
 
 

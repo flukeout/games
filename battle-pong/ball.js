@@ -66,12 +66,8 @@ function createBall(){
     },
 
     resolvePaddleHit: function(){
-
-
       this.checkSpeed();
       this.resolvePaddleHitFlag = false;
-
-
     },
 
 

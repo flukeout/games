@@ -28,11 +28,6 @@ Events.on(engine, 'collisionStart', function(event) {
 // Uses named object variables created earlier to compare.
 function collisionManager(objectsArray){
 
-  // If the ball hits anything
-  if(objectsArray.indexOf(ball) > -1) {
-    // ball.hit();
-  }
-
   var one = objectsArray[0];
   var two = objectsArray[1];
 
@@ -43,7 +38,6 @@ function collisionManager(objectsArray){
   if(two && two.hit) {
     two.hit(one);
   }
-
 
   if(objectsArray.indexOf(ball) > -1 && (objectsArray.indexOf(paddleTwo) > -1 || objectsArray.indexOf(paddleOne) > -1)) {
     ball.paddleHit();

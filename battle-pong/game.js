@@ -6,7 +6,7 @@ var game =  {
   terrainChange : 5,
   mode : "off", // on - game on, off - game over (refresh browser to restart)
   boardWidth : 0,
-  terrainHeight: 0,
+  boardHeight: 0,
   runLoopStarted : false,
   terrainOne : "",
   terrainTwo: "",
@@ -336,11 +336,9 @@ function run() {
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 
   if(!hasPowerup) {
-    var chance = getRandom(0,10);
-    // console.log(chance);
-
-    if(chance < 2) {
-      addPowerup();
+    var chance = getRandom(0,500);
+    if(chance < 1) {
+      addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
       hasPowerup = true;
     }
   }
@@ -367,8 +365,13 @@ function run() {
         obj.resolveHit();
       }
 
-      ball.run();
+
     }
+
+    if(obj.run) {
+      obj.run();
+    }
+
 
     // Update the element position & angle
     var el = obj.element;
