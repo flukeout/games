@@ -1,6 +1,7 @@
 function createBall(){
 
   return createObject({
+    ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
     selector: ".ball",
     physicsOptions : {
       frictionAir: 0.00001,

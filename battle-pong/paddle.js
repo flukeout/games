@@ -64,6 +64,7 @@ function createPaddle(options) {
       'moveX', 'moveY', 'spin'
     ],
     force: function (x, y) {
+
       Matter.Body.applyForce(this.physics, this.physics.position, {
         x: x,
         y: y
@@ -85,7 +86,7 @@ function createPaddle(options) {
       // Set the angle to 0, then apply Scale x & y,
       // Then return the angle back to the previous angle
 
-      var angle = JSON.parse(JSON.stringify(paddleOne.physics.angle));
+      var angle = JSON.parse(JSON.stringify(this.physics.angle));
       Matter.Body.setAngle(this.physics, 0);
       Matter.Body.scale(this.physics, 1, 1.5, this.physics.position);
       Matter.Body.setAngle(this.physics, angle);
@@ -98,16 +99,16 @@ function createPaddle(options) {
       var that = this;
       setTimeout(function(){
         that.resetPowerup();
-      }, 3500);
+      }, 5500);
 
     },
 
     resetPowerup(){
-      var angle = JSON.parse(JSON.stringify(paddleOne.physics.angle));
+      var angle = JSON.parse(JSON.stringify(this.physics.angle));
       Matter.Body.setAngle(this.physics, 0);
       Matter.Body.scale(this.physics, 1, 1 * (1/1.5), this.physics.position);
       Matter.Body.setAngle(this.physics, angle);
-      paddleOne.physics.mass = 2;
+      this.physics.mass = 2;
 
       this.height = this.height * 1/1.5;
       this.element.style.height = this.height+ "px";

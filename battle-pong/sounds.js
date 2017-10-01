@@ -100,7 +100,7 @@ function playSound(name, options){
 
   volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
 
-  console.log(name, volume.gain.value);
+
 
   panNode.connect(soundContext.destination);
   volume.connect(panNode);

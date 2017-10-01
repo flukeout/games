@@ -51,6 +51,10 @@ var game =  {
 
     this.terrainOne.style.width = this.terrainLine + "%";
     this.terrainTwo.style.width = (100-this.terrainLine) + "%";
+
+    // var deltaX = ball.physics.position.x - paddleTwo.physics.position.x;
+    // var deltaY = ball.physics.position.y - paddleTwo.physics.position.y;
+
   },
 
   gameOver : function() {
@@ -74,7 +78,6 @@ var game =  {
   flashTimeout : false,
   playerScored : function(player){
 
-
     // Only score when game is still on
     if(this.mode === "off") {
       return;
@@ -82,6 +85,17 @@ var game =  {
 
     // Make an explosion when someone scores
     makeExplosion(ball.physics.position.x,ball.physics.position.y, 75);
+
+    // var delta = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
+
+    // var deltaX = ball.physics.position.x - paddleTwo.physics.position.x;
+    // var deltaY = ball.physics.position.y - paddleTwo.physics.position.y;
+    // var delta = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
+
+    // console.log(paddleTwo.element.remove());
+
+
+
 
     // Flash some color on the body element to correspond to the player
     // who scored.
@@ -186,9 +200,13 @@ var game =  {
 
     this.updateBounds();
 
+
+
+
     if(this.terrainLine === 100 || this.terrainLine === 0) {
       this.gameOver();
     }
+
 
 
   }
@@ -318,7 +336,7 @@ function run() {
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 
   if(!hasPowerup) {
-    var chance = getRandom(0,500);
+    var chance = getRandom(0,10);
     // console.log(chance);
 
     if(chance < 2) {
@@ -359,7 +377,12 @@ function run() {
     var y = physics.position.y - obj.height / 2;
     var angle = physics.angle;
 
-    el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
+    if(obj.ignoreRotation) {
+      el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px)';
+    } else {
+      el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
+    }
+
 
     if(obj.update){
       obj.update();

@@ -255,7 +255,6 @@ canvas {
   }
   30% {
     background: #ffb806;
-
   }
   40% {
     transform: scale(1) translateZ(4px);
@@ -340,17 +339,33 @@ canvas {
   border-radius: 50%;
   transform-style: preserve-3d;
   z-index: 1000;
+
 }
+
 
 .powerup .shadow {
   background: rgba(0,0,0,.2);
-  width: 100%;
-  height: 100%;
+  width: 40px;
+  height: 40px;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: -5px;
+  left: -5px;
   border-radius: 50%;
+  animation: powerupAppear .2s ease-out;
 }
+
+@keyframes powerupAppear {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 
 
 .powerup .body {
@@ -358,15 +373,32 @@ canvas {
   z-index: 999;
   text-align: center;
   width: 30px;
+  background-image: url(star.svg);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
   height: 30px;
   position: absolute;
-  top: 10px;
-  left: 10px;
-  border-radius: 50%;
-  background: black;
+  top: 0px;
+  left: 0px;
+/*  border-radius: 50%;*/
+
+/*  background: #ffa91d;*/
   transform: translateZ(20px);
-  animation: spinZ .5s linear infinite;
-/*  transform-origin: 50% 50%;*/
+  animation: appear .5s ease-out, spinZ .5s linear infinite;
+  animation-delay: 0s, .5s;
+}
+
+@keyframes appear {
+  0% {
+    transform: translateZ(10px) scale(0);
+  }
+  60% {
+    transform: translateZ(25px) scale(1);
+  }
+  100% {
+    transform: translateZ(20px) scale(1);
+  }
 }
 
 @keyframes spinZ {
@@ -374,4 +406,17 @@ canvas {
     transform: translateZ(30px);
   }
 
+}
+
+
+
+
+.star {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-image: url(star.svg);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
