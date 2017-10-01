@@ -178,8 +178,7 @@ var connectedGamePads = 0;
 
 function connectGamepad(newGamepad) {
   // Start from the last paddle and work backwards
-  console.log(paddles);
-  console.log(paddles.length - connectedGamePads - 1);
+
   paddles[paddles.length - connectedGamePads - 1].addInputComponent(createGamepadInputComponent(newGamepad, paddleGamepadActionMapping));
   ++connectedGamePads;
 }

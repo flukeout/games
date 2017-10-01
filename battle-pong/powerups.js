@@ -46,6 +46,8 @@ function createPowerup(x,y){
       if(hit){
         removalList.push(this);
         playSound("coin");
+        hasPowerup = false;
+
       }
 
       var angle = Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180 / Math.PI;

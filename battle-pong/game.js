@@ -30,6 +30,7 @@ var game =  {
 
 
     this.mode = "on";
+    hasPowerup  = false;
     ball.launch(0, .02);
 
     this.terrainLine = 50;
@@ -259,7 +260,7 @@ function setupRenderer(worldSelector){
   world.bounds.max.y = sBoxDim.height;
   world.gravity.y = 0;
 
-  Render.run(render); // TODO - since this is for debugging only, we should make it a flag
+  //Render.run(render); // TODO - since this is for debugging only, we should make it a flag
 }
 
 var Engine = Matter.Engine,
@@ -336,7 +337,7 @@ function run() {
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 
   if(!hasPowerup) {
-    var chance = getRandom(0,500);
+    var chance = getRandom(0, 250);
     if(chance < 1) {
       addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
       hasPowerup = true;

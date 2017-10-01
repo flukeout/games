@@ -53,7 +53,7 @@ canvas {
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
   z-index: 99999999;
 }
