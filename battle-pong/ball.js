@@ -13,15 +13,18 @@ function createBall(){
     gotPaddleHit : false,
     wordSpeed : 12,
     phrases : [
+      "DANGER!",
       "BOOOOOM",
       "THHHHHWAP",
       "BA-DOOOM",
       "BLAM!!!",
       "FWOOOSH",
+      "TAKE THAT!",
       "WHAAAAAAM",
       "o=={===>"
     ],
     wordInProgress : false,
+    lastHitBy : "",
     wordString : false,
     wordDirection : "",
     letterIndex : 0,
@@ -122,7 +125,12 @@ function createBall(){
       this.frameTick++;
     },
 
-    hit : function(){
+    hit : function(obj){
+
+      if(obj && obj.hasOwnProperty("player")){
+        this.lastHitBy = obj.player;
+      }
+
       this.gotHit = true;
       this.oldVelocity = JSON.stringify(this.physics.velocity);
     },

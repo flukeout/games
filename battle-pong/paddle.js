@@ -53,6 +53,7 @@ function createPaddle(options) {
     },
     maxX: false,
     minX: false,
+    tempHeight : 0,
     swishTimeout: false,  // Keeps track of the swish soudn timeout
     swishTimeoutMS : 260, // Delay between playing the swish sound
     actions: [
@@ -79,9 +80,43 @@ function createPaddle(options) {
         }, this.swishTimeoutMS);
       }
     },
+    powerup(){
+      // TODO - this is how we could change the size of the paddles.
+      // Set the angle to 0, then apply Scale x & y,
+      // Then return the angle back to the previous angle
+
+      var angle = JSON.parse(JSON.stringify(paddleOne.physics.angle));
+      Matter.Body.setAngle(this.physics, 0);
+      Matter.Body.scale(this.physics, 1, 1.5, this.physics.position);
+      Matter.Body.setAngle(this.physics, angle);
+      paddleOne.physics.mass = 2;
+
+      this.height = this.height * 1.5;
+
+      this.element.style.height = this.height + "px";
+
+      var that = this;
+      setTimeout(function(){
+        that.resetPowerup();
+      }, 3500);
+
+    },
+
+    resetPowerup(){
+      var angle = JSON.parse(JSON.stringify(paddleOne.physics.angle));
+      Matter.Body.setAngle(this.physics, 0);
+      Matter.Body.scale(this.physics, 1, 1 * (1/1.5), this.physics.position);
+      Matter.Body.setAngle(this.physics, angle);
+      paddleOne.physics.mass = 2;
+
+      this.height = this.height * 1/1.5;
+      this.element.style.height = this.height+ "px";
+
+      hasPowerup = false;
+
+    },
     update(){
       this.updateActionsFromInputComponents();
-
 
       // We want to calculate a movement angle based on
       // the directional inputs.

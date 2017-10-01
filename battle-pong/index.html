@@ -24,14 +24,17 @@
 
     <script src="paddle.js"></script>       <!-- the paddles -->
     <script src="ball.js"></script>         <!-- the ball -->
+    <script src="powerups.js"></script>     <!-- fires everything up -->
 
     <script src="start.js"></script>        <!-- fires everything up -->
+
 
   </head>
 
   <body>
-    <div class="shake-wrapper">
     <p class="score-display"></p>
+
+    <div class="shake-wrapper">
     <div class="score one"></div>
     <div class="score two"></div>
     <div class="tilt-wrapper">
@@ -40,7 +43,9 @@
         <div class="terrain two"></div>
         <div class="endzone one"></div>
         <div class="endzone two"></div>
-        <div class="ball" data-physics="true" ></div>
+
+        <div class="ball" data-physics="true"></div>
+
         <div class="paddle one" data-physics="true"></div>
         <div class="paddle two" data-physics="true"></div>
       </div>

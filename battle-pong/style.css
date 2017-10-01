@@ -1,4 +1,10 @@
+@font-face {
+  font-family: Lato;
+  src: url(fonts/Lato-Black.ttf);
+}
+
 html, body {
+  font-family: Lato;
   width: 100%;
   height: 100%;
   padding: 0;
@@ -24,7 +30,6 @@ html, body {
   margin: 0;
   padding: 15px;
   box-sizing: border-box;
-  font-family: sans-serif;
   text-align: center;
 }
 
@@ -46,8 +51,11 @@ html, body {
 
 canvas {
   position: absolute;
+  top: 0;
+  left: 0;
   opacity: 0;
   pointer-events: none;
+  z-index: 99999999;
 }
 
 .controller {
@@ -66,7 +74,7 @@ canvas {
   width: 20px;
   height: 100px;
   top: calc(50% - 50px);
-  z-index: 999999;
+  z-index: 999;
 }
 
 .paddle.one {
@@ -115,7 +123,6 @@ canvas {
   top: 0;
   width: 50%;
   transition: width .25s ease-out;
-
 }
 
 .terrain.two:after {
@@ -130,7 +137,6 @@ canvas {
 
 .terrain.one {
   left: 0;
-  background: #8c2919;
   background: #ac4d9d;
 }
 
@@ -140,7 +146,6 @@ canvas {
 }
 
 .terrain.two {
-  background: #4cbd94;
   background: #3faa7f;
   right: 0;
 }
@@ -171,8 +176,7 @@ canvas {
   font-weight: bold;
   text-align: center;
   font-size: 30px;
-  font-family: sans-serif;
-  text-shadow: 0 2px 0 rgba(0,0,0,.2);
+  font-family: Lato;
   color: rgba(255,255,255,.7);
 }
 
@@ -310,7 +314,6 @@ canvas {
   text-align: center;
   width: 260px;
   font-weight: bold;
-  font-family: sans-serif;
   transform: translateY(-25px) translateX(10px) translateZ(20px) rotateX(-45deg);
   animation: messagePop 2s ease-out;
   animation-fill-mode: forwards;
@@ -327,4 +330,48 @@ canvas {
     transform: translateY(-25px) translateX(10px) translateZ(100px) rotateX(-55deg);
     opacity: 0;
   }
+}
+
+
+.powerup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  z-index: 1000;
+}
+
+.powerup .shadow {
+  background: rgba(0,0,0,.2);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+}
+
+
+.powerup .body {
+  color: rgba(255,255,255,.4);
+  z-index: 999;
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 50%;
+  background: black;
+  transform: translateZ(20px);
+  animation: spinZ .5s linear infinite;
+/*  transform-origin: 50% 50%;*/
+}
+
+@keyframes spinZ {
+  50% {
+    transform: translateZ(30px);
+  }
+
 }

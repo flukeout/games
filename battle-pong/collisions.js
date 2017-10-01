@@ -30,8 +30,20 @@ function collisionManager(objectsArray){
 
   // If the ball hits anything
   if(objectsArray.indexOf(ball) > -1) {
-    ball.hit();
+    // ball.hit();
   }
+
+  var one = objectsArray[0];
+  var two = objectsArray[1];
+
+  if(one && one.hit) {
+    one.hit(two);
+  }
+
+  if(two && two.hit) {
+    two.hit(one);
+  }
+
 
   if(objectsArray.indexOf(ball) > -1 && (objectsArray.indexOf(paddleTwo) > -1 || objectsArray.indexOf(paddleOne) > -1)) {
     ball.paddleHit();

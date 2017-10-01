@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   connectPaddlesToControls();
 
-
   // Create the endzones - just using the generic createObject
 
   endzoneOne = createObject({
@@ -44,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Create the ball
   ball = createBall();
+
 
   game.init();
 });

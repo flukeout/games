@@ -2,10 +2,6 @@ var worldEl;
 var tiltEl;
 
 var game =  {
-  score : {
-    player1: 0,
-    player2: 0
-  },
   terrainLine : 50,
   terrainChange : 5,
   mode : "off", // on - game on, off - game over (refresh browser to restart)
@@ -30,6 +26,8 @@ var game =  {
   },
 
   restart : function(){
+
+
 
     this.mode = "on";
     ball.launch(0, .02);
@@ -62,9 +60,9 @@ var game =  {
     this.mode = "off";
 
     if(this.terrainLine == 100) {
-      document.querySelector(".score-display").innerHTML = "&larr; RED WINS";
+      document.querySelector(".score-display").innerHTML = "&larr; P1 WINS";
     } else {
-      document.querySelector(".score-display").innerHTML = "&rarr; BLUE WINS";
+      document.querySelector(".score-display").innerHTML = "P2 WINS &rarr;";
     }
 
     var that = this;
@@ -75,6 +73,7 @@ var game =  {
   },
   flashTimeout : false,
   playerScored : function(player){
+
 
     // Only score when game is still on
     if(this.mode === "off") {
@@ -115,10 +114,7 @@ var game =  {
     // player wins.
 
     var xForce = Math.abs(ball.physics.velocity.x);
-    var xForceRatio = xForce / 20;
-    if(xForceRatio > 1) {
-      xForceRatio = 1;
-    }
+    var xForceRatio = xForce / 15;
 
     this.terrainChange = 5 + (xForceRatio * 15);
 
@@ -245,7 +241,7 @@ function setupRenderer(worldSelector){
   world.bounds.max.y = sBoxDim.height;
   world.gravity.y = 0;
 
-  // Render.run(render); // TODO - since this is for debugging only, we should make it a flag
+  Render.run(render); // TODO - since this is for debugging only, we should make it a flag
 }
 
 var Engine = Matter.Engine,
@@ -260,6 +256,9 @@ var engine = Engine.create(),
     world = engine.world;
 
 var objectsToRender = [];
+
+// Objects to remove
+var removalList = [];
 
 
 // Adds 4 walls to the World to surround it
@@ -312,10 +311,22 @@ var frameTick = 0;  // Keeps track of frames for the ball trail effect
 // The main game engine, moves things around
 
 var letterIndex = 0;
+var hasPowerup = false;
 
 function run() {
 
   // TODO - should we base the engine update tick based on elapsed time since last frame?
+
+  if(!hasPowerup) {
+    var chance = getRandom(0,500);
+    // console.log(chance);
+
+    if(chance < 2) {
+      addPowerup();
+      hasPowerup = true;
+    }
+  }
+
 
   Engine.update(engine, 1000 / 60);
 
@@ -358,12 +369,13 @@ function run() {
   drawParticles();
 
   // Saving this for later
-  // var removalList = [];
-  // removalList.forEach(function (element) {
-  //   element.parentNode.removeChild(element);
-  //   World.remove(engine.world, element.physics);
-  //   objectsToRender.splice(objectsToRender.indexOf(element), 1);
-  // });
+  removalList.forEach(function (obj) {
+    obj.element.parentNode.removeChild(obj.element);
+    World.remove(engine.world, obj.physics);
+    objectsToRender.splice(objectsToRender.indexOf(obj), 1);
+  });
+
+  removalList = [];
 
   requestAnimationFrame(run);
 };
