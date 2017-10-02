@@ -143,7 +143,6 @@ function makeParticle(options){
       // p.xVa = p.xVa * -1; //Bounce
     }
 
-
     p.o = p.o + p.oV;
 
     // If the particle opacity drops below 0 and won't get above 0, get rid of it

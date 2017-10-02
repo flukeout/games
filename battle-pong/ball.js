@@ -1,8 +1,20 @@
-function createBall(){
+function createBall(options){
+
+  var options = options || {};
+  console.log(options);
 
   return createObject({
     ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
     selector: ".ball",
+    className : "ball",
+    classNames : ["ball"],
+    properties : {
+      x: options.x || 0,
+      y: options.y || 0,
+      height: 30,
+      width: 30,
+      classNames : options.classNames || []
+    },
     physicsOptions : {
       frictionAir: 0.00001,
       restitution: 1
@@ -70,7 +82,6 @@ function createBall(){
       this.resolvePaddleHitFlag = false;
     },
 
-
     startWord: function(){
       this.wordInProgress = true;
       this.letterIndex = 0;
@@ -137,7 +148,6 @@ function createBall(){
       this.angleWhenHit = Math.atan2(this.physics.velocity.x,this.physics.velocity.y) * 180/Math.PI;
       this.gotPaddleHit = true;
     },
-
 
     resolveHit : function(){
 

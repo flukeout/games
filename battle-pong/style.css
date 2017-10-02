@@ -21,7 +21,7 @@ html, body {
 
 .score-display {
   position: absolute;
-  bottom: 0;
+  top: 20px;
   width: 100%;
   font-size: 40px;
   font-weight: bold;
@@ -44,16 +44,19 @@ html, body {
   width: 800px;
   height: 500px;
   position: absolute;
-  outline: solid 20px rgba(255,255,255,.2);
   outline: solid 20px #222;
   box-sizing: border-box;
+}
+
+.winner-screen .world {
+  outline: solid 20px rgba(255,255,255,.2);
 }
 
 canvas {
   position: absolute;
   top: 0;
   left: 0;
-  opacity: 1;
+  opacity: .3;
   pointer-events: none;
   z-index: 99999999;
 }
@@ -73,8 +76,20 @@ canvas {
   position: absolute;
   width: 20px;
   height: 100px;
-  top: calc(50% - 50px);
+
   z-index: 999;
+}
+
+.paddleChunk {
+  background: rgba(255,255,255,.2);
+}
+
+.paddle.loser {
+  background: rgba(255,255,255,.2);
+}
+
+.paddle.dead {
+  background: rgba(255,255,255,0);
 }
 
 .paddle.one {
@@ -82,7 +97,7 @@ canvas {
 }
 
 .paddle.two {
-  right: 50px;
+
 }
 
 .paddle.powerup-hit {
@@ -100,8 +115,6 @@ canvas {
   position: absolute;
   width: 30px;
   height: 30px;
-  left: calc(50% - 15px);
-  top: 100px;
   border-radius: 15px;
   z-index: 9999999;
 }
@@ -127,6 +140,14 @@ canvas {
   right: 0;
 }
 
+.winner-screen .terrain.two:after {
+  display: none;
+}
+
+.winner-screen .terrain.two:after {
+  display: none;
+}
+
 .terrain {
   position: absolute;
   height: 100%;
@@ -138,7 +159,7 @@ canvas {
 .terrain.two:after {
  content:"";
  width: 0px;
- border-left: dashed 2px rgba(255,255,255,.2);
+/* border-left: dashed 2px rgba(255,255,255,.2);*/
  position:absolute;
  left: 0px;
  top: -10%;
@@ -150,6 +171,10 @@ canvas {
   background: #ac4d9d;
 }
 
+.winner-one {
+  background: #ac4d9d;
+}
+
 .red-chunk {
   z-index: 1;
   background: #ac4d9d;
@@ -158,6 +183,10 @@ canvas {
 .terrain.two {
   background: #3faa7f;
   right: 0;
+}
+
+.winner-two {
+  background: #3faa7f;
 }
 
 .blue-chunk {
@@ -419,9 +448,6 @@ canvas {
   }
 
 }
-
-
-
 
 .star {
   position: absolute;

@@ -25,9 +25,31 @@ var game =  {
     this.restart();
   },
 
+  loserDied: function(){
+
+    var that = this;
+    setTimeout(function(){
+      that.restart()
+    },2500);
+
+  },
+
   restart : function(){
 
+    document.querySelector("body").classList.remove("winner-screen");
+    document.querySelector("body").classList.remove("winner-two");
+    document.querySelector("body").classList.remove("winner-one");
 
+    for(var i = 0; i < paddles.length; i++){
+      var p = paddles[i];
+      p.element.classList.remove("dead");
+      p.element.classList.remove("loser");
+      p.mode = "normal";
+      p.targetHeight = 100;
+    }
+
+    // Create the ball
+    ball = createBall();
 
     this.mode = "on";
     hasPowerup  = false;
@@ -53,9 +75,6 @@ var game =  {
     this.terrainOne.style.width = this.terrainLine + "%";
     this.terrainTwo.style.width = (100-this.terrainLine) + "%";
 
-    // var deltaX = ball.physics.position.x - paddleTwo.physics.position.x;
-    // var deltaY = ball.physics.position.y - paddleTwo.physics.position.y;
-
   },
 
   gameOver : function() {
@@ -64,16 +83,59 @@ var game =  {
 
     this.mode = "off";
 
+    document.querySelector("body").classList.add("winner-screen");
+
+    var winner;
+
     if(this.terrainLine == 100) {
-      document.querySelector(".score-display").innerHTML = "&larr; P1 WINS";
+      winner = paddleOne;
+      loser = paddleTwo;
     } else {
-      document.querySelector(".score-display").innerHTML = "P2 WINS &rarr;";
+      winner = paddleTwo;
+      loser = paddleOne;
+    }
+
+    removalList.push(ball);
+
+    loser.mode = "ghost";
+    loser.element.classList.add("loser");
+
+    if(winner == paddleOne) {
+      document.querySelector(".score-display").innerHTML = "Player 1 Wins";
+      document.querySelector("body").classList.add("winner-one");
+    } else {
+      document.querySelector(".score-display").innerHTML = "Player 2 Wins";
+      document.querySelector("body").classList.add("winner-two");
     }
 
     var that = this;
+
     setTimeout(function(){
-      that.restart();
-    }, this.restartTimeoutMS);
+      document.querySelector(".score-display").innerHTML = "DO IT";
+      var minY = loser.physics.bounds.min.y;
+      var maxY = loser.physics.bounds.max.y;
+      var deltaY = minY - maxY;
+      var paddleY = maxY + deltaY/2 - ball.width/2;
+
+      // Create the ball
+      // var ballX = that.boardWidth - 250;
+      if(winner == paddleOne) {
+        var ballX = 600;
+      } else {
+        var ballX = 200;
+      }
+      ball = createBall({
+        x: ballX,
+        y: paddleY
+      });
+
+
+    }, 2000);
+
+    // var that = this;
+    // setTimeout(function(){
+      // that.restart();
+    // }, this.restartTimeoutMS);
 
   },
   flashTimeout : false,
@@ -142,9 +204,7 @@ var game =  {
     messageBody.innerText = Math.round(this.terrainChange) + "%";
     messageBody.style.fontSize = (20 + 35 * xForceRatio) + "px";
     messageEl.appendChild(messageBody);
-
     messageEl.style.transform = "translateX("+ ball.physics.position.x +"px) translateY(" + ball.physics.position.y +"px)";
-
     document.querySelector(".world").appendChild(messageEl);
 
     setTimeout(function(el) {
@@ -199,16 +259,13 @@ var game =  {
       this.terrainLine = 0;
     }
 
+
+    // this.terrainLine = 0;    // TODO - remove this
     this.updateBounds();
-
-
-
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
       this.gameOver();
     }
-
-
 
   }
 }
@@ -279,7 +336,6 @@ var objectsToRender = [];
 // Objects to remove
 var removalList = [];
 
-
 // Adds 4 walls to the World to surround it
 function addWalls(options){
 
@@ -323,8 +379,6 @@ function addWalls(options){
 }
 
 
-
-
 var frameTick = 0;  // Keeps track of frames for the ball trail effect
 
 // The main game engine, moves things around
@@ -336,14 +390,13 @@ function run() {
 
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 
-  if(!hasPowerup) {
-    var chance = getRandom(0, 250);
+  if(!hasPowerup && game.mode == "on") {
+    var chance = getRandom(0, 300);
     if(chance < 1) {
       addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
       hasPowerup = true;
     }
   }
-
 
   Engine.update(engine, 1000 / 60);
 
@@ -357,7 +410,10 @@ function run() {
       var rotateX = 5 * deltaY/250 + 20 ;
       var rotateY = -5 * deltaX/400;
 
-      tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg) rotateZ(0)";
+      if(game.mode == "on") {
+        tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg) rotateZ(0)";
+      }
+
 
       // This is how we have to handle collisions
       // First they get marked as hit by the collisionManager
@@ -387,7 +443,6 @@ function run() {
       el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
     }
 
-
     if(obj.update){
       obj.update();
     }
@@ -397,10 +452,14 @@ function run() {
 
   // Saving this for later
   removalList.forEach(function (obj) {
+    console.log("removing");
+    console.log(obj);
+
     obj.element.parentNode.removeChild(obj.element);
     World.remove(engine.world, obj.physics);
     objectsToRender.splice(objectsToRender.indexOf(obj), 1);
   });
+
 
   removalList = [];
 

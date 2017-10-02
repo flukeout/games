@@ -68,14 +68,29 @@ function createObject(options){
       // Get the element
       if(this.selector) {
         this.element = document.querySelector(this.selector);
+      }
+
+      if(this.element) {
         props = getElementProperties(this.element);
       } else {
-        this.element = document.createElement("div");
-        this.element.classList.add(options.className);
-        this.element.innerHTML = options.innerHTML;
-        document.querySelector(".world").appendChild(this.element);
 
         props = options.properties;
+
+        this.element = document.createElement("div");
+
+        if(props.classNames){
+          for(var i = 0; i < props.classNames.length; i++) {
+            var className = props.classNames[i];
+            this.element.classList.add(className);
+          }
+        }
+
+        this.element.classList.add(options.className);
+        // this.element.classList.add(this.selector);
+        this.element.innerHTML = options.innerHTML || "";
+        document.querySelector(".world").appendChild(this.element);
+
+
         this.element.style.height = props.height + "px";
         this.element.style.width = props.width + "px";
         this.x = props.x;

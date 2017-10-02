@@ -12,13 +12,21 @@ document.addEventListener('DOMContentLoaded', function () {
   // Create the Paddles
 
   paddleOne = createPaddle({
-    selector: ".paddle.one",
-    player: 0
+    player: 0,
+    x : 50,
+    y : 200,
+    height: 100,
+    width: 20,
+    classNames : ["paddle","two"]
   });
 
   paddleTwo = createPaddle({
-    selector: ".paddle.two",
-    player: 1
+    player: 1,
+    x : game.boardWidth - 120,
+    y : 200,
+    height: 100,
+    width: 20,
+    classNames : ["paddle","one"]
   });
 
   connectPaddlesToControls();
@@ -40,10 +48,6 @@ document.addEventListener('DOMContentLoaded', function () {
       isStatic: true
     }
   });
-
-  // Create the ball
-  ball = createBall();
-
 
   game.init();
 });
