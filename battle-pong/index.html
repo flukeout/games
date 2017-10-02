@@ -1,33 +1,49 @@
 <!DOCTYPE html>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
 <html>
   <head>
-    <title>&rarr;Battle-Pong&larr;</title>
+    <title></title>
     <link rel="stylesheet" href="style.css"/>
-    <script src="sounds.js"></script>
-    <script src="matter.min.js"></script>
-    <!-- <script src="controls.js"></script> -->
-    <script src="input.js"></script>
-    <script src="game.js"></script>
-    <script src="convert.js"></script>
-    <script src="paddle.js"></script>
-    <script src="ball.js"></script>
-    <script src="endzone.js"></script>
-    <script src="components.js"></script>
+
+    <script src="particles.js"></script>    <!-- particle engine -->
+    <script src="effects.js"></script>      <!-- effects like the explosions -->
+
+    <script src="title.js"></script>        <!-- animates browser tab -->
+    <script src="sounds.js"></script>       <!-- handles loading & playing sounds -->
+    <script src="matter.min.js"></script>   <!-- physics engine -->
+    <script src="input.js"></script>        <!-- keyboard and joystick controls -->
+    <script src="game.js"></script>         <!-- main game loop -->
+    <script src="collisions.js"></script>   <!-- handles collisions -->
+
+    <script src="make-stuff.js"></script>   <!-- animates browser tab -->
+
+
+    <script src="convert.js"></script>      <!-- Get DOM elements properties for the engine -->
+    <script src="components.js"></script>   <!-- animates browser tab -->
+
+    <script src="paddle.js"></script>       <!-- the paddles -->
+    <script src="ball.js"></script>         <!-- the ball -->
+    <script src="powerups.js"></script>     <!-- fires everything up -->
+
+    <script src="start.js"></script>        <!-- fires everything up -->
+
   </head>
 
   <body>
     <p class="score-display"></p>
-    <div class="score one"></div>
-    <div class="score two"></div>
-    <div class="tilt-wrapper">
-      <div class="world">
-        <div class="terrain one"></div>
-        <div class="terrain two"></div>
-        <div class="endzone one"></div>
-        <div class="endzone two"></div>
-        <div class="ball" data-physics="true" ></div>
-        <div class="paddle one" data-physics="true"></div>
-        <div class="paddle two" data-physics="true"></div>
+
+    <div class="shake-wrapper">
+      <div class="tilt-wrapper">
+        <div class="world">
+          <div class="terrain one"></div>
+          <div class="terrain two"></div>
+          <div class="endzone one"></div>
+          <div class="endzone two"></div>
+          <!-- <div class="ball" data-physics="true"></div> -->
+          <!-- <div class="paddle one" data-physics="true"></div> -->
+          <!-- <div class="paddle two" data-physics="true"></div> -->
+        </div>
       </div>
     </div>
 

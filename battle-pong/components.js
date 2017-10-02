@@ -6,6 +6,10 @@ function createObject(options){
     selector: false,
     element : false,  // Placeholder for DOM element
     physics : false,  // Placeholder for physics properties
+    width : 0,
+    height: 0,
+    x : 0,
+    y : 0,
 
     // These are the defaults, but also get overwritten / changed
     // based on the options that are passed in.
@@ -59,20 +63,54 @@ function createObject(options){
         Object.assign(this.physicsOptions, options.physicsOptions);
       }
 
+      var props;
+
       // Get the element
-      this.element = document.querySelector(this.selector);
+      if(this.selector) {
+        this.element = document.querySelector(this.selector);
+      }
+
+      if(this.element) {
+        props = getElementProperties(this.element);
+      } else {
+
+        props = options.properties;
+
+        this.element = document.createElement("div");
+
+        if(props.classNames){
+          for(var i = 0; i < props.classNames.length; i++) {
+            var className = props.classNames[i];
+            this.element.classList.add(className);
+          }
+        }
+
+        this.element.classList.add(options.className);
+        // this.element.classList.add(this.selector);
+        this.element.innerHTML = options.innerHTML || "";
+        document.querySelector(".world").appendChild(this.element);
+
+
+        this.element.style.height = props.height + "px";
+        this.element.style.width = props.width + "px";
+        this.x = props.x;
+        this.y = props.y;
+        this.element.style.transform = "translateX("+this.x+"px) translateY("+this.y+"px)";
+        this.element.style.width = props.width + "px";
+      }
+
+      this.height = props.height;
+      this.width = props.width;
 
       // Create the physics simulation
       this.physics = createPhysicsForElement(this.element, this.physicsOptions);
+
 
       var actions = this.actions;
       this.actions = {};
       for (var i = 0; i < actions.length; ++i) {
         this.actions[actions[i]] = 0;
       }
-
-      this.width = this.element.getBoundingClientRect().width;
-      this.height = this.element.getBoundingClientRect().height;
 
       // Add it to the World
       World.add(engine.world, [this.physics]);

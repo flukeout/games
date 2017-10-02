@@ -7,6 +7,18 @@ var sounds = {
   "swish" : {
     url : "sounds/swish.wav",
   },
+  "bonus" : {
+    url : "sounds/bonus.wav",
+    volume : .03
+  },
+  "coin" : {
+    url : "sounds/coin.mp3",
+  },
+
+  "boom" : {
+    url : "sounds/boom.wav",
+    volume : .3
+  },
   "score" : {
     url : "sounds/score.mp3",
     volume:  .1
@@ -43,6 +55,7 @@ function loadSound(name){
 }
 
 function playSound(name, options){
+
 
   var sound = sounds[name];
 
@@ -83,7 +96,11 @@ function playSound(name, options){
   panNode.pan.value = soundOptions.pan;
 
   var volume = soundContext.createGain();
+
+
   volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
+
+
 
   panNode.connect(soundContext.destination);
   volume.connect(panNode);

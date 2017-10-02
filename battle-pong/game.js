@@ -1,57 +1,169 @@
-// Beginning of game object
 var worldEl;
 var tiltEl;
 
 var game =  {
-  score : {
-    player1: 0,
-    player2: 0
-  },
   terrainLine : 50,
   terrainChange : 5,
   mode : "off", // on - game on, off - game over (refresh browser to restart)
   boardWidth : 0,
-  start : function(){
-    this.mode = "on";
+  boardHeight: 0,
+  runLoopStarted : false,
+  terrainOne : "",
+  terrainTwo: "",
+  restartTimeoutMS: 3500, //time before the game restarts
+  init: function(){
 
     var world = document.querySelector(".world");
     this.boardWidth = world.getBoundingClientRect().width;
+    this.boardHeight = world.getBoundingClientRect().height;
+
+    this.terrainOne = document.querySelector(".terrain.one");
+    this.terrainTwo = document.querySelector(".terrain.two");
+
+    run();
+
+    this.restart();
+  },
+
+  loserDied: function(){
 
     var that = this;
     setTimeout(function(){
-      that.updateBounds();
-    },100);
+      that.restart()
+    },2500);
+
   },
+
+  restart : function(){
+
+    document.querySelector("body").classList.remove("winner-screen");
+    document.querySelector("body").classList.remove("winner-two");
+    document.querySelector("body").classList.remove("winner-one");
+
+    for(var i = 0; i < paddles.length; i++){
+      var p = paddles[i];
+      p.element.classList.remove("dead");
+      p.element.classList.remove("loser");
+      p.mode = "normal";
+      p.targetHeight = 100;
+    }
+
+    // Create the ball
+    ball = createBall();
+
+    this.mode = "on";
+    hasPowerup  = false;
+    ball.launch(0, .02);
+
+    this.terrainLine = 50;
+    this.updateBounds();
+
+    document.querySelector(".score-display").innerHTML = "";
+
+    Matter.Body.set(ball.physics, {
+      position: { x: 400, y: 0 },
+      velocity: { x: 0, y: 0 }
+    });
+  },
+
+  // Updates the terrain and the paddle movement
+  // restrictions.
   updateBounds : function(){
     paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
     paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
 
-    document.querySelector(".terrain.one").style.width = this.terrainLine + "%";
-    document.querySelector(".terrain.two").style.width = (100-this.terrainLine) + "%";
+    this.terrainOne.style.width = this.terrainLine + "%";
+    this.terrainTwo.style.width = (100-this.terrainLine) + "%";
+
   },
+
   gameOver : function() {
     paddleOne.maxX = false;
     paddleTwo.minX = false;
 
     this.mode = "off";
+
+    document.querySelector("body").classList.add("winner-screen");
+
+    var winner;
+
     if(this.terrainLine == 100) {
-      document.querySelector(".score-display").innerHTML = "&larr; RED WINS";
+      winner = paddleOne;
+      loser = paddleTwo;
     } else {
-      document.querySelector(".score-display").innerHTML = "&rarr; BLUE WINS";
+      winner = paddleTwo;
+      loser = paddleOne;
     }
+
+    removalList.push(ball);
+
+    loser.mode = "ghost";
+    loser.element.classList.add("loser");
+
+    if(winner == paddleOne) {
+      document.querySelector(".score-display").innerHTML = "Player 1 Wins";
+      document.querySelector("body").classList.add("winner-one");
+    } else {
+      document.querySelector(".score-display").innerHTML = "Player 2 Wins";
+      document.querySelector("body").classList.add("winner-two");
+    }
+
+    var that = this;
+
+    setTimeout(function(){
+      document.querySelector(".score-display").innerHTML = "DO IT";
+      var minY = loser.physics.bounds.min.y;
+      var maxY = loser.physics.bounds.max.y;
+      var deltaY = minY - maxY;
+      var paddleY = maxY + deltaY/2 - ball.width/2;
+
+      // Create the ball
+      // var ballX = that.boardWidth - 250;
+      if(winner == paddleOne) {
+        var ballX = 600;
+      } else {
+        var ballX = 200;
+      }
+      ball = createBall({
+        x: ballX,
+        y: paddleY
+      });
+
+
+    }, 2000);
+
+    // var that = this;
+    // setTimeout(function(){
+      // that.restart();
+    // }, this.restartTimeoutMS);
+
   },
   flashTimeout : false,
   playerScored : function(player){
 
+    // Only score when game is still on
     if(this.mode === "off") {
       return;
     }
 
-    playSound("score");
+    // Make an explosion when someone scores
+    makeExplosion(ball.physics.position.x,ball.physics.position.y, 75);
 
+    // var delta = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
+
+    // var deltaX = ball.physics.position.x - paddleTwo.physics.position.x;
+    // var deltaY = ball.physics.position.y - paddleTwo.physics.position.y;
+    // var delta = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
+
+    // console.log(paddleTwo.element.remove());
+
+
+
+
+    // Flash some color on the body element to correspond to the player
+    // who scored.
     var lightupEl = document.querySelector("body");
     var width = lightupEl.getBoundingClientRect().width;
-    console.log(width);
 
     if(this.flashTimeout) {
       clearTimeout(this.flashTimeout);
@@ -74,19 +186,87 @@ var game =  {
       that.flashTimeout = false;
     }, 1000);
 
+    // Check horizontal velocity of the ball
+    // the faster it hits an endzone the more that
+    // player wins.
 
+    var xForce = Math.abs(ball.physics.velocity.x);
+    var xForceRatio = xForce / 15;
 
+    this.terrainChange = 5 + (xForceRatio * 15);
+
+    // Add a message near the impact that indicates
+    // the force of the hit (in percentage points)
+    var messageEl = document.createElement("div");
+    messageEl.classList.add("message");
+    var messageBody = document.createElement("div");
+    messageBody.classList.add("body");
+    messageBody.innerText = Math.round(this.terrainChange) + "%";
+    messageBody.style.fontSize = (20 + 35 * xForceRatio) + "px";
+    messageEl.appendChild(messageBody);
+    messageEl.style.transform = "translateX("+ ball.physics.position.x +"px) translateY(" + ball.physics.position.y +"px)";
+    document.querySelector(".world").appendChild(messageEl);
+
+    setTimeout(function(el) {
+      return function() {
+        el.remove();
+      };
+    }(messageEl), 2750);
+
+    // Add red or blue particles when the terrain line moves
+    var modifier = 1;
+    if( player===1 ) {
+      modifier = -1;
+    }
+    var maxSize = 65;
+    for(var i = 0; i < 10; i++) {
+      var options = {
+        zR : getRandom(-5,5),
+        scaleV : -.02,
+        height: getRandom(25,maxSize),
+        lifespan: 100,
+        xV : getRandom(modifier * 15, modifier * 20),
+        minX : 0
+      }
+
+      options.maxX = 800 - options.height;
+      options.x = this.terrainLine/100 * 800 - (modifier * options.height),
+      options.xV = options.xV - ((options.height / maxSize) * options.xV * .5);
+      options.xVa = -options.xV / 40;
+      options.y  = getRandom(0, 500 - options.height);
+
+      if(player === 1) {
+        options.className = "blue-chunk";
+      } else {
+        options.className = "red-chunk";
+      }
+
+      options.width = options.height;
+      options.x = options.x - options.width / 2;
+      makeParticle(options);
+    }
+
+    // Move the terrain line accordingly
     if(player === 1) {
       this.terrainLine = this.terrainLine - this.terrainChange;
     } else {
       this.terrainLine = this.terrainLine + this.terrainChange;
     }
 
+    if(this.terrainLine > 100) {
+      this.terrainLine = 100;
+    } else if(this.terrainLine < 0) {
+      this.terrainLine = 0;
+    }
+
+
+    // this.terrainLine = 0;    // TODO - remove this
     this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
       this.gameOver();
     }
+
   }
 }
 
@@ -100,7 +280,6 @@ document.addEventListener('DOMContentLoaded', function () {
   worldEl = document.querySelector(".world");
   tiltEl = document.querySelector(".tilt-wrapper");
 
-  game.start();
 
 });
 
@@ -111,7 +290,7 @@ function setupRenderer(worldSelector){
   var sBoxDim = sBox.getBoundingClientRect();
 
   game.boardWidth = sBoxDim.width;
-  game.start();
+
 
   addWalls({
     world: World,
@@ -138,7 +317,7 @@ function setupRenderer(worldSelector){
   world.bounds.max.y = sBoxDim.height;
   world.gravity.y = 0;
 
-  // Render.run(render); // TODO - since this is for debugging only, we should make it a flag
+  //Render.run(render); // TODO - since this is for debugging only, we should make it a flag
 }
 
 var Engine = Matter.Engine,
@@ -154,6 +333,8 @@ var engine = Engine.create(),
 
 var objectsToRender = [];
 
+// Objects to remove
+var removalList = [];
 
 // Adds 4 walls to the World to surround it
 function addWalls(options){
@@ -195,130 +376,92 @@ function addWalls(options){
     wall.friction = options.friction || 0;
     world.add(engine.world, wall);
   }
-
 }
 
 
-// Bounds for collision detection
-// This keeps it inside the world DIV / area
+var frameTick = 0;  // Keeps track of frames for the ball trail effect
 
 // The main game engine, moves things around
-(function run() {
+
+var letterIndex = 0;
+var hasPowerup = false;
+
+function run() {
 
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 
-  Engine.update(engine, 1000 / 60);
+  if(!hasPowerup && game.mode == "on") {
+    var chance = getRandom(0, 300);
+    if(chance < 1) {
+      addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
+      hasPowerup = true;
+    }
+  }
 
-  // checkControllers();
+  Engine.update(engine, 1000 / 60);
 
   objectsToRender.forEach(function (obj) {
 
-    if(obj.selector == ".ball") {
+    if(obj == ball) {
 
-      var deltaX = 400 - obj.physics.position.x;
-      var deltaY = 250 - obj.physics.position.y;
+      var deltaX = 400 - ball.physics.position.x;
+      var deltaY = 250 - ball.physics.position.y;
 
       var rotateX = 5 * deltaY/250 + 20 ;
       var rotateY = -5 * deltaX/400;
 
+      if(game.mode == "on") {
+        tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg) rotateZ(0)";
+      }
+
+
+      // This is how we have to handle collisions
+      // First they get marked as hit by the collisionManager
+      // then we resolve the collision on the next frame.
       if(obj.gotHit) {
         obj.resolveHit();
       }
 
-      tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
+
     }
 
+    if(obj.run) {
+      obj.run();
+    }
+
+
+    // Update the element position & angle
     var el = obj.element;
     var physics = obj.physics;
     var x = physics.position.x - obj.width / 2;
     var y = physics.position.y - obj.height / 2;
     var angle = physics.angle;
 
-    el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
+    if(obj.ignoreRotation) {
+      el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px)';
+    } else {
+      el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
+    }
 
     if(obj.update){
       obj.update();
     }
   });
 
+  drawParticles();
+
   // Saving this for later
-  // var removalList = [];
-  // removalList.forEach(function (element) {
-  //   element.parentNode.removeChild(element);
-  //   World.remove(engine.world, element.physics);
-  //   objectsToRender.splice(objectsToRender.indexOf(element), 1);
-  // });
+  removalList.forEach(function (obj) {
+    console.log("removing");
+    console.log(obj);
+
+    obj.element.parentNode.removeChild(obj.element);
+    World.remove(engine.world, obj.physics);
+    objectsToRender.splice(objectsToRender.indexOf(obj), 1);
+  });
+
+
+  removalList = [];
 
   requestAnimationFrame(run);
-})();
-
-
-
-
-// Collision manager
-Events.on(engine, 'collisionStart', function(event) {
-  var pairs = event.pairs;
-
-  for (var i = 0, j = pairs.length; i != j; ++i) {
-    var pair = pairs[i];
-    var objA, objB;
-
-    for(var k = 0; k < objectsToRender.length; k++) {
-      if(objectsToRender[k].physics === pair.bodyA){
-        objA = objectsToRender[k];
-      }
-      if(objectsToRender[k].physics === pair.bodyB){
-        objB = objectsToRender[k];
-      }
-    }
-
-    if(!objA){
-      objA = {};
-    }
-    if(!objB){
-      objB = {};
-    }
-
-    collisionManager(objA,objB);
-  }
-
-});
-
-
-// Runs collision stuff! - this seems lame still
-// Should we build a Game object that has this and all of the states?
-// Should we build a lookup table thing to quickly get the parent object based on the object.physics?
-
-function collisionManager(a,b){
-
-  // These are the physics objects from the engine
-  // Need a good way to map these to our gameobjects inside objectsToRender
-  // so that we can reference them easily.
-  // Some kind of lookup function?
-
-  var objects = [];
-  objects.push(a);
-  objects.push(b);
-
-  var selectors = [];
-  selectors.push(a.selector);
-  selectors.push(b.selector);
-
-  var scored = false;
-
-  if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.one") < 0 && selectors.indexOf(".endzone.two") < 0) {
-    var index = selectors.indexOf(".ball");
-    objects[index].hit();
-  }
-
-  if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.one") > -1) {
-    game.playerScored(1);
-    scored = true;
-  }
-
-  if(selectors.indexOf(".ball") > -1 && selectors.indexOf(".endzone.two") > -1) {
-    game.playerScored(2);
-    scored = true;
-  }
-
-}
+};
