@@ -44,6 +44,7 @@ var game =  {
       var p = paddles[i];
       p.element.classList.remove("dead");
       p.element.classList.remove("loser");
+      p.element.classList.remove("shaking");
       p.mode = "normal";
       p.targetHeight = 100;
     }
@@ -116,6 +117,7 @@ var game =  {
       var maxY = loser.physics.bounds.max.y;
       var deltaY = minY - maxY;
       var paddleY = maxY + deltaY/2 - ball.width/2;
+      loser.element.classList.add("shaking");
 
       // Create the ball
       // var ballX = that.boardWidth - 250;
@@ -259,8 +261,6 @@ var game =  {
       this.terrainLine = 0;
     }
 
-
-    // this.terrainLine = 0;    // TODO - remove this
     this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
