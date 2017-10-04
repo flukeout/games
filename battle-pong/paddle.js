@@ -142,6 +142,7 @@ function createPaddle(options) {
           shakeScreen();
 
           this.element.classList.add("dead");
+          this.element.classList.remove("shaking");
           removalList.push(ball);
 
           game.loserDied();
