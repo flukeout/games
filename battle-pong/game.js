@@ -481,7 +481,7 @@ var game =  {
       this.terrainLine = 0;
     }
 
-    this.terrainLine = 100; // TODO - comment out
+    // this.terrainLine = 100; // TODO - comment out <- used for testing instant wins
 
     this.updateBounds();
 
