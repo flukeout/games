@@ -80,6 +80,10 @@ function makeExplosion(xposition, yposition, size){
 }
 
 
+// This is such garbage....
+// TODO - make more of this dynamically generated
+// * Loop over the percentages and generate the values?
+// * Then we can add more steps?
 
 function shakeScreen(){
 
@@ -110,5 +114,18 @@ function shakeScreen(){
       document.querySelector(".shake-wrapper").style.animation = "";
     };
   }(styleTag),250);
+
+}
+
+
+// Used for animations
+// * Adds a class
+// * Removes it after a specified amount of time
+// * If the element already has the class we need to figure out a way to add it a way that re-triggers the animation.
+//   * We might not be able to rely on the width trick due to transforms
+//   * Can we try a 0 setTimeout intead?
+
+function addTemporaryClassName(element, className, duration){
+
 
 }

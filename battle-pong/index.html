@@ -16,8 +16,6 @@
     <script src="game.js"></script>         <!-- main game loop -->
     <script src="collisions.js"></script>   <!-- handles collisions -->
 
-    <script src="make-stuff.js"></script>   <!-- animates browser tab -->
-
 
     <script src="convert.js"></script>      <!-- Get DOM elements properties for the engine -->
     <script src="components.js"></script>   <!-- animates browser tab -->
@@ -31,18 +29,38 @@
   </head>
 
   <body>
-    <p class="score-display"></p>
+    <p class="score-display">
+      <div class="message"></div>
+      <div class="sub-message"></div>
+    </p>
+
+    <div class="score-wrapper">
+      <div class="score one"></div>
+      <div class="score two"></div>
+    </div>
+
 
     <div class="shake-wrapper">
       <div class="tilt-wrapper">
         <div class="world">
-          <div class="terrain one"></div>
-          <div class="terrain two"></div>
+
+          <div class="terrain one">
+            <div class="bigscore">
+              <div class="score-number"></div>
+            </div>
+            <div class="bestof">BEST</div>
+          </div>
+
+          <div class="terrain two">
+            <div class="bigscore">
+              <div class="score-number"></div>
+            </div>
+            <div class="bestof">OF 5</div>
+          </div>
+
           <div class="endzone one"></div>
           <div class="endzone two"></div>
-          <!-- <div class="ball" data-physics="true"></div> -->
-          <!-- <div class="paddle one" data-physics="true"></div> -->
-          <!-- <div class="paddle two" data-physics="true"></div> -->
+
         </div>
       </div>
     </div>

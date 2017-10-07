@@ -143,7 +143,7 @@ function createPaddle(options) {
 
           this.element.classList.add("dead");
           this.element.classList.remove("shaking");
-          removalList.push(ball);
+
 
           game.loserDied();
         }
@@ -242,13 +242,15 @@ function createPaddle(options) {
       if(this.actions.moveY)                  this.force(0, maxForce * this.actions.moveY);
       if(this.actions.spin)                   this.spin(this.actions.spin * .2);
 
+      var forceModifier = 1.25;
+
       // Movement bounds - keep the paddle in its zone
       if(this.physics.position.x > this.maxX && this.maxX) {
-        this.force(-maxForce * 1.25, 0);
+        this.force(-maxForce * forceModifier, 0);
       }
 
       if(this.physics.position.x < this.minX && this.minX) {
-        this.force(maxForce * 1.25, 0);
+        this.force(maxForce * forceModifier, 0);
       }
     }
   });

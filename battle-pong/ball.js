@@ -1,12 +1,12 @@
 function createBall(options){
 
   var options = options || {};
-  console.log(options);
 
   return createObject({
     ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
-    selector: ".ball",
-    className : "ball",
+    // selector: ".ball",
+    innerHTML : "<div class='shadow'></div><div class='body'></div>",
+    className: "ball",
     classNames : ["ball"],
     properties : {
       x: options.x || 0,
@@ -15,9 +15,11 @@ function createBall(options){
       width: 30,
       classNames : options.classNames || []
     },
+    bodyEL : false,
     physicsOptions : {
       frictionAir: 0.00001,
-      restitution: 1
+      restitution: 1,
+      label: "ball"
     },
     launch : function(x,y){
       Matter.Body.applyForce(this.physics, this.physics.position, {x: x,y:y});
@@ -26,15 +28,14 @@ function createBall(options){
     gotPaddleHit : false,
     wordSpeed : 12,
     phrases : [
-      "DANGER!",
       "BOOOOOM",
       "THHHHHWAP",
       "BA-DOOOM",
       "BLAM!!!",
       "FWOOOSH",
-      "TAKE THAT!",
       "WHAAAAAAM",
-      "o=={===>"
+      "KA-POW!",
+      "BOOP!"
     ],
     wordInProgress : false,
     lastHitBy : "",
@@ -83,6 +84,10 @@ function createBall(options){
     },
 
     startWord: function(){
+      if(game.mode != "on") {
+        return;
+      }
+
       this.wordInProgress = true;
       this.letterIndex = 0;
       var wordIndex = Math.floor(getRandom(0,this.phrases.length));
@@ -117,7 +122,7 @@ function createBall(options){
           // angle : -movementAngle,
           // speed: .2,
           lifespan : 100,
-          className : "speed",
+          className : "speedLetter",
           text : this.wordString.charAt(this.letterIndex)
         }
 
@@ -134,6 +139,10 @@ function createBall(options){
     },
 
     hit : function(obj){
+
+      if(game.mode == "finish" && obj.name == "wall") {
+        game.loserLived();
+      }
 
       if(obj && obj.hasOwnProperty("player")){
         this.lastHitBy = obj.player;
@@ -152,7 +161,6 @@ function createBall(options){
     resolveHit : function(){
 
       this.gotHit = false;
-
 
       var start = JSON.parse(this.oldVelocity);
       var end = this.physics.velocity;
