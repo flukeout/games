@@ -6,7 +6,7 @@ var paddleKeyboardActionMapping = {
   "a": "spinCounterClockwise",
   "s": "spinClockwise"
 };
-  
+
 var paddleGamepadActionMapping = {
   buttons: {
     "dPadUp": "up", // Just to try it :)
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
       actions: [
         // for buttons
         'spinClockwise','spinCounterClockwise','up','down','left','right',
-        
+
         // for more fluid options that can use floats instead of booleans (e.g. joysticks)
         'moveX', 'moveY', 'spin'
       ],
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     })
   }
-  
+
   var paddles = [
     createPaddle({
       selector: ".paddle.one",

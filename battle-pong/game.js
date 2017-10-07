@@ -2,18 +2,30 @@ var worldEl;
 var tiltEl;
 
 var game =  {
+  score : {
+    player1 : 0,
+    player2 : 0,
+    max: 3,
+    winner : false,
+    loser : false
+  },
   terrainLine : 50,
   terrainChange : 5,
   mode : "off", // on - game on, off - game over (refresh browser to restart)
+  // on - game is playing
+  // off - game is over (loser screen)
+  // finish - finish it
+
   boardWidth : 0,
   boardHeight: 0,
   runLoopStarted : false,
   terrainOne : "",
   terrainTwo: "",
-  restartTimeoutMS: 3500, //time before the game restarts
-  init: function(){
+  timeBetweenRoundsMS: 1000, // Time between rounds of the game
 
+  init: function(){
     var world = document.querySelector(".world");
+
     this.boardWidth = world.getBoundingClientRect().width;
     this.boardHeight = world.getBoundingClientRect().height;
 
@@ -25,16 +37,171 @@ var game =  {
     this.restart();
   },
 
-  loserDied: function(){
+  loserLived: function(){
+
+    this.mode = "off";
+
+    this.showMessage("HA! MISSED!", 1500);
+    this.score.loser.mode = "normal";
+    this.score.loser.element.classList.remove("loser");   // TODO - move to the paddle... setType, setMode..?
+    this.score.loser.element.classList.remove("shaking"); // TODO - move to the paddle...
 
     var that = this;
+
     setTimeout(function(){
-      that.restart()
+      console.log("just pushed", ball);
+      removalList.push(ball);
+    },1500);
+
+
+    setTimeout(function(){
+      that.restart();
     },2500);
 
   },
 
+  loserDied: function(){
+
+    removalList.push(ball);
+
+    var that = this;
+
+    setTimeout(function(){
+      that.showMessage("YOU MONSTER", 1750);
+    },1000);
+
+    setTimeout(function(){
+      that.restart()
+    },3000);
+  },
+
+
+  showMessage : function(text, timeoutMS){
+
+    var scoreEl = document.querySelector(".score-display");
+
+    scoreEl.classList.add("show-message");
+    scoreEl.innerHTML = text;
+
+    setTimeout(function(){
+      scoreEl.classList.remove("show-message");
+    }, 250);
+
+    if(timeoutMS) {
+      setTimeout(function(){
+        scoreEl.classList.add("remove-message");
+      }, timeoutMS - 250);
+
+      setTimeout(function(){
+        scoreEl.innerHTML = "";
+        scoreEl.classList.remove("remove-message");
+      }, timeoutMS);
+
+    }
+  },
+
+
+  launchBall : function(){
+    ball = createBall();
+
+
+    Matter.Body.set(ball.physics, {
+      position: { x: this.boardWidth / 2, y: this.boardHeight/2 - 15 }
+    });
+
+    var maxSize = 65;
+
+
+    var chance = Math.floor(getRandom(0,2));
+    if(chance == 0) {
+      ball.launch(0, -.02);
+    } else {
+      ball.launch(0, .02);
+    }
+
+
+    // for(var i = 0; i < 10; i++) {
+
+      // var options = {
+      //   x: ball.physics.position.x - 15,
+      //   y: ball.physics.position.y - 15,
+      //   scaleV : .2,
+      //   oV: -.05,
+      //   width: 30,
+      //   height: 30,
+        // lifespan: 50000,
+        // className : "circleRing"
+      // }
+
+      // makeParticle(options);
+
+    // }
+
+
+
+
+
+  },
+
+
+  showScore : function(){
+    var that = this;
+    var delay = 500;
+    var scoreOneEl = document.querySelector(".terrain.one .bigscore");
+    var scoreTwoEl = document.querySelector(".terrain.two .bigscore");
+
+    var bestOfOne = document.querySelector(".terrain.one .bestof");
+    var bestOfTwo = document.querySelector(".terrain.two .bestof");
+
+    // TODO simplify all this carp you moron
+    scoreOneEl.classList.remove("hide-animation");
+    scoreTwoEl.classList.remove("hide-animation")
+    bestOfOne.classList.remove("hide-animation");;
+    bestOfTwo.classList.remove("hide-animation");
+
+    setTimeout(function(){
+      scoreOneEl.querySelector(".score-number").innerHTML = that.score.player1;
+      scoreOneEl.style.display = "block";
+      bestOfOne.style.display = "block";
+      scoreTwoEl.querySelector(".score-number").innerHTML = that.score.player2;
+      scoreTwoEl.style.display = "block";
+      bestOfTwo.style.display = "block";
+    }, delay);
+
+    delay = delay + 1000;
+
+    setTimeout(function(){
+      scoreOneEl.classList.add("hide-animation");
+      scoreTwoEl.classList.add("hide-animation");
+      bestOfOne.classList.add("hide-animation");
+      bestOfTwo.classList.add("hide-animation");
+
+    }, delay);
+
+    delay = delay + 500;
+    setTimeout(function(){
+      scoreOneEl.style.display = "none";
+      scoreTwoEl.style.display = "none";
+      bestOfOne.style.display = "none";
+      bestOfTwo.style.display = "none";
+
+    }, delay);
+  },
+
+
   restart : function(){
+
+    var that = this;
+    var messageDelay = 0;
+
+    this.showScore();
+
+    setTimeout(function(){
+      that.mode = "on";
+      that.updateBounds();
+      that.launchBall();
+
+    }, 1500);
 
     document.querySelector("body").classList.remove("winner-screen");
     document.querySelector("body").classList.remove("winner-two");
@@ -49,123 +216,171 @@ var game =  {
       p.targetHeight = 100;
     }
 
-    // Create the ball
-    ball = createBall();
-
-    this.mode = "on";
     hasPowerup  = false;
-    ball.launch(0, .02);
-
+    this.mode = "pregame";
     this.terrainLine = 50;
+
     this.updateBounds();
 
-    document.querySelector(".score-display").innerHTML = "";
-
-    Matter.Body.set(ball.physics, {
-      position: { x: 400, y: 0 },
-      velocity: { x: 0, y: 0 }
-    });
+    this.updateScoreDisplay();
   },
+
+
+  // Updates the score display in the corners of the game
+  updateScoreDisplay: function(){
+
+    var scoreEls = document.querySelectorAll(".score");
+
+    for(var i = 1; i < 3; i++) {
+      var scoreEl = scoreEls[i-1];
+      scoreEl.innerHTML = "";
+      var playerScore = this.score["player" + i];
+      for(var j = 0; j < this.score.max; j++) {
+        if(j < this.score["player" + i]) {
+          scoreEl.innerHTML = scoreEl.innerHTML + " <span class='scored'>&middot;</span>";
+        } else {
+          scoreEl.innerHTML = scoreEl.innerHTML + " <span>&middot;</span>";
+        }
+      }
+    }
+
+  },
+
 
   // Updates the terrain and the paddle movement
   // restrictions.
-  updateBounds : function(){
-    paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
-    paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
+  updateBounds : function(mode){
+    if(this.mode == "on") {
+      paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
+      paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
+    }
 
-    this.terrainOne.style.width = this.terrainLine + "%";
-    this.terrainTwo.style.width = (100-this.terrainLine) + "%";
+    if(this.mode == "pregame") {
+      paddleOne.maxX = this.boardWidth * .25;
+      paddleTwo.minX = this.boardWidth - (this.boardWidth * .2);
+    }
+
+    var widthOne = Math.floor(this.boardWidth * this.terrainLine/100);
+    var widthTwo = this.boardWidth - widthOne;
+
+    this.terrainOne.style.width = widthOne + "px";
+    this.terrainTwo.style.width = widthTwo + "px";
 
   },
 
-  gameOver : function() {
-    paddleOne.maxX = false;
-    paddleTwo.minX = false;
 
-    this.mode = "off";
+  // When a player wins enough rounds, the game is over
+  // Goes into "finish it" mode.
+  gameOver : function(){
+
+    this.mode = "finish";
 
     document.querySelector("body").classList.add("winner-screen");
 
-    var winner;
-
-    if(this.terrainLine == 100) {
-      winner = paddleOne;
-      loser = paddleTwo;
-    } else {
-      winner = paddleTwo;
-      loser = paddleOne;
-    }
-
-    removalList.push(ball);
-
-    loser.mode = "ghost";
-    loser.element.classList.add("loser");
-
-    if(winner == paddleOne) {
-      document.querySelector(".score-display").innerHTML = "Player 1 Wins";
-      document.querySelector("body").classList.add("winner-one");
-    } else {
-      document.querySelector(".score-display").innerHTML = "Player 2 Wins";
-      document.querySelector("body").classList.add("winner-two");
-    }
+    this.score.loser.mode = "ghost";
+    this.score.loser.element.classList.add("loser");
 
     var that = this;
 
+    if(this.score.winner == paddleOne) {
+      this.showMessage("Player 1 Wins!", 1500);
+      document.querySelector("body").classList.add("winner-one");
+    } else {
+      this.showMessage("Player 2 Wins!", 1500);
+      document.querySelector("body").classList.add("winner-two");
+    }
+
+    this.score.player1 = 0;
+    this.score.player2 = 0;
+
     setTimeout(function(){
-      document.querySelector(".score-display").innerHTML = "DO IT";
-      var minY = loser.physics.bounds.min.y;
-      var maxY = loser.physics.bounds.max.y;
+
+      var minY = that.score.loser.physics.bounds.min.y;
+      var maxY = that.score.loser.physics.bounds.max.y;
       var deltaY = minY - maxY;
       var paddleY = maxY + deltaY/2 - ball.width/2;
-      loser.element.classList.add("shaking");
+      that.score.loser.element.classList.add("shaking");
 
       // Create the ball
-      // var ballX = that.boardWidth - 250;
-      if(winner == paddleOne) {
+      if(that.score.winner == paddleOne) {
         var ballX = 600;
       } else {
         var ballX = 200;
       }
+
+      that.showMessage("FINISH IT!!!");
+
       ball = createBall({
         x: ballX,
         y: paddleY
       });
 
-
     }, 2000);
 
-    // var that = this;
-    // setTimeout(function(){
-      // that.restart();
-    // }, this.restartTimeoutMS);
+  },
+
+
+  // When the round is over, but a player hasn't wong the game yet
+  roundOver: function() {
+    paddleOne.maxX = false;
+    paddleTwo.minX = false;
+
+    removalList.push(ball);
+
+    this.mode = "off";
+
+    document.querySelector("body").classList.add("winner-screen");
+    var winner, loser;
+
+    if(this.terrainLine == 100) {
+      winner = paddleOne;
+      loser = paddleTwo;
+      this.score["player1"] = this.score["player1"] + 1;
+    } else {
+      winner = paddleTwo;
+      loser = paddleOne;
+      this.score["player2"] = this.score["player2"] + 1;
+    }
+
+    this.updateScoreDisplay();
+
+    if(winner == paddleOne) {
+      document.querySelector("body").classList.add("winner-one");
+    } else {
+      document.querySelector("body").classList.add("winner-two");
+    }
+
+    if(this.score["player2"] == this.score.max || this.score["player1"] == this.score.max) {
+      this.score.winner = winner;
+      this.score.loser = loser;
+      this.gameOver();
+    } else {
+      var that = this;
+      setTimeout(function(){
+        that.restart()
+      },this.timeBetweenRoundsMS);
+    }
+
 
   },
+
   flashTimeout : false,
   playerScored : function(player){
 
     // Only score when game is still on
-    if(this.mode === "off") {
+    if(this.mode === "off" || this.mode === "finish") {
       return;
     }
 
     // Make an explosion when someone scores
     makeExplosion(ball.physics.position.x,ball.physics.position.y, 75);
 
-    // var delta = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
-
-    // var deltaX = ball.physics.position.x - paddleTwo.physics.position.x;
-    // var deltaY = ball.physics.position.y - paddleTwo.physics.position.y;
-    // var delta = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
-
-    // console.log(paddleTwo.element.remove());
-
-
-
-
     // Flash some color on the body element to correspond to the player
     // who scored.
+    // TODO - move this to a utils function that...
+    // * effects.addTemporaryClassName(el, className, durationMS)
     var lightupEl = document.querySelector("body");
-    var width = lightupEl.getBoundingClientRect().width;
+    var width = lightupEl.getBoundingClientRect().width; // <-- this might not work on transformed elements
 
     if(this.flashTimeout) {
       clearTimeout(this.flashTimeout);
@@ -181,6 +396,7 @@ var game =  {
       lightupEl.classList.add("light-up-blue");
     }
 
+    // Remove the lightup
     var that = this;
     this.flashTimeout = setTimeout(function(){
       lightupEl.classList.remove("light-up-red");
@@ -199,25 +415,29 @@ var game =  {
 
     // Add a message near the impact that indicates
     // the force of the hit (in percentage points)
-    var messageEl = document.createElement("div");
-    messageEl.classList.add("message");
-    var messageBody = document.createElement("div");
-    messageBody.classList.add("body");
-    messageBody.innerText = Math.round(this.terrainChange) + "%";
-    messageBody.style.fontSize = (20 + 35 * xForceRatio) + "px";
-    messageEl.appendChild(messageBody);
-    messageEl.style.transform = "translateX("+ ball.physics.position.x +"px) translateY(" + ball.physics.position.y +"px)";
-    document.querySelector(".world").appendChild(messageEl);
 
-    setTimeout(function(el) {
-      return function() {
-        el.remove();
-      };
-    }(messageEl), 2750);
+    if(this.terrainChange >= 10) {
+      var messageEl = document.createElement("div");
+      messageEl.classList.add("message");
+      var messageBody = document.createElement("div");
+      messageBody.classList.add("body");
+      messageBody.innerText = Math.round(this.terrainChange) + "%";
+      messageBody.style.fontSize = (20 + 35 * xForceRatio) + "px";
+      messageEl.appendChild(messageBody);
+      messageEl.style.transform = "translateX("+ ball.physics.position.x +"px) translateY(" + ball.physics.position.y +"px)";
+      document.querySelector(".world").appendChild(messageEl);
+
+      setTimeout(function(el) {
+        return function() {
+          el.remove();
+        };
+      }(messageEl), 2750);
+
+    }
 
     // Add red or blue particles when the terrain line moves
     var modifier = 1;
-    if( player===1 ) {
+    if( player == 1 ) {
       modifier = -1;
     }
     var maxSize = 65;
@@ -261,10 +481,12 @@ var game =  {
       this.terrainLine = 0;
     }
 
+    this.terrainLine = 100; // TODO - comment out
+
     this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
-      this.gameOver();
+      this.roundOver();
     }
 
   }
@@ -279,7 +501,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   worldEl = document.querySelector(".world");
   tiltEl = document.querySelector(".tilt-wrapper");
-
 
 });
 
@@ -372,7 +593,7 @@ function addWalls(options){
       wallHeight = thickness;
     }
 
-    var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, { isStatic: true });
+    var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, { isStatic: true, label: "wall" });
     wall.friction = options.friction || 0;
     world.add(engine.world, wall);
   }
@@ -400,21 +621,28 @@ function run() {
 
   Engine.update(engine, 1000 / 60);
 
+  if(ball) {
+    var deltaX = 400 - ball.physics.position.x;
+    var deltaY = 250 - ball.physics.position.y;
+    if(ball.deleted == true) {
+      var deltaX = 0;
+      var deltaY = 0;
+    }
+  } else {
+    var deltaX = 0;
+    var deltaY = 0;
+  }
+
+  var rotateX = 5 * deltaY/250 + 20;
+  var rotateY = -5 * deltaX/400;
+
+  if(game.mode != "off") {
+    tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
+  }
+
   objectsToRender.forEach(function (obj) {
 
     if(obj == ball) {
-
-      var deltaX = 400 - ball.physics.position.x;
-      var deltaY = 250 - ball.physics.position.y;
-
-      var rotateX = 5 * deltaY/250 + 20 ;
-      var rotateY = -5 * deltaX/400;
-
-      if(game.mode == "on") {
-        tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg) rotateZ(0)";
-      }
-
-
       // This is how we have to handle collisions
       // First they get marked as hit by the collisionManager
       // then we resolve the collision on the next frame.
@@ -428,7 +656,6 @@ function run() {
     if(obj.run) {
       obj.run();
     }
-
 
     // Update the element position & angle
     var el = obj.element;
@@ -452,12 +679,10 @@ function run() {
 
   // Saving this for later
   removalList.forEach(function (obj) {
-    console.log("removing");
-    console.log(obj);
-
     obj.element.parentNode.removeChild(obj.element);
     World.remove(engine.world, obj.physics);
     objectsToRender.splice(objectsToRender.indexOf(obj), 1);
+    obj.deleted = true;
   });
 
 

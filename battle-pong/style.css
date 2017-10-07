@@ -12,16 +12,96 @@ html, body {
   overflow: hidden;
   background: black;
   perspective: 1200px;
-
 }
 
 .shake-wrapper {
   transform-style: preserve-3d;
 }
 
+
+/* Z-index crap */
+
+.terrain {
+  z-index: 1;
+}
+
+.red-chunk, .blue-chunk {
+  z-index: 2;
+}
+
+.paddleChunk {
+  z-index: 2;
+}
+
+.boom {
+  z-index: 4;
+}
+
+.speedLetter {
+  z-index: 3;
+}
+
+.paddle {
+  z-index: 100;
+}
+
+
+
+.score-wrapper {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+.score {
+  text-align: center;
+  display: inline-block;
+  font-size: 30px;
+  line-height: 15px;
+  text-align: left;
+  color: rgba(255,255,255,.4);
+  display: flex;
+  width: 50%;
+  flex-direction: row;
+}
+
+.score span {
+  margin: 0 3px;
+  flex: 0;
+}
+
+.score .scored {
+  color: rgba(255,255,255,.8);
+  /* transform: scale(1.25) translateY(-.6px); */
+  /* margin: 0 2px; */
+}
+
+.score.one {
+  float: left;
+  align-items: flex-end;
+}
+
+.score.two {
+  float: right;
+  justify-content: flex-end;
+}
+
+.score.one .scored {
+  /*  color: #ac4d9d;*/
+}
+
+
+.score.two .scored {
+/*  color: #3faa7f;*/
+  order: 999;
+}
+
 .score-display {
   position: absolute;
-  top: 20px;
+  top: 10px;
   width: 100%;
   font-size: 40px;
   font-weight: bold;
@@ -33,6 +113,45 @@ html, body {
   text-align: center;
 }
 
+.score-display.show-message {
+  animation: showMessage .2s ease-out;
+}
+
+
+@keyframes showMessage {
+  0% {
+    transform: scaleY(0);
+  }
+  60% {
+    transform: scaleY(1.1);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.score-display.remove-message {
+  animation: removeMessage .2s ease-out;
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+@keyframes removeMessage {
+  0% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  40% {
+    transform: scaleY(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+
 .tilt-wrapper {
   position: absolute;
   top: calc(50vh - 275px);
@@ -43,7 +162,7 @@ html, body {
 .world {
   width: 800px;
   height: 500px;
-  position: absolute;
+  position: relative;
   outline: solid 20px #222;
   box-sizing: border-box;
 }
@@ -76,11 +195,8 @@ canvas {
   position: absolute;
   width: 20px;
   height: 100px;
-  z-index: 999;
+  transition: background .2s ease-out;
 }
-
-
-
 
 .paddleChunk {
   background: rgba(255,255,255,.2);
@@ -148,13 +264,46 @@ canvas {
 }
 
 .ball {
-  background: white;
   position: absolute;
   width: 30px;
   height: 30px;
-  border-radius: 15px;
+  border-radius: 15px; /* must have radius! */
   z-index: 9999999;
+  transform-style: preserve-3d;
+;
 }
+
+.ball .body {
+  background: white;
+  border-radius: 15px;
+  border-radius: 15px;
+  width: 100%;
+  height: 100%;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: ballAppear .25s ease-out 1;
+}
+
+@keyframes ballAppear {
+  0% {
+    transform: scale(.2);
+  }
+  50% {
+    transform: scale(1.2)
+  }
+}
+
+.ball .shadow {
+  background: rgba(0,0,0,.2);
+  border-radius: 15px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: none;
+}
+
 
 [data-physics] {
   will-change: transform;
@@ -193,6 +342,100 @@ canvas {
   transition: width .25s ease-out;
 }
 
+.bigscore {
+  position: absolute;
+  top: 55px;
+  left: 25%;
+  width: 50%;
+  height: 400px;
+  text-align: center;
+  display: none;
+  font-size: 300px;
+  animation: bigScoreAppear .15s ease-out;
+  box-sizing: border-box;
+}
+
+@keyframes bigScoreAppear {
+  0%  {
+    opacity: .0;
+    transform: scale(.9) translateZ(5px);
+  }
+  100%  {
+
+  }
+}
+
+.bigscore.hide-animation {
+  opacity: 0;
+  animation: bigScoreHideAnimation .15s ease-out;
+}
+
+@keyframes bigScoreHideAnimation {
+  0%    {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(.9) translateY(5px);
+   }
+}
+
+
+  .bestof.hide-animation {
+    opacity: 0;
+    animation: bigScoreHideAnimation .15s ease-out;
+  }
+
+.terrain .bestof {
+  box-sizing: border-box;
+  font-size: 50px;
+  position: absolute;
+  top: 65px;
+  width: 230px;
+  text-align: center;
+}
+
+.terrain.one .bestof {
+  color: #3faa7f;
+  right: 0;
+  display: none;
+  transform-origin: bottom right;
+  transform: rotate(-90deg);
+  animation: bestOfAppear .2s ease-out;
+}
+
+@keyframes bestOfAppear {
+  0% {
+    transform: rotate(-60deg);
+    opacity: 0;
+  }
+}
+
+.terrain.two .bestof {
+  color: #ac4d9d;
+  display: none;
+  transform-origin: bottom left;
+  transform: rotate(90deg);
+  animation: bestOfAppearScore .2s ease-out;
+}
+
+@keyframes bestOfAppearScore {
+  0% {
+    transform: rotate(60deg);
+    opacity: 0;
+  }
+}
+
+
+.terrain.one .bigscore {
+  color: #3faa7f;
+}
+
+.terrain.two .bigscore {
+  color: #ac4d9d;
+}
+
 .terrain.two:after {
  content:"";
  width: 0px;
@@ -213,7 +456,7 @@ canvas {
 }
 
 .red-chunk {
-  z-index: 1;
+  z-index: 2;
   background: #ac4d9d;
 }
 
@@ -247,7 +490,7 @@ canvas {
   5% { background: #3faa7f; }
 }
 
-.speed {
+.speedLetter {
   color: white;
   font-weight: bold;
   text-align: center;
@@ -256,16 +499,6 @@ canvas {
   color: rgba(255,255,255,.7);
 }
 
-/*.blue {
-  background: #1871a8;
-  border-radius: 5px;
-}
-
-.red {
-  background: #8c2919;
-  border-radius: 5px;
-}
-*/
 .blank-particle {
   position: absolute;
   display: none;
@@ -295,10 +528,8 @@ canvas {
 }
 
 
-
 .boom {
   position: absolute;
-  z-index: 999;
   opacity: 1;
   transform-style: preserve-3d;
 }
@@ -483,7 +714,6 @@ canvas {
   50% {
     transform: translateZ(30px);
   }
-
 }
 
 .star {
@@ -494,4 +724,11 @@ canvas {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+
+.circleRing  {
+  border: solid 5px white;
+  border-radius: 50%;
+  box-sizing: border-box;
 }

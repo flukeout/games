@@ -10,7 +10,6 @@ function addPowerup(x,y){
 function createPowerup(x,y){
 
   return createObject({
-    // ignoreRotation: true,
     className : "powerup",
     innerHTML : "<div class='shadow'></div><div class='body'></div>",
     gotHit : false,
@@ -22,9 +21,11 @@ function createPowerup(x,y){
       x: x - 15,
       y: y
     },
+
     launch : function(x,y){
       Matter.Body.applyForce(this.physics, this.physics.position, {x: x,y:y});
     },
+
     physicsOptions : {
       frictionAir: 0.015,
       restitution: 1

@@ -6,10 +6,14 @@
 
 Events.on(engine, 'collisionStart', function(event) {
   var pairs = event.pairs;
-  var objA, objB;
+  var objA;
+  var objB;
 
   for (var i = 0, j = pairs.length; i != j; ++i) {
     var pair = pairs[i];
+
+    objA = { name : pair.bodyA.label };
+    objB = { name : pair.bodyB.label };
 
     for(var k = 0; k < objectsToRender.length; k++) {
       if(objectsToRender[k].physics === pair.bodyA){
@@ -19,8 +23,12 @@ Events.on(engine, 'collisionStart', function(event) {
         objB = objectsToRender[k];
       }
     }
+
     collisionManager([objA, objB]);
   }
+
+  // console.log(objA, objB);
+
 });
 
 
@@ -31,16 +39,24 @@ function collisionManager(objectsArray){
   var one = objectsArray[0];
   var two = objectsArray[1];
 
-  if(one && one.hit) {
+  // console.log(one,two);
+
+  if(one.hit) {
     one.hit(two);
   }
 
-  if(two && two.hit) {
+  if(two.hit) {
     two.hit(one);
   }
 
+
+  // console.log(objectsArray);
+  // console.log(objectsArray.indexOf(ball))
+
   if(objectsArray.indexOf(ball) > -1 && (objectsArray.indexOf(paddleTwo) > -1 || objectsArray.indexOf(paddleOne) > -1)) {
-    ball.paddleHit();
+    if(ball){
+      ball.paddleHit();
+    }
   }
 
   // If the ball hits either endzone
