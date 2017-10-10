@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', function () {
       selector: options.selector,
       player: options.player,
       physicsOptions : {
-        frictionAir: 0.1
+        frictionAir: 0.1,
+        // slop: 0
       },
       actions: [
         // for buttons
