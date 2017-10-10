@@ -103,6 +103,7 @@ var game =  {
     if(this.ballZone != this.lastBallZone) {
       this.elapsedTime = 0;
       this.ballState = "neutral";
+      ball.element.classList.remove("overtime");
     }
 
     this.lastBallZone = this.ballZone;
@@ -112,9 +113,9 @@ var game =  {
     if(this.previousTime && ball.physics.speed < 2.5) {
       var delta =  currentTime - this.previousTime;
       this.elapsedTime = this.elapsedTime + delta;
-      console.log("slow ball");
     } else {
       this.elapsedTime = 0;
+      ball.element.classList.remove("overtime");
     }
 
     if(this.ballState == "neutral" && this.elapsedTime > 5000) {
@@ -137,7 +138,6 @@ var game =  {
   },
 
   playerDelay : function(player){
-    console.log('playerDelay');
     // Move the terrain line accordingly
     if(player === 1) {
       this.terrainLine = this.terrainLine - 2;
@@ -690,11 +690,8 @@ function addWalls(options){
     var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, {
       isStatic: true,
       label: "wall"
-
     });
     wall.friction = options.friction || 0;
-
-    console.log(wall.restitution);
     world.add(engine.world, wall);
   }
 }
