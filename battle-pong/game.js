@@ -200,7 +200,12 @@ var game =  {
       position: { x: x, y: y }
     });
 
-    // ball.launch(-.001, -.001); TODO - remove, used for testing stuff.
+    var chance = Math.floor(getRandom(0,2));
+    if(chance == 0) {
+      ball.launch(0, -.02);
+    } else {
+      ball.launch(0, .02);
+    }
   },
 
 
