@@ -5,7 +5,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max: 3,
+    max: 5,
     winner : false,
     loser : false
   },
@@ -75,7 +75,93 @@ var game =  {
     },3000);
   },
 
+  // We need something that runs every turn so we can do shit
+  ballZone : false,
+  previousTime: false,
+  elapsedTime : 0,
+  lastBallZone : false,
+  ballState : "neutral",
 
+  run : function(){
+
+    var currentTime = Date.now();
+
+    var middleX = this.boardWidth * this.terrainLine/100;
+
+
+
+    if(ball) {
+      if(ball.physics.position.x > middleX) {
+        this.ballZone = 2;
+      } else if (ball.physics.position.x < middleX) {
+        this.ballZone = 1;
+      }
+    } else {
+      return;
+    }
+
+    if(this.ballZone != this.lastBallZone) {
+      this.elapsedTime = 0;
+      this.ballState = "neutral";
+      ball.element.classList.remove("overtime");
+    }
+
+    this.lastBallZone = this.ballZone;
+
+    // Ff the ball is going slower than 2.5
+    // We start keeping track of time
+    if(this.previousTime && ball.physics.speed < 2.5) {
+      var delta =  currentTime - this.previousTime;
+      this.elapsedTime = this.elapsedTime + delta;
+    } else {
+      this.elapsedTime = 0;
+      ball.element.classList.remove("overtime");
+    }
+
+    if(this.ballState == "neutral" && this.elapsedTime > 5000) {
+      this.ballState = "overtime";
+      ball.element.classList.add("overtime");
+      this.elapsedTime = 0;
+    }
+
+    if(this.ballState == "overtime") {
+      if(this.elapsedTime > 500) {
+        this.playerDelay(this.ballZone);
+        this.elapsedTime = 0;
+      }
+    }
+
+    this.previousTime = currentTime;
+
+    // console.log(this.elapsedTime);
+    // Need to keep track of how long a ball has been inside of one zone
+  },
+
+  playerDelay : function(player){
+    // Move the terrain line accordingly
+    if(player === 1) {
+      this.terrainLine = this.terrainLine - 2;
+    } else {
+      this.terrainLine = this.terrainLine + 2;
+    }
+
+    if(this.terrainLine > 100) {
+      this.terrainLine = 100;
+    } else if(this.terrainLine < 0) {
+      this.terrainLine = 0;
+    }
+
+    // this.terrainLine = 100; // TODO - comment out <- used for testing instant wins
+
+    this.updateBounds();
+
+    if(this.terrainLine === 100 || this.terrainLine === 0) {
+      this.roundOver();
+    }
+
+  },
+
+  // Shows a message above the game board
   showMessage : function(text, timeoutMS){
 
     var scoreEl = document.querySelector(".score-display");
@@ -104,13 +190,18 @@ var game =  {
   launchBall : function(){
     ball = createBall();
 
+    var y = this.boardHeight / 2 - 15;
+
+    // var y = 100;
+    var x = this.boardWidth / 2;
 
     Matter.Body.set(ball.physics, {
-      position: { x: this.boardWidth / 2, y: this.boardHeight/2 - 15 }
+      position: { x: x, y: y }
     });
 
-    var maxSize = 65;
+    // var maxSize = 65;
 
+    // ball.launch(-.005, -.002);
 
     var chance = Math.floor(getRandom(0,2));
     if(chance == 0) {
@@ -189,6 +280,7 @@ var game =  {
   },
 
 
+  // Restarts a round
   restart : function(){
 
     var that = this;
@@ -364,6 +456,7 @@ var game =  {
 
   },
 
+
   flashTimeout : false,
   playerScored : function(player){
 
@@ -537,6 +630,7 @@ function setupRenderer(worldSelector){
   world.bounds.min.y = 0;
   world.bounds.max.y = sBoxDim.height;
   world.gravity.y = 0;
+  Matter.Resolver._restingThresh = 0.1;
 
   //Render.run(render); // TODO - since this is for debugging only, we should make it a flag
 }
@@ -593,7 +687,10 @@ function addWalls(options){
       wallHeight = thickness;
     }
 
-    var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, { isStatic: true, label: "wall" });
+    var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, {
+      isStatic: true,
+      label: "wall"
+    });
     wall.friction = options.friction || 0;
     world.add(engine.world, wall);
   }
@@ -608,6 +705,8 @@ var letterIndex = 0;
 var hasPowerup = false;
 
 function run() {
+
+  game.run();
 
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 

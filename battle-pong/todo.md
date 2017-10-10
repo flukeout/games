@@ -1,11 +1,6 @@
 **Left Off**
 
-* Showing 'Best of 5' or 'First to 3'
-  * ...
-* It's possible between rounds to stay within the other person's zone...
-* Need a higher 'fuckoff' force between rounds?
-* Respawn positions?
-* Probably need a new mode call pushback...? Clear the paddles out?
+* Adding a timeout to how long you can hold the ball....
 
 
 Fixes
