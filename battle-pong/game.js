@@ -192,23 +192,23 @@ var game =  {
 
     var y = this.boardHeight / 2 - 15;
 
-    var y = 100;
+    // var y = 100;
     var x = this.boardWidth / 2;
 
     Matter.Body.set(ball.physics, {
       position: { x: x, y: y }
     });
 
-    var maxSize = 65;
+    // var maxSize = 65;
 
-    ball.launch(-.005, -.002);
+    // ball.launch(-.005, -.002);
 
-    // var chance = Math.floor(getRandom(0,2));
-    // if(chance == 0) {
-    //   ball.launch(0, -.02);
-    // } else {
-    //   ball.launch(0, .02);
-    // }
+    var chance = Math.floor(getRandom(0,2));
+    if(chance == 0) {
+      ball.launch(0, -.02);
+    } else {
+      ball.launch(0, .02);
+    }
 
 
     // for(var i = 0; i < 10; i++) {
