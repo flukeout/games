@@ -75,29 +75,36 @@ var game =  {
     },3000);
   },
 
-  // We need something that runs every turn so we can do shit
-  ballZone : false,
+  // Keeps track of where the ball is and for how long so
+  // we can apply penalties if someone is hogging it.
+
   previousTime: false,
   elapsedTime : 0,
+
+  ballZone : false,
   lastBallZone : false,
   ballState : "neutral",
 
   run : function(){
 
-    var currentTime = Date.now();
+    if(!ball) { return }
 
+    // Some vars for easy tweaking
+    var delayTimeoutMS = 5000;   // How long we let a slow ball stay on one side before penalizing
+    var penaltyTimeoutMS = 500;  // How often we penalize once things are too slow
+    var percentPenalty = 2;      // How many percent of the field we penalize
+
+    //var middleBuffer;
+
+    var currentTime = Date.now();
     var middleX = this.boardWidth * this.terrainLine/100;
 
 
-
-    if(ball) {
-      if(ball.physics.position.x > middleX) {
-        this.ballZone = 2;
-      } else if (ball.physics.position.x < middleX) {
-        this.ballZone = 1;
-      }
+    // Figure out what player zone we are in
+    if(ball.physics.position.x > middleX) {
+      this.ballZone = 2;
     } else {
-      return;
+      this.ballZone = 1;
     }
 
     if(this.ballZone != this.lastBallZone) {
@@ -118,31 +125,29 @@ var game =  {
       ball.element.classList.remove("overtime");
     }
 
-    if(this.ballState == "neutral" && this.elapsedTime > 5000) {
+    if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS) {
       this.ballState = "overtime";
-      ball.element.classList.add("overtime");
       this.elapsedTime = 0;
     }
 
     if(this.ballState == "overtime") {
-      if(this.elapsedTime > 500) {
-        this.playerDelay(this.ballZone);
+      if(this.elapsedTime > penaltyTimeoutMS) {
+        ball.element.classList.add("overtime");
+        this.playerDelay(this.ballZone, percentPenalty);
+        playSound("beep");
         this.elapsedTime = 0;
       }
     }
 
     this.previousTime = currentTime;
-
-    // console.log(this.elapsedTime);
-    // Need to keep track of how long a ball has been inside of one zone
   },
 
-  playerDelay : function(player){
+  playerDelay : function(player, penalty){
     // Move the terrain line accordingly
     if(player === 1) {
-      this.terrainLine = this.terrainLine - 2;
+      this.terrainLine = this.terrainLine - penalty;
     } else {
-      this.terrainLine = this.terrainLine + 2;
+      this.terrainLine = this.terrainLine + penalty;
     }
 
     if(this.terrainLine > 100) {
@@ -150,8 +155,6 @@ var game =  {
     } else if(this.terrainLine < 0) {
       this.terrainLine = 0;
     }
-
-    // this.terrainLine = 100; // TODO - comment out <- used for testing instant wins
 
     this.updateBounds();
 
@@ -191,47 +194,13 @@ var game =  {
     ball = createBall();
 
     var y = this.boardHeight / 2 - 15;
-
-    // var y = 100;
     var x = this.boardWidth / 2;
 
     Matter.Body.set(ball.physics, {
       position: { x: x, y: y }
     });
 
-    // var maxSize = 65;
-
-    // ball.launch(-.005, -.002);
-
-    var chance = Math.floor(getRandom(0,2));
-    if(chance == 0) {
-      ball.launch(0, -.02);
-    } else {
-      ball.launch(0, .02);
-    }
-
-
-    // for(var i = 0; i < 10; i++) {
-
-      // var options = {
-      //   x: ball.physics.position.x - 15,
-      //   y: ball.physics.position.y - 15,
-      //   scaleV : .2,
-      //   oV: -.05,
-      //   width: 30,
-      //   height: 30,
-        // lifespan: 50000,
-        // className : "circleRing"
-      // }
-
-      // makeParticle(options);
-
-    // }
-
-
-
-
-
+    // ball.launch(-.001, -.001); TODO - remove, used for testing stuff.
   },
 
 

@@ -1,6 +1,9 @@
 **Left Off**
 
-* Adding a timeout to how long you can hold the ball....
+* Added delay of game timeout...
+  * When it loses the 'delayed' class, it doesn't regain it if it stays within your zone...
+* Powerup
+  * Annoying if you get it but don't get to use it if the other person holds the ball
 
 
 Fixes
@@ -15,7 +18,6 @@ Nice-to-have
 
 * Figure out how to keep people away from teh ball before the round starts...
 * Add 'flawless' mechanic...
-* Limit time on the 'finish him' screen?
 * Better mapping to gamepads? Some kind fo screen?
 
 

@@ -4,6 +4,10 @@
 // * That would allow us to not have two hit sounds...
 
 var sounds = {
+  "beep" : {
+    url : "sounds/beep.mp3",
+    volume : .15
+  },
   "swish" : {
     url : "sounds/swish.wav",
   },
