@@ -1,6 +1,3 @@
-var worldEl;
-var tiltEl;
-
 var game =  {
   score : {
     player1 : 0,
@@ -11,30 +8,42 @@ var game =  {
   },
   terrainLine : 50,
   terrainChange : 5,
-  mode : "off", // on - game on, off - game over (refresh browser to restart)
+  mode : "off",
+
   // on - game is playing
   // off - game is over (loser screen)
   // finish - finish it
+  // pregame - before a game starts
 
   boardWidth : 0,
   boardHeight: 0,
-  runLoopStarted : false,
-  terrainOne : "",
-  terrainTwo: "",
+
+  terrainOneEl : "",
+  terrainTwoEl: "",
+  worldE: "",
+
   timeBetweenRoundsMS: 1000, // Time between rounds of the game
 
   init: function(){
-    var world = document.querySelector(".world");
+    this.worldEl = document.querySelector(".world");
 
-    this.boardWidth = world.getBoundingClientRect().width;
-    this.boardHeight = world.getBoundingClientRect().height;
+    this.boardWidth = this.worldEl.getBoundingClientRect().width;
+    this.boardHeight = this.worldEl.getBoundingClientRect().height;
 
-    this.terrainOne = document.querySelector(".terrain.one");
-    this.terrainTwo = document.querySelector(".terrain.two");
+    this.terrainOneEl = document.querySelector(".terrain.one");
+    this.terrainTwoEl = document.querySelector(".terrain.two");
 
-    run();
+    run(); // Start the game Loop
 
     this.restart();
+    var that = this;
+
+    // Event listener for ball hitting an Endzone
+    document.addEventListener("ballHitEndzone",function(e){
+      console.log("Player, ", e.detail.player, " scored");
+      that.playerScored(e.detail.player);
+    })
+
   },
 
   loserLived: function(){
@@ -329,8 +338,8 @@ var game =  {
     var widthOne = Math.floor(this.boardWidth * this.terrainLine/100);
     var widthTwo = this.boardWidth - widthOne;
 
-    this.terrainOne.style.width = widthOne + "px";
-    this.terrainTwo.style.width = widthTwo + "px";
+    this.terrainOneEl.style.width = widthOne + "px";
+    this.terrainTwoEl.style.width = widthTwo + "px";
 
   },
 
@@ -579,7 +588,6 @@ function setupRenderer(worldSelector){
 
   game.boardWidth = sBoxDim.width;
 
-
   addWalls({
     world: World,
     width: sBoxDim.width,
@@ -663,7 +671,7 @@ function addWalls(options){
 
     var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, {
       isStatic: true,
-      label: "wall"
+      label: "wall-"  + side
     });
     wall.friction = options.friction || 0;
     world.add(engine.world, wall);
@@ -677,10 +685,24 @@ var frameTick = 0;  // Keeps track of frames for the ball trail effect
 
 var letterIndex = 0;
 var hasPowerup = false;
+var currentTime;
+var lastTime = false;
+var delta;
+var worldEl;
+var tiltEl;
+
 
 function run() {
 
   game.run();
+
+  currentTime = Date.now();
+
+  if(lastTime){
+    delta = currentTime - lastTime;
+  }
+
+  lastTime = currentTime;
 
   // TODO - should we base the engine update tick based on elapsed time since last frame?
 
@@ -693,6 +715,7 @@ function run() {
   }
 
   Engine.update(engine, 1000 / 60);
+  // Engine.update(engine, delta);
 
   if(ball) {
     var deltaX = 400 - ball.physics.position.x;
@@ -722,12 +745,14 @@ function run() {
       if(obj.gotHit) {
         obj.resolveHit();
       }
-
-
     }
 
     if(obj.run) {
       obj.run();
+    }
+
+    if(obj.update){
+      obj.update();
     }
 
     // Update the element position & angle
@@ -743,9 +768,6 @@ function run() {
       el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
     }
 
-    if(obj.update){
-      obj.update();
-    }
   });
 
   drawParticles();

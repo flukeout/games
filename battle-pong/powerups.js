@@ -32,14 +32,15 @@ function createPowerup(x,y){
     },
 
     hit : function(obj){
+
       var hit = false;
 
-      if(obj == endzoneTwo) {
+      if(obj.name == "wall-right") {
         paddleOne.powerup();
         hit = true;
       }
 
-      if(obj == endzoneOne) {
+      if(obj.name == "wall-left") {
         paddleTwo.powerup();
         hit = true;
       }
@@ -68,7 +69,6 @@ function createPowerup(x,y){
           }
 
           makeParticle(options);
-
         }
       }
     }
