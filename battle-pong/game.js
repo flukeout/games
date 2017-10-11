@@ -42,13 +42,11 @@ var game =  {
     document.addEventListener("ballHitEndzone",function(e){
       console.log("Player, ", e.detail.player, " scored");
       that.playerScored(e.detail.player);
-
       if (e.detail.player === 1)
         reactionMachine.chooseForMe('winning', 'losing');
       else
         reactionMachine.chooseForMe('losing', 'winning');
-    })
-
+    });
   },
 
   loserLived: function(){

@@ -59,7 +59,8 @@ function createPaddle(options) {
     },
 
     physicsOptions : {
-      frictionAir: 0.1
+      frictionAir: 0.1,
+      label: 'paddle-' + (['one', 'two'][options.player])       // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3
     },
 
     mode: "normal",
