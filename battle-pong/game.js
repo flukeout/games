@@ -42,6 +42,11 @@ var game =  {
     document.addEventListener("ballHitEndzone",function(e){
       console.log("Player, ", e.detail.player, " scored");
       that.playerScored(e.detail.player);
+
+      if (e.detail.player === 1)
+        reactionMachine.chooseForMe('winning', 'losing');
+      else
+        reactionMachine.chooseForMe('losing', 'winning');
     })
 
   },
@@ -571,6 +576,7 @@ var game =  {
 
 // Sets up the world
 document.addEventListener('DOMContentLoaded', function () {
+  reactionMachine = new ReactionMachine();
 
   // Build a renderer based on an element
   setupRenderer(".world");
@@ -691,6 +697,7 @@ var delta;
 var worldEl;
 var tiltEl;
 
+var reactionMachine;
 
 function run() {
 
@@ -779,7 +786,6 @@ function run() {
     objectsToRender.splice(objectsToRender.indexOf(obj), 1);
     obj.deleted = true;
   });
-
 
   removalList = [];
 
