@@ -7,6 +7,8 @@ var ball,
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  initParticleEngine();
+
   // Create the Paddles
 
   paddleOne = createPaddle({
@@ -30,4 +32,21 @@ document.addEventListener('DOMContentLoaded', function () {
   connectPaddlesToControls();
 
   game.init();
+
+  // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
+  game.step();
+
+  if (Settings.showIntro) {
+    var introMachine = new IntroMachine();
+    introMachine.start(function () {
+      game.restart();
+      game.run();      
+    });
+  }
+  else {
+    document.querySelector('.board-wrapper').classList.remove('hide');
+    game.restart();
+    game.run();
+  }
+
 });

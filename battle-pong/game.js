@@ -26,16 +26,12 @@ var game =  {
 
   init: function(){
     this.worldEl = document.querySelector(".world");
-
-    this.boardWidth = this.worldEl.getBoundingClientRect().width;
-    this.boardHeight = this.worldEl.getBoundingClientRect().height;
+    this.boardWidth = this.worldEl.clientWidth;
+    this.boardHeight = this.worldEl.clientHeight;
 
     this.terrainOneEl = document.querySelector(".terrain.one");
     this.terrainTwoEl = document.querySelector(".terrain.two");
 
-    run(); // Start the game Loop
-
-    this.restart();
     var that = this;
 
     var lastPlayerTouch = 0; 
@@ -112,9 +108,98 @@ var game =  {
   lastBallZone : false,
   ballState : "neutral",
 
-  run : function(){
+  run: function () {
+    var g = this;
+    g.mode = 'startup';
+    (function loop() {
+      if (g.mode === 'paused' || g.mode === 'off') {
+        return;
+      }
 
-    if(!ball) { return }
+      g.step();
+      requestAnimationFrame(loop);
+    })();
+  },
+  pause: function () {
+    this.mode = 'paused';
+  },
+
+  step : function(){
+    currentTime = Date.now();
+
+    if(lastTime){
+      delta = currentTime - lastTime;
+    }
+
+    lastTime = currentTime;
+
+    // TODO - should we base the engine update tick based on elapsed time since last frame?
+
+    if(!hasPowerup && game.mode == "on") {
+      var chance = getRandom(0, 300);
+      if(chance < 1) {
+        addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
+        hasPowerup = true;
+      }
+    }
+
+    Engine.update(engine, 1000 / 60);
+    // Engine.update(engine, delta);
+
+    if(ball) {
+      var deltaX = 400 - ball.physics.position.x;
+      var deltaY = 250 - ball.physics.position.y;
+      if(ball.deleted == true) {
+        var deltaX = 0;
+        var deltaY = 0;
+      }
+    } else {
+      var deltaX = 0;
+      var deltaY = 0;
+    }
+
+    var rotateX = 5 * deltaY/250 + 20;
+    var rotateY = -5 * deltaX/400;
+
+    if(game.mode != "off") {
+      tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
+    }
+
+    objectsToRender.forEach(function (obj) {
+
+      if(obj == ball) {
+        // This is how we have to handle collisions
+        // First they get marked as hit by the collisionManager
+        // then we resolve the collision on the next frame.
+        if(obj.gotHit) {
+          obj.resolveHit();
+        }
+      }
+
+      if(obj.run) {
+        obj.run();
+      }
+
+      if(obj.update){
+        obj.update();
+      }
+
+      // Update the element position & angle
+      var el = obj.element;
+      var physics = obj.physics;
+      var x = physics.position.x - obj.width / 2;
+      var y = physics.position.y - obj.height / 2;
+      var angle = physics.angle;
+
+      if(obj.ignoreRotation) {
+        el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px)';
+      } else {
+        el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
+      }
+
+    });
+
+    drawParticles();
 
     // Some vars for easy tweaking
     var delayTimeoutMS = 5000;   // How long we let a slow ball stay on one side before penalizing
@@ -127,46 +212,48 @@ var game =  {
     var middleX = this.boardWidth * this.terrainLine/100;
 
 
-    // Figure out what player zone we are in
-    if(ball.physics.position.x > middleX) {
-      this.ballZone = 2;
-    } else {
-      this.ballZone = 1;
-    }
+    if (ball) {
+      // Figure out what player zone we are in
+      if(ball.physics.position.x > middleX) {
+        this.ballZone = 2;
+      } else {
+        this.ballZone = 1;
+      }
 
-    if(this.ballZone != this.lastBallZone) {
-      this.elapsedTime = 0;
-      this.ballState = "neutral";
-      ball.element.classList.remove("overtime");
-    }
+      if(this.ballZone != this.lastBallZone) {
+        this.elapsedTime = 0;
+        this.ballState = "neutral";
+        ball.element.classList.remove("overtime");
+      }
 
-    this.lastBallZone = this.ballZone;
+      this.lastBallZone = this.ballZone;
 
-    // Ff the ball is going slower than 2.5
-    // We start keeping track of time
-    if(this.previousTime && ball.physics.speed < 2.5) {
-      var delta =  currentTime - this.previousTime;
-      this.elapsedTime = this.elapsedTime + delta;
-    } else {
-      this.elapsedTime = 0;
-      ball.element.classList.remove("overtime");
-    }
+      // Ff the ball is going slower than 2.5
+      // We start keeping track of time
+      if(this.previousTime && ball.physics.speed < 2.5) {
+        var delta =  currentTime - this.previousTime;
+        this.elapsedTime = this.elapsedTime + delta;
+      } else {
+        this.elapsedTime = 0;
+        ball.element.classList.remove("overtime");
+      }
 
-    if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS) {
-      this.ballState = "overtime";
-      this.elapsedTime = 0;
-    }
-
-    if(this.ballState == "overtime") {
-      if(this.elapsedTime > penaltyTimeoutMS) {
-        ball.element.classList.add("overtime");
-        this.playerDelay(this.ballZone, percentPenalty);
-        playSound("beep");
+      if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS) {
+        this.ballState = "overtime";
         this.elapsedTime = 0;
       }
-    }
 
-    this.previousTime = currentTime;
+      if(this.ballState == "overtime") {
+        if(this.elapsedTime > penaltyTimeoutMS) {
+          ball.element.classList.add("overtime");
+          this.playerDelay(this.ballZone, percentPenalty);
+          playSound("beep");
+          this.elapsedTime = 0;
+        }
+      }
+
+      this.previousTime = currentTime;
+    }
   },
 
   playerDelay : function(player, penalty){
@@ -219,6 +306,7 @@ var game =  {
 
   launchBall : function(){
     ball = createBall();
+    ball.element.classList.add('show');
 
     var y = this.boardHeight / 2 - 15;
     var x = this.boardWidth / 2;
@@ -474,7 +562,7 @@ var game =  {
     // TODO - move this to a utils function that...
     // * effects.addTemporaryClassName(el, className, durationMS)
     var lightupEl = document.querySelector("body");
-    var width = lightupEl.getBoundingClientRect().width; // <-- this might not work on transformed elements
+    var width = lightupEl.clientWidth;
 
     if(this.flashTimeout) {
       clearTimeout(this.flashTimeout);
@@ -603,14 +691,13 @@ document.addEventListener('DOMContentLoaded', function () {
 function setupRenderer(worldSelector){
 
   var sBox = document.querySelector(worldSelector);
-  var sBoxDim = sBox.getBoundingClientRect();
 
-  game.boardWidth = sBoxDim.width;
+  game.boardWidth = sBox.clientWidth;
 
   addWalls({
     world: World,
-    width: sBoxDim.width,
-    height: sBoxDim.height,
+    width: sBox.clientWidth,
+    height: sBox.clientHeight,
     sides : ["top","right","bottom","left"]
   });
 
@@ -619,17 +706,17 @@ function setupRenderer(worldSelector){
     element: document.querySelector(worldSelector),
     engine: engine,
     options: {
-      width: sBoxDim.width,
-      height: sBoxDim.height,
+      width: sBox.clientWidth,
+      height: sBox.clientHeight,
       showVelocity: true,
       showAngleIndicator: true
     }
   });
 
   world.bounds.min.x = 0;
-  world.bounds.max.x = sBoxDim.width;
+  world.bounds.max.x = sBox.clientWidth;
   world.bounds.min.y = 0;
-  world.bounds.max.y = sBoxDim.height;
+  world.bounds.max.y = sBox.clientHeight;
   world.gravity.y = 0;
   Matter.Resolver._restingThresh = 0.1;
 
@@ -711,96 +798,3 @@ var worldEl;
 var tiltEl;
 
 var reactionMachine;
-
-function run() {
-
-  game.run();
-
-  currentTime = Date.now();
-
-  if(lastTime){
-    delta = currentTime - lastTime;
-  }
-
-  lastTime = currentTime;
-
-  // TODO - should we base the engine update tick based on elapsed time since last frame?
-
-  if(!hasPowerup && game.mode == "on") {
-    var chance = getRandom(0, 300);
-    if(chance < 1) {
-      addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
-      hasPowerup = true;
-    }
-  }
-
-  Engine.update(engine, 1000 / 60);
-  // Engine.update(engine, delta);
-
-  if(ball) {
-    var deltaX = 400 - ball.physics.position.x;
-    var deltaY = 250 - ball.physics.position.y;
-    if(ball.deleted == true) {
-      var deltaX = 0;
-      var deltaY = 0;
-    }
-  } else {
-    var deltaX = 0;
-    var deltaY = 0;
-  }
-
-  var rotateX = 5 * deltaY/250 + 20;
-  var rotateY = -5 * deltaX/400;
-
-  if(game.mode != "off") {
-    tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
-  }
-
-  objectsToRender.forEach(function (obj) {
-
-    if(obj == ball) {
-      // This is how we have to handle collisions
-      // First they get marked as hit by the collisionManager
-      // then we resolve the collision on the next frame.
-      if(obj.gotHit) {
-        obj.resolveHit();
-      }
-    }
-
-    if(obj.run) {
-      obj.run();
-    }
-
-    if(obj.update){
-      obj.update();
-    }
-
-    // Update the element position & angle
-    var el = obj.element;
-    var physics = obj.physics;
-    var x = physics.position.x - obj.width / 2;
-    var y = physics.position.y - obj.height / 2;
-    var angle = physics.angle;
-
-    if(obj.ignoreRotation) {
-      el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px)';
-    } else {
-      el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
-    }
-
-  });
-
-  drawParticles();
-
-  // Saving this for later
-  removalList.forEach(function (obj) {
-    obj.element.parentNode.removeChild(obj.element);
-    World.remove(engine.world, obj.physics);
-    objectsToRender.splice(objectsToRender.indexOf(obj), 1);
-    obj.deleted = true;
-  });
-
-  removalList = [];
-
-  requestAnimationFrame(run);
-};

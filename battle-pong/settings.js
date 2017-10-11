@@ -1,0 +1,3 @@
+window.Settings = {
+  showIntro: false
+};

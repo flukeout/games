@@ -4,6 +4,7 @@
 <html>
   <head>
     <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Teko" rel="stylesheet">
     <link rel="stylesheet" href="style.css"/>
     <link rel="stylesheet" href="reactions.css"/>
 
@@ -27,6 +28,10 @@
 
     <script src="reactions.js"></script>
 
+    <script src="intro.js"></script>
+
+    <script src="settings.js"></script>
+
     <script src="start.js"></script>        <!-- fires everything up -->
   </head>
 
@@ -42,29 +47,35 @@
     </div>
 
 
-    <div class="shake-wrapper">
-      <div class="tilt-wrapper">
-        <div class="world">
+    <div class="board-wrapper hide">
+      <div class="shake-wrapper">
+        <div class="tilt-wrapper">
+          <div class="world">
 
-          <div class="terrain one">
-            <div class="bigscore">
-              <div class="score-number"></div>
+            <div class="terrain one">
+              <div class="bigscore">
+                <div class="score-number"></div>
+              </div>
+              <div class="bestof">BEST</div>
             </div>
-            <div class="bestof">BEST</div>
-          </div>
 
-          <div class="terrain two">
-            <div class="bigscore">
-              <div class="score-number"></div>
+            <div class="terrain two">
+              <div class="bigscore">
+                <div class="score-number"></div>
+              </div>
+              <div class="bestof">OF 7</div>
             </div>
-            <div class="bestof">OF 7</div>
+
+            <div class="endzone one"></div>
+            <div class="endzone two"></div>
+
           </div>
-
-          <div class="endzone one"></div>
-          <div class="endzone two"></div>
-
         </div>
       </div>
+    </div>
+    <div class="intro-wrapper">
+      <div class="title">BATTLE<br/>PONG</div>
+      <div class="start">start</div>
     </div>
     <div class="reaction-container one">
       <div class="emoji"></div>
