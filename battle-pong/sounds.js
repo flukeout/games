@@ -4,6 +4,10 @@
 // * That would allow us to not have two hit sounds...
 
 var sounds = {
+  "beep" : {
+    url : "sounds/beep.mp3",
+    volume : .15
+  },
   "swish" : {
     url : "sounds/swish.wav",
   },
@@ -55,8 +59,6 @@ function loadSound(name){
 }
 
 function playSound(name, options){
-
-
   var sound = sounds[name];
 
   var soundOptions = {
@@ -76,31 +78,15 @@ function playSound(name, options){
 
   if(!buffer){ return; }
 
-
   var source = soundContext.createBufferSource();
   source.buffer = buffer;
-
-  // If there is a timeout
-  // if(soundOptions.timeout) {
-  //   if(sound.waiting == false) {
-  //     sound.waiting = true;
-  //     setTimeout(function(){
-  //       sound.waiting = false;
-  //     }, soundOptions.timeout);
-  //   } else {
-  //     return;
-  //   }
-  // }
 
   var panNode = soundContext.createStereoPanner();
   panNode.pan.value = soundOptions.pan;
 
   var volume = soundContext.createGain();
 
-
   volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
-
-
 
   panNode.connect(soundContext.destination);
   volume.connect(panNode);

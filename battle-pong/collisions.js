@@ -12,6 +12,23 @@ Events.on(engine, 'collisionStart', function(event) {
   for (var i = 0, j = pairs.length; i != j; ++i) {
     var pair = pairs[i];
 
+    var pairLabels = [];
+
+    pairLabels.push(pair.bodyA.label);
+    pairLabels.push(pair.bodyB.label);
+
+
+    // Bobby, the new - label-based approach is here...
+    if(pairLabels.indexOf("ball") > -1 && pairLabels.indexOf("wall-right") > -1) {
+      var event = new CustomEvent("ballHitEndzone", { detail : { player : 1 }});
+      document.dispatchEvent(event);
+    }
+
+    if(pairLabels.indexOf("ball") > -1 && pairLabels.indexOf("wall-left") > -1) {
+      var event = new CustomEvent("ballHitEndzone", { detail : { player : 2 }});
+      document.dispatchEvent(event);
+    }
+
     objA = { name : pair.bodyA.label };
     objB = { name : pair.bodyB.label };
 
@@ -26,9 +43,6 @@ Events.on(engine, 'collisionStart', function(event) {
 
     collisionManager([objA, objB]);
   }
-
-  // console.log(objA, objB);
-
 });
 
 
@@ -36,10 +50,11 @@ Events.on(engine, 'collisionStart', function(event) {
 // Uses named object variables created earlier to compare.
 function collisionManager(objectsArray){
 
+
   var one = objectsArray[0];
   var two = objectsArray[1];
 
-  // console.log(one,two);
+  // TODO - change the powerup HIT and Paddle hit stuff to 'event based' system
 
   if(one.hit) {
     one.hit(two);
@@ -49,22 +64,9 @@ function collisionManager(objectsArray){
     two.hit(one);
   }
 
-
-  // console.log(objectsArray);
-  // console.log(objectsArray.indexOf(ball))
-
   if(objectsArray.indexOf(ball) > -1 && (objectsArray.indexOf(paddleTwo) > -1 || objectsArray.indexOf(paddleOne) > -1)) {
     if(ball){
       ball.paddleHit();
     }
-  }
-
-  // If the ball hits either endzone
-  if(objectsArray.indexOf(ball) > -1 && objectsArray.indexOf(endzoneOne) > -1) {
-    game.playerScored(1);
-  }
-
-  if(objectsArray.indexOf(ball) > -1 && objectsArray.indexOf(endzoneTwo) > -1) {
-    game.playerScored(2);
   }
 }

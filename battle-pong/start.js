@@ -1,8 +1,6 @@
 // Game components
 
-var endzoneOne,
-    endzoneTwo,
-    ball,
+var ball,
     paddleOne,
     paddleTwo;
 
@@ -30,24 +28,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   connectPaddlesToControls();
-
-  // Create the endzones - just using the generic createObject
-
-  endzoneOne = createObject({
-    selector: ".endzone.one",
-    physicsOptions : {
-      isSensor: true,
-      isStatic: true
-    }
-  });
-
-  endzoneTwo = createObject({
-    selector: ".endzone.two",
-    physicsOptions : {
-      isSensor: true,
-      isStatic: true
-    }
-  });
 
   game.init();
 });

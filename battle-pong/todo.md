@@ -1,23 +1,28 @@
 **Left Off**
 
-* Adding a timeout to how long you can hold the ball....
+* Was working on the delay-of-game penalty
 
 
-Fixes
+Bugs?
+
+*
+
+
+To think about
 
 * Powerups
-  * Maybe don't spawn them when the round is already over?
-  * Keep an active count of them? - powerupCount, powerupCountMax,
-* When the ball spawns directly under a paddle - ? does it matter?
+  * Should we change when / how they go away?
+  * Right now there's an issue where you can get a powerup but it expires before you get a chance to use it...
+  * Is it really an issue?
+* Right now we have a weird thing where sometimes there are more than one in play
+  * Why is this happening?
+  * Since it's unintentional, but fun, what are the rules?
 
 
 Nice-to-have
 
-* Figure out how to keep people away from teh ball before the round starts...
-* Add 'flawless' mechanic...
-* Limit time on the 'finish him' screen?
-* Better mapping to gamepads? Some kind fo screen?
-
+* Add 'flawless win' indicator
+* Ability to map keys/buttons at the start of the game?
 
 
 UNRELATED IDEA
