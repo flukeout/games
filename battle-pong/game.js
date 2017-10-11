@@ -44,9 +44,9 @@ var game =  {
       that.playerScored(e.detail.player);
 
       if (e.detail.player === 1)
-        reactionMachine.chooseForMe('losing', 'winning');
-      else
         reactionMachine.chooseForMe('winning', 'losing');
+      else
+        reactionMachine.chooseForMe('losing', 'winning');
     })
 
   },
