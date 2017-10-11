@@ -38,14 +38,29 @@ var game =  {
     this.restart();
     var that = this;
 
+    var lastPlayerTouch = 0; 
+    document.addEventListener("ballHitPaddle", function(e) {
+      console.log('Ball touched player ' + e.detail.player + ' last');
+      lastPlayerTouch = e.detail.player;
+    });
+
     // Event listener for ball hitting an Endzone
-    document.addEventListener("ballHitEndzone",function(e){
+    document.addEventListener("ballHitEndzone", function(e) {
       console.log("Player, ", e.detail.player, " scored");
       that.playerScored(e.detail.player);
-      if (e.detail.player === 1)
-        reactionMachine.chooseForMe('winning', 'losing');
-      else
-        reactionMachine.chooseForMe('losing', 'winning');
+
+      if (e.detail.player !== lastPlayerTouch && lastPlayerTouch > 0) {
+        // If the player scored on themselves, SHAME
+        reactionMachine.react(e.detail.player, 'taunting');
+        reactionMachine.react(3 - e.detail.player, 'embarrassed');
+      }
+      else {
+        // Otherwise, more normal reaction
+        reactionMachine.react(e.detail.player, 'winning');
+      }
+
+      // Reset this each time so that player can't score on themselves again if ball keeps moving
+      lastPlayerTouch = 0;
     });
   },
 
