@@ -4,6 +4,13 @@
 // to the collisionManager.
 // We only pass them on if they're in the "objectsToRender" array
 
+var ballEvents = {
+  'wall-right':   {type: 'ballHitEndzone',    detail: { player: 1 }},
+  'wall-left':    {type: 'ballHitEndzone',    detail: { player: 2 }},
+  'paddle-one':   {type: 'ballHitPaddle',     detail: { player: 1 }},
+  'paddle-two':   {type: 'ballHitPaddle',     detail: { player: 2 }}
+};
+
 Events.on(engine, 'collisionStart', function(event) {
   var pairs = event.pairs;
   var objA;
@@ -18,15 +25,16 @@ Events.on(engine, 'collisionStart', function(event) {
     pairLabels.push(pair.bodyB.label);
 
 
-    // Bobby, the new - label-based approach is here...
-    if(pairLabels.indexOf("ball") > -1 && pairLabels.indexOf("wall-right") > -1) {
-      var event = new CustomEvent("ballHitEndzone", { detail : { player : 1 }});
-      document.dispatchEvent(event);
-    }
+    // If the ball is involved
+    var ballLookup = pairLabels.indexOf("ball");
+    if (ballLookup > -1) {
+      var otherLabel = pairLabels[(ballLookup + 1) % 2];
 
-    if(pairLabels.indexOf("ball") > -1 && pairLabels.indexOf("wall-left") > -1) {
-      var event = new CustomEvent("ballHitEndzone", { detail : { player : 2 }});
-      document.dispatchEvent(event);
+      var event = ballEvents[otherLabel];
+
+      if (event) {
+        document.dispatchEvent(new CustomEvent(event.type, {detail: event.detail}));
+      }
     }
 
     objA = { name : pair.bodyA.label };

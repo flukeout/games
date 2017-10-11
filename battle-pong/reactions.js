@@ -32,11 +32,15 @@
       'what what'
     ],
     losing: [
-      'whoopsie',
       'uh oh',
       'yikes!',
       'blarg...',
       'oops'
+    ],
+    taunting: [
+      'toasty!',
+    ],
+    embarrassed: [
     ]
   };
 
@@ -57,7 +61,7 @@
         var randomExclamation = verbalPool[Math.floor(Math.random() * verbalPool.length)];
         var randomExclamationClass = exclamationClasses[Math.floor(Math.random() * exclamationClasses.length)];
 
-        var reactionContainer = reactionContainers[player].cloneNode(true);
+        var reactionContainer = reactionContainers[player - 1].cloneNode(true);
         document.body.appendChild(reactionContainer);
 
         var emotionalContainer = reactionContainer.querySelector('.emoji');
@@ -67,7 +71,9 @@
         var randomVerbalXPosition = Math.round(Math.random() * 100);
 
         emotionalContainer.style.backgroundImage = 'url("assets/emojis/' + randomEmotion + '")';
-        verbalContainer.innerText = randomExclamation;
+
+        if (randomExclamation) verbalContainer.innerText = randomExclamation;
+
         verbalContainer.classList.add(randomExclamationClass);
 
         verbalContainer.style.transform = 'translateX(' + randomVerbalXPosition + 'px) translateY(-150px) rotate(' + randomVerbalAngle + 'rad)';
@@ -86,19 +92,6 @@
           }, 1000);
         }, 50);
   
-      },
-      chooseForMe: function (player1Emotion, player2Emotion) {
-        var randomness = Math.random();
-        if (randomness > 0.66) {
-          machine.react(0, player1Emotion);
-        }
-        else if (randomness > 0.33) {
-          machine.react(1, player2Emotion);
-        }
-        else {
-          machine.react(0, player1Emotion);
-          machine.react(1, player2Emotion);
-        }
       }
     };
 
