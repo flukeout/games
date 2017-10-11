@@ -1,27 +1,26 @@
 (function() {
 
   var emojis = {
+    taunting: [
+      'emoji_u1f60e.svg',
+      'emoji_u1f62a.svg',
+      'emoji_u1f61a.svg',
+      'emoji_u1f61c.svg',
+      'emoji_u1f61d.svg'
+    ],
+    embarrassed: [
+      'emoji_u1f61b.svg',
+      'emoji_u1f62d.svg'
+    ],
     winning: [
-      'face-throwing-a-kiss_1f618.png',
-      'kissing-face-with-smiling-eyes_1f619.png',
-      'kissing-face_1f617.png',
-      'smiling-face-with-heart-shaped-eyes_1f60d.png',
-      'smiling-face-with-open-mouth-and-cold-sweat_1f605.png',
-      'smiling-face-with-open-mouth-and-tightly-closed-eyes_1f606.png',
-      'persevering-face_1f623.png'
+      'emoji_u1f60b.svg',
+      'emoji_u1f60b.svg',
+      'emoji_u1f64c.svg'
     ],
     losing: [
-      'dizzy-face_1f635.png',
-      'crying-face_1f622.png',
-      'astonished-face_1f632.png',
-      'loudly-crying-face_1f62d.png',
-      'face-with-cold-sweat_1f613.png',
-      'face-with-cold-sweat_1f613.png',
-      'face-with-no-good-gesture_1f645.png',
-      'neutral-face_1f610.png',
-      'pensive-face_1f614.png',
-      'hushed-face_1f62f.png',
-      'disappointed-but-relieved-face_1f625.png'
+      'emoji_u1f61e.svg',
+      'emoji_u1f61f.svg',
+      'emoji_u1f62d.svg'
     ]
   };
   
@@ -67,7 +66,7 @@
         var randomVerbalAngle = Math.random() * Math.PI / 2 - Math.PI / 4;
         var randomVerbalXPosition = Math.round(Math.random() * 100);
 
-        emotionalContainer.style.backgroundImage = 'url("assets/' + randomEmotion + '")';
+        emotionalContainer.style.backgroundImage = 'url("assets/emojis/' + randomEmotion + '")';
         verbalContainer.innerText = randomExclamation;
         verbalContainer.classList.add(randomExclamationClass);
 
