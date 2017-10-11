@@ -98,9 +98,4 @@
     return machine;
   };
 
-  window.addEventListener('DOMContentLoaded', function () {
-    window.rm = new ReactionMachine();
-
-  });
-
 })();

@@ -14,6 +14,92 @@ html, body {
   perspective: 1200px;
 }
 
+.board-wrapper {
+  transform-style: preserve-3d;
+  perspective: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.board-wrapper.hide {
+  opacity: 0;
+}
+
+@keyframes boardIntro {
+  0%      { opacity: 0;    transform: translateY(0vh) translateZ(800px) rotateZ(-20rad); }
+  64.5%   { opacity: 0.8;  transform: translateY(0vh) translateZ(800px) rotateZ(0rad); }
+  99.9%   { opacity: 1; }
+  100%  { opacity: 0.8; }
+}
+
+.board-wrapper.intro {
+  animation: boardIntro 7.769636s 0s 1 forwards;
+}
+
+.intro-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  color: white;
+}
+
+.intro-wrapper.hide {
+  display: none;
+}
+
+@keyframes textShadowColorCycle {
+  0%      {text-shadow: 0 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  10%     {text-shadow: -5px 0 20px orange, 0 0 5px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  20%     {text-shadow: -5px -5px 10px orange, 5px 0 30px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  30%     {text-shadow: 0 -5px 10px orange, 5px 5px 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  40%     {text-shadow: 0 0 10px orange, 0 5px 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  50%     {text-shadow: 0 0 30px orange, 0 0 50px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  60%     {text-shadow: -5px 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  70%     {text-shadow: -5px -5px 10px orange, 5px 0 30px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  80%     {text-shadow: 0 -5px 10px orange, 0 5px 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  90%     {text-shadow: 0 0 40px orange, 5px 5px 20px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+  100%    {text-shadow: 0 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;}
+}
+
+.intro-wrapper .title {
+  font-family: 'Teko', sans-serif;
+  line-height: 0.8em;
+  font-size: 300px;
+  font-weight: bold;
+  visibility: hidden;
+  text-shadow: 0 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 10px orange, 0 0 31px orange;
+  animation: textShadowColorCycle 10s 0s infinite linear;
+}
+
+.intro-wrapper .title.show {
+  visibility: visible;
+}
+
+.intro-wrapper .start {
+  cursor: pointer;
+  text-transform: uppercase;
+  visibility: hidden;
+  font-size: 2em;
+  transition: transform .05s, text-shadow .15s linear;
+  text-shadow: 0 0 0 transparent, 0 0 0 transparent;
+}
+.intro-wrapper .start.show {
+  visibility: visible;
+}
+.intro-wrapper .start:hover {
+  transform: scale(1.2);
+  text-shadow: -2px 2px 4px magenta, 2px 4px 5px lightblue;
+}
+
 .shake-wrapper {
   transform-style: preserve-3d;
 }
@@ -155,6 +241,7 @@ html, body {
   top: calc(50vh - 275px);
   left: calc(50vw - 400px);
   transform-style: preserve-3d;
+  transform: rotateX(20deg) rotateY(0deg);
 }
 
 .world {
@@ -268,6 +355,11 @@ canvas {
   border-radius: 15px; /* must have radius! */
   z-index: 9999999;
   transform-style: preserve-3d;
+  visibility: hidden;
+}
+
+.ball.show {
+  visibility: visible;
 }
 
 .ball .body {

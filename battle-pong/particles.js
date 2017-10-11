@@ -2,8 +2,7 @@ var particles = [];         // Holds all particle objects
 var blankParticles = [];    // Holdes reference to pre-appended particle elements
 var maxParticleCount = 100; // Number of pre-appended particle divs
 
-document.addEventListener('DOMContentLoaded', function () {
-
+function initParticleEngine() {
   for(var i = 0; i < maxParticleCount; i++){
 
     var blankParticle = document.createElement("div");
@@ -17,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-});
+}
 
 
 // Makes a particle
