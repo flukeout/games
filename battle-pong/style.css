@@ -16,7 +16,7 @@ html, body {
 
 .board-wrapper {
   transform-style: preserve-3d;
-  perspective: inherit;
+  perspective: initial;
   position: absolute;
   top: 0;
   left: 0;
