@@ -1,0 +1,70 @@
+@keyframes scaredPaddle {
+  0% {
+    transform: translateX(2px) translateY(0px);
+  }
+  25% {
+    transform: translateX(0px) translateY(-2px) rotate(1deg);
+  }
+  50% {
+    transform: translateX(-2px) translateY(0px);
+  }
+  75% {
+    transform: translateX(0px) translateY(2px) rotate(-1deg);
+  }
+}
+
+@keyframes powerupHit {
+  0% {
+    background: #ffb806;
+  }
+}
+
+.paddle {
+  background: white;
+  position: absolute;
+  width: 20px;
+  height: 100px;
+  transition: background .2s ease-out;
+
+  &.loser {
+    background: transparent;
+    background: rgba(255,255,255,.2);    
+  }
+
+  &.shaking {
+    background: transparent;
+    
+    &:after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      position: absolute;
+      content: "";
+      animation: scaredPaddle .1s linear infinite;
+      background: rgba(255,255,255,.2);
+    }
+
+    &.one {
+      left: 50px;
+    }
+
+    &.two {
+    }
+
+    &.powerup-hit {
+      animation: powerupHit .5s ease-out;
+    }
+  }
+
+  &.dead {
+    background: rgba(255,255,255,0);
+  }
+}
+
+.paddleChunk {
+  background: rgba(255,255,255,.2);
+}
+

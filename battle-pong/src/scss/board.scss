@@ -1,0 +1,252 @@
+.board-wrapper {
+  transform-style: preserve-3d;
+  perspective: initial;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.board-wrapper.hide {
+  opacity: 0;
+}
+
+@keyframes boardIntro {
+  0%      { opacity: 0;    transform: translateY(0vh) translateZ(800px) rotateZ(-20rad); }
+  64.5%   { opacity: 0.8;  transform: translateY(0vh) translateZ(800px) rotateZ(0rad); }
+  99.9%   { opacity: 1; }
+  100%  { opacity: 0.8; }
+}
+
+.board-wrapper.intro {
+  animation: boardIntro 7.769636s 0s 1 forwards;
+}
+
+.shake-wrapper {
+  transform-style: preserve-3d;
+}
+
+.terrain {
+  z-index: 1;
+}
+
+.red-chunk, .blue-chunk {
+  z-index: 2;
+}
+
+.paddleChunk {
+  z-index: 2;
+}
+
+.boom {
+  z-index: 4;
+}
+
+.speedLetter {
+  z-index: 3;
+}
+
+.paddle {
+  z-index: 100;
+}
+
+.tilt-wrapper {
+  position: absolute;
+  top: calc(50vh - 275px);
+  left: calc(50vw - 400px);
+  transform-style: preserve-3d;
+  transform: rotateX(20deg) rotateY(0deg);
+}
+
+.world {
+  width: 800px;
+  height: 500px;
+  position: relative;
+  outline: solid 20px #222;
+  box-sizing: border-box;
+}
+
+.winner-screen .world {
+  outline: solid 20px rgba(255,255,255,.2);
+}
+
+.terrain.one .bigscore {
+  color: #3faa7f;
+}
+
+.terrain.two .bigscore {
+  color: #ac4d9d;
+}
+
+.terrain.two:after {
+ content:"";
+ width: 0px;
+/* border-left: dashed 2px rgba(255,255,255,.2);*/
+ position:absolute;
+ left: 0px;
+ top: -10%;
+ height: 120%;
+}
+
+.terrain.one {
+  left: 0;
+  background: #ac4d9d;
+}
+
+.winner-one {
+  background: #ac4d9d;
+}
+
+.red-chunk {
+  z-index: 2;
+  background: #ac4d9d;
+}
+
+.terrain.two {
+  background: #3faa7f;
+  right: 0;
+}
+
+.winner-two {
+  background: #3faa7f;
+}
+
+.blue-chunk {
+  z-index: 1;
+  background: #3faa7f;
+}
+
+.light-up-red {
+  animation: lightupRed 1s ease-out;
+}
+
+.bestof.hide-animation {
+  opacity: 0;
+  animation: bigScoreHideAnimation .15s ease-out;
+}
+
+.terrain .bestof {
+  box-sizing: border-box;
+  font-size: 50px;
+  position: absolute;
+  top: 65px;
+  width: 230px;
+  text-align: center;
+}
+
+.terrain.one .bestof {
+  color: #3faa7f;
+  right: 0;
+  display: none;
+  transform-origin: bottom right;
+  transform: rotate(-90deg);
+  animation: bestOfAppear .2s ease-out;
+}
+
+@keyframes bestOfAppear {
+  0% {
+    transform: rotate(-60deg);
+    opacity: 0;
+  }
+}
+
+.terrain.two .bestof {
+  color: #ac4d9d;
+  display: none;
+  transform-origin: bottom left;
+  transform: rotate(90deg);
+  animation: bestOfAppearScore .2s ease-out;
+}
+
+@keyframes bestOfAppearScore {
+  0% {
+    transform: rotate(60deg);
+    opacity: 0;
+  }
+}
+
+
+@keyframes lightupRed {
+  5% { background: #ac4d9d; }
+}
+
+.light-up-blue {
+  animation: lightupBlue 1s ease-out;
+}
+
+@keyframes lightupBlue {
+  5% { background: #3faa7f; }
+}
+
+.endzone {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  width: 5px;
+  background: white;
+  opacity: 0;
+}
+
+.endzone.one {
+  left: 0;
+}
+
+.endzone.two {
+  right: 0;
+}
+
+.winner-screen .terrain.two:after {
+  display: none;
+}
+
+.winner-screen .terrain.two:after {
+  display: none;
+}
+
+.terrain {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  width: 50%;
+  transition: width .25s ease-out;
+}
+
+.bigscore {
+  position: absolute;
+  top: 55px;
+  left: 25%;
+  width: 50%;
+  height: 400px;
+  text-align: center;
+  display: none;
+  font-size: 300px;
+  animation: bigScoreAppear .15s ease-out;
+  box-sizing: border-box;
+}
+
+@keyframes bigScoreAppear {
+  0%  {
+    opacity: .0;
+    transform: scale(.9) translateZ(5px);
+  }
+  100%  {
+
+  }
+}
+
+.bigscore.hide-animation {
+  opacity: 0;
+  animation: bigScoreHideAnimation .15s ease-out;
+}
+
+@keyframes bigScoreHideAnimation {
+  0%    {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(.9) translateY(5px);
+   }
+}

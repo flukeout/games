@@ -1,0 +1,146 @@
+.blank-particle {
+  position: absolute;
+  display: none;
+  top: 0;
+  left: 0;
+  height: 15px;
+  width: 15px;
+}
+
+.puff {
+  background: rgba(255,255,255,.4);
+  background: #555;
+  z-index: 5;
+}
+
+
+.blast-line {
+  transform-origin: top;
+  z-index: 4;
+}
+
+
+.underblast {
+  z-index: 2;
+  position: absolute;
+  border-radius: 50%;
+}
+
+
+.boom {
+  position: absolute;
+  opacity: 1;
+  transform-style: preserve-3d;
+}
+
+.boom .body {
+  animation: boom .5s ease-out;
+  animation-fill-mode: forward;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.boom .shock {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  animation: shock .5s ease-out;
+  animation-fill-mode: forward;
+  background: white;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+
+@keyframes boom {
+  0% {
+    transform: scale(.95) translateZ(0);
+    opacity: 1;
+    background: white;
+  }
+  30% {
+    background: #ffb806;
+  }
+  40% {
+    transform: scale(1) translateZ(4px);
+    opacity: 1;
+    background: #ffb806;
+    animation-timing-function: ease-in;
+  }
+  80% {
+    background: #727272;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(.75) translateZ(20px);
+  }
+}
+
+@keyframes shock {
+  0% {
+    transform: scale(.95);
+    opacity: .4;
+    background: white;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+.underblast {
+  z-index: 2;
+  position: absolute;
+  border-radius: 50%;
+}
+
+.speedLetter {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  font-size: 30px;
+  font-family: Lato;
+  color: rgba(255,255,255,.7);
+}
+
+.message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  z-index: 9999;
+  transform-style: preserve-3d;
+}
+
+.message .body {
+  color: white;
+  white-space: nowrap;
+  z-index: 3;
+  padding: 5px 0;
+  position: absolute;
+  font-size: 35px;
+  opacity: .9;
+  top: 0;
+  left: -130px;
+  text-align: center;
+  width: 260px;
+  font-weight: bold;
+  transform: translateY(-25px) translateX(10px) translateZ(20px) rotateX(-45deg);
+  animation: messagePop 2s ease-out;
+  animation-fill-mode: forwards;
+  text-transform: uppercase;
+  text-shadow: 0px 2px 0 rgba(0,0,0,.2);
+}
+
+@keyframes messagePop {
+  0% {
+    transform: translateY(-25px) translateX(10px) translateZ(10px) rotateX(-45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-25px) translateX(10px) translateZ(100px) rotateX(-55deg);
+    opacity: 0;
+  }
+}
