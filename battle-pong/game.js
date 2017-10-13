@@ -8,12 +8,15 @@ var game =  {
   },
   terrainLine : 50,
   terrainChange : 5,
-  mode : "off",
 
-  // on - game is playing
-  // off - game is over (loser screen)
+  // running - game is playing
+  // gameover - game is over (loser screen)
+  // roundover - round is over (about to reset)
   // finish - finish it
   // pregame - before a game starts
+  // paused - game loop is paused
+  // startup - kickstarting the game loop
+  mode : "off",
 
   boardWidth : 0,
   boardHeight: 0,
@@ -112,7 +115,7 @@ var game =  {
     var g = this;
     g.mode = 'startup';
     (function loop() {
-      if (g.mode === 'paused' || g.mode === 'off') {
+      if (g.mode === 'paused') {
         return;
       }
 
@@ -135,7 +138,7 @@ var game =  {
 
     // TODO - should we base the engine update tick based on elapsed time since last frame?
 
-    if(!hasPowerup && game.mode == "on") {
+    if(!hasPowerup && game.mode == "running") {
       var chance = getRandom(0, 300);
       if(chance < 1) {
         addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
@@ -254,6 +257,18 @@ var game =  {
 
       this.previousTime = currentTime;
     }
+
+    if (removalList.length > 0) {
+      removalList.forEach(function (obj) {
+        if (obj.deleted) return;
+        obj.element.parentNode.removeChild(obj.element);
+        World.remove(engine.world, obj.physics);
+        objectsToRender.splice(objectsToRender.indexOf(obj), 1);
+        obj.deleted = true;
+      });
+      removalList = [];
+    }
+
   },
 
   playerDelay : function(player, penalty){
@@ -378,7 +393,7 @@ var game =  {
     this.showScore();
 
     setTimeout(function(){
-      that.mode = "on";
+      that.mode = "running";
       that.updateBounds();
       that.launchBall();
 
@@ -431,7 +446,7 @@ var game =  {
   // Updates the terrain and the paddle movement
   // restrictions.
   updateBounds : function(mode){
-    if(this.mode == "on") {
+    if(this.mode == "running") {
       paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
       paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
     }
@@ -508,7 +523,7 @@ var game =  {
 
     removalList.push(ball);
 
-    this.mode = "off";
+    this.mode = "roundover";
 
     document.querySelector("body").classList.add("winner-screen");
     var winner, loser;

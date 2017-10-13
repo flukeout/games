@@ -1,3 +1,4 @@
 window.Settings = {
-  showIntro: false
+  showIntro: false,
+  debug: true
 };
