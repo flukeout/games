@@ -36,17 +36,24 @@ document.addEventListener('DOMContentLoaded', function () {
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
   game.step();
 
+  var menu = new MenuMachine();
+
+  function startGame () {
+    game.restart();
+    game.run();
+    menu.waitToBeSummoned();
+  }
+
   if (Settings.showIntro) {
     var introMachine = new IntroMachine();
     introMachine.start(function () {
-      game.restart();
-      game.run();      
+      startGame();
     });
   }
   else {
     document.querySelector('.board-wrapper').classList.remove('hide');
-    game.restart();
-    game.run();
+    startGame();
   }
+
 
 });

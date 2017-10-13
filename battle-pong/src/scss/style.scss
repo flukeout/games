@@ -1,0 +1,38 @@
+@font-face {
+  font-family: Lato;
+  src: url(fonts/Lato-Black.ttf);
+}
+
+html, body {
+  font-family: Lato;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: black;
+  perspective: 1200px;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: .3;
+  pointer-events: none;
+  z-index: 99999999;
+}
+
+[data-physics] {
+  will-change: transform;
+}
+
+@import 'effects';
+@import 'reactions';
+@import 'board';
+@import 'paddle';
+@import 'ball';
+@import 'powerups';
+@import 'intro';
+@import 'menu';
+@import 'score';
