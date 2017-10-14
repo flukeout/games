@@ -84,7 +84,7 @@ function createBall(options){
     },
 
     startWord: function(){
-      if(game.mode != "on") {
+      if(game.mode != "running") {
         return;
       }
 
