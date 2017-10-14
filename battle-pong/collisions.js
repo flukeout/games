@@ -52,25 +52,12 @@ Events.on(engine, 'collisionStart', function(event) {
       }
     }
 
-    collisionManager([objA, objB]);
+    if(objA.hit) {
+      objA.hit(objB);
+    }
+
+    if(objB.hit) {
+      objB.hit(objA);
+    }
   }
 });
-
-
-// Checks the array of objects that have collided (always a pair of two)
-// Uses named object variables created earlier to compare.
-function collisionManager(objectsArray){
-
-  var one = objectsArray[0];
-  var two = objectsArray[1];
-
-  // TODO - change the powerup HIT and Paddle hit stuff to 'event based' system
-
-  if(one.hit) {
-    one.hit(two);
-  }
-
-  if(two.hit) {
-    two.hit(one);
-  }
-}
