@@ -447,14 +447,24 @@ var game =  {
   // Updates the terrain and the paddle movement
   // restrictions.
   updateBounds : function(mode){
-    if(this.mode == "running") {
-      paddles[0].maxX = this.boardWidth * (this.terrainLine/100);
-      paddles[1].minX = this.boardWidth * (this.terrainLine/100);
-    }
+    for(var i = 0; i < paddles.length; i++) {
+      var p = paddles[i];
 
-    if(this.mode == "pregame") {
-      paddles[0].maxX = this.boardWidth * .25;
-      paddles[1].minX = this.boardWidth - (this.boardWidth * .2);
+      if(this.mode == "running") {
+        if(p.player == 0) {
+          p.maxX = this.boardWidth * (this.terrainLine/100);
+        } else if (p.player == 1) {
+          p.minX = this.boardWidth * (this.terrainLine/100);
+        }
+      }
+
+      if(this.mode == "pregame") {
+        if(p.player == 0) {
+          p.maxX = this.boardWidth * .25;
+        } else if (p.player == 1) {
+          p.minX = this.boardWidth - (this.boardWidth * .2);
+        }
+      }
     }
 
     var widthOne = Math.floor(this.boardWidth * this.terrainLine/100);

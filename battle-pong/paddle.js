@@ -31,6 +31,9 @@ function connectPaddlesToControls(){
   // Let the first paddle use the keyboard regardless
   paddles[0].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
   // paddles[1].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
+  // paddles[2].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
+  // paddles[3].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
+  // paddles[1].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
   // If there are more than 0 and less than 2 gamepads, hook them up to paddles!
   for (var i = 0; i < gamepads.length && i < 2; ++i) {
     connectGamepad(gamepads[i]);

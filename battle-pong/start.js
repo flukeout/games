@@ -2,7 +2,7 @@
 
 var ball;
 var paddles = [];
-var numPaddles = 2;
+var numPaddles = 4;
 var paddleDetails;
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -10,14 +10,25 @@ document.addEventListener('DOMContentLoaded', function () {
   paddleDetails = [
     {
       player : 0,
-      x: 50,
+      x: 80,
       y: 200
     },
     {
       player: 1,
-      x : game.boardWidth - 120,
+      x : game.boardWidth - 100,
+      y : 200
+    },
+    {
+      player : 0,
+      x: 40,
+      y: 200
+    },
+    {
+      player: 1,
+      x : game.boardWidth - 60,
       y : 200
     }
+
   ];
 
   initParticleEngine();
