@@ -24,9 +24,12 @@ Events.on(engine, 'collisionStart', function(event) {
     pairLabels.push(pair.bodyA.label);
     pairLabels.push(pair.bodyB.label);
 
+    if(pairLabels.indexOf("ball"))
+
 
     // If the ball is involved
     var ballLookup = pairLabels.indexOf("ball");
+
     if (ballLookup > -1) {
       var otherLabel = pairLabels[(ballLookup + 1) % 2];
 
@@ -58,7 +61,6 @@ Events.on(engine, 'collisionStart', function(event) {
 // Uses named object variables created earlier to compare.
 function collisionManager(objectsArray){
 
-
   var one = objectsArray[0];
   var two = objectsArray[1];
 
@@ -70,11 +72,5 @@ function collisionManager(objectsArray){
 
   if(two.hit) {
     two.hit(one);
-  }
-
-  if(objectsArray.indexOf(ball) > -1 && (objectsArray.indexOf(paddleTwo) > -1 || objectsArray.indexOf(paddleOne) > -1)) {
-    if(ball){
-      ball.paddleHit();
-    }
   }
 }

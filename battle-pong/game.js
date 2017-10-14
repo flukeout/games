@@ -37,10 +37,11 @@ var game =  {
 
     var that = this;
 
-    var lastPlayerTouch = 0; 
+    var lastPlayerTouch = 0;
     document.addEventListener("ballHitPaddle", function(e) {
       console.log('Ball touched player ' + e.detail.player + ' last');
       lastPlayerTouch = e.detail.player;
+      ball.paddleHit();
     });
 
     // Event listener for ball hitting an Endzone
@@ -447,13 +448,13 @@ var game =  {
   // restrictions.
   updateBounds : function(mode){
     if(this.mode == "running") {
-      paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
-      paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
+      paddles[0].maxX = this.boardWidth * (this.terrainLine/100);
+      paddles[1].minX = this.boardWidth * (this.terrainLine/100);
     }
 
     if(this.mode == "pregame") {
-      paddleOne.maxX = this.boardWidth * .25;
-      paddleTwo.minX = this.boardWidth - (this.boardWidth * .2);
+      paddles[0].maxX = this.boardWidth * .25;
+      paddles[1].minX = this.boardWidth - (this.boardWidth * .2);
     }
 
     var widthOne = Math.floor(this.boardWidth * this.terrainLine/100);
@@ -478,7 +479,7 @@ var game =  {
 
     var that = this;
 
-    if(this.score.winner == paddleOne) {
+    if(this.score.winner == paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
       document.querySelector("body").classList.add("winner-one");
     } else {
@@ -498,7 +499,7 @@ var game =  {
       that.score.loser.element.classList.add("shaking");
 
       // Create the ball
-      if(that.score.winner == paddleOne) {
+      if(that.score.winner == paddles[0]) {
         var ballX = 600;
       } else {
         var ballX = 200;
@@ -518,8 +519,8 @@ var game =  {
 
   // When the round is over, but a player hasn't wong the game yet
   roundOver: function() {
-    paddleOne.maxX = false;
-    paddleTwo.minX = false;
+    paddles[0].maxX = false;
+    paddles[1].minX = false;
 
     removalList.push(ball);
 
@@ -529,18 +530,18 @@ var game =  {
     var winner, loser;
 
     if(this.terrainLine == 100) {
-      winner = paddleOne;
-      loser = paddleTwo;
+      winner = paddles[0];
+      loser = paddles[1];
       this.score["player1"] = this.score["player1"] + 1;
     } else {
-      winner = paddleTwo;
-      loser = paddleOne;
+      winner = paddles[1];
+      loser = paddles[0];
       this.score["player2"] = this.score["player2"] + 1;
     }
 
     this.updateScoreDisplay();
 
-    if(winner == paddleOne) {
+    if(winner == paddles[0]) {
       document.querySelector("body").classList.add("winner-one");
     } else {
       document.querySelector("body").classList.add("winner-two");

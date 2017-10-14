@@ -1,33 +1,37 @@
 // Game components
 
-var ball,
-    paddleOne,
-    paddleTwo;
-
+var ball;
+var paddles = [];
+var numPaddles = 2;
+var paddleDetails;
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  paddleDetails = [
+    {
+      player : 0,
+      x: 50,
+      y: 200
+    },
+    {
+      player: 1,
+      x : game.boardWidth - 120,
+      y : 200
+    }
+  ];
+
   initParticleEngine();
 
-  // Create the Paddles
-
-  paddleOne = createPaddle({
-    player: 0,
-    x : 50,
-    y : 200,
-    height: 100,
-    width: 20,
-    classNames : ["paddle","two"]
-  });
-
-  paddleTwo = createPaddle({
-    player: 1,
-    x : game.boardWidth - 120,
-    y : 200,
-    height: 100,
-    width: 20,
-    classNames : ["paddle","one"]
-  });
+  for(var i = 0; i < numPaddles; i++) {
+    paddles[i] = createPaddle({
+      player: paddleDetails[i].player,
+      x : paddleDetails[i].x,
+      y : paddleDetails[i].y,
+      height: 100,
+      width: 20,
+      classNames : ["paddle"]
+    });
+  }
 
   connectPaddlesToControls();
 
