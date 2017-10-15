@@ -47,17 +47,25 @@ var game =  {
 
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", function(e) {
-      console.log("Player, ", e.detail.player, " scored");
-      that.playerScored(e.detail.player);
+
+      var scoringPlayer = 1;
+      var losingPlayer = 2;
+
+      if(e.detail.side == "left") {
+        scoringPlayer = 2;
+        losingPlayer = 1;
+      }
+
+      that.playerScored(scoringPlayer);
 
       if (e.detail.player !== lastPlayerTouch && lastPlayerTouch > 0) {
         // If the player scored on themselves, SHAME
-        reactionMachine.react(e.detail.player, 'taunting');
-        reactionMachine.react(3 - e.detail.player, 'embarrassed');
+        reactionMachine.react(scoringPlayer, 'taunting');
+        reactionMachine.react(losingPlayer, 'embarrassed');
       }
       else {
         // Otherwise, more normal reaction
-        reactionMachine.react(e.detail.player, 'winning');
+        reactionMachine.react(scoringPlayer, 'winning');
       }
 
       // Reset this each time so that player can't score on themselves again if ball keeps moving
@@ -595,7 +603,7 @@ var game =  {
       lightupEl.style.width = width;
     }
 
-    if(player == 2) {
+    if(player == 1) {
       lightupEl.classList.add("light-up-red");
     } else {
       lightupEl.classList.add("light-up-blue");
@@ -642,10 +650,13 @@ var game =  {
 
     // Add red or blue particles when the terrain line moves
     var modifier = 1;
-    if( player == 1 ) {
+
+    if( player == 2 ) {
       modifier = -1;
     }
+
     var maxSize = 65;
+
     for(var i = 0; i < 10; i++) {
       var options = {
         zR : getRandom(-5,5),
@@ -662,7 +673,7 @@ var game =  {
       options.xVa = -options.xV / 40;
       options.y  = getRandom(0, 500 - options.height);
 
-      if(player === 1) {
+      if(player == 2) {
         options.className = "blue-chunk";
       } else {
         options.className = "red-chunk";
@@ -675,9 +686,9 @@ var game =  {
 
     // Move the terrain line accordingly
     if(player === 1) {
-      this.terrainLine = this.terrainLine - this.terrainChange;
-    } else {
       this.terrainLine = this.terrainLine + this.terrainChange;
+    } else {
+      this.terrainLine = this.terrainLine - this.terrainChange;
     }
 
     if(this.terrainLine > 100) {
