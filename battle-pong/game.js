@@ -407,11 +407,7 @@ var game =  {
 
     for(var i = 0; i < paddles.length; i++){
       var p = paddles[i];
-      p.element.classList.remove("dead");
-      p.element.classList.remove("loser");
-      p.element.classList.remove("shaking");
-      p.mode = "normal";
-      p.targetHeight = 100;
+      p.reset();
     }
 
     hasPowerup  = false;

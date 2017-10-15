@@ -2,7 +2,7 @@
 
 var ball;
 var paddles = [];
-var numPaddles = 4;
+var numPaddles = 2;
 var paddleDetails;
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     {
       player : 0,
       x: 80,
-      y: 200
+      y: 200,
+      height: 50
     },
     {
       player: 1,
@@ -38,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
       player: paddleDetails[i].player,
       x : paddleDetails[i].x,
       y : paddleDetails[i].y,
-      height: 100,
+      height : paddleDetails[i].height || 100,
       width: 20,
       classNames : ["paddle"]
     });

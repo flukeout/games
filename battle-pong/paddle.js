@@ -57,12 +57,24 @@ function createPaddle(options) {
       classNames : options.classNames || []
     },
 
+    reset: function(){
+      this.element.classList.remove("dead");
+      this.element.classList.remove("loser");
+      this.element.classList.remove("shaking");
+      this.mode = "normal";
+      this.targetHeight = this.baseHeight;
+    },
+
     physicsOptions : {
+      mass : 2,
       frictionAir: 0.1,
       label: 'paddle-' + (['one', 'two'][options.player])       // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3
     },
 
     mode: "normal",
+    targetHeight : options.height,          // We change this
+    baseHeight : parseInt(options.height),  // Keeps track of base height
+    baseMass : 2,
 
     // Keeps track of movement bounds based on the terrain the paddle occupies.
     maxX: false,
@@ -79,9 +91,11 @@ function createPaddle(options) {
       // for more fluid options that can use floats instead of booleans (e.g. joysticks)
       'moveX', 'moveY', 'spin'
     ],
+
     force: function (x, y) {
       Matter.Body.applyForce(this.physics, this.physics.position, { x: x, y: y });
     },
+
     spin: function (v) {
       Matter.Body.setAngularVelocity(this.physics, v);
 
@@ -153,6 +167,7 @@ function createPaddle(options) {
 
     // When we have to grow or shrink a paddle after getting a powerup
     changeHeight(type){
+
       var modifier = .05;
 
       if(type == "shrink"){
@@ -169,6 +184,8 @@ function createPaddle(options) {
       this.element.style.height = this.height + "px";
 
       Matter.Body.setAngle(this.physics, angle);
+
+      this.physics.mass = this.baseMass;
     },
 
     // When we get a powerup
@@ -180,8 +197,8 @@ function createPaddle(options) {
       var that = this;
       setTimeout(function(){
         that.targetHeight = that.targetHeight * 1/1.5;
-        if(that.targetHeight < 100) {
-          that.targetHeight = 100;
+        if(that.targetHeight < that.baseHeight) {
+          that.targetHeight = that.baseHeight;
         }
         that.hasPowerup = false;
       }, 5500);
