@@ -38,6 +38,7 @@ var game =  {
     var that = this;
 
     var lastPlayerTouch = 0;
+
     document.addEventListener("ballHitPaddle", function(e) {
       console.log('Ball touched player ' + e.detail.player + ' last');
       lastPlayerTouch = e.detail.player;
