@@ -1,0 +1,46 @@
+.header {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  text-align: center;
+  width: 100%;
+
+  .title {
+    @keyframes textShadowColorCycleHeader {
+      0%      {text-shadow: 0 0 10px orange;}
+      10%     {text-shadow: 0 0 20px orange;}
+      20%     {text-shadow: 0 0 10px orange;}
+      30%     {text-shadow: 0 0 10px orange;}
+      40%     {text-shadow: 0 0 10px orange;}
+      50%     {text-shadow: 0 0 30px orange;}
+      60%     {text-shadow: 0 0 10px orange;}
+      70%     {text-shadow: 0 0 10px orange;}
+      80%     {text-shadow: 0 0 10px orange;}
+      90%     {text-shadow: 0 0 40px orange;}
+      100%    {text-shadow: 0 0 10px orange;}
+    }
+
+    color: black;
+    font-family: 'Teko', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    animation: textShadowColorCycleHeader 10s 0s infinite linear;
+
+    margin-top: 5px;
+
+    visibility: hidden;
+
+    transition: color .25s;
+
+    &:hover {
+      color: white;
+      cursor: pointer;
+    }
+  }
+
+  &.show {
+    .title {
+      visibility: visible;
+    }
+  }
+}

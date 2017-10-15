@@ -1,11 +1,29 @@
-var paddleKeyboardActionMapping = {
-  "up": "up",
-  "down": "down",
-  "left": "left",
-  "right": "right",
-  "a": "spinCounterClockwise",
-  "s": "spinClockwise",
-  "d": "spinCounterClockwise"
+var paddleActions = [
+  // Discrete on/off buttons
+  'spinClockwise','spinCounterClockwise','up','down','left','right',
+];
+
+var paddleGamepadActions = [
+  // Fluid options that can use floats instead of booleans (e.g. joysticks)
+  'moveX', 'moveY', 'spin'
+];
+
+var defaultPaddle1KeyboardActionMapping = {
+  "KeyW": "up",
+  "KeyS": "down",
+  "KeyA": "left",
+  "KeyD": "right",
+  "KeyC": "spinCounterClockwise",
+  "KeyV": "spinClockwise"
+};
+
+var defaultPaddle2KeyboardActionMapping = {
+  "ArrowUp":    "up",
+  "ArrowDown":  "down",
+  "ArrowLeft":  "left",
+  "ArrowRight": "right",
+  "Comma":      "spinCounterClockwise",
+  "Period":     "spinClockwise"
 };
 
 var paddleGamepadActionMapping = {
@@ -23,22 +41,6 @@ var paddleGamepadActionMapping = {
     "rightX": "spin"
   }
 };
-
-
-function connectPaddlesToControls(){
-
-
-  // Let the first paddle use the keyboard regardless
-  paddles[0].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
-  // paddles[1].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
-  // paddles[2].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
-  // paddles[3].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
-  // If there are more than 0 and less than 2 gamepads, hook them up to paddles!
-  for (var i = 0; i < gamepads.length && i < 2; ++i) {
-    connectGamepad(gamepads[i]);
-  }
-}
-
 
 function createPaddle(options) {
   var maxForce = 0.004;
@@ -86,13 +88,7 @@ function createPaddle(options) {
 
     setTimeout: false,  // Keeps track of the swish soudn timeout
     swishTimeoutMS : 260, // Delay between playing the swish sound
-    actions: [
-      // Discrete on/off buttons
-      'spinClockwise','spinCounterClockwise','up','down','left','right',
-
-      // Fluid options that can use floats instead of booleans (e.g. joysticks)
-      'moveX', 'moveY', 'spin'
-    ],
+    actions: paddleActions.concat(paddleGamepadActions),
 
     force: function (x, y) {
       Matter.Body.applyForce(this.physics, this.physics.position, { x: x, y: y });
@@ -236,19 +232,3 @@ function createPaddle(options) {
   });
 }
 
-
-// See what gamepads are up for grabs
-var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-
-var connectedGamePads = 0;
-
-function connectGamepad(newGamepad) {
-  // Start from the last paddle and work backwards
-
-  paddles[paddles.length - connectedGamePads - 1].addInputComponent(createGamepadInputComponent(newGamepad, paddleGamepadActionMapping));
-  ++connectedGamePads;
-}
-
-window.addEventListener('gamepadconnected', function (e) {
-  connectGamepad(e.gamepad);
-});
