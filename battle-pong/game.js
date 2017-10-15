@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max: 5,
+    max: 2,
     winner : false,
     loser : false
   },
@@ -85,15 +85,12 @@ var game =  {
     var that = this;
 
     setTimeout(function(){
-      console.log("just pushed", ball);
       removalList.push(ball);
     },1500);
-
 
     setTimeout(function(){
       that.restart();
     },2500);
-
   },
 
   loserDied: function(){

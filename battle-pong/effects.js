@@ -129,3 +129,50 @@ function addTemporaryClassName(element, className, duration){
 
 
 }
+
+
+function explodePaddle(physics){
+
+  for(var i = 0; i < 15; i++) {
+    var options = {
+      x : getRandom(physics.bounds.min.x, physics.bounds.max.x),
+      y : getRandom(physics.bounds.min.y, physics.bounds.max.y),
+      zR : getRandom(-5,5),
+      zRv : getRandom(-5,5),
+      scaleV : -.005,
+      height: 20,
+      width: 20,
+      lifespan: 100,
+      xV : getRandom(-5,5),
+      yV : getRandom(-5,5),
+      className : "paddleChunk"
+    }
+    makeParticle(options);
+  }
+
+  makeExplosion(physics.position.x, physics.position.y, 75);
+  shakeScreen();
+}
+
+
+// Adds a message to the game board
+function showMessage(text, x, y){
+
+  var messageEl = document.createElement("div");
+  messageEl.classList.add("message");
+
+  var messageBody = document.createElement("div");
+  messageBody.classList.add("body");
+
+  messageBody.innerText = text;
+  messageBody.style.fontSize = 40 + "px";
+  messageEl.appendChild(messageBody);
+  messageEl.style.transform = "translateX("+ x +"px) translateY(" + y +"px)";
+  document.querySelector(".world").appendChild(messageEl);
+
+  setTimeout(function(el) {
+    return function() {
+      el.remove();
+    };
+  }(messageEl), 1000);
+}

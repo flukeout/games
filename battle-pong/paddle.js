@@ -18,9 +18,9 @@ var paddleGamepadActionMapping = {
     "bumperRight": "spinClockwise"
   },
   axes: {
-    // "leftX": "moveX",
-    // "leftY": "moveY",
-    // "rightX": "spin"
+    "leftX": "moveX",
+    "leftY": "moveY",
+    "rightX": "spin"
   }
 };
 
@@ -48,6 +48,7 @@ function createPaddle(options) {
   return createObject({
     selector: options.selector,
     player: options.player,
+
     properties: {
       x: options.x || 0,
       y: options.y || 0,
@@ -55,6 +56,7 @@ function createPaddle(options) {
       height: options.height || 0,
       classNames : options.classNames || []
     },
+
 
     reset: function(){
       this.element.classList.remove("dead");
@@ -67,27 +69,28 @@ function createPaddle(options) {
     physicsOptions : {
       mass : 2,
       frictionAir: 0.1,
-      label: 'paddle-' + (['one', 'two'][options.player])       // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3
+      label: 'paddle-' + (['one', 'two'][options.player])
+      // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3 (ha sic)
     },
 
     mode: "normal",
-    targetHeight : options.height,          // We change this
-    baseHeight : parseInt(options.height),  // Keeps track of base height
-    baseMass : 2,
+
+    powerupDuration : 5500, // How long powerups last
+    targetHeight : options.height,          // Powerups affect this, then the paddle grows / shrinks
+    baseHeight : parseInt(options.height),  // Paddle resets to this after powerups
+    baseMass : 2,                           // After resizing, we use this to keep the mass the same
 
     // Keeps track of movement bounds based on the terrain the paddle occupies.
     maxX: false,
     minX: false,
 
-    hasPowerup: false,
-
     setTimeout: false,  // Keeps track of the swish soudn timeout
     swishTimeoutMS : 260, // Delay between playing the swish sound
     actions: [
-      // for buttons
+      // Discrete on/off buttons
       'spinClockwise','spinCounterClockwise','up','down','left','right',
 
-      // for more fluid options that can use floats instead of booleans (e.g. joysticks)
+      // Fluid options that can use floats instead of booleans (e.g. joysticks)
       'moveX', 'moveY', 'spin'
     ],
 
@@ -108,60 +111,17 @@ function createPaddle(options) {
     },
 
     hit: function(obj) {
-      // If I'm a ghost and I get hit by a ball I die
+      // If I'm a ghost and I get hit by a ball I die (at the end of a game)
       if(this.mode == "ghost" && obj == ball) {
         if(obj == ball){
-
-          for(var i = 0; i < 15; i++) {
-            var options = {
-              x : getRandom(this.physics.bounds.min.x, this.physics.bounds.max.x),
-              y : getRandom(this.physics.bounds.min.y, this.physics.bounds.max.y),
-              zR : getRandom(-5,5),
-              zRv : getRandom(-5,5),
-              scaleV : -.005,
-              height: 20,
-              width: 20,
-              lifespan: 100,
-              xV : getRandom(-5,5),
-              yV : getRandom(-5,5),
-              className : "paddleChunk"
-            }
-
-            makeParticle(options);
-          }
-
-          var paddleX = this.physics.position.x;
-          var paddleY = this.physics.position.y;
-          makeExplosion(paddleX, paddleY, 75);
-
-          // Add a message near the impact that indicates
-          // the force of the hit (in percentage points)
-          var messageEl = document.createElement("div");
-          messageEl.classList.add("message");
-          var messageBody = document.createElement("div");
-          messageBody.classList.add("body");
-          messageBody.innerText = "T_T";
-          messageBody.style.fontSize = 40 + "px";
-          messageEl.appendChild(messageBody);
-          messageEl.style.transform = "translateX("+ paddleX +"px) translateY(" + paddleY +"px)";
-          document.querySelector(".world").appendChild(messageEl);
-
-          setTimeout(function(el) {
-            return function() {
-              el.remove();
-            };
-          }(messageEl), 1000);
-
-          shakeScreen();
-
           this.element.classList.add("dead");
           this.element.classList.remove("shaking");
 
-
-          game.loserDied();
+          explodePaddle(this.physics);
+          showMessage("T_T", this.physics.position.x, this.physics.position.y);
+          game.loserDied(); // TODO - emit an event instead
         }
       }
-
     },
 
     // When we have to grow or shrink a paddle after getting a powerup
@@ -177,8 +137,6 @@ function createPaddle(options) {
       Matter.Body.setAngle(this.physics, 0);
       Matter.Body.scale(this.physics, 1, 1 + modifier, this.physics.position);
 
-      this.physics.mass = 2;
-
       this.height = this.height + (this.height * modifier);
       this.element.style.height = this.height + "px";
 
@@ -189,18 +147,18 @@ function createPaddle(options) {
 
     // When we get a powerup
     powerup(){
-      this.hasPowerup = true;
+
       this.targetHeight = this.height * 1.5;
       this.element.classList.add("powerup-hit");
 
       var that = this;
+
       setTimeout(function(){
         that.targetHeight = that.targetHeight * 1/1.5;
         if(that.targetHeight < that.baseHeight) {
           that.targetHeight = that.baseHeight;
         }
-        that.hasPowerup = false;
-      }, 5500);
+      }, this.powerupDuration);
 
     },
 
@@ -222,6 +180,7 @@ function createPaddle(options) {
       if(this.mode != "ghost") {
         this.updateActionsFromInputComponents();
       } else {
+        // Set all actions to false
         this.actions.up = false;
         this.actions.down = false;
         this.actions.left = false;
@@ -230,16 +189,16 @@ function createPaddle(options) {
         this.actions.spinCounterClockwise = false;
       }
 
-
       // We want to calculate a movement angle based on
       // the directional inputs.
-      var xDelta = 0
-      var yDelta = 0;
+      var xDelta = 0,
+          yDelta = 0;
+
+      if(this.actions.left)   xDelta--;
+      if(this.actions.right)  xDelta++;
 
       if(this.actions.up)     yDelta++;
       if(this.actions.down)   yDelta--;
-      if(this.actions.left)   xDelta--;
-      if(this.actions.right)  xDelta++;
 
       var angleRad = Math.atan2(xDelta,yDelta);
 
