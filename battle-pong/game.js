@@ -178,9 +178,6 @@ var game =  {
     objectsToRender.forEach(function (obj) {
 
       if(obj == ball) {
-        // This is how we have to handle collisions
-        // First they get marked as hit by the collisionManager
-        // then we resolve the collision on the next frame.
         if(obj.gotHit) {
           obj.resolveHit();
         }
@@ -297,7 +294,6 @@ var game =  {
     if(this.terrainLine === 100 || this.terrainLine === 0) {
       this.roundOver();
     }
-
   },
 
   // Shows a message above the game board
@@ -442,7 +438,6 @@ var game =  {
         }
       }
     }
-
   },
 
 
@@ -627,22 +622,13 @@ var game =  {
     // the force of the hit (in percentage points)
 
     if(this.terrainChange >= 10) {
-      var messageEl = document.createElement("div");
-      messageEl.classList.add("message");
-      var messageBody = document.createElement("div");
-      messageBody.classList.add("body");
-      messageBody.innerText = Math.round(this.terrainChange) + "%";
-      messageBody.style.fontSize = (20 + 35 * xForceRatio) + "px";
-      messageEl.appendChild(messageBody);
-      messageEl.style.transform = "translateX("+ ball.physics.position.x +"px) translateY(" + ball.physics.position.y +"px)";
-      document.querySelector(".world").appendChild(messageEl);
-
-      setTimeout(function(el) {
-        return function() {
-          el.remove();
-        };
-      }(messageEl), 2750);
-
+      showMessage({
+        text: Math.round(this.terrainChange) + "%",
+        x: ball.physics.position.x,
+        y: ball.physics.position.y,
+        fontSize : (20 + 35 * xForceRatio),
+        timeout: 2750
+      });
     }
 
     // Add red or blue particles when the terrain line moves

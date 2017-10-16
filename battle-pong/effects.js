@@ -156,7 +156,7 @@ function explodePaddle(physics){
 
 
 // Adds a message to the game board
-function showMessage(text, x, y){
+function showMessage(options){
 
   var messageEl = document.createElement("div");
   messageEl.classList.add("message");
@@ -164,15 +164,16 @@ function showMessage(text, x, y){
   var messageBody = document.createElement("div");
   messageBody.classList.add("body");
 
-  messageBody.innerText = text;
-  messageBody.style.fontSize = 40 + "px";
+  messageBody.innerText = options.text;
+  messageBody.style.fontSize = options.fontSize + "px";
   messageEl.appendChild(messageBody);
-  messageEl.style.transform = "translateX("+ x +"px) translateY(" + y +"px)";
+
+  messageEl.style.transform = "translateX("+ options.x +"px) translateY(" + options.y +"px)";
   document.querySelector(".world").appendChild(messageEl);
 
   setTimeout(function(el) {
     return function() {
       el.remove();
     };
-  }(messageEl), 1000);
+  }(messageEl), options.timeout);
 }

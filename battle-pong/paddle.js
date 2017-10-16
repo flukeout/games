@@ -116,9 +116,14 @@ function createPaddle(options) {
         if(obj == ball){
           this.element.classList.add("dead");
           this.element.classList.remove("shaking");
-
           explodePaddle(this.physics);
-          showMessage("T_T", this.physics.position.x, this.physics.position.y);
+          showMessage({
+            text: "T_T",
+            x: this.physics.position.x,
+            y: this.physics.position.y,
+            fontSize : 40,
+            timeout: 1000,
+          });
           game.loserDied(); // TODO - emit an event instead
         }
       }
