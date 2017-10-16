@@ -179,3 +179,31 @@ function showMessage(options){
     };
   }(messageEl), options.timeout);
 }
+
+// When terrain moves, add some chunks
+function makeTerrainChunks(terrainLine, modifier, className){
+
+  var maxSize = 65;
+
+  for(var i = 0; i < 10; i++) {
+    var options = {
+      zR : getRandom(-5,5),
+      scaleV : -.02,
+      height: getRandom(25, maxSize),
+      lifespan: 100,
+      xV : getRandom(modifier * 15, modifier * 20),
+      minX : 0
+    }
+
+    options.maxX = 800 - options.height;
+    options.x = terrainLine/100 * 800 - (modifier * options.height),
+    options.xV = options.xV - ((options.height / maxSize) * options.xV * .5);
+    options.xVa = -options.xV / 40;
+    options.y  = getRandom(0, 500 - options.height);
+    options.className = className;
+    options.width = options.height;
+    options.x = options.x - options.width / 2;
+
+    makeParticle(options);
+  }
+}

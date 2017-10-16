@@ -399,7 +399,6 @@ var game =  {
       that.mode = "running";
       that.updateBounds();
       that.launchBall();
-
     }, 1500);
 
     document.querySelector("body").classList.remove("winner-screen");
@@ -441,9 +440,9 @@ var game =  {
   },
 
 
-  // Updates the terrain and the paddle movement
-  // restrictions.
+  // Updates the terrain widths and paddle movement restrictions
   updateBounds : function(mode){
+
     for(var i = 0; i < paddles.length; i++) {
       var p = paddles[i];
 
@@ -459,17 +458,16 @@ var game =  {
         if(p.player == 0) {
           p.maxX = this.boardWidth * .25;
         } else if (p.player == 1) {
-          p.minX = this.boardWidth - (this.boardWidth * .2);
+          p.minX = this.boardWidth - (this.boardWidth * .25);
         }
       }
     }
 
-    var widthOne = Math.floor(this.boardWidth * this.terrainLine/100);
-    var widthTwo = this.boardWidth - widthOne;
+    var leftWidth = Math.floor(this.boardWidth * this.terrainLine/100);
+    var rightWidth = this.boardWidth - leftWidth;
 
-    this.terrainOneEl.style.width = widthOne + "px";
-    this.terrainTwoEl.style.width = widthTwo + "px";
-
+    this.terrainOneEl.style.width = leftWidth + "px";
+    this.terrainTwoEl.style.width = rightWidth + "px";
   },
 
 
@@ -617,40 +615,18 @@ var game =  {
     }
 
     // Add red or blue particles when the terrain line moves
-    var modifier = 1;
 
-    if( player == 2 ) {
+    var modifier, className;
+
+    if(player === 1) {
+      modifier = 1;
+      className = "red-chunk";
+    } else if (player === 2){
       modifier = -1;
+      className = "blue-chunk";
     }
 
-    var maxSize = 65;
-
-    for(var i = 0; i < 10; i++) {
-      var options = {
-        zR : getRandom(-5,5),
-        scaleV : -.02,
-        height: getRandom(25,maxSize),
-        lifespan: 100,
-        xV : getRandom(modifier * 15, modifier * 20),
-        minX : 0
-      }
-
-      options.maxX = 800 - options.height;
-      options.x = this.terrainLine/100 * 800 - (modifier * options.height),
-      options.xV = options.xV - ((options.height / maxSize) * options.xV * .5);
-      options.xVa = -options.xV / 40;
-      options.y  = getRandom(0, 500 - options.height);
-
-      if(player == 2) {
-        options.className = "blue-chunk";
-      } else {
-        options.className = "red-chunk";
-      }
-
-      options.width = options.height;
-      options.x = options.x - options.width / 2;
-      makeParticle(options);
-    }
+    makeTerrainChunks(this.terrainLine, modifier, className);
 
     // Move the terrain line accordingly
     if(player === 1) {
@@ -665,8 +641,7 @@ var game =  {
       this.terrainLine = 0;
     }
 
-    // this.terrainLine = 100; // TODO - comment out <- used for testing instant wins
-
+    // Changes the
     this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
