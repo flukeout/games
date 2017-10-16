@@ -58,15 +58,15 @@ var game =  {
 
       that.playerScored(scoringPlayer);
 
-      if (e.detail.player !== lastPlayerTouch && lastPlayerTouch > 0) {
+      // if (e.detail.player !== lastPlayerTouch && lastPlayerTouch > 0) {
         // If the player scored on themselves, SHAME
-        reactionMachine.react(scoringPlayer, 'taunting');
-        reactionMachine.react(losingPlayer, 'embarrassed');
-      }
-      else {
-        // Otherwise, more normal reaction
-        reactionMachine.react(scoringPlayer, 'winning');
-      }
+        // document.dispatchEvent(new CustomEvent("emotion", {detail: {
+        //   player: losingPlayer,
+        //   type: "embarrassed"
+        // }}));
+      // } else {
+      // }
+
 
       // Reset this each time so that player can't score on themselves again if ball keeps moving
       lastPlayerTouch = 0;
@@ -612,6 +612,11 @@ var game =  {
         fontSize : (20 + 35 * xForceRatio),
         timeout: 2750
       });
+
+      document.dispatchEvent(new CustomEvent("emotion", {detail: {
+        player: player,
+        type: "winning"
+      }}));
     }
 
     // Add red or blue particles when the terrain line moves

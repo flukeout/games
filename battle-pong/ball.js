@@ -158,6 +158,9 @@ function createBall(options){
       this.gotPaddleHit = true;
     },
 
+    hitSoundTimeout: false,
+    hitSoundTimeoutMS: 100,
+
     resolveHit : function(){
 
       this.gotHit = false;
@@ -174,15 +177,19 @@ function createBall(options){
 
       if(percentage > 1) {
         percentage = 1;
-      }
-
-      if(percentage < .5) {
+      } else if (percentage < .5) {
         percentage = .5;
       }
 
-      var pan = .8 * (-400 + this.physics.position.x) / 400;
+      var pan = .8 * (-game.boardWidth/2 + this.physics.position.x) / game.boardWidth/2;
 
-      playSound("hit", { volume: percentage, pan : pan });
+      if(!this.hitSoundTimeout) {
+        playSound("hit", { volume: percentage, pan : pan });
+        var that = this;
+        this.hitSoundTimeout = setTimeout(function(){
+          that.hitSoundTimeout = false;
+        }, this.hitSoundTimeoutMS);
+      }
     }
   });
 
