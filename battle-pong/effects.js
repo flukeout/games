@@ -118,14 +118,92 @@ function shakeScreen(){
 }
 
 
-// Used for animations
-// * Adds a class
-// * Removes it after a specified amount of time
-// * If the element already has the class we need to figure out a way to add it a way that re-triggers the animation.
-//   * We might not be able to rely on the width trick due to transforms
-//   * Can we try a 0 setTimeout intead?
+// Used to add animations by applying a class, then removing it
+// If this happens in rapid succession (less than 1000ms apart,
+// we'll have to do the width trick.
 
-function addTemporaryClassName(element, className, duration){
+function addTemporaryClassName(element, className, durationMS){
+  element.classList.remove(className);
+  element.style.width = element.clientWidth;
+  element.classList.add(className);
+
+  setTimeout(function(){
+    element.classList.remove(className);
+  }, durationMS || 1000);
+}
 
 
+function explodePaddle(physics){
+
+  for(var i = 0; i < 15; i++) {
+    var options = {
+      x : getRandom(physics.bounds.min.x, physics.bounds.max.x),
+      y : getRandom(physics.bounds.min.y, physics.bounds.max.y),
+      zR : getRandom(-5,5),
+      zRv : getRandom(-5,5),
+      scaleV : -.005,
+      height: 20,
+      width: 20,
+      lifespan: 100,
+      xV : getRandom(-5,5),
+      yV : getRandom(-5,5),
+      className : "paddleChunk"
+    }
+    makeParticle(options);
+  }
+
+  makeExplosion(physics.position.x, physics.position.y, 75);
+  shakeScreen();
+}
+
+
+// Adds a message to the game board
+function showMessage(options){
+
+  var messageEl = document.createElement("div");
+  messageEl.classList.add("message");
+
+  var messageBody = document.createElement("div");
+  messageBody.classList.add("body");
+
+  messageBody.innerText = options.text;
+  messageBody.style.fontSize = options.fontSize + "px";
+  messageEl.appendChild(messageBody);
+
+  messageEl.style.transform = "translateX("+ options.x +"px) translateY(" + options.y +"px)";
+  document.querySelector(".world").appendChild(messageEl);
+
+  setTimeout(function(el) {
+    return function() {
+      el.remove();
+    };
+  }(messageEl), options.timeout);
+}
+
+// When terrain moves, add some chunks
+function makeTerrainChunks(terrainLine, modifier, className){
+
+  var maxSize = 65;
+
+  for(var i = 0; i < 10; i++) {
+    var options = {
+      zR : getRandom(-5,5),
+      scaleV : -.02,
+      height: getRandom(25, maxSize),
+      lifespan: 100,
+      xV : getRandom(modifier * 15, modifier * 20),
+      minX : 0
+    }
+
+    options.maxX = 800 - options.height;
+    options.x = terrainLine/100 * 800 - (modifier * options.height),
+    options.xV = options.xV - ((options.height / maxSize) * options.xV * .5);
+    options.xVa = -options.xV / 40;
+    options.y  = getRandom(0, 500 - options.height);
+    options.className = className;
+    options.width = options.height;
+    options.x = options.x - options.width / 2;
+
+    makeParticle(options);
+  }
 }

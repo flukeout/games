@@ -36,12 +36,22 @@ function createPowerup(x,y){
       var hit = false;
 
       if(obj.name == "wall-right") {
-        paddleOne.powerup();
+        for(var i = 0; i < paddles.length; i++){
+          var paddle = paddles[i];
+          if(paddle.player == 0) {
+            paddle.powerup();
+          }
+        }
         hit = true;
       }
 
       if(obj.name == "wall-left") {
-        paddleTwo.powerup();
+        for(var i = 0; i < paddles.length; i++){
+          var paddle = paddles[i];
+          if(paddle.player == 1) {
+            paddle.powerup();
+          }
+        }
         hit = true;
       }
 

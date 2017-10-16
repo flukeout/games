@@ -28,11 +28,11 @@
 }
 
 .reaction-container.one.show .emoji {
-  transform: translateX(0px) scaleX(-1);
+  transform: translateX(20px) scaleX(-1);
 }
 
 .reaction-container.two.show .emoji {
-  transform: translateX(0px);
+  transform: translateX(-20px);
 }
 
 .reaction-container .words {

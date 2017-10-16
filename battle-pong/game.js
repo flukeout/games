@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max: 5,
+    max: 2,
     winner : false,
     loser : false
   },
@@ -37,26 +37,36 @@ var game =  {
 
     var that = this;
 
-    var lastPlayerTouch = 0; 
+    var lastPlayerTouch = 0;
+
     document.addEventListener("ballHitPaddle", function(e) {
       console.log('Ball touched player ' + e.detail.player + ' last');
       lastPlayerTouch = e.detail.player;
+      ball.paddleHit();
     });
 
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", function(e) {
-      console.log("Player, ", e.detail.player, " scored");
-      that.playerScored(e.detail.player);
 
-      if (e.detail.player !== lastPlayerTouch && lastPlayerTouch > 0) {
+      var scoringPlayer = 1;
+      var losingPlayer = 2;
+
+      if(e.detail.side == "left") {
+        scoringPlayer = 2;
+        losingPlayer = 1;
+      }
+
+      that.playerScored(scoringPlayer);
+
+      // if (e.detail.player !== lastPlayerTouch && lastPlayerTouch > 0) {
         // If the player scored on themselves, SHAME
-        reactionMachine.react(e.detail.player, 'taunting');
-        reactionMachine.react(3 - e.detail.player, 'embarrassed');
-      }
-      else {
-        // Otherwise, more normal reaction
-        reactionMachine.react(e.detail.player, 'winning');
-      }
+        // document.dispatchEvent(new CustomEvent("emotion", {detail: {
+        //   player: losingPlayer,
+        //   type: "embarrassed"
+        // }}));
+      // } else {
+      // }
+
 
       // Reset this each time so that player can't score on themselves again if ball keeps moving
       lastPlayerTouch = 0;
@@ -75,15 +85,12 @@ var game =  {
     var that = this;
 
     setTimeout(function(){
-      console.log("just pushed", ball);
       removalList.push(ball);
     },1500);
-
 
     setTimeout(function(){
       that.restart();
     },2500);
-
   },
 
   loserDied: function(){
@@ -171,9 +178,6 @@ var game =  {
     objectsToRender.forEach(function (obj) {
 
       if(obj == ball) {
-        // This is how we have to handle collisions
-        // First they get marked as hit by the collisionManager
-        // then we resolve the collision on the next frame.
         if(obj.gotHit) {
           obj.resolveHit();
         }
@@ -290,7 +294,6 @@ var game =  {
     if(this.terrainLine === 100 || this.terrainLine === 0) {
       this.roundOver();
     }
-
   },
 
   // Shows a message above the game board
@@ -396,7 +399,6 @@ var game =  {
       that.mode = "running";
       that.updateBounds();
       that.launchBall();
-
     }, 1500);
 
     document.querySelector("body").classList.remove("winner-screen");
@@ -405,11 +407,7 @@ var game =  {
 
     for(var i = 0; i < paddles.length; i++){
       var p = paddles[i];
-      p.element.classList.remove("dead");
-      p.element.classList.remove("loser");
-      p.element.classList.remove("shaking");
-      p.mode = "normal";
-      p.targetHeight = 100;
+      p.reset();
     }
 
     hasPowerup  = false;
@@ -439,29 +437,37 @@ var game =  {
         }
       }
     }
-
   },
 
 
-  // Updates the terrain and the paddle movement
-  // restrictions.
+  // Updates the terrain widths and paddle movement restrictions
   updateBounds : function(mode){
-    if(this.mode == "running") {
-      paddleOne.maxX = this.boardWidth * (this.terrainLine/100);
-      paddleTwo.minX = this.boardWidth * (this.terrainLine/100);
+
+    for(var i = 0; i < paddles.length; i++) {
+      var p = paddles[i];
+
+      if(this.mode == "running") {
+        if(p.player == 0) {
+          p.maxX = this.boardWidth * (this.terrainLine/100);
+        } else if (p.player == 1) {
+          p.minX = this.boardWidth * (this.terrainLine/100);
+        }
+      }
+
+      if(this.mode == "pregame") {
+        if(p.player == 0) {
+          p.maxX = this.boardWidth * .25;
+        } else if (p.player == 1) {
+          p.minX = this.boardWidth - (this.boardWidth * .25);
+        }
+      }
     }
 
-    if(this.mode == "pregame") {
-      paddleOne.maxX = this.boardWidth * .25;
-      paddleTwo.minX = this.boardWidth - (this.boardWidth * .2);
-    }
+    var leftWidth = Math.floor(this.boardWidth * this.terrainLine/100);
+    var rightWidth = this.boardWidth - leftWidth;
 
-    var widthOne = Math.floor(this.boardWidth * this.terrainLine/100);
-    var widthTwo = this.boardWidth - widthOne;
-
-    this.terrainOneEl.style.width = widthOne + "px";
-    this.terrainTwoEl.style.width = widthTwo + "px";
-
+    this.terrainOneEl.style.width = leftWidth + "px";
+    this.terrainTwoEl.style.width = rightWidth + "px";
   },
 
 
@@ -478,7 +484,7 @@ var game =  {
 
     var that = this;
 
-    if(this.score.winner == paddleOne) {
+    if(this.score.winner == paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
       document.querySelector("body").classList.add("winner-one");
     } else {
@@ -498,7 +504,7 @@ var game =  {
       that.score.loser.element.classList.add("shaking");
 
       // Create the ball
-      if(that.score.winner == paddleOne) {
+      if(that.score.winner == paddles[0]) {
         var ballX = 600;
       } else {
         var ballX = 200;
@@ -518,8 +524,8 @@ var game =  {
 
   // When the round is over, but a player hasn't wong the game yet
   roundOver: function() {
-    paddleOne.maxX = false;
-    paddleTwo.minX = false;
+    paddles[0].maxX = false;
+    paddles[1].minX = false;
 
     removalList.push(ball);
 
@@ -529,18 +535,18 @@ var game =  {
     var winner, loser;
 
     if(this.terrainLine == 100) {
-      winner = paddleOne;
-      loser = paddleTwo;
+      winner = paddles[0];
+      loser = paddles[1];
       this.score["player1"] = this.score["player1"] + 1;
     } else {
-      winner = paddleTwo;
-      loser = paddleOne;
+      winner = paddles[1];
+      loser = paddles[0];
       this.score["player2"] = this.score["player2"] + 1;
     }
 
     this.updateScoreDisplay();
 
-    if(winner == paddleOne) {
+    if(winner == paddles[0]) {
       document.querySelector("body").classList.add("winner-one");
     } else {
       document.querySelector("body").classList.add("winner-two");
@@ -561,7 +567,8 @@ var game =  {
   },
 
 
-  flashTimeout : false,
+  flashTimeout : false, // Tracks if a flashing background animation is happening
+
   playerScored : function(player){
 
     // Only score when game is still on
@@ -577,29 +584,13 @@ var game =  {
     // TODO - move this to a utils function that...
     // * effects.addTemporaryClassName(el, className, durationMS)
     var lightupEl = document.querySelector("body");
-    var width = lightupEl.clientWidth;
 
-    if(this.flashTimeout) {
-      clearTimeout(this.flashTimeout);
-      this.flashTimeout = false;
-      lightupEl.classList.remove("light-up-red");
-      lightupEl.classList.remove("light-up-blue");
-      lightupEl.style.width = width;
+
+    if(player == 1) {
+      addTemporaryClassName(lightupEl, "light-up-red", 1000)
+    } else if (player == 2) {
+      addTemporaryClassName(lightupEl, "light-up-blue", 1000);
     }
-
-    if(player == 2) {
-      lightupEl.classList.add("light-up-red");
-    } else {
-      lightupEl.classList.add("light-up-blue");
-    }
-
-    // Remove the lightup
-    var that = this;
-    this.flashTimeout = setTimeout(function(){
-      lightupEl.classList.remove("light-up-red");
-      lightupEl.classList.remove("light-up-blue");
-      that.flashTimeout = false;
-    }, 1000);
 
     // Check horizontal velocity of the ball
     // the faster it hits an endzone the more that
@@ -614,62 +605,39 @@ var game =  {
     // the force of the hit (in percentage points)
 
     if(this.terrainChange >= 10) {
-      var messageEl = document.createElement("div");
-      messageEl.classList.add("message");
-      var messageBody = document.createElement("div");
-      messageBody.classList.add("body");
-      messageBody.innerText = Math.round(this.terrainChange) + "%";
-      messageBody.style.fontSize = (20 + 35 * xForceRatio) + "px";
-      messageEl.appendChild(messageBody);
-      messageEl.style.transform = "translateX("+ ball.physics.position.x +"px) translateY(" + ball.physics.position.y +"px)";
-      document.querySelector(".world").appendChild(messageEl);
+      showMessage({
+        text: Math.round(this.terrainChange) + "%",
+        x: ball.physics.position.x,
+        y: ball.physics.position.y,
+        fontSize : (20 + 35 * xForceRatio),
+        timeout: 2750
+      });
 
-      setTimeout(function(el) {
-        return function() {
-          el.remove();
-        };
-      }(messageEl), 2750);
-
+      document.dispatchEvent(new CustomEvent("emotion", {detail: {
+        player: player,
+        type: "winning"
+      }}));
     }
 
     // Add red or blue particles when the terrain line moves
-    var modifier = 1;
-    if( player == 1 ) {
+
+    var modifier, className;
+
+    if(player === 1) {
+      modifier = 1;
+      className = "red-chunk";
+    } else if (player === 2){
       modifier = -1;
+      className = "blue-chunk";
     }
-    var maxSize = 65;
-    for(var i = 0; i < 10; i++) {
-      var options = {
-        zR : getRandom(-5,5),
-        scaleV : -.02,
-        height: getRandom(25,maxSize),
-        lifespan: 100,
-        xV : getRandom(modifier * 15, modifier * 20),
-        minX : 0
-      }
 
-      options.maxX = 800 - options.height;
-      options.x = this.terrainLine/100 * 800 - (modifier * options.height),
-      options.xV = options.xV - ((options.height / maxSize) * options.xV * .5);
-      options.xVa = -options.xV / 40;
-      options.y  = getRandom(0, 500 - options.height);
-
-      if(player === 1) {
-        options.className = "blue-chunk";
-      } else {
-        options.className = "red-chunk";
-      }
-
-      options.width = options.height;
-      options.x = options.x - options.width / 2;
-      makeParticle(options);
-    }
+    makeTerrainChunks(this.terrainLine, modifier, className);
 
     // Move the terrain line accordingly
     if(player === 1) {
-      this.terrainLine = this.terrainLine - this.terrainChange;
-    } else {
       this.terrainLine = this.terrainLine + this.terrainChange;
+    } else {
+      this.terrainLine = this.terrainLine - this.terrainChange;
     }
 
     if(this.terrainLine > 100) {
@@ -678,8 +646,7 @@ var game =  {
       this.terrainLine = 0;
     }
 
-    // this.terrainLine = 100; // TODO - comment out <- used for testing instant wins
-
+    // Changes the
     this.updateBounds();
 
     if(this.terrainLine === 100 || this.terrainLine === 0) {
