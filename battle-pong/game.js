@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max: 2,
+    max: 3,
     winner : false,
     loser : false
   },
@@ -66,7 +66,6 @@ var game =  {
         // }}));
       // } else {
       // }
-
 
       // Reset this each time so that player can't score on themselves again if ball keeps moving
       lastPlayerTouch = 0;
@@ -333,12 +332,13 @@ var game =  {
       position: { x: x, y: y }
     });
 
-    var chance = Math.floor(getRandom(0,2));
-    if(chance == 0) {
-      ball.launch(0, -.02);
-    } else {
-      ball.launch(0, .02);
-    }
+    // var chance = Math.floor(getRandom(0,2));
+    // if(chance == 0) {
+      // ball.launch(0, -.02);
+    // } else {
+      // ball.launch(0, .02);
+    // }
+    ball.launch(0, -.01);
   },
 
 
@@ -350,6 +350,8 @@ var game =  {
 
     var bestOfOne = document.querySelector(".terrain.one .bestof");
     var bestOfTwo = document.querySelector(".terrain.two .bestof");
+
+    bestOfTwo.innerHTML = "OF " + ((this.score.max * 2) - 1);
 
     // TODO simplify all this carp you moron
     scoreOneEl.classList.remove("hide-animation");

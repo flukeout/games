@@ -1,6 +1,7 @@
 **Left Off**
 
-* Was working on the delay-of-game penalty
+* Working on ball rotation...
+*
 
 
 Bugs?

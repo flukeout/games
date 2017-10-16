@@ -66,6 +66,43 @@ function createBall(options){
         this.resolvePaddleHit();
       }
 
+      var xV = this.physics.velocity.x;
+      var yV = -this.physics.velocity.y;
+
+      var movementAngle = Math.atan2(xV, yV);
+
+      document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
+
+      // if(movementAngle < 0) {
+      //   movementAngle = movementAngle + Math.PI;
+      // }
+
+      var a = JSON.parse(JSON.stringify(movementAngle));
+      var rotating = false;
+
+      if (paddles[0].physics.angularVelocity > .1) {
+          a = movementAngle + Math.PI / 2;
+          rotating = true;
+      } else if (paddles[0].physics.angularVelocity < -.1) {
+          a = movementAngle - Math.PI / 2;
+          rotating = true;
+      }
+
+      document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
+
+
+
+
+      var newX = Math.sin(a) * .00005 * this.physics.speed;
+      var newY = Math.cos(a) * -.00005 * this.physics.speed;
+
+      if(rotating && this.physics.speed > 6) {
+        Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });
+      }
+
+
+
+
       // The paddle hit stuff needs a one frame delay before taking effect seemingly.
       // This is the way around that. Should be easier?
       if(this.gotPaddleHit) {

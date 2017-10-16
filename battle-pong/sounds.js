@@ -59,7 +59,11 @@ function loadSound(name){
 }
 
 function playSound(name, options){
+
   var sound = sounds[name];
+  var buffer = sound.buffer;
+
+  if(!buffer){ return; }
 
   var soundOptions = {
     volume: sounds[name].volume || 1,
@@ -72,11 +76,6 @@ function playSound(name, options){
       soundOptions[k] = options[k];
     }
   }
-
-  var sound = sounds[name];
-  var buffer = sound.buffer;
-
-  if(!buffer){ return; }
 
   var source = soundContext.createBufferSource();
   source.buffer = buffer;
