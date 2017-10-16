@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
       player : 0,
       x: 80,
       y: 200,
-      height: 20
+      height: 100
     },
     {
       player: 1,

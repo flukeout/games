@@ -569,7 +569,8 @@ var game =  {
   },
 
 
-  flashTimeout : false,
+  flashTimeout : false, // Tracks if a flashing background animation is happening
+
   playerScored : function(player){
 
     // Only score when game is still on
@@ -585,29 +586,13 @@ var game =  {
     // TODO - move this to a utils function that...
     // * effects.addTemporaryClassName(el, className, durationMS)
     var lightupEl = document.querySelector("body");
-    var width = lightupEl.clientWidth;
 
-    if(this.flashTimeout) {
-      clearTimeout(this.flashTimeout);
-      this.flashTimeout = false;
-      lightupEl.classList.remove("light-up-red");
-      lightupEl.classList.remove("light-up-blue");
-      lightupEl.style.width = width;
-    }
 
     if(player == 1) {
-      lightupEl.classList.add("light-up-red");
-    } else {
-      lightupEl.classList.add("light-up-blue");
+      addTemporaryClassName(lightupEl, "light-up-red", 1000)
+    } else if (player == 2) {
+      addTemporaryClassName(lightupEl, "light-up-blue", 1000);
     }
-
-    // Remove the lightup
-    var that = this;
-    this.flashTimeout = setTimeout(function(){
-      lightupEl.classList.remove("light-up-red");
-      lightupEl.classList.remove("light-up-blue");
-      that.flashTimeout = false;
-    }, 1000);
 
     // Check horizontal velocity of the ball
     // the faster it hits an endzone the more that

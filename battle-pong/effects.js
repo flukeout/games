@@ -118,16 +118,18 @@ function shakeScreen(){
 }
 
 
-// Used for animations
-// * Adds a class
-// * Removes it after a specified amount of time
-// * If the element already has the class we need to figure out a way to add it a way that re-triggers the animation.
-//   * We might not be able to rely on the width trick due to transforms
-//   * Can we try a 0 setTimeout intead?
+// Used to add animations by applying a class, then removing it
+// If this happens in rapid succession (less than 1000ms apart,
+// we'll have to do the width trick.
 
-function addTemporaryClassName(element, className, duration){
+function addTemporaryClassName(element, className, durationMS){
+  element.classList.remove(className);
+  element.style.width = element.clientWidth;
+  element.classList.add(className);
 
-
+  setTimeout(function(){
+    element.classList.remove(className);
+  }, durationMS || 1000);
 }
 
 
