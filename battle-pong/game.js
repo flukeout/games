@@ -37,14 +37,6 @@ var game =  {
 
     var that = this;
 
-    var lastPlayerTouch = 0;
-
-    document.addEventListener("ballHitPaddle", function(e) {
-      console.log('Ball touched player ' + e.detail.player + ' last');
-      lastPlayerTouch = e.detail.player;
-      ball.paddleHit();
-    });
-
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", function(e) {
 
@@ -57,18 +49,6 @@ var game =  {
       }
 
       that.playerScored(scoringPlayer);
-
-      // if (e.detail.player !== lastPlayerTouch && lastPlayerTouch > 0) {
-        // If the player scored on themselves, SHAME
-        // document.dispatchEvent(new CustomEvent("emotion", {detail: {
-        //   player: losingPlayer,
-        //   type: "embarrassed"
-        // }}));
-      // } else {
-      // }
-
-      // Reset this each time so that player can't score on themselves again if ball keeps moving
-      lastPlayerTouch = 0;
     });
   },
 
@@ -183,7 +163,7 @@ var game =  {
       }
 
       if(obj.run) {
-        obj.run();
+        obj.run(delta);
       }
 
       if(obj.update){

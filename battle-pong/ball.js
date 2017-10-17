@@ -38,7 +38,7 @@ function createBall(options){
       "BOOP!"
     ],
     wordInProgress : false,
-    lastHitBy : "",
+    // lastHitBy : "",
     wordString : false,
     wordDirection : "",
     letterIndex : 0,
@@ -60,13 +60,39 @@ function createBall(options){
       }
     },
 
-    displayAngle : 0,
-    rotationVelocity : 0,
-    rotationVelocityMax : 15,
-    rotationAccel : .5,
+    displayAngle: 0,
+    rotationVelocity: 0,
+    rotationVelocityMax: 15,
+    rotationAccel: .5,
+    canSpin: false,
+
+    // This slows the ball down after it is going too fast for too long
+    goingFast: false,
+    timeGoingFastMS: 0,
+    timeAllowedGoingFastMS : 1000,
+    goingFastSpeedThreshold: 5,
+    slowdownRatio: .995,
+
+    run: function(delta) {
+
+      // console.log(delta);
+
+      if(this.physics.speed > this.goingFastSpeedThreshold) {
+        this.timeGoingFastMS = this.timeGoingFastMS + delta;
+      } else {
+        this.timeGoingFastMS = 0
+      }
+
+      if(this.timeGoingFastMS > this.timeAllowedGoingFastMS && this.physics.speed > this.goingFastSpeedThreshold) {
+        Matter.Body.setVelocity(this.physics, {
+          x : this.physics.velocity.x * this.slowdownRatio,
+          y : this.physics.velocity.y * this.slowdownRatio
+        });
+      }
 
 
-    run: function() {
+
+
 
       if(this.resolvePaddleHitFlag) {
         this.resolvePaddleHit();
@@ -80,39 +106,38 @@ function createBall(options){
       document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
 
       var rotating = false;
+      var direction;
+
 
       if (paddles[0].physics.angularVelocity > .1) {
         // Clockwise
         var a = movementAngle + Math.PI / 2;
         rotating = true;
         this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
+
         if(this.rotationVelocity > this.rotationVelocityMax){
           this.rotationVelocity = this.rotationVelocityMax;
         }
       } else if (paddles[0].physics.angularVelocity < -.1) {
-
-        // Counter clockwise
-
+        // Counter-clockwise
         var a = movementAngle - Math.PI / 2;
-
         rotating = true;
-
         this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
 
         if(this.rotationVelocity < -this.rotationVelocityMax){
           this.rotationVelocity = -this.rotationVelocityMax;
         }
-
       } else {
         if(this.rotationVelocity > 0) {
           this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
         }
+
         if(this.rotationVelocity < 0) {
           this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
         }
       }
 
-      this.displayAngle = this.displayAngle + this.rotationVelocity;
+      this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
 
       var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
 
@@ -124,13 +149,11 @@ function createBall(options){
       var oMax = .35;
       var opacity = oMin + (oMax - oMin) * rotationRatio;
 
-      var modifier = 1;
-
+      var modifier = 1; // Reverses the rotation
 
       if(this.rotationVelocity < 0) {
         modifier = modifier * -1;
       }
-
 
       this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
       this.element.querySelector(".spinny").style.opacity = opacity;
@@ -154,6 +177,10 @@ function createBall(options){
       if(this.wordInProgress){
         this.drawLetter();
       }
+    },
+
+    updateSpiningAnimation() {
+
     },
 
     resolvePaddleHit: function(){
@@ -218,16 +245,21 @@ function createBall(options){
 
     hit : function(obj){
 
-      if(game.mode == "finish" && obj.name == "wall") {
+      if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {
         game.loserLived();
       }
 
-      if(obj && obj.hasOwnProperty("player")){
-        this.lastHitBy = obj.player;
+      // if(obj && obj.hasOwnProperty("player")){
+      //   this.lastHitBy = obj.player;
+      // }
+
+      this.velocityWhenHit = JSON.parse(JSON.stringify(this.physics.velocity));
+
+      if(obj.name.indexOf("paddle") > -1) {
+        this.paddleHit();
       }
 
       this.gotHit = true;
-      this.oldVelocity = JSON.stringify(this.physics.velocity);
     },
 
     paddleHit : function(){
@@ -244,7 +276,7 @@ function createBall(options){
 
       this.gotHit = false;
 
-      var start = JSON.parse(this.oldVelocity);
+      var start = this.velocityWhenHit;
       var end = this.physics.velocity;
 
       var deltaX = Math.abs(start.x - end.x);
