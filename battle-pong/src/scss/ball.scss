@@ -22,11 +22,27 @@
   transform-style: preserve-3d;
   visibility: hidden;
 
+
   &.show {
     visibility: visible;
   }
 
+  .spinny {
+    opacity: .5;
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    animation: ballAppear .25s ease-out 1;
+    background-image: url(assets/images/spinny2.svg);
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
   .body {
+//  outline: 2px dashed blue;
     background: white;
     border-radius: 15px;
     border-radius: 15px;

@@ -5,7 +5,7 @@ function createBall(options){
   return createObject({
     ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
     // selector: ".ball",
-    innerHTML : "<div class='shadow'></div><div class='body'></div>",
+    innerHTML : "<div class='spinny'></div><div class='shadow'></div><div class='body'></div>",
     className: "ball",
     classNames : ["ball"],
     properties : {
@@ -60,6 +60,12 @@ function createBall(options){
       }
     },
 
+    displayAngle : 0,
+    rotationVelocity : 0,
+    rotationVelocityMax : 15,
+    rotationAccel : .5,
+
+
     run: function() {
 
       if(this.resolvePaddleHitFlag) {
@@ -73,35 +79,70 @@ function createBall(options){
 
       document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
 
-      // if(movementAngle < 0) {
-      //   movementAngle = movementAngle + Math.PI;
-      // }
-
-      var a = JSON.parse(JSON.stringify(movementAngle));
       var rotating = false;
 
       if (paddles[0].physics.angularVelocity > .1) {
-          a = movementAngle + Math.PI / 2;
-          rotating = true;
+        // Clockwise
+        var a = movementAngle + Math.PI / 2;
+        rotating = true;
+        this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
+        if(this.rotationVelocity > this.rotationVelocityMax){
+          this.rotationVelocity = this.rotationVelocityMax;
+        }
       } else if (paddles[0].physics.angularVelocity < -.1) {
-          a = movementAngle - Math.PI / 2;
-          rotating = true;
+
+        // Counter clockwise
+
+        var a = movementAngle - Math.PI / 2;
+
+        rotating = true;
+
+        this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
+
+        if(this.rotationVelocity < -this.rotationVelocityMax){
+          this.rotationVelocity = -this.rotationVelocityMax;
+        }
+
+      } else {
+        if(this.rotationVelocity > 0) {
+          this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
+        }
+        if(this.rotationVelocity < 0) {
+          this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
+        }
       }
+
+      this.displayAngle = this.displayAngle + this.rotationVelocity;
+
+      var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
+
+      var scaleMin = .5;
+      var scaleMax = 1.2;
+      var scale = scaleMin + (scaleMax - scaleMin) * rotationRatio;
+
+      var oMin = -.2;
+      var oMax = .35;
+      var opacity = oMin + (oMax - oMin) * rotationRatio;
+
+      var modifier = 1;
+
+
+      if(this.rotationVelocity < 0) {
+        modifier = modifier * -1;
+      }
+
+
+      this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
+      this.element.querySelector(".spinny").style.opacity = opacity;
 
       document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
 
+      var newX = Math.sin(a) *  .00005 * this.physics.speed * rotationRatio;
+      var newY = Math.cos(a) * -.00005 * this.physics.speed * rotationRatio;
 
-
-
-      var newX = Math.sin(a) * .00005 * this.physics.speed;
-      var newY = Math.cos(a) * -.00005 * this.physics.speed;
-
-      if(rotating && this.physics.speed > 6) {
+      if(rotating && this.physics.speed > 2) {
         Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });
       }
-
-
-
 
       // The paddle hit stuff needs a one frame delay before taking effect seemingly.
       // This is the way around that. Should be easier?
@@ -195,6 +236,7 @@ function createBall(options){
       this.gotPaddleHit = true;
     },
 
+    // This makes it so that the hit sound can't play in rapid crazy succession.
     hitSoundTimeout: false,
     hitSoundTimeoutMS: 100,
 
