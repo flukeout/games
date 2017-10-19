@@ -113,12 +113,33 @@ var game =  {
     this.mode = 'paused';
   },
 
+  layer1Pos : 0,
+  layer2Pos : 0,
+  layer3Pos : 0,
+
+  xVel : 2,
+
   step : function(){
     currentTime = Date.now();
 
     if(lastTime){
       delta = currentTime - lastTime;
     }
+
+
+    var velRatio = (-50 + game.terrainLine) / 50;
+
+    this.xVel = velRatio * 10;
+
+    document.querySelector(".layer-1").style.backgroundPosition = -this.layer1Pos + "px 0px";
+
+    document.querySelector(".layer-2").style.backgroundPosition = -this.layer2Pos + "px 0px";
+
+    document.querySelector(".layer-3").style.backgroundPosition = -this.layer3Pos + "px 0px";
+
+    this.layer1Pos = this.layer1Pos + this.xVel;
+    this.layer2Pos = this.layer2Pos + this.xVel/1.2;
+    this.layer3Pos = this.layer3Pos + this.xVel/1.5;
 
     lastTime = currentTime;
 
