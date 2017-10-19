@@ -318,7 +318,8 @@ var game =  {
     // } else {
       // ball.launch(0, .02);
     // }
-    ball.launch(0, -.01);
+
+    ball.launch(-.01, 0);
   },
 
 
@@ -613,7 +614,7 @@ var game =  {
       className = "blue-chunk";
     }
 
-    makeTerrainChunks(this.terrainLine, modifier, className);
+    makeTerrainChunks(this.terrainLine, modifier, className, this.boardWidth, this.boardHeight);
 
     // Move the terrain line accordingly
     if(player === 1) {

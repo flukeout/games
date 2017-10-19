@@ -181,7 +181,7 @@ function showMessage(options){
 }
 
 // When terrain moves, add some chunks
-function makeTerrainChunks(terrainLine, modifier, className){
+function makeTerrainChunks(terrainLine, modifier, className, boardWidth, boardHeight){
 
   var maxSize = 65;
 
@@ -195,11 +195,11 @@ function makeTerrainChunks(terrainLine, modifier, className){
       minX : 0
     }
 
-    options.maxX = 800 - options.height;
-    options.x = terrainLine/100 * 800 - (modifier * options.height),
+    options.maxX = boardWidth - options.height;
+    options.x = terrainLine/100 * boardWidth - (modifier * options.height),
     options.xV = options.xV - ((options.height / maxSize) * options.xV * .5);
     options.xVa = -options.xV / 40;
-    options.y  = getRandom(0, 500 - options.height);
+    options.y  = getRandom(0, boardHeight - options.height);
     options.className = className;
     options.width = options.height;
     options.x = options.x - options.width / 2;
