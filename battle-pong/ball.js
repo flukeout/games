@@ -62,7 +62,6 @@ function createBall(options){
     slowdownRatio: .995,
 
     lastHitPaddle : false,
-    lastHitPaddleTimestamp: 0,
 
     wooshPlayed: false,
 
@@ -75,7 +74,6 @@ function createBall(options){
       // We should give the ball a bit of time, if you hit the wall right away, i think it's OK
       var paddleHitCondition = false;
 
-      this.lastHitPaddleTimestamp = Date.now();
       if(this.lastHitPaddle) {
         paddleHitCondition = true;
       }
@@ -303,11 +301,15 @@ function createBall(options){
         game.loserLived();
       }
 
+
+      if(obj.name.indexOf("wall-left") > -1 || obj.name.indexOf("wall-right") > -1) {
+        this.lastHitPaddle = false;
+      }
+
+
       this.velocityWhenHit = JSON.parse(JSON.stringify(this.physics.velocity));
 
       if(obj.name.indexOf("paddle") > -1) {
-        this.lastHitPaddleTimestamp = Date.now();
-
 
         if(obj.name.indexOf("one") > -1) {
           this.lastHitPaddle = 1; // This relates to the spinning business
@@ -320,8 +322,6 @@ function createBall(options){
         this.speedWhenHit = JSON.parse(JSON.stringify(this.physics.speed));
         this.gotPaddleHit = true;
         this.timeSpentGoingFastMS = 0; // Reset the counter
-      } else {
-        this.lastHitPaddle = false;
       }
 
       if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {

@@ -1,12 +1,5 @@
 **Left Off**
 
-* Working on ball rotation...
-*
-
-
-Bugs?
-
-*
 
 
 To think about
