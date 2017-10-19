@@ -13,6 +13,13 @@
   }
 }
 
+
+.pixel {
+  background: white;
+  position: absolute;
+  z-index: 9999;
+}
+
 .ball {
   position: absolute;
   width: 30px;
@@ -22,12 +29,27 @@
   transform-style: preserve-3d;
   visibility: hidden;
 
+
   &.show {
     visibility: visible;
   }
 
+  .spinny {
+    opacity: .5;
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    background-image: url(assets/images/spinny2.svg);
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
   .body {
     background: white;
+    border: solid 5px white;
     border-radius: 15px;
     border-radius: 15px;
     width: 100%;
@@ -36,6 +58,16 @@
     top: 0;
     left: 0;
     animation: ballAppear .25s ease-out 1;
+    transition: background .2s ease-out;
+    box-sizing: border-box;
+
+    &.canSpin-1 {
+      background: #ac4d9d;
+    }
+
+    &.canSpin-2 {
+      background: #3faa7f;
+    }
   }
 
   &.overtime:before {

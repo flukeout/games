@@ -36,3 +36,36 @@ canvas {
 @import 'intro';
 @import 'menu';
 @import 'score';
+
+
+.angle {
+  position: fixed;
+  bottom: 100px;
+  right: 100px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,.4);
+  border-radius: 50px;
+  display: none;
+
+  .arrow-1 {
+    position: absolute;
+    width: 2px;
+    height: 50px;
+    background: red;
+    top: 0;
+    left: 49px;
+    transform-origin: bottom;
+  }
+
+  .arrow-2 {
+    position: absolute;
+    width: 2px;
+    height: 25px;
+    background: blue;
+    top: 25px;
+    left: 49px;
+    transform-origin: bottom;
+  }
+
+}

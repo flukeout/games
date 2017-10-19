@@ -13,8 +13,8 @@ var ballEvents = {
 
 Events.on(engine, 'collisionStart', function(event) {
   var pairs = event.pairs;
-  var objA;
-  var objB;
+  var physicsObjectA;
+  var physicsObjectA;
 
   for (var i = 0, j = pairs.length; i != j; ++i) {
     var pair = pairs[i];
@@ -24,8 +24,7 @@ Events.on(engine, 'collisionStart', function(event) {
     pairLabels.push(pair.bodyA.label);
     pairLabels.push(pair.bodyB.label);
 
-    if(pairLabels.indexOf("ball"))
-
+    // if(pairLabels.indexOf("ball"))
 
     // If the ball is involved
     var ballLookup = pairLabels.indexOf("ball");
@@ -40,24 +39,32 @@ Events.on(engine, 'collisionStart', function(event) {
       }
     }
 
-    objA = { name : pair.bodyA.label };
-    objB = { name : pair.bodyB.label };
+    physicsObjectA = { name : pair.bodyA.label };
+    physicsObjectB = { name : pair.bodyB.label };
 
+    /// TODO - we can still make this easier somehow, have a way to do lookups
     for(var k = 0; k < objectsToRender.length; k++) {
       if(objectsToRender[k].physics === pair.bodyA){
-        objA = objectsToRender[k];
+        var gameObject = objectsToRender[k];
+        if(gameObject.hit){
+          gameObject.hit(physicsObjectB);
+        }
       }
       if(objectsToRender[k].physics === pair.bodyB){
-        objB = objectsToRender[k];
+        var gameObject = objectsToRender[k];
+        if(gameObject.hit){
+          gameObject.hit(physicsObjectA);
+        }
       }
     }
 
-    if(objA.hit) {
-      objA.hit(objB);
-    }
-
-    if(objB.hit) {
-      objB.hit(objA);
-    }
+    // TODO - I think it's safe to remove this.
+    // if(physicsObjectA.hit) {
+    //   physicsObjectA.hit(physicsObjectB);
+    // }
+    //
+    // if(physicsObjectB.hit) {
+    //   physicsObjectB.hit(physicsObjectA);
+    // }
   }
 });

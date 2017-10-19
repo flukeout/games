@@ -8,6 +8,10 @@ var sounds = {
     url : "sounds/beep.mp3",
     volume : .15
   },
+  "woosh" : {
+    url : "sounds/woosh.wav",
+    volume : .35
+  },
   "swish" : {
     url : "sounds/swish.wav",
   },
@@ -18,7 +22,6 @@ var sounds = {
   "coin" : {
     url : "sounds/coin.mp3",
   },
-
   "boom" : {
     url : "sounds/boom.wav",
     volume : .3
@@ -59,7 +62,11 @@ function loadSound(name){
 }
 
 function playSound(name, options){
+
   var sound = sounds[name];
+  var buffer = sound.buffer;
+
+  if(!buffer){ return; }
 
   var soundOptions = {
     volume: sounds[name].volume || 1,
@@ -72,11 +79,6 @@ function playSound(name, options){
       soundOptions[k] = options[k];
     }
   }
-
-  var sound = sounds[name];
-  var buffer = sound.buffer;
-
-  if(!buffer){ return; }
 
   var source = soundContext.createBufferSource();
   source.buffer = buffer;
