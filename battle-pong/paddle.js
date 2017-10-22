@@ -58,6 +58,7 @@ function createPaddle(options) {
     },
 
 
+
     reset: function(){
       this.element.classList.remove("dead");
       this.element.classList.remove("loser");
@@ -74,6 +75,8 @@ function createPaddle(options) {
     },
 
     mode: "normal",
+
+    hasSpinPowerup : false,
 
     powerupDuration : 5500, // How long powerups last
     targetHeight : options.height,          // Powerups affect this, then the paddle grows / shrinks
@@ -151,19 +154,35 @@ function createPaddle(options) {
     },
 
     // When we get a powerup
-    powerup(){
+    powerup(type){
 
-      this.targetHeight = this.height * 1.5;
-      this.element.classList.add("powerup-hit");
+      if(type == "grow") {
+        this.targetHeight = this.height * 1.5;
+        this.element.classList.add("powerup-hit");
 
-      var that = this;
+        var that = this;
 
-      setTimeout(function(){
-        that.targetHeight = that.targetHeight * 1/1.5;
-        if(that.targetHeight < that.baseHeight) {
-          that.targetHeight = that.baseHeight;
-        }
-      }, this.powerupDuration);
+        setTimeout(function(){
+          that.targetHeight = that.targetHeight * 1/1.5;
+          if(that.targetHeight < that.baseHeight) {
+            that.targetHeight = that.baseHeight;
+          }
+        }, this.powerupDuration);
+      }
+
+      if(type == "spin") {
+        console.log("i got spin ...");
+        this.element.classList.add("powerup-spin");
+        this.hasSpinPowerup = true;
+
+        var that = this;
+        setTimeout(function(){
+          console.log("i lost spin ...");
+          that.element.classList.remove("powerup-spin");
+          that.hasSpinPowerup = false;
+        }, 5000);
+      }
+
 
     },
 

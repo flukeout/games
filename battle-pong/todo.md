@@ -1,5 +1,9 @@
 **Left Off**
 
+* Making spin a power-up, getting there working in paddle.js to set a 'hasSpinPowerup' thingy
+* Fix end of game not working
+* Increase physics sampling
+* clean up reactions, only one at a time
 
 
 To think about

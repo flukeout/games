@@ -38,7 +38,7 @@ function createBall(options){
       "BOOP!"
     ],
     wordInProgress : false,
-    // lastHitBy : "",
+
     wordString : false,
     wordDirection : "",
     letterIndex : 0,
@@ -55,12 +55,12 @@ function createBall(options){
     // This slows the ball down after it is going too fast for too long
     goingFast: false,
     timeSpentGoingFastMS: 0,
-    timeAllowedGoingFastMS : 2000,
-    delayBeforeCanSpinMS : 200,
+    timeAllowedGoingFastMS : 5000, // max time to have spinmode
 
-    goingFastSpeedThreshold: 11,
     slowdownRatio: .995,
 
+    delayBeforeCanSpinMS : 100,
+    goingFastSpeedThreshold: 3,
     lastHitPaddle : false,
 
     wooshPlayed: false,
@@ -119,15 +119,24 @@ function createBall(options){
 
     },
 
+    frameTicks : 0,
+
     run: function(delta) {
 
-      this.canSpin = this.checkSpinConditions(delta);
+      this.canSpin = false;
+
+      if(this.lastHitPaddle != false) {
+        var relatedPaddle = paddles[this.lastHitPaddle- 1];
+        if(relatedPaddle.hasSpinPowerup == true) {
+          this.canSpin = true;
+        }
+      }
+      // this.canSpin = this.checkSpinConditions(delta);
 
       if(this.canSpin){
-        this.element.querySelector(".body").classList.add("canSpin-" + this.lastHitPaddle);
+        this.element.querySelector(".body").classList.add("canSpin");
       } else {
-        this.element.querySelector(".body").classList.remove("canSpin-1");
-        this.element.querySelector(".body").classList.remove("canSpin-2");
+        this.element.querySelector(".body").classList.remove("canSpin");
       }
 
       if(this.resolvePaddleHitFlag) {
@@ -139,7 +148,6 @@ function createBall(options){
       //   x : this.physics.velocity.x * this.slowdownRatio,
       //   y : this.physics.velocity.y * this.slowdownRatio
       // });
-
 
       // All this crap below just relates to curving the ball
       // and adding the spinning animation.
@@ -188,39 +196,58 @@ function createBall(options){
         }
       }
 
-        this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
-
-        var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
-
-        var scaleMin = .5;
-        var scaleMax = 1.2;
-        var scale = scaleMin + (scaleMax - scaleMin) * rotationRatio;
-
-        var oMin = -.2;
-        var oMax = .35;
-        var opacity = oMin + (oMax - oMin) * rotationRatio;
-        //opacity = 1;
-
-        var modifier = 1; // Reverses the rotation
-
-        if(this.rotationVelocity < 0) {
-          modifier = modifier * -1;
+      if(this.frameTicks > 1) {
+        if(Math.abs(this.rotationVelocity) > 0 || rotating){
+          var options = {
+            x : this.physics.position.x - 15,
+            y : this.physics.position.y - 15,
+            width : 30,
+            oV: -.02,
+            scaleV: -.01,
+            height: 30,
+            className : 'spinSquare',
+            lifespan: 125
+          }
+          makeParticle(options);
         }
+        this.frameTicks = 0;
+      } else {
+        this.frameTicks++;
+      }
 
-        this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
-        this.element.querySelector(".body").style.transform = "rotate("+ this.displayAngle +"deg)";
-        this.element.querySelector(".spinny").style.opacity = opacity;
+      this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
 
-        // For debugging, displays the angle of the ball movement and 'curve force'
-        document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
-        document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
+      var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
 
-        var newX = Math.sin(a) *  .00005 * this.physics.speed * rotationRatio;
-        var newY = Math.cos(a) * -.00005 * this.physics.speed * rotationRatio;
+      var scaleMin = .5;
+      var scaleMax = 1.2;
+      var scale = scaleMin + (scaleMax - scaleMin) * rotationRatio;
 
-        if(rotating && this.physics.speed > 2) {
-          Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });
-        }
+      var oMin = -.2;
+      var oMax = .35;
+      var opacity = oMin + (oMax - oMin) * rotationRatio;
+      //opacity = 1;
+
+      var modifier = 1; // Reverses the rotation
+
+      if(this.rotationVelocity < 0) {
+        modifier = modifier * -1;
+      }
+
+      this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
+      this.element.querySelector(".body").style.transform = "rotate("+ this.displayAngle +"deg)";
+      this.element.querySelector(".spinny").style.opacity = opacity;
+
+      // For debugging, displays the angle of the ball movement and 'curve force'
+      document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
+      document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
+
+      var newX = Math.sin(a) *  .00005 * this.physics.speed * rotationRatio; //.00005
+      var newY = Math.cos(a) * -.00005 * this.physics.speed * rotationRatio; //.00005
+
+      if(rotating && this.physics.speed > 2) {
+        Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });
+      }
 
       // --Spinning ball garbage ends here.
 
@@ -306,7 +333,6 @@ function createBall(options){
         this.lastHitPaddle = false;
       }
 
-
       this.velocityWhenHit = JSON.parse(JSON.stringify(this.physics.velocity));
 
       if(obj.name.indexOf("paddle") > -1) {
@@ -330,7 +356,6 @@ function createBall(options){
 
       this.gotHit = true;
     },
-
 
     // After a paddle hit, we want to check if the ball is going
     // fast enough, and if the hit imparted it with more speed.

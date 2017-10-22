@@ -126,25 +126,12 @@ var game =  {
       delta = currentTime - lastTime;
     }
 
-
-    // var velRatio = (-50 + game.terrainLine) / 50;
-    //
-    // this.xVel = velRatio * 10;
-    //
-    // document.querySelector(".layer-1").style.backgroundPosition = -this.layer1Pos + "px 0px";
-    // document.querySelector(".layer-2").style.backgroundPosition = -this.layer2Pos + "px 0px";
-    // document.querySelector(".layer-3").style.backgroundPosition = -this.layer3Pos + "px 0px";
-    //
-    // this.layer1Pos = this.layer1Pos + this.xVel;
-    // this.layer2Pos = this.layer2Pos + this.xVel/1.2;
-    // this.layer3Pos = this.layer3Pos + this.xVel/1.5;
-
     lastTime = currentTime;
 
     // TODO - should we base the engine update tick based on elapsed time since last frame?
 
     if(!hasPowerup && game.mode == "running") {
-      var chance = getRandom(0, 300);
+      var chance = getRandom(0, 100);
       if(chance < 1) {
         addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
         hasPowerup = true;
@@ -331,14 +318,14 @@ var game =  {
       position: { x: x, y: y }
     });
 
-    // var chance = Math.floor(getRandom(0,2));
-    // if(chance == 0) {
-      // ball.launch(0, -.02);
-    // } else {
-      // ball.launch(0, .02);
-    // }
+    var chance = Math.floor(getRandom(0,2));
+    if(chance == 0) {
+      ball.launch(0, -.02);
+    } else {
+      ball.launch(0, .02);
+    }
 
-    ball.launch(-.01, 0);
+    // ball.launch(0, 0);
   },
 
 
@@ -579,7 +566,11 @@ var game =  {
     }
 
     // Make an explosion when someone scores
-    makeExplosion(ball.physics.position.x,ball.physics.position.y, 75);
+    var blastDirection = "left";
+    if(player == 2) {
+      blastDirection = "right";
+    }
+    makeExplosion(ball.physics.position.x,ball.physics.position.y, 75, blastDirection);
 
     // Flash some color on the body element to correspond to the player
     // who scored.

@@ -26,6 +26,19 @@
   height: 100px;
   transition: background .2s ease-out;
 
+  &:after {
+    //    content: "";
+    //    position: absolute;
+    //    width: 150%;
+    //    left: -25%;
+    //    height: 100%;
+    //
+    //    background-image: url(assets/images/bone.svg);
+    //    background-size: 100%;
+    //    background-position: center;
+    //    background-repeat: no-repeat;
+  }
+
   &.loser {
     background: transparent;
     background: rgba(255,255,255,.2);
@@ -55,9 +68,16 @@
     &.two {
     }
 
-    &.powerup-hit {
-      animation: powerupHit .5s ease-out;
-    }
+  }
+
+  &.powerup-hit {
+    animation: powerupHit .5s ease-out;
+  }
+
+
+  &.powerup-spin {
+    background: #5fffff;
+    animation: spinPowerupOn .15s ease-out 4;
   }
 
   &.dead {
@@ -65,7 +85,22 @@
   }
 }
 
+@keyframes spinPowerupOn {
+  50% {
+    background: white;
+  }
+}
+
+
 .paddleChunk {
   background: rgba(255,255,255,.2);
+}
+
+
+.spinSquare {
+  background: rgba(255,255,255,.2);
+  position: absolute;
+  border-radius: 50%;
+  z-index: 2;
 }
 

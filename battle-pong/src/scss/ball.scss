@@ -49,7 +49,6 @@
 
   .body {
     background: white;
-    border: solid 5px white;
     border-radius: 15px;
     border-radius: 15px;
     width: 100%;
@@ -61,12 +60,8 @@
     transition: background .2s ease-out;
     box-sizing: border-box;
 
-    &.canSpin-1 {
-      background: #ac4d9d;
-    }
-
-    &.canSpin-2 {
-      background: #3faa7f;
+    &.canSpin {
+      background: #5fffff;
     }
   }
 

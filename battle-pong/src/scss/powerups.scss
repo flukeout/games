@@ -36,8 +36,25 @@
   transform-style: preserve-3d;
   z-index: 1000;
 
+  .body {
+    color: rgba(255,255,255,.4);
+    z-index: 999;
+    text-align: center;
+    width: 30px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 30px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: translateZ(20px);
+    animation: appear .5s ease-out, spinZ .5s linear infinite;
+    animation-delay: 0s, .5s;
+  }
+
+
   .shadow {
-    background-image: url(star-shadow.svg);
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -50,36 +67,34 @@
     animation: powerupAppear .2s ease-out;
   }
 
-
-
-  .body {
-    color: rgba(255,255,255,.4);
-    z-index: 999;
-    text-align: center;
-    width: 30px;
-    background-image: url(star.svg);
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    height: 30px;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    // border-radius: 50%;
-    // background: #ffa91d;
-    transform: translateZ(20px);
-    animation: appear .5s ease-out, spinZ .5s linear infinite;
-    animation-delay: 0s, .5s;
+  &.grow {
+    .shadow {
+      background-image: url(assets/images/star-shadow.svg);
+    }
+    .body {
+      background-image: url(assets/images/star.svg);
+    }
   }
+
+  &.spin {
+    .shadow {
+      background-image: url(assets/images/spinner-shadow.svg);
+    }
+
+    .body {
+      background-image: url(assets/images/spinner.svg);
+    }
+  }
+
 }
 
-.star {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background-image: url(star.svg);
-  background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-}
+//.star {
+//  position: absolute;
+//  width: 30px;
+//  height: 30px;
+//  background-image: url(star.svg);
+//  background-position: center;
+//  background-size: contain;
+//  background-repeat: no-repeat;
+//}
 
