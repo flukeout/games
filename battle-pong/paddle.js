@@ -180,7 +180,7 @@ function createPaddle(options) {
           console.log("i lost spin ...");
           that.element.classList.remove("powerup-spin");
           that.hasSpinPowerup = false;
-        }, 5000);
+        }, 7500);
       }
 
 
