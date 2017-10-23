@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     {
       player: 1,
       x : game.boardWidth - 100,
-      y : 400
+      y : 200
     },
     {
       player : 0,
