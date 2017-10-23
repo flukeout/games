@@ -33,18 +33,6 @@ var gamepadInputMappings = {
   }
 };
 
-var keyboardInputMappings = {
-  standard: {
-    65: 'a',
-    83: 's',
-    68: 'd',
-    38: 'up',
-    40: 'down',
-    37: 'left',
-    39: 'right'
-  }
-};
-
 function createInputComponent(actionMapping, options) {
   if (!actionMapping) {
     throw 'actionMapping is required to create an input component';
@@ -54,8 +42,25 @@ function createInputComponent(actionMapping, options) {
     actionMapping: {},
     actions: {},
     update: function () {},
+    setMappingForAction: function (action, key) {
+      this.actionMapping[key] = action;
+    },
+    generateActionMapping: function (inverseActionMapping) {
+      // this.actionMapping
+    },
+    getInverseActionMapping: function () {
+      var inverseActionMapping = {};
+      Object.keys(this.actionMapping).forEach((key) => {
+        inverseActionMapping[this.actionMapping[key]] = key;
+      });
+      return inverseActionMapping;
+    },
     register: function (actions) {
       this.actions = actions;
+      options.register && options.register.call(this, actions);
+    },
+    remove: function () {
+      options.remove && options.remove.call(this);
     }
   };
 
@@ -64,6 +69,7 @@ function createInputComponent(actionMapping, options) {
   component.actionMapping = JSON.parse(JSON.stringify(actionMapping));
 
   for(var k in options){
+    if (k === 'register' || k === 'remove') continue;
     component[k] = options[k];
   }
 
@@ -72,6 +78,7 @@ function createInputComponent(actionMapping, options) {
 
 function createGamepadInputComponent(gamepad, actionMapping) {
   var component = createInputComponent(actionMapping, {
+    type: 'gamepad',
     inputMapping: gamepadInputMappings['standard'],
     gamepad: gamepad,
     update: function () {
@@ -109,9 +116,7 @@ function createGamepadInputComponent(gamepad, actionMapping) {
         }
       }
 
-
       return tempActions;
-
     }
   });
 
@@ -123,34 +128,35 @@ function createGamepadInputComponent(gamepad, actionMapping) {
 
 function createKeyboardInputComponent(actionMapping) {
   var component = createInputComponent(actionMapping, {
-    inputMapping: keyboardInputMappings['standard'],
+    type: 'keyboard',
+    register: function () {
+      document.addEventListener("keydown", onKeyDown);
+      document.addEventListener("keyup", onKeyUp);
+    },
     update: function () {
       return tempActions;
+    },
+    remove: function () {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keyup", onKeyUp);
     }
   });
 
   var tempActions = {};
 
-  document.addEventListener("keydown",function(e){
+  function onKeyDown(e) {
     // If the user pushed a key we know about...
-    // ...that we know about
-    if (component.inputMapping[e.keyCode]
-      // ...and which is part of actionMapping
-      && component.inputMapping[e.keyCode] in component.actionMapping)
+    if (e.code in component.actionMapping)
       // ...then actions[mapping[keyCode]] = ...
-      tempActions[component.actionMapping[component.inputMapping[e.keyCode]]] = true;
-  });
+      tempActions[component.actionMapping[e.code]] = true;
+  }
 
-  document.addEventListener("keyup",function(e){
-    // If the user pushed a key...
-
-    // ...that we know about
-    if (component.inputMapping[e.keyCode]
-      // ...and which is part of actionMapping
-      && component.inputMapping[e.keyCode] in component.actionMapping)
+  function onKeyUp(e) {
+    // If the user pushed a key we know about...
+    if (e.code in component.actionMapping)
       // ...then actions[mapping[keyCode]] = ...
-      tempActions[component.actionMapping[component.inputMapping[e.keyCode]]] = false;
-  });
+      tempActions[component.actionMapping[e.code]] = false;
+  }
 
   return component;
 }

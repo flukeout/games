@@ -82,14 +82,64 @@
       </div>
     </div>
     <div class="menu-wrapper">
-      <div class="title">BATTLE PONG</div>
+      <h1>BATTLE PONG</h1>
+      <section data-name="main">
+        <h2>SETTINGS</h2>
+        <ul>
+          <li data-goto="controls">Controls</li>
+          <li data-goto="game">Game Settings</li>
+          <li data-goto="exit">Return to Game</li>
+        </ul>
+      </section>
+      <section data-name="controls">
+        <h2>CONTROLS</h2>
+        <div class="player-indicator">
+          <span class="switcher" data-direction="left">&larr;</span>
+          Player <span class="player-number"></span>
+          <span class="switcher" data-direction="right">&rarr;</span>
+        </div>
+        <div class="menu-content">
+          <label class="input-type">
+            <input type="checkbox">
+            <div class="slider">
+              <span class="on">Gamepad</span><span class="off">Keyboard</span>
+            </div>
+          </label>
+
+          <ul class="player-controls">
+            <li class="control" data-name="up">
+              <span class="control-label">Up</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="left">
+              <span class="control-label">Left</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="down">
+              <span class="control-label">Down</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="right">
+              <span class="control-label">Right</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="spinCounterClockwise">
+              <span class="control-label">Spin Left</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="spinClockwise">
+              <span class="control-label">Spin Right</span> <span class="control-key"></span>
+            </li>
+          </ul>
+
+          <button class="set-all">Set All</button> <button class="done">Done</button>
+        </div>
+      </section>
+      <section data-name="game">
+
+      </section>
     </div>
-    <!--
+    
     <div class="intro-wrapper">
       <div class="title">BATTLE<br/>PONG</div>
       <div class="start">start</div>
     </div>
-    -->
+    
     <div class="reaction-container one">
       <div class="emoji"></div>
       <div class="words"></div>
@@ -102,6 +152,9 @@
     <div class='angle'>
       <div class='arrow-1'></div>
       <div class='arrow-2'></div>
+    </div>
+    <div class="header">
+      <div class="title">BATTLE PONG</div>
     </div>
   </body>
 </html>

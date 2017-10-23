@@ -1,3 +1,230 @@
 .menu-wrapper {
-  display: none;
+  @keyframes textShadowColorCycleMenu {
+    0%      {text-shadow: 0 0 10px orange;}
+    10%     {text-shadow: 0 0 20px orange;}
+    20%     {text-shadow: 0 0 10px orange;}
+    30%     {text-shadow: 0 0 17px orange;}
+    40%     {text-shadow: 0 0 10px orange;}
+    50%     {text-shadow: 0 0 18px orange;}
+    60%     {text-shadow: 0 0 10px orange;}
+    70%     {text-shadow: 0 0 12px orange;}
+    80%     {text-shadow: 0 0 10px orange;}
+    90%     {text-shadow: 0 0 20px orange;}
+    100%    {text-shadow: 0 0 10px orange;}
+  }
+
+  position: fixed;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  top: 100vh;
+  left: 0;
+
+  color: black;
+  font-family: 'Teko', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+
+  visibility: hidden;
+
+  transition: visibility .5s ease-in, top .5s ease-in;
+
+  h1, h2 {
+    margin: 0;
+    text-align: center;
+    animation: textShadowColorCycleMenu 10s 0s infinite linear;
+  }
+
+  &.show {
+    visibility: visible;
+    top: 0vh;
+  }
+
+  section {
+    visibility: hidden;
+    display: none;
+    text-align: center;
+    justify-content: center;
+    flex-direction: row;
+
+    &.show {
+      visibility: visible;
+      display: initial;
+    }
+
+    ul {
+      text-transform: uppercase;
+      list-style: none;
+      padding: 0;
+
+      li {
+        font-size: 3em;
+        color: black;
+        transition: color .3s;
+        text-shadow: 0 0 1px orange;
+
+        &:hover {
+          color: orange;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .menu-content {
+      width: 400px;
+      margin: 0 auto;
+    }
+    
+
+    &[data-name="controls"] {
+      .player-indicator {
+        text-transform: uppercase;
+        font-size: 2em;
+        text-shadow: 0 0 1px orange;
+        color: orange;
+
+        .switcher {
+          transition: color .3s;
+          color: black;
+
+          &:hover {
+            cursor: pointer;
+            color: orange;
+          }
+
+          user-select: none;
+        }
+      }
+
+      
+      .input-type {
+        $width: 150px;
+        $sliderPadding: 4px;
+        $sliderWidth: 26px;
+
+        position: relative;
+        display: inline-block;
+        width: $width;
+        height: 34px;
+
+        input {
+          display: none;
+        }
+
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border: 1px solid orange;
+          border-radius: 5px;
+          
+          background-color: rgba(0, 0, 0, 0.4); 
+          transition: .4s;
+
+          text-transform: uppercase;
+
+          &:before {
+            position: absolute;
+            content: " ";
+            width: $sliderWidth;
+            left: $sliderPadding;
+            top: $sliderPadding;
+            bottom: $sliderPadding;
+            background-color: orange;
+            transition: .4s;
+            border-radius: 4px;
+          }
+        }
+
+        input:checked + .slider {
+        }
+
+        input:checked + .slider:before {
+          transform: translateX($width - $sliderWidth - $sliderPadding * 2 - 1);
+        }
+
+        /*------ ADDED CSS ---------*/
+        .on {
+          display: none;
+        }
+
+        .on, .off {
+          position: absolute;
+          transform: translate(-50%,-50%);
+          top: 50%;
+          left: 50%;
+          font-size: 10px;
+          font-family: Verdana, sans-serif;
+          color: orange;
+        }
+
+        input:checked + .slider .on {
+          display: block;
+        }
+
+        input:checked + .slider .off {
+          display: none;
+        }
+      }
+
+      .player-controls {
+        font-size: .85em;
+        text-align: left;
+        position: relative;
+
+        li {
+          position: relative;
+
+          .control-label {
+
+          }
+
+          .control-key {
+            position: absolute;
+            right: 0;
+            box-sizing: border-box;
+            border-radius: 5px;
+            height: 1em;
+            width: 1em;
+
+            &.editing {
+              border: 1px dashed orange;
+            }
+          }
+        }
+      }
+
+      button {
+        background: black;
+        border: 1px solid orange;
+        border-radius: 4px;
+        text-transform: uppercase;
+        color: orange;
+        transition: background .25s, color .25s;
+        font-size: 2em;
+        font-family: 'Teko', sans-serif;
+
+        min-width: 150px;
+        
+        padding: 0em .5em;
+        height: 1.5em;
+        line-height: 1.5em;
+        
+        cursor: pointer;
+
+        &:focus {
+          outline: none;
+        }
+
+        &:hover {
+          background: orange;
+          color: black;
+        }
+      }
+    }
+  }
 }

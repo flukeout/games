@@ -28,6 +28,8 @@ window.IntroMachine = function () {
       var boardWrapper = document.querySelector('.board-wrapper');
       var title = document.querySelector('.intro-wrapper .title');
       var startButton = document.querySelector('.intro-wrapper .start');
+      
+      introWrapper.classList.add('show');
       boardWrapper.classList.add('intro');
       boardWrapper.classList.remove('hide');
 
@@ -43,7 +45,7 @@ window.IntroMachine = function () {
         audio.pause();
         title.classList.remove('show');
         startButton.classList.remove('show');
-        introWrapper.classList.add('hide');
+        introWrapper.classList.remove('show');
         boardWrapper.classList.remove('intro');
         onward();
       });
