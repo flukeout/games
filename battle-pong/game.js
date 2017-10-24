@@ -113,12 +113,6 @@ var game =  {
     this.mode = 'paused';
   },
 
-  // layer1Pos : 0,
-  // layer2Pos : 0,
-  // layer3Pos : 0,
-
-  xVel : 2,
-
   step : function(){
     currentTime = Date.now();
 
@@ -131,7 +125,7 @@ var game =  {
     // TODO - should we base the engine update tick based on elapsed time since last frame?
 
     if(!hasPowerup && game.mode == "running") {
-      var chance = getRandom(0, 100);
+      var chance = getRandom(0, 10);
       if(chance < 1) {
         addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
         hasPowerup = true;
@@ -173,7 +167,7 @@ var game =  {
       }
 
       if(obj.update){
-        obj.update();
+        obj.update(delta);
       }
 
       // Update the element position & angle
@@ -318,14 +312,14 @@ var game =  {
       position: { x: x, y: y }
     });
 
-    var chance = Math.floor(getRandom(0,2));
-    if(chance == 0) {
-      ball.launch(0, -.02);
-    } else {
-      ball.launch(0, .02);
-    }
+    // var chance = Math.floor(getRandom(0,2));
+    // if(chance == 0) {
+    //   ball.launch(0, -.02);
+    // } else {
+    //   ball.launch(0, .02);
+    // }
 
-    // ball.launch(0, 0);
+    ball.launch(0, 0);
   },
 
 

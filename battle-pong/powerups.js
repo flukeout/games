@@ -1,6 +1,7 @@
 var powerUp;
 
 var powerUpTypes = ["grow","spin"];
+var powerUpTypes = ["spin"];
 
 function addPowerup(x,y){
 

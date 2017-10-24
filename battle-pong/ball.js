@@ -131,8 +131,10 @@ function createBall(options){
           this.canSpin = true;
         }
       }
+
       // this.canSpin = this.checkSpinConditions(delta);
 
+      // TODO - fix how this is added / removed, we don't want to do it every frame
       if(this.canSpin){
         this.element.querySelector(".body").classList.add("canSpin");
       } else {
@@ -143,7 +145,10 @@ function createBall(options){
         this.resolvePaddleHit();
       }
 
-      // Slowdown
+
+      // Slowdown - TODO - make this a setting on the ball
+      // We can make it slow down if it's been traveling too fast for too long (or too far)
+      // Or maybe after two endzone hits in a row
       // Matter.Body.setVelocity(this.physics, {
       //   x : this.physics.velocity.x * this.slowdownRatio,
       //   y : this.physics.velocity.y * this.slowdownRatio
@@ -190,13 +195,28 @@ function createBall(options){
         }
         this.wooshPlayed = false;
       } else {
+
+        // Increase the speed of the ball if it's going too slow while spinning
+        // TODO - make a separate function for decreasing / increasing velocity that accepts
+        // a percentage?
+
+
+        // While spinning...
+        if(this.physics.speed < 9) {
+          Matter.Body.setVelocity(this.physics, {
+            x : this.physics.velocity.x * 1.03,
+            y : this.physics.velocity.y * 1.03
+          });
+        }
+
         if(this.wooshPlayed == false && Math.abs(this.rotationVelocity) == this.rotationVelocityMax){
           playSound("woosh");
           this.wooshPlayed = true;
         }
+
       }
 
-      if(this.frameTicks > 1) {
+      if(this.frameTicks > 1 & this.physics.speed > 7) {
         if(Math.abs(this.rotationVelocity) > 0 || rotating){
           var options = {
             x : this.physics.position.x - 15,
@@ -217,6 +237,7 @@ function createBall(options){
 
       this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
 
+
       var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
 
       var scaleMin = .5;
@@ -226,7 +247,6 @@ function createBall(options){
       var oMin = -.2;
       var oMax = .35;
       var opacity = oMin + (oMax - oMin) * rotationRatio;
-      //opacity = 1;
 
       var modifier = 1; // Reverses the rotation
 
@@ -239,11 +259,11 @@ function createBall(options){
       this.element.querySelector(".spinny").style.opacity = opacity;
 
       // For debugging, displays the angle of the ball movement and 'curve force'
-      document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
-      document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
+      // document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
+      // document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
 
-      var newX = Math.sin(a) *  .00005 * this.physics.speed * rotationRatio; //.00005
-      var newY = Math.cos(a) * -.00005 * this.physics.speed * rotationRatio; //.00005
+      var newX = Math.sin(a) *  .000075 * this.physics.speed * rotationRatio; //.00005
+      var newY = Math.cos(a) * -.000075 * this.physics.speed * rotationRatio; //.00005
 
       if(rotating && this.physics.speed > 2) {
         Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });

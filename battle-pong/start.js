@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', function () {
       width: 20,
       classNames : ["paddle"]
     });
+
+    paddles[i].init();
   }
 
   connectPaddlesToControls();

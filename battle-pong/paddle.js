@@ -65,6 +65,9 @@ function createPaddle(options) {
       this.element.classList.remove("shaking");
       this.mode = "normal";
       this.targetHeight = this.baseHeight;
+      this.hasSpinPowerup = false;
+      this.spinPowerupRemaining = 0;
+      this.spinPowerupCountdown = false;
     },
 
     physicsOptions : {
@@ -75,8 +78,6 @@ function createPaddle(options) {
     },
 
     mode: "normal",
-
-    hasSpinPowerup : false,
 
     powerupDuration : 5500, // How long powerups last
     targetHeight : options.height,          // Powerups affect this, then the paddle grows / shrinks
@@ -115,7 +116,13 @@ function createPaddle(options) {
 
     hit: function(obj) {
       // If I'm a ghost and I get hit by a ball I die (at the end of a game)
-      if(this.mode == "ghost" && obj == ball) {
+
+      if(obj.name == "ball" && this.spinPowerupRemaining > 0 && this.spinPowerupCountdown == false) {
+        this.spinPowerupCountdown = true;
+      }
+
+
+      if(this.mode == "ghost" && obj.name == "ball") {
         if(obj == ball){
           this.element.classList.add("dead");
           this.element.classList.remove("shaking");
@@ -153,6 +160,12 @@ function createPaddle(options) {
       this.physics.mass = this.baseMass;
     },
 
+    hasSpinPowerup : false,
+    spinPowerupRemaining : 0,
+    spinPowerupCountdown: false,
+    spinPowerupTime : 5500,
+
+
     // When we get a powerup
     powerup(type){
 
@@ -170,24 +183,49 @@ function createPaddle(options) {
         }, this.powerupDuration);
       }
 
+      // For this powerup, we treat it as having a 'time remaining'
+      // Gets reduced every frame, and added to when we hit a powerup.
       if(type == "spin") {
-        console.log("i got spin ...");
-        this.element.classList.add("powerup-spin");
-        this.hasSpinPowerup = true;
-
-        var that = this;
-        setTimeout(function(){
-          console.log("i lost spin ...");
-          that.element.classList.remove("powerup-spin");
-          that.hasSpinPowerup = false;
-        }, 7500);
+        this.spinPowerupRemaining = this.spinPowerupRemaining + this.spinPowerupTime;
       }
-
 
     },
 
+    init: function(){
+
+      // This ends the spin powerup when a ball hits the endzone
+      var that = this;
+      document.addEventListener("ballHitEndzone", function(e) {
+        if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
+          that.spinPowerupRemaining = 0;
+          that.hasSpinPowerup = false;
+          that.spinPowerupCountdown = false;
+        }
+      });
+    },
+
     // This gets called every frame of the game
-    update(){
+    update(delta){
+
+      if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {
+        this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
+      }
+
+      if(this.spinPowerupRemaining > 0) {
+        if(this.hasSpinPowerup == false) {
+          this.element.classList.add("powerup-spin");
+        }
+        this.hasSpinPowerup = true;
+      } else {
+        this.element.classList.remove("powerup-spin");
+      }
+
+
+      if(this.player == 0) {
+        // console.log(this.spinPowerupRemaining, this.hasSpinPowerup);
+      }
+
+      // End spin stuff
 
       if(this.height < this.targetHeight) {
         this.changeHeight("grow");

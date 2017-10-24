@@ -79,10 +79,12 @@
   &.spin {
     .shadow {
       background-image: url(assets/images/spinner-shadow.svg);
+      background-size: 90%;
     }
 
     .body {
       background-image: url(assets/images/spinner.svg);
+      background-size: 90%;
     }
   }
 
