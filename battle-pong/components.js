@@ -18,35 +18,31 @@ function createObject(options){
       restitution: 1
     },
 
-    inputComponents: [],
+    inputComponent: null,
 
     actions: [],
 
-    addInputComponent: function(inputComponent) {
-      this.inputComponents.push(inputComponent);
+    setInputComponent: function(inputComponent) {
+      if (this.inputComponent) {
+        inputComponent.remove();
+      }
+
+      this.inputComponent = inputComponent;
       inputComponent.register(this.actions);
     },
 
     updateActionsFromInputComponents: function () {
 
-      // Prepare a queue to mixdown actions received from inputs
-      var actionsQueue = [];
+      if (this.inputComponent) {
+        var updatedActions = this.inputComponent.update();
 
-      // Store the action changes from each input component
-      for (var i = 0; i < this.inputComponents.length; ++i) {
-        actionsQueue.push(this.inputComponents[i].update());
-      }
+        // For each action, see if the input component registered anything
+        for (action in this.actions) {
 
-      // For each action, see if any of the input components registered anything
-      for (action in this.actions) {
-
-        // Reset
-        this.actions[action] = 0;
-        for (var i = 0; i < actionsQueue.length; ++i) {
-          if (action in actionsQueue[i]) {
-
-            // If it's already set to something, don't set it back to 0
-            this.actions[action] = this.actions[action] || actionsQueue[i][action];
+          // Reset
+          this.actions[action] = 0;
+          if (action in updatedActions) {
+            this.actions[action] = updatedActions[action];
           }
         }
       }
