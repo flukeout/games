@@ -79,15 +79,6 @@
   color: #ac4d9d;
 }
 
-.terrain.two:after {
- content:"";
- width: 0px;
-/* border-left: dashed 2px rgba(255,255,255,.2);*/
- position:absolute;
- left: 0px;
- top: -10%;
- height: 120%;
-}
 
 .terrain.one {
   left: 0;
@@ -196,14 +187,6 @@
   right: 0;
 }
 
-.winner-screen .terrain.two:after {
-  display: none;
-}
-
-.winner-screen .terrain.two:after {
-  display: none;
-}
-
 .terrain {
   position: absolute;
   height: 100%;
@@ -288,4 +271,12 @@
     transform: rotate(-2deg);
   }
 
+}
+
+svg {
+  position: absolute;
+  opacity: .4;
+  top: 0;
+  left: 0;
+  z-index: 999;
 }

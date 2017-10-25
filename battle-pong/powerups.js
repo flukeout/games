@@ -1,13 +1,10 @@
 var powerUp;
 
 var powerUpTypes = ["grow","spin"];
-var powerUpTypes = ["spin"];
+// var powerUpTypes = ["spin"];
 
 function addPowerup(x,y){
-
   var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-
-  console.log(type);
   powerUp = createPowerup(x, y, type);
   powerUp.element.classList.add(type);
   powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));

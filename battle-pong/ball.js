@@ -61,7 +61,7 @@ function createBall(options){
 
     delayBeforeCanSpinMS : 100,
     goingFastSpeedThreshold: 3,
-    lastHitPaddle : false,
+    lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
 
     wooshPlayed: false,
 
@@ -144,7 +144,6 @@ function createBall(options){
       if(this.resolvePaddleHitFlag) {
         this.resolvePaddleHit();
       }
-
 
       // Slowdown - TODO - make this a setting on the ball
       // We can make it slow down if it's been traveling too fast for too long (or too far)
@@ -344,12 +343,11 @@ function createBall(options){
 
     hit: function(obj){
 
-      if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {
-        game.loserLived();
+      if(this.lastHitPaddle == 1 && (obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("paddle-two") > -1)) {
+        this.lastHitPaddle = false;
       }
 
-
-      if(obj.name.indexOf("wall-left") > -1 || obj.name.indexOf("wall-right") > -1) {
+      if(this.lastHitPaddle == 2 && (obj.name.indexOf("wall-left") > -1 || obj.name.indexOf("paddle-one") > -1)) {
         this.lastHitPaddle = false;
       }
 
@@ -358,11 +356,19 @@ function createBall(options){
       if(obj.name.indexOf("paddle") > -1) {
 
         if(obj.name.indexOf("one") > -1) {
-          this.lastHitPaddle = 1; // This relates to the spinning business
+          var paddleIndex = 1;
+          var paddle = paddles[paddleIndex - 1];
+          if(paddle.hasSpinPowerup) {
+            this.lastHitPaddle = 1;
+          }
         }
 
         if(obj.name.indexOf("two") > -1) {
-          this.lastHitPaddle = 2; // This relates to the spinning business
+          var paddleIndex = 2;
+          var paddle = paddles[paddleIndex - 1];
+          if(paddle.hasSpinPowerup) {
+            this.lastHitPaddle = 2;
+          }
         }
 
         this.speedWhenHit = JSON.parse(JSON.stringify(this.physics.speed));

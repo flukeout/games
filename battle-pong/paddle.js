@@ -30,9 +30,13 @@ function connectPaddlesToControls(){
 
   // Let the first paddle use the keyboard regardless
   paddles[0].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
+
+  // For debuggin, it's useful to link up some more
   // paddles[1].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
   // paddles[2].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
   // paddles[3].addInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
+
+
   // If there are more than 0 and less than 2 gamepads, hook them up to paddles!
   for (var i = 0; i < gamepads.length && i < 2; ++i) {
     connectGamepad(gamepads[i]);
@@ -57,12 +61,11 @@ function createPaddle(options) {
       classNames : options.classNames || []
     },
 
-
-
     reset: function(){
       this.element.classList.remove("dead");
       this.element.classList.remove("loser");
       this.element.classList.remove("shaking");
+      this.element.classList.remove("powerup-spin");
       this.mode = "normal";
       this.targetHeight = this.baseHeight;
       this.hasSpinPowerup = false;
@@ -121,21 +124,18 @@ function createPaddle(options) {
         this.spinPowerupCountdown = true;
       }
 
-
-      if(this.mode == "ghost" && obj.name == "ball") {
-        if(obj == ball){
-          this.element.classList.add("dead");
-          this.element.classList.remove("shaking");
-          explodePaddle(this.physics);
-          showMessage({
-            text: "T_T",
-            x: this.physics.position.x,
-            y: this.physics.position.y,
-            fontSize : 40,
-            timeout: 1000,
-          });
-          game.loserDied(); // TODO - emit an event instead
-        }
+      if(this.mode == "ghost" && obj.name.indexOf("ball") > -1) {
+        this.element.classList.add("dead");
+        this.element.classList.remove("shaking");
+        explodePaddle(this.physics);
+        showMessage({
+          text: "T_T",
+          x: this.physics.position.x,
+          y: this.physics.position.y,
+          fontSize : 40,
+          timeout: 1000,
+        });
+        game.loserDied(); // TODO - emit an event instead?
       }
     },
 
@@ -193,14 +193,16 @@ function createPaddle(options) {
 
     init: function(){
 
+
       // This ends the spin powerup when a ball hits the endzone
       var that = this;
+
       document.addEventListener("ballHitEndzone", function(e) {
-        if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
-          that.spinPowerupRemaining = 0;
-          that.hasSpinPowerup = false;
-          that.spinPowerupCountdown = false;
-        }
+        // if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
+        //   that.spinPowerupRemaining = 0;
+        //   that.hasSpinPowerup = false;
+        //   that.spinPowerupCountdown = false;
+        // }
       });
     },
 
@@ -216,7 +218,12 @@ function createPaddle(options) {
           this.element.classList.add("powerup-spin");
         }
         this.hasSpinPowerup = true;
-      } else {
+      }
+
+      if(this.spinPowerupRemaining <= 0 && this.hasSpinPowerup) {
+        this.spinPowerupRemaining = 0;
+        this.hasSpinPowerup = false;
+        this.spinPowerupCountdown = false;
         this.element.classList.remove("powerup-spin");
       }
 

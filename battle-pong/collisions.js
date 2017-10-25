@@ -5,8 +5,8 @@
 // We only pass them on if they're in the "objectsToRender" array
 
 var ballEvents = {
-  'wall-right':   {type: 'ballHitEndzone',    detail: { side: "right" }},
-  'wall-left':    {type: 'ballHitEndzone',    detail: { side: "left" }},
+  'wall-left':    {type: 'ballHitEndzone',    detail: { side: "left",  belongsToPlayer: 0 }},
+  'wall-right':   {type: 'ballHitEndzone',    detail: { side: "right", belongsToPlayer: 1 }},
   'paddle-one':   {type: 'ballHitPaddle',     detail: { player: 1 }},
   'paddle-two':   {type: 'ballHitPaddle',     detail: { player: 2 }}
 };

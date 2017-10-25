@@ -2,16 +2,17 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max: 3,
+    max: 2,
     winner : false,
     loser : false
   },
   terrainLine : 50,
-  terrainChange : 5,
+  terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
+  powerupFrequency: 300,
   // running - game is playing
-  // gameover - game is over (loser screen)
   // roundover - round is over (about to reset)
+  // gameover - game is over (loser screen)
   // finish - finish it
   // pregame - before a game starts
   // paused - game loop is paused
@@ -53,6 +54,7 @@ var game =  {
   },
 
   loserLived: function(){
+    console.log("loser lived");
 
     this.mode = "off";
 
@@ -73,6 +75,8 @@ var game =  {
   },
 
   loserDied: function(){
+
+    console.log("loserDied");
 
     removalList.push(ball);
 
@@ -124,8 +128,9 @@ var game =  {
 
     // TODO - should we base the engine update tick based on elapsed time since last frame?
 
+    // TODO - make the 'chance' thing a variable upTop
     if(!hasPowerup && game.mode == "running") {
-      var chance = getRandom(0, 10);
+      var chance = getRandom(0, this.powerupFrequency);
       if(chance < 1) {
         addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
         hasPowerup = true;
@@ -224,7 +229,7 @@ var game =  {
         ball.element.classList.remove("overtime");
       }
 
-      if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS) {
+      if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS && this.state == "running") {
         this.ballState = "overtime";
         this.elapsedTime = 0;
       }
@@ -312,16 +317,15 @@ var game =  {
       position: { x: x, y: y }
     });
 
-    // var chance = Math.floor(getRandom(0,2));
-    // if(chance == 0) {
-    //   ball.launch(0, -.02);
-    // } else {
-    //   ball.launch(0, .02);
-    // }
-
-    ball.launch(0, 0);
+    // TODO - make this simpler?
+    // Ternamy operator vor y value?
+    var chance = Math.floor(getRandom(0,300));
+    if(chance == 0) {
+      ball.launch(0, -.02);
+    } else {
+      ball.launch(0, .02);
+    }
   },
-
 
   showScore : function(){
     var that = this;
@@ -372,6 +376,7 @@ var game =  {
 
   // Restarts a round
   restart : function(){
+    console.log("restart")
 
     var that = this;
     var messageDelay = 0;
@@ -393,7 +398,6 @@ var game =  {
       p.reset();
     }
 
-    hasPowerup  = false;
     this.mode = "pregame";
     this.terrainLine = 50;
 
@@ -405,7 +409,6 @@ var game =  {
 
   // Updates the score display in the corners of the game
   updateScoreDisplay: function(){
-
     var scoreEls = document.querySelectorAll(".score");
 
     for(var i = 1; i < 3; i++) {
@@ -458,7 +461,10 @@ var game =  {
   // Goes into "finish it" mode.
   gameOver : function(){
 
-    this.mode = "finish";
+    var that = this;
+    setTimeout(function(){
+      that.mode = "finish";
+    }, 50);
 
     document.querySelector("body").classList.add("winner-screen");
 
@@ -487,6 +493,7 @@ var game =  {
       that.score.loser.element.classList.add("shaking");
 
       // Create the ball
+      // TODO make this relative to the paddle X value?
       if(that.score.winner == paddles[0]) {
         var ballX = 600;
       } else {
@@ -500,6 +507,8 @@ var game =  {
         y: paddleY
       });
 
+      ball.element.classList.add('show');
+
     }, 2000);
 
   },
@@ -507,6 +516,9 @@ var game =  {
 
   // When the round is over, but a player hasn't wong the game yet
   roundOver: function() {
+
+    console.log("roundOver");
+
     paddles[0].maxX = false;
     paddles[1].minX = false;
 
@@ -586,11 +598,12 @@ var game =  {
     var xForce = Math.abs(ball.physics.velocity.x);
     var xForceRatio = xForce / 15;
 
-    this.terrainChange = 5 + (xForceRatio * 15);
+    this.terrainChange = 5 + (xForceRatio * 15); // TODO - make the 5 a variable like (minChange)
 
     // Add a message near the impact that indicates
     // the force of the hit (in percentage points)
 
+    // TODO - make the 10 a variable up top somehwere
     if(this.terrainChange >= 10) {
       showMessage({
         text: Math.round(this.terrainChange) + "%",
@@ -754,12 +767,10 @@ function addWalls(options){
 }
 
 
-var frameTick = 0;  // Keeps track of frames for the ball trail effect
-
 // The main game engine, moves things around
 
 var letterIndex = 0;
-var hasPowerup = false;
+var hasPowerup = false; // TODO- make this part of the game object, yo
 var currentTime;
 var lastTime = false;
 var delta;
