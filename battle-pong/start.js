@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     {
       player : 0,
       x: 80,
-      y: 200,
-      height: 100
+      y: 200
     },
     {
       player: 1,
@@ -20,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
       y : 200
     },
     {
-      player : 0,
+      player: 0,
       x: 40,
       y: 200
     },

@@ -3,7 +3,8 @@ var powerUp;
 var powerUpTypes = ["grow","spin"];
 // var powerUpTypes = ["spin"];
 
-function addPowerup(x,y){
+// Adds a random powerup
+function addPowerup(x, y){
   var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
   powerUp = createPowerup(x, y, type);
   powerUp.element.classList.add(type);
@@ -11,7 +12,7 @@ function addPowerup(x,y){
   playSound("bonus");
 }
 
-function createPowerup(x,y, type){
+function createPowerup(x, y, type){
 
   return createObject({
     className : "powerup",
@@ -22,10 +23,10 @@ function createPowerup(x,y, type){
     type : type,
 
     properties : {
-      width: 30,
-      height: 30,
-      x: x - 15,
-      y: y
+      width : 30,
+      height : 30,
+      x : x - 15,
+      y : y
     },
 
     launch : function(x,y){
@@ -40,7 +41,6 @@ function createPowerup(x,y, type){
     hit : function(obj){
 
       var playerHit = false;
-
 
       if(obj.name == "wall-right") {
         playerAffected = 0;

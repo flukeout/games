@@ -71,6 +71,14 @@
   outline: solid 20px rgba(255,255,255,.2);
 }
 
+.terrain {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  width: 50%;
+  transition: width .25s ease-out;
+}
+
 .terrain.one .bigscore {
   color: #3faa7f;
 }
@@ -78,7 +86,6 @@
 .terrain.two .bigscore {
   color: #ac4d9d;
 }
-
 
 .terrain.one {
   left: 0;
@@ -108,9 +115,6 @@
   background: #3faa7f;
 }
 
-.light-up-red {
-  animation: lightupRed 1s ease-out;
-}
 
 .bestof.hide-animation {
   opacity: 0;
@@ -157,44 +161,6 @@
   }
 }
 
-
-@keyframes lightupRed {
-  5% { background: #ac4d9d; }
-}
-
-.light-up-blue {
-  animation: lightupBlue 1s ease-out;
-}
-
-@keyframes lightupBlue {
-  5% { background: #3faa7f; }
-}
-
-.endzone {
-  position: absolute;
-  height: 100%;
-  top: 0;
-  width: 5px;
-  background: white;
-  opacity: 0;
-}
-
-.endzone.one {
-  left: 0;
-}
-
-.endzone.two {
-  right: 0;
-}
-
-.terrain {
-  position: absolute;
-  height: 100%;
-  top: 0;
-  width: 50%;
-  transition: width .25s ease-out;
-}
-
 .bigscore {
   position: absolute;
   top: 55px;
@@ -210,11 +176,8 @@
 
 @keyframes bigScoreAppear {
   0%  {
-    opacity: .0;
+    opacity: 0;
     transform: scale(.9) translateZ(5px);
-  }
-  100%  {
-
   }
 }
 
@@ -234,49 +197,30 @@
    }
 }
 
-
-.starralax {
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
-
-  .layer-1 {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url(assets/images/stars.svg);
-    background-size: 150px;
-    opacity: .5;
-    transform: rotate(2deg);
-  }
-
-  .layer-2 {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url(assets/images/stars.svg);
-    background-size: 125px;
-    opacity: .45;
-  }
-
-  .layer-3 {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url(assets/images/stars.svg);
-    background-size: 100px;
-    opacity: .4;
-    transform: rotate(-2deg);
-  }
-
+.goal-one {
+  position: absolute;
+  width: 100px;
+  right: -5px;
+  opacity: .5;
+  height: 80px;
+  background: yellow;
+  transform: rotateY(90deg);
+  transform-origin: right;
+  z-index: 99999999;
 }
 
-svg {
-  position: absolute;
-  opacity: .4;
-  top: 0;
-  left: 0;
-  z-index: 999;
+.team-1-scored-flash {
+  animation: team-1-scored-flash 1s ease-out;
+}
+
+@keyframes team-1-scored-flash {
+  5% { background: #ac4d9d; }
+}
+
+.team-2-scored-flash {
+  animation: team-2-scored-flash 1s ease-out;
+}
+
+@keyframes team-2-scored-flash {
+  5% { background: #3faa7f; }
 }

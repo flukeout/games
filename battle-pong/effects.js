@@ -133,6 +133,36 @@ function shakeScreen(){
 }
 
 
+function bumpScreen(direction){
+
+  var styleTag = document.createElement("style");
+  document.head.appendChild(styleTag);
+
+  var distance = -5;
+  if(direction == "down") {
+    distance = 5;
+  }
+
+  styleTag.innerHTML = `
+    @keyframes shake-one {
+      30% {
+        transform: translateY(`+ distance + `px);
+        transition-timing-function: ease-out;
+      }
+    }`;
+
+  document.querySelector(".shake-wrapper").style.transitionTimingFunction = "ease-out";
+  document.querySelector(".shake-wrapper").style.animation = "shake-one .2s ease-out";
+
+  setTimeout(function(styleTag,shakeEl) {
+    return function(){
+      styleTag.remove();
+      document.querySelector(".shake-wrapper").style.animation = "";
+    };
+  }(styleTag),250);
+
+}
+
 // Used to add animations by applying a class, then removing it
 // If this happens in rapid succession (less than 1000ms apart,
 // we'll have to do the width trick.

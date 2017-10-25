@@ -1,24 +1,50 @@
-**BUGS**
+### BUGS
 
-* NONE
+*
 
-** Ball options to implement **
-
-* Max speed
-* Max duration over a certain speed
-  * Or, max hits to endzones at certain speed
-
-** Reactions **
-
-* Better reaction for winning
-
-
-**TO-DO**
+### TO-DO
 
 * Increase physics sampling
-* clean up reactions, only one at a time
+* Change game to have player 1, 2, 3, 4 and Team 1, 2
+* Make board width & height variables that can be set in game.js
 
-** To think about **
+
+### Ball options to implement
+
+* Max speed
+* Slow ball down after certain condition met?
+  * Duration of time spent above certain speed limit
+  * Number of endzone hits?
+
+
+### Reactions
+
+* Better reaction for winning around
+* Multiple reactions at once for one player
+  * Bunch of sad faces at once etc.
+* Ability to 'hold' a reaction longer
+*
+
+
+### Nice-to-have
+
+* Add 'flawless win' indicator
+* Once we have this, add a reaction too
+* System for tracking actions and displaying kudos, ex
+  * Show "nice stall" when you slow down a ball from a high speed to a low speed
+  * Can do this by putting actions into an array and parsing them out
+* Track stats
+  * Average shot speed
+  * Fastest shot
+  * Total rotations
+  * Own goals
+
+
+
+
+
+
+### To think about
 
 * Powerups
   * Should we change when / how they go away?
@@ -30,6 +56,3 @@
   * Since it's unintentional, but fun, what are the rules?
 
 
-Nice-to-have
-
-* Add 'flawless win' indicator
