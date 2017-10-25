@@ -59,13 +59,16 @@ function createPaddle(options) {
       classNames : options.classNames || []
     },
 
-
     reset: function(){
       this.element.classList.remove("dead");
       this.element.classList.remove("loser");
       this.element.classList.remove("shaking");
+      this.element.classList.remove("powerup-spin");
       this.mode = "normal";
       this.targetHeight = this.baseHeight;
+      this.hasSpinPowerup = false;
+      this.spinPowerupRemaining = 0;
+      this.spinPowerupCountdown = false;
     },
 
     physicsOptions : {
@@ -108,20 +111,23 @@ function createPaddle(options) {
 
     hit: function(obj) {
       // If I'm a ghost and I get hit by a ball I die (at the end of a game)
-      if(this.mode == "ghost" && obj == ball) {
-        if(obj == ball){
-          this.element.classList.add("dead");
-          this.element.classList.remove("shaking");
-          explodePaddle(this.physics);
-          showMessage({
-            text: "T_T",
-            x: this.physics.position.x,
-            y: this.physics.position.y,
-            fontSize : 40,
-            timeout: 1000,
-          });
-          game.loserDied(); // TODO - emit an event instead
-        }
+
+      if(obj.name == "ball" && this.spinPowerupRemaining > 0 && this.spinPowerupCountdown == false) {
+        this.spinPowerupCountdown = true;
+      }
+
+      if(this.mode == "ghost" && obj.name.indexOf("ball") > -1) {
+        this.element.classList.add("dead");
+        this.element.classList.remove("shaking");
+        explodePaddle(this.physics);
+        showMessage({
+          text: "T_T",
+          x: this.physics.position.x,
+          y: this.physics.position.y,
+          fontSize : 40,
+          timeout: 1000,
+        });
+        game.loserDied(); // TODO - emit an event instead?
       }
     },
 
@@ -146,25 +152,79 @@ function createPaddle(options) {
       this.physics.mass = this.baseMass;
     },
 
+    hasSpinPowerup : false,
+    spinPowerupRemaining : 0,
+    spinPowerupCountdown: false,
+    spinPowerupTime : 5500,
+
+
     // When we get a powerup
-    powerup(){
+    powerup(type){
 
-      this.targetHeight = this.height * 1.5;
-      this.element.classList.add("powerup-hit");
+      if(type == "grow") {
+        this.targetHeight = this.height * 1.5;
+        this.element.classList.add("powerup-hit");
 
-      var that = this;
+        var that = this;
 
-      setTimeout(function(){
-        that.targetHeight = that.targetHeight * 1/1.5;
-        if(that.targetHeight < that.baseHeight) {
-          that.targetHeight = that.baseHeight;
-        }
-      }, this.powerupDuration);
+        setTimeout(function(){
+          that.targetHeight = that.targetHeight * 1/1.5;
+          if(that.targetHeight < that.baseHeight) {
+            that.targetHeight = that.baseHeight;
+          }
+        }, this.powerupDuration);
+      }
+
+      // For this powerup, we treat it as having a 'time remaining'
+      // Gets reduced every frame, and added to when we hit a powerup.
+      if(type == "spin") {
+        this.spinPowerupRemaining = this.spinPowerupRemaining + this.spinPowerupTime;
+      }
 
     },
 
+    init: function(){
+
+
+      // This ends the spin powerup when a ball hits the endzone
+      var that = this;
+
+      document.addEventListener("ballHitEndzone", function(e) {
+        // if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
+        //   that.spinPowerupRemaining = 0;
+        //   that.hasSpinPowerup = false;
+        //   that.spinPowerupCountdown = false;
+        // }
+      });
+    },
+
     // This gets called every frame of the game
-    update(){
+    update(delta){
+
+      if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {
+        this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
+      }
+
+      if(this.spinPowerupRemaining > 0) {
+        if(this.hasSpinPowerup == false) {
+          this.element.classList.add("powerup-spin");
+        }
+        this.hasSpinPowerup = true;
+      }
+
+      if(this.spinPowerupRemaining <= 0 && this.hasSpinPowerup) {
+        this.spinPowerupRemaining = 0;
+        this.hasSpinPowerup = false;
+        this.spinPowerupCountdown = false;
+        this.element.classList.remove("powerup-spin");
+      }
+
+
+      if(this.player == 0) {
+        // console.log(this.spinPowerupRemaining, this.hasSpinPowerup);
+      }
+
+      // End spin stuff
 
       if(this.height < this.targetHeight) {
         this.changeHeight("grow");

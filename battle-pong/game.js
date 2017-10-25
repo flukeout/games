@@ -2,28 +2,33 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max: 3,
-    winner : false,
-    loser : false
+    max : 2,         // First to this number wins
+    winner : false,  // Holds the winning paddle object
+    loser : false    // Holds the losing paddle object
   },
-  terrainLine : 50,
-  terrainChange : 5,
+
+  terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
+  terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
+
+  powerupFrequency: 300, // A powerup appears once in every X frames
 
   // running - game is playing
-  // gameover - game is over (loser screen)
   // roundover - round is over (about to reset)
+  // gameover - game is over (loser screen)
   // finish - finish it
   // pregame - before a game starts
   // paused - game loop is paused
   // startup - kickstarting the game loop
+  // off - ?
   mode : "off",
 
   boardWidth : 0,
   boardHeight: 0,
 
   terrainOneEl : "",
-  terrainTwoEl: "",
-  worldE: "",
+  terrainTwoEl : "",
+  worldE : "",
+  bodyEl : "",
 
   timeBetweenRoundsMS: 1000, // Time between rounds of the game
 
@@ -31,6 +36,8 @@ var game =  {
     this.worldEl = document.querySelector(".world");
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
+
+    this.bodyEl = document.querySelector("body");
 
     this.terrainOneEl = document.querySelector(".terrain.one");
     this.terrainTwoEl = document.querySelector(".terrain.two");
@@ -41,60 +48,74 @@ var game =  {
     document.addEventListener("ballHitEndzone", function(e) {
 
       var scoringPlayer = 1;
-      var losingPlayer = 2;
 
       if(e.detail.side == "left") {
         scoringPlayer = 2;
-        losingPlayer = 1;
       }
 
       that.playerScored(scoringPlayer);
     });
+
+    // Adds a little effect when the ball hits the top or bottom side
+    document.addEventListener("ballHitSide", function(e) {
+      if(ball.physics.speed > 4) {
+        if(e.detail.side == "top") {
+          bumpScreen("up");
+        } else {
+          bumpScreen("down");
+        }
+      }
+    });
   },
 
   loserLived: function(){
-
     this.mode = "off";
-
     this.showMessage("HA! MISSED!", 1500);
+
+    // TODO - move this stuff to the paddle, add a setType function?
     this.score.loser.mode = "normal";
-    this.score.loser.element.classList.remove("loser");   // TODO - move to the paddle... setType, setMode..?
-    this.score.loser.element.classList.remove("shaking"); // TODO - move to the paddle...
+    this.score.loser.element.classList.remove("loser");
+    this.score.loser.element.classList.remove("shaking");
+
+    setTimeout(function(){
+      removalList.push(ball);
+    }, 1500);
 
     var that = this;
 
     setTimeout(function(){
-      removalList.push(ball);
-    },1500);
-
-    setTimeout(function(){
       that.restart();
-    },2500);
+    }, 2500);
   },
 
   loserDied: function(){
-
     removalList.push(ball);
 
     var that = this;
 
     setTimeout(function(){
       that.showMessage("YOU MONSTER", 1750);
-    },1000);
+    }, 1000);
 
     setTimeout(function(){
       that.restart()
-    },3000);
+    }, 3000);
   },
 
   // Keeps track of where the ball is and for how long so
   // we can apply penalties if someone is hogging it.
 
   previousTime: false,
+
+  // TODO - change this to elapsedTimeInZone, it only keeps track of when a slow-moving
+  // ball hangs out in one terrain too long
   elapsedTime : 0,
 
+
+  // TODO - rename to reference 'terrain' maybe for consistency
   ballZone : false,
   lastBallZone : false,
+
   ballState : "neutral",
 
   run: function () {
@@ -109,84 +130,79 @@ var game =  {
       requestAnimationFrame(loop);
     })();
   },
+
   pause: function () {
-    this.mode = 'paused';
+    this.mode = "paused";
   },
 
-  // layer1Pos : 0,
-  // layer2Pos : 0,
-  // layer3Pos : 0,
-
-  xVel : 2,
-
   step : function(){
-    currentTime = Date.now();
+    var currentTime = Date.now();
+    var delta;
 
-    if(lastTime){
+    if(lastTime) {
       delta = currentTime - lastTime;
     }
 
-
-    // var velRatio = (-50 + game.terrainLine) / 50;
-    //
-    // this.xVel = velRatio * 10;
-    //
-    // document.querySelector(".layer-1").style.backgroundPosition = -this.layer1Pos + "px 0px";
-    // document.querySelector(".layer-2").style.backgroundPosition = -this.layer2Pos + "px 0px";
-    // document.querySelector(".layer-3").style.backgroundPosition = -this.layer3Pos + "px 0px";
-    //
-    // this.layer1Pos = this.layer1Pos + this.xVel;
-    // this.layer2Pos = this.layer2Pos + this.xVel/1.2;
-    // this.layer3Pos = this.layer3Pos + this.xVel/1.5;
-
     lastTime = currentTime;
 
-    // TODO - should we base the engine update tick based on elapsed time since last frame?
 
     if(!hasPowerup && game.mode == "running") {
-      var chance = getRandom(0, 300);
+      var chance = getRandom(0, this.powerupFrequency);
       if(chance < 1) {
-        addPowerup(game.boardWidth * game.terrainLine/100, getRandom(0, game.boardHeight - 50));
+
+        // TODO - change to event, and add listener in powerup.js
+        addPowerup(game.boardWidth * game.terrainLinePercent/100, getRandom(0, game.boardHeight - 50));
+
+        // TODO - make this a property of the game object, and rename to hasActivePowerup?
         hasPowerup = true;
       }
     }
 
+    // TODO - increase physics sampling rate
     Engine.update(engine, 1000 / 60);
-    // Engine.update(engine, delta);
+
+
+    // Tilts the board depending on where the ball is
+
+    var deltaX = 0;
+    var deltaY = 0;
 
     if(ball) {
-      var deltaX = 400 - ball.physics.position.x;
-      var deltaY = 250 - ball.physics.position.y;
-      if(ball.deleted == true) {
-        var deltaX = 0;
-        var deltaY = 0;
+      if(ball.deleted != true) {
+        deltaX = this.boardWidth / 2 - ball.physics.position.x;
+        deltaY = this.boardHeight / 2 - ball.physics.position.y;
       }
-    } else {
-      var deltaX = 0;
-      var deltaY = 0;
     }
 
-    var rotateX = 5 * deltaY/250 + 20;
-    var rotateY = -5 * deltaX/400;
+    var maxRotation = 20;
+    var rotateXDeg =  maxRotation * deltaY / this.boardHeight / 2 + 20;
+    var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
 
     if(game.mode != "off") {
-      tiltEl.style.transform = "rotateX("+rotateX+"deg) rotateY("+rotateY+"deg)";
+      tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
     }
 
+    // Iterate over all of the objects are are updating on screen
     objectsToRender.forEach(function (obj) {
 
+      // TODO - remove this because the ball has a function that runs every frame anyway now
+      // so we can add that logic internally in the ball.
       if(obj == ball) {
         if(obj.gotHit) {
           obj.resolveHit();
         }
       }
 
+
+      // TODO - pick a name for this function and standardize
+      // "step" might be better than run or update actually, since we use that for the game
+      // maybe "frameStep" for clarity;
       if(obj.run) {
         obj.run(delta);
       }
 
       if(obj.update){
-        obj.update();
+        obj.update(delta);
       }
 
       // Update the element position & angle
@@ -201,28 +217,27 @@ var game =  {
       } else {
         el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
       }
-
     });
 
-    drawParticles();
+    drawParticles(); // Updates any particles we might have
 
     // Some vars for easy tweaking
+    // TODO - move these to the top of the game object
+
     var delayTimeoutMS = 5000;   // How long we let a slow ball stay on one side before penalizing
     var penaltyTimeoutMS = 500;  // How often we penalize once things are too slow
     var percentPenalty = 2;      // How many percent of the field we penalize
+    var slowSpeedCutoff = 2.5;
 
-    //var middleBuffer;
-
-    var currentTime = Date.now();
-    var middleX = this.boardWidth * this.terrainLine/100;
-
+    var terrainCenterX = this.boardWidth * this.terrainLinePercent/100;
 
     if (ball) {
+
       // Figure out what player zone we are in
-      if(ball.physics.position.x > middleX) {
-        this.ballZone = 2;
-      } else {
+      if(ball.physics.position.x < terrainCenterX) {
         this.ballZone = 1;
+      } else {
+        this.ballZone = 2;
       }
 
       if(this.ballZone != this.lastBallZone) {
@@ -233,17 +248,18 @@ var game =  {
 
       this.lastBallZone = this.ballZone;
 
-      // Ff the ball is going slower than 2.5
+      // If the ball is going slower than 2.5
       // We start keeping track of time
-      if(this.previousTime && ball.physics.speed < 2.5) {
-        var delta =  currentTime - this.previousTime;
+
+      if(this.previousTime && ball.physics.speed < slowSpeedCutoff) {
         this.elapsedTime = this.elapsedTime + delta;
       } else {
         this.elapsedTime = 0;
+        // TODO - make this an event, or at least a method on the ball?
         ball.element.classList.remove("overtime");
       }
 
-      if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS) {
+      if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS && this.mode == "running") {
         this.ballState = "overtime";
         this.elapsedTime = 0;
       }
@@ -260,6 +276,7 @@ var game =  {
       this.previousTime = currentTime;
     }
 
+    // Remove things we don't need
     if (removalList.length > 0) {
       removalList.forEach(function (obj) {
         if (obj.deleted) return;
@@ -276,20 +293,20 @@ var game =  {
   playerDelay : function(player, penalty){
     // Move the terrain line accordingly
     if(player === 1) {
-      this.terrainLine = this.terrainLine - penalty;
+      this.terrainLinePercent = this.terrainLinePercent - penalty;
     } else {
-      this.terrainLine = this.terrainLine + penalty;
+      this.terrainLinePercent = this.terrainLinePercent + penalty;
     }
 
-    if(this.terrainLine > 100) {
-      this.terrainLine = 100;
-    } else if(this.terrainLine < 0) {
-      this.terrainLine = 0;
+    if(this.terrainLinePercent > 100) {
+      this.terrainLinePercent = 100;
+    } else if(this.terrainLinePercent < 0) {
+      this.terrainLinePercent = 0;
     }
 
     this.updateBounds();
 
-    if(this.terrainLine === 100 || this.terrainLine === 0) {
+    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver();
     }
   },
@@ -322,25 +339,28 @@ var game =  {
 
   launchBall : function(){
     ball = createBall();
+
+    // TODO - Move a lot of this stuff to the ball object?
     ball.element.classList.add('show');
 
     var y = this.boardHeight / 2 - 15;
     var x = this.boardWidth / 2;
 
+
     Matter.Body.set(ball.physics, {
-      position: { x: x, y: y }
+      position: { x : x, y : y }
     });
 
-    // var chance = Math.floor(getRandom(0,2));
-    // if(chance == 0) {
-      // ball.launch(0, -.02);
-    // } else {
-      // ball.launch(0, .02);
-    // }
-
-    ball.launch(-.01, 0);
+    // TODO - make this simpler?
+    // * Ternamy operator vor y value?
+    //
+    var chance = Math.floor(getRandom(0,300));
+    if(chance === 0) {
+      ball.launch(0, -.02);
+    } else {
+      ball.launch(0, .02);
+    }
   },
-
 
   showScore : function(){
     var that = this;
@@ -391,7 +411,6 @@ var game =  {
 
   // Restarts a round
   restart : function(){
-
     var that = this;
     var messageDelay = 0;
 
@@ -403,18 +422,17 @@ var game =  {
       that.launchBall();
     }, 1500);
 
-    document.querySelector("body").classList.remove("winner-screen");
-    document.querySelector("body").classList.remove("winner-two");
-    document.querySelector("body").classList.remove("winner-one");
+    this.bodyEl.classList.remove("winner-screen");
+    this.bodyEl.classList.remove("winner-two");
+    this.bodyEl.classList.remove("winner-one");
 
     for(var i = 0; i < paddles.length; i++){
       var p = paddles[i];
       p.reset();
     }
 
-    hasPowerup  = false;
     this.mode = "pregame";
-    this.terrainLine = 50;
+    this.terrainLinePercent = 50;
 
     this.updateBounds();
 
@@ -424,7 +442,6 @@ var game =  {
 
   // Updates the score display in the corners of the game
   updateScoreDisplay: function(){
-
     var scoreEls = document.querySelectorAll(".score");
 
     for(var i = 1; i < 3; i++) {
@@ -450,9 +467,9 @@ var game =  {
 
       if(this.mode == "running") {
         if(p.player == 0) {
-          p.maxX = this.boardWidth * (this.terrainLine/100);
+          p.maxX = this.boardWidth * (this.terrainLinePercent/100);
         } else if (p.player == 1) {
-          p.minX = this.boardWidth * (this.terrainLine/100);
+          p.minX = this.boardWidth * (this.terrainLinePercent/100);
         }
       }
 
@@ -465,7 +482,7 @@ var game =  {
       }
     }
 
-    var leftWidth = Math.floor(this.boardWidth * this.terrainLine/100);
+    var leftWidth = Math.floor(this.boardWidth * this.terrainLinePercent/100);
     var rightWidth = this.boardWidth - leftWidth;
 
     this.terrainOneEl.style.width = leftWidth + "px";
@@ -477,9 +494,12 @@ var game =  {
   // Goes into "finish it" mode.
   gameOver : function(){
 
-    this.mode = "finish";
+    var that = this;
+    setTimeout(function(){
+      that.mode = "finish";
+    }, 50);
 
-    document.querySelector("body").classList.add("winner-screen");
+    this.bodyEl.classList.add("winner-screen");
 
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");
@@ -488,10 +508,10 @@ var game =  {
 
     if(this.score.winner == paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
-      document.querySelector("body").classList.add("winner-one");
+      this.bodyEl.classList.add("winner-one");
     } else {
       this.showMessage("Player 2 Wins!", 1500);
-      document.querySelector("body").classList.add("winner-two");
+      this.bodyEl.classList.add("winner-two");
     }
 
     this.score.player1 = 0;
@@ -506,6 +526,7 @@ var game =  {
       that.score.loser.element.classList.add("shaking");
 
       // Create the ball
+      // TODO make this relative to the paddle X value?
       if(that.score.winner == paddles[0]) {
         var ballX = 600;
       } else {
@@ -519,6 +540,8 @@ var game =  {
         y: paddleY
       });
 
+      ball.element.classList.add('show');
+
     }, 2000);
 
   },
@@ -526,6 +549,7 @@ var game =  {
 
   // When the round is over, but a player hasn't wong the game yet
   roundOver: function() {
+
     paddles[0].maxX = false;
     paddles[1].minX = false;
 
@@ -533,10 +557,12 @@ var game =  {
 
     this.mode = "roundover";
 
-    document.querySelector("body").classList.add("winner-screen");
+    this.bodyEl.classList.add("winner-screen");
+
     var winner, loser;
 
-    if(this.terrainLine == 100) {
+    // TODO - change to Team 1 & Team 2
+    if(this.terrainLinePercent == 100) {
       winner = paddles[0];
       loser = paddles[1];
       this.score["player1"] = this.score["player1"] + 1;
@@ -549,9 +575,9 @@ var game =  {
     this.updateScoreDisplay();
 
     if(winner == paddles[0]) {
-      document.querySelector("body").classList.add("winner-one");
+      this.bodyEl.classList.add("winner-one");
     } else {
-      document.querySelector("body").classList.add("winner-two");
+      this.bodyEl.classList.add("winner-two");
     }
 
     if(this.score["player2"] == this.score.max || this.score["player1"] == this.score.max) {
@@ -578,21 +604,27 @@ var game =  {
       return;
     }
 
-    // Make an explosion when someone scores
-    makeExplosion(ball.physics.position.x,ball.physics.position.y, 75);
-
-    // Flash some color on the body element to correspond to the player
-    // who scored.
-    // TODO - move this to a utils function that...
-    // * effects.addTemporaryClassName(el, className, durationMS)
-    var lightupEl = document.querySelector("body");
-
-
-    if(player == 1) {
-      addTemporaryClassName(lightupEl, "light-up-red", 1000)
-    } else if (player == 2) {
-      addTemporaryClassName(lightupEl, "light-up-blue", 1000);
+    var scoredByPlayerNum = player;
+    var scoredOnPlayerNum = 2;
+    if(scoredByPlayerNum == 2) {
+      scoredOnPlayerNum = 1;
     }
+
+    // Make an explosion when someone scores
+    var blastDirection = "left";
+
+    if(scoredByPlayerNum == 2) {
+      blastDirection = "right";
+    }
+
+    makeExplosion(ball.physics.position.x, ball.physics.position.y, 75, blastDirection);
+
+    // Flash some color on the body element to correspond to the player/team who scored.
+
+
+    // TODO - remove 'red' and 'blue' reference, make it like team-one color, team-two etc
+
+    addTemporaryClassName(this.bodyEl, "team-" + scoredByPlayerNum + "-scored-flash", 1000)
 
     // Check horizontal velocity of the ball
     // the faster it hits an endzone the more that
@@ -601,11 +633,12 @@ var game =  {
     var xForce = Math.abs(ball.physics.velocity.x);
     var xForceRatio = xForce / 15;
 
-    this.terrainChange = 5 + (xForceRatio * 15);
+    this.terrainChange = 5 + (xForceRatio * 15); // TODO - make the 5 a variable like (minChange)
 
     // Add a message near the impact that indicates
     // the force of the hit (in percentage points)
 
+    // TODO - make the 10 a variable up top somehwere
     if(this.terrainChange >= 10) {
       showMessage({
         text: Math.round(this.terrainChange) + "%",
@@ -616,8 +649,8 @@ var game =  {
       });
 
       document.dispatchEvent(new CustomEvent("emotion", {detail: {
-        player: player,
-        type: "winning"
+        player: scoredOnPlayerNum,
+        type: "losing"
       }}));
     }
 
@@ -633,25 +666,25 @@ var game =  {
       className = "blue-chunk";
     }
 
-    makeTerrainChunks(this.terrainLine, modifier, className, this.boardWidth, this.boardHeight);
+    makeTerrainChunks(this.terrainLinePercent, modifier, className, this.boardWidth, this.boardHeight);
 
     // Move the terrain line accordingly
     if(player === 1) {
-      this.terrainLine = this.terrainLine + this.terrainChange;
+      this.terrainLinePercent = this.terrainLinePercent + this.terrainChange;
     } else {
-      this.terrainLine = this.terrainLine - this.terrainChange;
+      this.terrainLinePercent = this.terrainLinePercent - this.terrainChange;
     }
 
-    if(this.terrainLine > 100) {
-      this.terrainLine = 100;
-    } else if(this.terrainLine < 0) {
-      this.terrainLine = 0;
+    if(this.terrainLinePercent > 100) {
+      this.terrainLinePercent = 100;
+    } else if(this.terrainLinePercent < 0) {
+      this.terrainLinePercent = 0;
     }
 
     // Changes the
     this.updateBounds();
 
-    if(this.terrainLine === 100 || this.terrainLine === 0) {
+    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver();
     }
 
@@ -769,12 +802,10 @@ function addWalls(options){
 }
 
 
-var frameTick = 0;  // Keeps track of frames for the ball trail effect
-
 // The main game engine, moves things around
 
 var letterIndex = 0;
-var hasPowerup = false;
+var hasPowerup = false; // TODO- make this part of the game object, yo
 var currentTime;
 var lastTime = false;
 var delta;

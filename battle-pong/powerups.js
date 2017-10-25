@@ -1,13 +1,18 @@
 var powerUp;
 
-function addPowerup(x,y){
-  powerUp = createPowerup(x,y);
-  powerUp.physics.mass = 2;
+var powerUpTypes = ["grow","spin"];
+// var powerUpTypes = ["spin"];
+
+// Adds a random powerup
+function addPowerup(x, y){
+  var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+  powerUp = createPowerup(x, y, type);
+  powerUp.element.classList.add(type);
   powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
   playSound("bonus");
 }
 
-function createPowerup(x,y){
+function createPowerup(x, y, type){
 
   return createObject({
     className : "powerup",
@@ -15,15 +20,17 @@ function createPowerup(x,y){
     gotHit : false,
     gotHitFlag : false,
     hitBy : "",
+    type : type,
+
     properties : {
-      width: 30,
-      height: 30,
-      x: x - 15,
-      y: y
+      width : 30,
+      height : 30,
+      x : x - 15,
+      y : y
     },
 
     launch : function(x,y){
-      Matter.Body.applyForce(this.physics, this.physics.position, {x: x,y:y});
+      Matter.Body.applyForce(this.physics, this.physics.position, {x: x, y: y});
     },
 
     physicsOptions : {
@@ -33,38 +40,34 @@ function createPowerup(x,y){
 
     hit : function(obj){
 
-      var hit = false;
+      var playerHit = false;
 
       if(obj.name == "wall-right") {
-        for(var i = 0; i < paddles.length; i++){
-          var paddle = paddles[i];
-          if(paddle.player == 0) {
-            paddle.powerup();
-          }
-        }
-        hit = true;
+        playerAffected = 0;
+        playerHit = true;
       }
 
       if(obj.name == "wall-left") {
-        for(var i = 0; i < paddles.length; i++){
-          var paddle = paddles[i];
-          if(paddle.player == 1) {
-            paddle.powerup();
-          }
-        }
-        hit = true;
+        playerAffected = 1;
+        playerHit = true;
       }
 
-      if(hit){
+      if(playerHit){
+
+        for(var i = 0; i < paddles.length; i++){
+          var paddle = paddles[i];
+          if(paddle.player == playerAffected) {
+            paddle.powerup(this.type);
+          }
+        }
+
         removalList.push(this);
         playSound("coin");
         hasPowerup = false;
-      }
 
-      var angle = Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180 / Math.PI;
+        var angle = Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180 / Math.PI;
 
-      if(hit) {
-        for(var i = 0; i < 5; i++) {
+          for(var i = 0; i < 5; i++) {
           var options = {
             x : this.physics.position.x - 15,
             y : this.physics.position.y - 15,

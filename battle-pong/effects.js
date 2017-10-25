@@ -1,7 +1,11 @@
 // Adds a bomb to the board at x,y
 // Pixel position, not grid position
 
-function makeExplosion(xposition, yposition, size){
+function makeExplosion(xposition, yposition, size, blastDirection){
+
+  if(!blastDirection) {
+    blastDirection = "all";
+  }
 
   playSound("boom");
   shakeScreen();
@@ -59,21 +63,32 @@ function makeExplosion(xposition, yposition, size){
     // makeParticle(options);
   }
 
+
   // Blast lines that eminate from the center of the bomb
   for(var i = 0; i < getRandom(8,12); i++){
     var options = {
-      x : xposition + 8,
-      y : yposition + 8,
+      x : xposition,
+      y : yposition,
       zR : getRandom(0,360),
       width: 4,
-      height: getRandom(60,100),
+      height: getRandom(60,120),
       className : 'blast-line',
       lifespan: 200,
       o: .4,
       oV: -.01
     }
 
-    var percentage = 100 * 15 / options.height; // Percent along blast line where the white should start.
+    if(blastDirection == "left") {
+      options.zR = getRandom(30, 150);
+      options.x = options.x + 10;
+    }
+
+    if(blastDirection == "right") {
+      options.zR = getRandom(210, 330);
+      options.x = options.x - 10;
+    }
+
+    var percentage = 5; // Percent along blast line where the white should start.
     options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
     makeParticle(options);
   }
@@ -117,6 +132,36 @@ function shakeScreen(){
 
 }
 
+
+function bumpScreen(direction){
+
+  var styleTag = document.createElement("style");
+  document.head.appendChild(styleTag);
+
+  var distance = -5;
+  if(direction == "down") {
+    distance = 5;
+  }
+
+  styleTag.innerHTML = `
+    @keyframes shake-one {
+      30% {
+        transform: translateY(`+ distance + `px);
+        transition-timing-function: ease-out;
+      }
+    }`;
+
+  document.querySelector(".shake-wrapper").style.transitionTimingFunction = "ease-out";
+  document.querySelector(".shake-wrapper").style.animation = "shake-one .2s ease-out";
+
+  setTimeout(function(styleTag,shakeEl) {
+    return function(){
+      styleTag.remove();
+      document.querySelector(".shake-wrapper").style.animation = "";
+    };
+  }(styleTag),250);
+
+}
 
 // Used to add animations by applying a class, then removing it
 // If this happens in rapid succession (less than 1000ms apart,

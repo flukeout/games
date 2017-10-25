@@ -62,7 +62,6 @@ function loadSound(name){
 }
 
 function playSound(name, options){
-
   var sound = sounds[name];
   var buffer = sound.buffer;
 

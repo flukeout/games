@@ -38,7 +38,7 @@ function createBall(options){
       "BOOP!"
     ],
     wordInProgress : false,
-    // lastHitBy : "",
+
     wordString : false,
     wordDirection : "",
     letterIndex : 0,
@@ -55,13 +55,13 @@ function createBall(options){
     // This slows the ball down after it is going too fast for too long
     goingFast: false,
     timeSpentGoingFastMS: 0,
-    timeAllowedGoingFastMS : 2000,
-    delayBeforeCanSpinMS : 200,
+    timeAllowedGoingFastMS : 5000, // max time to have spinmode
 
-    goingFastSpeedThreshold: 11,
     slowdownRatio: .995,
 
-    lastHitPaddle : false,
+    delayBeforeCanSpinMS : 100,
+    goingFastSpeedThreshold: 3,
+    lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
 
     wooshPlayed: false,
 
@@ -119,27 +119,39 @@ function createBall(options){
 
     },
 
+    frameTicks : 0,
+
     run: function(delta) {
 
-      this.canSpin = this.checkSpinConditions(delta);
+      this.canSpin = false;
 
+      if(this.lastHitPaddle != false) {
+        var relatedPaddle = paddles[this.lastHitPaddle- 1];
+        if(relatedPaddle.hasSpinPowerup == true) {
+          this.canSpin = true;
+        }
+      }
+
+      // this.canSpin = this.checkSpinConditions(delta);
+
+      // TODO - fix how this is added / removed, we don't want to do it every frame
       if(this.canSpin){
-        this.element.querySelector(".body").classList.add("canSpin-" + this.lastHitPaddle);
+        this.element.querySelector(".body").classList.add("canSpin");
       } else {
-        this.element.querySelector(".body").classList.remove("canSpin-1");
-        this.element.querySelector(".body").classList.remove("canSpin-2");
+        this.element.querySelector(".body").classList.remove("canSpin");
       }
 
       if(this.resolvePaddleHitFlag) {
         this.resolvePaddleHit();
       }
 
-      // Slowdown
+      // Slowdown - TODO - make this a setting on the ball
+      // We can make it slow down if it's been traveling too fast for too long (or too far)
+      // Or maybe after two endzone hits in a row
       // Matter.Body.setVelocity(this.physics, {
       //   x : this.physics.velocity.x * this.slowdownRatio,
       //   y : this.physics.velocity.y * this.slowdownRatio
       // });
-
 
       // All this crap below just relates to curving the ball
       // and adding the spinning animation.
@@ -182,45 +194,79 @@ function createBall(options){
         }
         this.wooshPlayed = false;
       } else {
+
+        // Increase the speed of the ball if it's going too slow while spinning
+        // TODO - make a separate function for decreasing / increasing velocity that accepts
+        // a percentage?
+
+
+        // While spinning...
+        if(this.physics.speed < 9) {
+          Matter.Body.setVelocity(this.physics, {
+            x : this.physics.velocity.x * 1.03,
+            y : this.physics.velocity.y * 1.03
+          });
+        }
+
         if(this.wooshPlayed == false && Math.abs(this.rotationVelocity) == this.rotationVelocityMax){
           playSound("woosh");
           this.wooshPlayed = true;
         }
+
       }
 
-        this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
-
-        var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
-
-        var scaleMin = .5;
-        var scaleMax = 1.2;
-        var scale = scaleMin + (scaleMax - scaleMin) * rotationRatio;
-
-        var oMin = -.2;
-        var oMax = .35;
-        var opacity = oMin + (oMax - oMin) * rotationRatio;
-        //opacity = 1;
-
-        var modifier = 1; // Reverses the rotation
-
-        if(this.rotationVelocity < 0) {
-          modifier = modifier * -1;
+      if(this.frameTicks > 1 & this.physics.speed > 7) {
+        if(Math.abs(this.rotationVelocity) > 0 || rotating){
+          var options = {
+            x : this.physics.position.x - 15,
+            y : this.physics.position.y - 15,
+            width : 30,
+            oV: -.02,
+            scaleV: -.01,
+            height: 30,
+            className : 'spinSquare',
+            lifespan: 125
+          }
+          makeParticle(options);
         }
+        this.frameTicks = 0;
+      } else {
+        this.frameTicks++;
+      }
 
-        this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
-        this.element.querySelector(".body").style.transform = "rotate("+ this.displayAngle +"deg)";
-        this.element.querySelector(".spinny").style.opacity = opacity;
+      this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
 
-        // For debugging, displays the angle of the ball movement and 'curve force'
-        document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
-        document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
 
-        var newX = Math.sin(a) *  .00005 * this.physics.speed * rotationRatio;
-        var newY = Math.cos(a) * -.00005 * this.physics.speed * rotationRatio;
+      var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
 
-        if(rotating && this.physics.speed > 2) {
-          Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });
-        }
+      var scaleMin = .5;
+      var scaleMax = 1.2;
+      var scale = scaleMin + (scaleMax - scaleMin) * rotationRatio;
+
+      var oMin = -.2;
+      var oMax = .35;
+      var opacity = oMin + (oMax - oMin) * rotationRatio;
+
+      var modifier = 1; // Reverses the rotation
+
+      if(this.rotationVelocity < 0) {
+        modifier = modifier * -1;
+      }
+
+      this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
+      this.element.querySelector(".body").style.transform = "rotate("+ this.displayAngle +"deg)";
+      this.element.querySelector(".spinny").style.opacity = opacity;
+
+      // For debugging, displays the angle of the ball movement and 'curve force'
+      // document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
+      // document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
+
+      var newX = Math.sin(a) *  .000075 * this.physics.speed * rotationRatio; //.00005
+      var newY = Math.cos(a) * -.000075 * this.physics.speed * rotationRatio; //.00005
+
+      if(rotating && this.physics.speed > 2) {
+        Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });
+      }
 
       // --Spinning ball garbage ends here.
 
@@ -297,26 +343,32 @@ function createBall(options){
 
     hit: function(obj){
 
-      if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {
-        game.loserLived();
-      }
-
-
-      if(obj.name.indexOf("wall-left") > -1 || obj.name.indexOf("wall-right") > -1) {
+      if(this.lastHitPaddle == 1 && (obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("paddle-two") > -1)) {
         this.lastHitPaddle = false;
       }
 
+      if(this.lastHitPaddle == 2 && (obj.name.indexOf("wall-left") > -1 || obj.name.indexOf("paddle-one") > -1)) {
+        this.lastHitPaddle = false;
+      }
 
       this.velocityWhenHit = JSON.parse(JSON.stringify(this.physics.velocity));
 
       if(obj.name.indexOf("paddle") > -1) {
 
         if(obj.name.indexOf("one") > -1) {
-          this.lastHitPaddle = 1; // This relates to the spinning business
+          var paddleIndex = 1;
+          var paddle = paddles[paddleIndex - 1];
+          if(paddle.hasSpinPowerup) {
+            this.lastHitPaddle = 1;
+          }
         }
 
         if(obj.name.indexOf("two") > -1) {
-          this.lastHitPaddle = 2; // This relates to the spinning business
+          var paddleIndex = 2;
+          var paddle = paddles[paddleIndex - 1];
+          if(paddle.hasSpinPowerup) {
+            this.lastHitPaddle = 2;
+          }
         }
 
         this.speedWhenHit = JSON.parse(JSON.stringify(this.physics.speed));
@@ -330,7 +382,6 @@ function createBall(options){
 
       this.gotHit = true;
     },
-
 
     // After a paddle hit, we want to check if the ball is going
     // fast enough, and if the hit imparted it with more speed.
