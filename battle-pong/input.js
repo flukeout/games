@@ -17,21 +17,76 @@ var gamepadInputMappings = {
       8: "select",
       9: "start",
       10: "analogLeft",
-      11: "dPadUp",
-      12: "dPadDown",
-      13: "dPadLeft",
-      14: "dPadRight",
+      11: "analogRight",
+      12: "dPadUp",
+      13: "dPadDown",
+      14: "dPadLeft",
       15: "dPadRight",
       16: "home"
     },
     axes: {
-      0: "leftX",
-      1: "leftY",
-      2: "rightX",
-      3: "rightY"
+      0: "analogLeftX",
+      1: "analogLeftY",
+      2: "analogRightX",
+      3: "analogRightY"
     }
   }
 };
+
+window.GamepadManager = (function () {
+  var gamepads;
+  var gamepadsInUse = [];
+
+  function isGamepadInUse(id) {
+    return gamepadsInUse.indexOf(id) > -1;
+  }
+
+  // This seems to fix a weird bug where values aren't actually updated if this isn't called each frame.
+  // Pretty annoying.
+  // TODO: Investigate or maybe file a bug on Chrome or something.
+  function refreshGamepads() {
+    gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+  }
+
+  function getGamepads() {
+    var gamepadList = [];
+    
+    refreshGamepads();
+
+    for (var i = 0; i < gamepads.length; ++i) {
+      if (gamepads[i]) {
+        gamepadList.push(gamepads[i]);
+      }
+    }
+
+    return gamepadList;
+  }
+
+  return {
+    refreshGamepads: refreshGamepads,
+    useGamepad: function(id) {
+      gamepadsInUse.push(id);
+    },
+    releaseGamepad: function(id) {
+      if (isGamepadInUse(id)) {
+        gamepadsInUse.splice(gamepadsInUse.indexOf(id), 1);
+      }
+    },
+    getGamepads: getGamepads,
+    getUnusedGamepad: function () {
+      getGamepads();
+      for (var i = 0; i < gamepads.length; ++i) {
+        if (!isGamepadInUse(gamepads[i])) {
+          return gamepads[i];
+        }
+      }
+      return null;
+    },
+    isGamepadInUse: isGamepadInUse
+  };
+
+  gamepads = this.getGamepads();
+})();
 
 function createInputComponent(actionMapping, options) {
   if (!actionMapping) {
@@ -42,11 +97,15 @@ function createInputComponent(actionMapping, options) {
     actionMapping: {},
     actions: {},
     update: function () {},
+    clearMappingForAction: function (action) {
+      Object.keys(this.actionMapping).forEach((key) => {
+        if (this.actionMapping[key] === action) {
+          delete this.actionMapping[key];
+        }
+      });
+    },
     setMappingForAction: function (action, key) {
       this.actionMapping[key] = action;
-    },
-    generateActionMapping: function (inverseActionMapping) {
-      // this.actionMapping
     },
     getInverseActionMapping: function () {
       var inverseActionMapping = {};
@@ -80,7 +139,11 @@ function createGamepadInputComponent(gamepad, actionMapping) {
   var component = createInputComponent(actionMapping, {
     type: 'gamepad',
     inputMapping: gamepadInputMappings['standard'],
-    gamepad: gamepad,
+    gamepad: null,
+    setGamepad: function (gamepad) {
+      this.gamepad = gamepad;
+      GamepadManager.useGamepad(gamepad.id);
+    },
     update: function () {
       if (!this.gamepad) return {};
 
@@ -89,21 +152,21 @@ function createGamepadInputComponent(gamepad, actionMapping) {
       // TODO: investigate why this is necessary
       // It *looks* like there's a browser bug here, because without this line, no gamepad is detected, even though
       // we've already stored a reference to it...
-      var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+      var gamepads = GamepadManager.getGamepads();
 
       var gamepad = this.gamepad;
 
       // check buttons
       for (var i = 0; i < gamepad.buttons.length; ++i) {
         var buttonValue = gamepad.buttons[i].pressed ? 1 : 0;
-        var action = this.actionMapping.buttons[this.inputMapping.buttons[i]];
+        var action = this.actionMapping[this.inputMapping.buttons[i]];
         tempActions[action] = buttonValue;
       }
 
       // check axes
       for (var i = 0; i < gamepad.axes.length; ++i) {
         var axisValue = gamepad.axes[i];
-        var action = this.actionMapping.axes[this.inputMapping.axes[i]];
+        var action = this.actionMapping[this.inputMapping.axes[i]];
 
         // if the actionMapping cares about this button...
         if (action) {
@@ -117,8 +180,13 @@ function createGamepadInputComponent(gamepad, actionMapping) {
       }
 
       return tempActions;
+    },
+    remove: function () {
+      GamepadManager.releaseGamepad(gamepad.id);
     }
   });
+
+  component.setGamepad(gamepad);
 
   actionMapping.buttons = actionMapping.buttons || {};
   actionMapping.axes = actionMapping.axes || {};

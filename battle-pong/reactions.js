@@ -22,7 +22,7 @@
       'cat-mad.svg',
       'crying-bigtime.svg',
       'sad-downlook.svg',
-      'sad-berated.svg'
+      'self-berated.svg'
     ]
   };
 

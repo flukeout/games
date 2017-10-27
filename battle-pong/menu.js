@@ -8,171 +8,452 @@ window.MenuMachine = function (game) {
 
   var mainSection = menuWrapper.querySelector('section[data-name="main"]');
   var activeSection = mainSection;
+  var activeSectionDriver;
 
   var numPlayers = 2;
 
-  function Section (sectionName, options) {
-    this.sectionElement = menuWrapper.querySelector('section[data-name="' + sectionName + '"]')
-    this.open = options.open || function () {};
-    this.close = options.close || function () {};
-
-    options.init && options.init.call(this);
-
-    for (var key in options) {
-      if (['open', 'close', 'init'].indexOf(key) === -1) {
-        this[key] = options[key];
-      }
-    }
-  }
-
   var sectionLogic = {
-    main: new Section('main', {
-      init: function () {
-        Array.prototype.forEach.call(this.sectionElement.querySelectorAll('ul li[data-goto]'), function (menuListItem) {
-          menuListItem.addEventListener('click', function () {
-            var newMenuName = menuListItem.getAttribute('data-goto');
-            if (newMenuName === 'exit') {
-              hideMenu();
-            }
-            else {
-              var newMenu = menuWrapper.querySelector('section[data-name="' + newMenuName + '"]');
-              showSection(newMenu);
-            }
-          });
-        });
-      },
-      onKeyDown: function (e) {
-        // if (e.code === 'Escape') {
-        //   window.removeEventListener('keydown', this.onKeyDown);
-        //   hideMenu();
-        // }
-      },
-      open : function () {
-        // console.log('opening');
-        // window.addEventListener('keydown', this.onKeyDown);
-      },
-      close: function () {
-        // TODO: This event listening doesn't let go for some reason. Need to investigate to make it work.
+    main: function () {
+      // This is a hack because I didn't feel like re-scoping everything after writing this code.
+      // This method felt easier. I'm sorry to whoever is reading this note.
+      var anonymousFunctionListeners = [];
 
-        // console.log('closing', this.onKeyDown);
-        // window.removeEventListener('keydown', this.onKeyDown);
-      }
-    }),
-    controls: new Section('controls', {
-      init: function () {
-        this.playerIndicator = this.sectionElement.querySelector('.player-indicator');
-        this.playerNumber = this.playerIndicator.querySelector('.player-number');
-        this.leftSwitcher = this.playerIndicator.querySelector('.switcher[data-direction="left"]');
-        this.rightSwitcher = this.playerIndicator.querySelector('.switcher[data-direction="right"]');
-        
-        this.inputSwitcher = this.playerIndicator.querySelector('.input-type');
-        this.playerControls = this.sectionElement.querySelector('.player-controls');
-
-        this.setAllButton = this.sectionElement.querySelector('button.set-all');
-        this.doneButton = this.sectionElement.querySelector('button.done');
-
-        this.rightSwitcher.addEventListener('click', () => {
-          this.nextPlayer();
-        });
-
-        this.leftSwitcher.addEventListener('click', () => {
-          this.lastPlayer();
-        });
-      },
-      showPlayer: function (number) {
-        this.currentPlayer = number;
-        this.playerNumber.innerHTML = this.currentPlayer + 1;
-
-        var paddle = paddles[this.currentPlayer];
-        var keyActionMap = paddle.inputComponent.getInverseActionMapping();
-
-        // For keeping track if we're editing a key now or not
-        var currentControlEditing = null;
-        var currentControlKeyEditing = null;
-
-        var controlQueue = [];
-
-        function translateKey (key) {
-          key = key.replace(/(Key|Digit|Arrow)/g, '');
-          return key;
-        }
-
-        function startEditingControl (container) {
-          currentControlEditing = container;
-          currentControlKeyEditing = currentControlEditing.querySelector('.control-key');
-          currentControlKeyEditing.innerHTML = '';
-          currentControlKeyEditing.classList.add('editing');
-          window.addEventListener('keydown', onKeyDownWhileEditing);
-        }
-
-        function stopEditingCurrentControl () {
-          var key = keyActionMap[currentControlEditing.getAttribute('data-name')];
-
-
-          currentControlKeyEditing.innerHTML = translateKey(key);
-          currentControlKeyEditing.classList.remove('editing');
-        }
-
-        function onKeyDownWhileEditing (e) {
-          var action = currentControlEditing.getAttribute('data-name');
-          var key = e.code;
-
-          paddle.inputComponent.setMappingForAction(action, key);
-
-          // Needs to be refreshed for reverse lookup again
-          keyActionMap = paddle.inputComponent.getInverseActionMapping();
-          
-          console.log(action, key, keyActionMap);
-
-          stopEditingCurrentControl();
-          window.removeEventListener('keydown', onKeyDownWhileEditing);
-
-          if (controlQueue.length > 0) {
-            startEditingControl(controlQueue.shift());
+      var sectionElement = menuWrapper.querySelector('section[data-name="main"]');
+      sectionElement.querySelectorAll('ul li[data-goto]').forEach(function (menuListItem) {
+        function fn () {
+          var newMenuName = menuListItem.getAttribute('data-goto');
+          if (newMenuName === 'exit') {
+            hideMenu();
+          }
+          else {
+            var newMenu = menuWrapper.querySelector('section[data-name="' + newMenuName + '"]');
+            showSection(newMenu);
           }
         }
+        menuListItem.addEventListener('click', fn);
+        anonymousFunctionListeners.push({object: menuListItem, event: 'click', fn: fn});
+      });
 
+      this.close = function () {
+        anonymousFunctionListeners.forEach((couple) => {
+          couple.object.removeEventListener(couple.event, couple.fn);
+        });
+      };
+    },
+    controls: function () {
+      var sectionElement = menuWrapper.querySelector('section[data-name="controls"]');
+      var playerIndicator = sectionElement.querySelector('.player-indicator');
+      var playerNumber = playerIndicator.querySelector('.player-number');
+      var leftSwitcher = playerIndicator.querySelector('.switcher[data-direction="left"]');
+      var rightSwitcher = playerIndicator.querySelector('.switcher[data-direction="right"]');
+      var inputSwitcher = sectionElement.querySelector('.input-type > input');
+      var setAllButton = sectionElement.querySelector('button.set-all');
+      var doneButton = sectionElement.querySelector('button.done');
 
-        // TODO: It's not cool that paddleActions is so global
-        paddleActions.forEach((action) => {
-          var container = this.playerControls.querySelector('li[data-name="' + action + '"]');
-          var controlKey = container.querySelector('.control-key');
+      var activeLogician = null;
+      
+      rightSwitcher.addEventListener('click', nextPlayer);
+      leftSwitcher.addEventListener('click', lastPlayer);
+      
+      var inputLogicians = {
 
-          container.addEventListener('click', () => {
+        // Keyboard Logician for configuring keyboard controls
+        'keyboard': function () {
+          var playerControls = sectionElement.querySelector('.player-controls[data-input-type="keyboard"]');
+          var paddle = paddles[currentPlayer];
+          var keyActionMap = paddle.inputComponent.getInverseActionMapping();
+          
+          // For keeping track if we're editing a key now or not
+          var currentControlEditing = null;
+          var currentControlKeyEditing = null;
+
+          var controlQueue = [];
+
+          playerControls.classList.add('show');
+
+          function translateKey (key) {
+            key = key.replace(/(Key|Digit|Arrow)/g, '');
+            return key;
+          }
+
+          function startEditingControl (container) {
+            currentControlEditing = container;
+            currentControlKeyEditing = currentControlEditing.querySelector('.control-key');
+            currentControlKeyEditing.innerHTML = '';
+            currentControlKeyEditing.classList.add('editing');
+            window.addEventListener('keydown', onKeyDownWhileEditing);
+          }
+
+          function stopEditingCurrentControl () {
+            if (currentControlEditing) {
+              var key = keyActionMap[currentControlEditing.getAttribute('data-name')];
+
+              currentControlKeyEditing.classList.remove('editing');
+              currentControlEditing = null;
+
+              populate();
+            }
+          }
+
+          function onKeyDownWhileEditing (e) {
+            var action = currentControlEditing.getAttribute('data-name');
+            var key = e.code;
+
+            // Abort! Bail! Ahhhh!
+            if (key === 'Escape') {
+              controlQueue = [];
+              stopEditingCurrentControl();
+              window.removeEventListener('keydown', onKeyDownWhileEditing);
+              return;
+            }
+
+            // Get rid of any keys that were pointing to this action already
+            paddle.inputComponent.clearMappingForAction(action);
+
+            // Save a new key for this action (e.g. key: KeyW => action: 'up')
+            paddle.inputComponent.setMappingForAction(action, key);
+
+            // Needs to be refreshed for reverse lookup again
+            keyActionMap = paddle.inputComponent.getInverseActionMapping();
+            
+            localStorage.setItem('paddle' + currentPlayer + 'KeyboardActionMapping',
+              JSON.stringify(paddle.inputComponent.actionMapping));
+
+            stopEditingCurrentControl();
+            window.removeEventListener('keydown', onKeyDownWhileEditing);
+
+            if (controlQueue.length > 0) {
+              startEditingControl(controlQueue.shift());
+            }
+          }
+
+          function onControlContainerClick (e) {
+            var container = e.target.parentNode;
+
             if (currentControlEditing !== container) {
               if (currentControlEditing) {
                 stopEditingCurrentControl();
               }
               startEditingControl(container);
+            }            
+          }
+
+          function onSetAllButtonClicked() {
+            controlQueue = Array.prototype.slice.call(playerControls.querySelectorAll('li[data-name]'));
+            startEditingControl(controlQueue.shift());
+          }
+
+          function populate() {
+            paddleActions.forEach((action) => {
+              var container = playerControls.querySelector('li[data-name="' + action + '"]');
+
+              if (container) {
+                var controlKey = container.querySelector('.control-key');
+
+                if (paddle.inputComponent) {
+                  controlKey.innerHTML = keyActionMap[action] ? translateKey(keyActionMap[action]) : '???';
+                }
+              }            
+            });
+          }
+
+          setAllButton.addEventListener('click', onSetAllButtonClicked);
+
+          // TODO: It's not cool that paddleActions is so global
+          paddleKeyboardActions.forEach((action) => {
+            var container = playerControls.querySelector('li[data-name="' + action + '"]');
+            var controlKey = container.querySelector('.control-key');
+
+            container.addEventListener('click', onControlContainerClick);
+          });
+
+          populate();
+
+          return {
+            destroy: function () {
+              playerControls.classList.remove('show');
+              stopEditingCurrentControl();
+              window.removeEventListener('keydown', onKeyDownWhileEditing);
+
+              setAllButton.removeEventListener('click', onSetAllButtonClicked);
+              
+              paddleKeyboardActions.forEach((action) => {
+                var container = playerControls.querySelector('li[data-name="' + action + '"]');
+                container.removeEventListener('click', onControlContainerClick);
+              });
+            }
+          }
+        },
+
+        // Gamepad logician for configuring gamepad controls
+        gamepad: function () {
+          var playerControls = sectionElement.querySelector('.player-controls[data-input-type="gamepad"]');
+          var gamepadsList = playerControls.querySelector('.gamepads');
+
+          var paddle = paddles[currentPlayer];
+          var keyActionMap = paddle.inputComponent.getInverseActionMapping();
+
+          var gamepads = GamepadManager.getGamepads();
+          var gamepadIndicators = [];
+          
+          var controlQueue = [];
+          var currentControlEditing = null;
+
+          playerControls.classList.add('show');
+
+          gamepads.forEach((gamepad) => {
+            var span = document.createElement('span');
+            span.classList.add('connected');
+            
+            gamepadsList.appendChild(span);
+            gamepadIndicators.push(span);
+          });
+
+          var currentGamepadIndicator = gamepadIndicators[gamepads.indexOf(paddle.inputComponent.gamepad)];
+          currentGamepadIndicator.classList.add('in-use');
+
+          var gamepadInputWaitInterval;
+          function waitForGamepadInput (gamepadInputWaitType) {
+            var action = currentControlEditing.getAttribute('data-name');
+            gamepadInputWaitInterval = setInterval(() => {
+
+              // See input.js for weirdness about needing to call this function each frame
+              GamepadManager.refreshGamepads();
+
+              var gamepad = paddle.inputComponent.gamepad;
+
+              if (gamepadInputWaitType === 'button') {
+                for (var i = 0; i < gamepad.buttons.length; ++i) {
+                  if (gamepad.buttons[i].pressed) {
+                    // Get rid of any keys that were pointing to this action already
+                    paddle.inputComponent.clearMappingForAction(action);
+
+                    // Save a new key for this action (e.g. key: KeyW => action: 'up')
+                    paddle.inputComponent.setMappingForAction(action, gamepadInputMappings[gamepad.mapping].buttons[i]);
+
+                    // Needs to be refreshed for reverse lookup again
+                    keyActionMap = paddle.inputComponent.getInverseActionMapping();
+                    
+                    localStorage.setItem('paddle' + currentPlayer + 'KeyboardActionMapping',
+                      JSON.stringify(paddle.inputComponent.actionMapping));
+
+                    clearInterval(gamepadInputWaitInterval);
+                    stopEditingCurrentControl();
+                    if (controlQueue.length > 0) {
+
+                      // TODO: Tighten this up
+                      setTimeout(function () {
+                        startEditingControl(controlQueue.shift());  
+                      }, 500);
+                    }
+                  }
+                }
+              }
+              else if (gamepadInputWaitType === 'analog') {
+                // TODO: This might need to be a "difference" rather than a magnitude from 0, since
+                // analog sticks tend to drift.
+
+                // check axes
+                for (var i = 0; i < gamepad.axes.length; ++i) {
+                  var axisValue = gamepad.axes[i];
+                  // axisThreshol from input.js
+                  if (Math.abs(axisValue) > axisThreshold) {
+                    // Get rid of any keys that were pointing to this action already
+                    paddle.inputComponent.clearMappingForAction(action);
+
+                    // Save a new key for this action (e.g. key: KeyW => action: 'up')
+                    paddle.inputComponent.setMappingForAction(action, gamepadInputMappings[gamepad.mapping].axes[i]);
+
+                    // Needs to be refreshed for reverse lookup again
+                    keyActionMap = paddle.inputComponent.getInverseActionMapping();
+                    
+                    localStorage.setItem('paddle' + currentPlayer + 'KeyboardActionMapping',
+                      JSON.stringify(paddle.inputComponent.actionMapping));
+
+                    clearInterval(gamepadInputWaitInterval);
+                    stopEditingCurrentControl();
+                    if (controlQueue.length > 0) {
+
+                      // TODO: Tighten this up
+                      setTimeout(function () {
+                        startEditingControl(controlQueue.shift());  
+                      }, 500);
+                    }
+                  }
+                }  
+              }
+            }, 50);
+
+          }
+
+          function onKeyDownWhileEditing (e) {
+            // Abort! Bail! Ahhhh!
+            if (e.code === 'Escape') {
+              controlQueue = [];
+              stopEditingCurrentControl();
+              window.removeEventListener('keydown', onKeyDownWhileEditing);
+            }
+          }
+
+          function startEditingControl (container) {
+            currentControlEditing = container;
+            currentControlKeyEditing = currentControlEditing.querySelector('.control-key');
+            currentControlKeyEditing.innerHTML = '';
+            currentControlKeyEditing.classList.add('editing');
+            waitForGamepadInput(currentControlEditing.getAttribute('data-type'));
+            window.addEventListener('keydown', onKeyDownWhileEditing);
+          }
+
+          function stopEditingCurrentControl () {
+            if (currentControlEditing) {
+              var key = keyActionMap[currentControlEditing.getAttribute('data-name')];
+
+              currentControlKeyEditing.classList.remove('editing');
+              currentControlEditing = null;
+
+              populate();
+            }
+            window.removeEventListener('keydown', onKeyDownWhileEditing);
+          }
+
+          function onControlContainerClick (e) {
+            var container = e.target.parentNode;
+
+            if (currentControlEditing !== container) {
+              if (currentControlEditing) {
+                controlQueue = [];
+                stopEditingCurrentControl();
+              }
+              startEditingControl(container);
+            }            
+
+          }
+
+          function onSetAllButtonClicked() {
+            controlQueue = Array.prototype.slice.call(playerControls.querySelectorAll('li[data-name]'));
+            startEditingControl(controlQueue.shift());
+          }
+
+          function populate() {
+            paddleActions.forEach((action) => {
+              var container = playerControls.querySelector('li[data-name="' + action + '"]');
+
+              if (container) {
+                var controlKey = container.querySelector('.control-key');
+
+                if (paddle.inputComponent) {
+                  controlKey.innerHTML = keyActionMap[action] || '???';
+                }
+              }            
+            });
+          }
+
+          // TODO: It's not cool that paddleActions is so global
+          // Buttons first
+          paddleActions.forEach((action) => {
+            var container = playerControls.querySelector('li[data-name="' + action + '"]');
+            if (container) {
+              var controlKey = container.querySelector('.control-key');
+              container.addEventListener('click', onControlContainerClick);
             }
           });
 
-          if (paddle.inputComponent) {
-            controlKey.innerHTML = translateKey(keyActionMap[action]);
+          populate();
+
+          setAllButton.addEventListener('click', onSetAllButtonClicked);
+
+          return {
+            destroy: function () {
+              gamepadsList.innerHTML = '';
+              playerControls.classList.remove('show');
+              stopEditingCurrentControl(); 
+              setAllButton.removeEventListener('click', onSetAllButtonClicked);
+
+              paddleActions.forEach((action) => {
+                var container = playerControls.querySelector('li[data-name="' + action + '"]');
+
+                if (container) {
+                  container.removeEventListener('click', onControlContainerClick);
+                }
+              });
+            }
           }
-        });
+        }
+      };
 
-        this.setAllButton.addEventListener('click', () => {
-          controlQueue = Array.prototype.slice.call(this.playerControls.querySelectorAll('li[data-name]'));
-          startEditingControl(controlQueue.shift());
-        });
+      function activateInputLogician (type) {
+        if (activeLogician)
+          activeLogician.destroy();
 
-        this.doneButton.addEventListener('click', () => {
-          hideMenu();
-        });
-      },
-      nextPlayer: function () {
-        this.showPlayer((this.currentPlayer + 1) % numPlayers);
-      },
-      lastPlayer: function () {
-        this.showPlayer((((this.currentPlayer - 1)%numPlayers)+numPlayers)%numPlayers);
-      },
-      open: function () {
-        this.showPlayer(0);
-      },
-      close: function () {
+        activeLogician = new inputLogicians[type]();
       }
-    })
+
+      function onInputSwitcherChanged() {
+        var paddle = paddles[currentPlayer];
+        
+        // Gamepad
+        if (inputSwitcher.checked === true) {
+          var actionMapping = JSON.parse(localStorage.getItem('paddle' + currentPlayer + 'GamepadActionMapping'));
+          paddle.setInputComponent(createGamepadInputComponent(GamepadManager.getUnusedGamepad(), actionMapping));
+          localStorage.setItem('paddle' + currentPlayer + 'InputType', 'gamepad');
+          activateInputLogician('gamepad');
+        }
+
+        // Keyboard
+        else {
+          var actionMapping = JSON.parse(localStorage.getItem('paddle' + currentPlayer + 'KeyboardActionMapping'));
+
+          paddle.setInputComponent(createKeyboardInputComponent(actionMapping));
+          localStorage.setItem('paddle' + currentPlayer + 'InputType', 'keyboard');
+          activateInputLogician('keyboard');
+        }
+      }
+
+      function showPlayer(number) {
+        currentPlayer = number;
+        playerNumber.innerHTML = currentPlayer + 1;
+
+        var paddle = paddles[currentPlayer];
+
+        // Gamepad
+        if (paddle.inputComponent.type === 'gamepad') {
+          inputSwitcher.checked = true;
+          activateInputLogician('gamepad');
+        }
+
+        // Keyboard
+        else {
+          inputSwitcher.checked = false;
+          activateInputLogician('keyboard');
+        }
+      }
+
+      function doneButtonClicked() {
+        doneButton.removeEventListener('click', doneButtonClicked);
+        hideMenu();
+      }
+
+      doneButton.addEventListener('click', doneButtonClicked);
+      inputSwitcher.addEventListener('change', onInputSwitcherChanged);
+
+      function nextPlayer() {
+        showPlayer((currentPlayer + 1) % numPlayers);
+      }
+
+      function lastPlayer() {
+        showPlayer((((currentPlayer - 1) % numPlayers) + numPlayers) % numPlayers);
+      }
+
+      showPlayer(0);
+
+      this.close = function () {
+        activeLogician && activeLogician.destroy();
+        doneButton.removeEventListener('click', doneButtonClicked);
+        rightSwitcher.removeEventListener('click', nextPlayer);
+        leftSwitcher.removeEventListener('click', lastPlayer);
+        inputSwitcher.removeEventListener('change', onInputSwitcherChanged);
+      };
+    }
   };
 
   function showSection (section) {
@@ -186,7 +467,7 @@ window.MenuMachine = function (game) {
     activeSection.classList.add('show');
 
     if (sectionLogic[sectionName]) {
-      sectionLogic[sectionName].open();
+      activeSectionDriver = new sectionLogic[sectionName]();
     }
   }
 
@@ -195,8 +476,8 @@ window.MenuMachine = function (game) {
       var sectionName = activeSection.getAttribute('data-name');
       activeSection.classList.remove('show');
 
-      if (sectionLogic[sectionName]) {
-        sectionLogic[sectionName].close();
+      if (activeSectionDriver && activeSectionDriver.close) {
+        activeSectionDriver.close();
       }
 
       activeSection = null;
