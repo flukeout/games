@@ -8,7 +8,26 @@ var paddleGamepadActions = [
   'moveX', 'moveY', 'spin'
 ];
 
-var defaultPaddle1KeyboardActionMapping = {
+// var defaultPaddle1KeyboardActionMapping = {
+//   "KeyW": "up",
+//   "KeyS": "down",
+//   "KeyA": "left",
+//   "KeyD": "right",
+//   "KeyC": "spinCounterClockwise",
+//   "KeyV": "spinClockwise"
+// };
+//
+// var defaultPaddle2KeyboardActionMapping = {
+//   "ArrowUp":    "up",
+//   "ArrowDown":  "down",
+//   "ArrowLeft":  "left",
+//   "ArrowRight": "right",
+//   "Comma":      "spinCounterClockwise",
+//   "Period":     "spinClockwise"
+// };
+
+
+var defaultPaddle2KeyboardActionMapping = {
   "KeyW": "up",
   "KeyS": "down",
   "KeyA": "left",
@@ -17,13 +36,13 @@ var defaultPaddle1KeyboardActionMapping = {
   "KeyV": "spinClockwise"
 };
 
-var defaultPaddle2KeyboardActionMapping = {
+var defaultPaddle1KeyboardActionMapping = {
   "ArrowUp":    "up",
   "ArrowDown":  "down",
   "ArrowLeft":  "left",
   "ArrowRight": "right",
-  "Comma":      "spinCounterClockwise",
-  "Period":     "spinClockwise"
+  "KeyA":      "spinCounterClockwise",
+  "KeyS":     "spinClockwise"
 };
 
 var paddleGamepadActionMapping = {
@@ -201,6 +220,13 @@ function createPaddle(options) {
     // This gets called every frame of the game
     update(delta){
 
+
+      this.physics.frictionAir = .1 * (game.physicsStepMS / (1000/60)) || .05;
+      // console.log(game.physicsStepMS / (1000/60)  * .1);
+
+      // this.physics.frictionAir = .05;
+      // console.log(this.physics.frictionAir);
+
       if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {
         this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
       }
@@ -263,15 +289,25 @@ function createPaddle(options) {
 
       var angleRad = Math.atan2(xDelta,yDelta);
 
+
+
       // Only move if there is an input
       if(xDelta != 0 || yDelta != 0) {
         var xForce = Math.sin(angleRad) * maxForce;
         var yForce = Math.cos(angleRad) * -maxForce;  // Have to reverse Y axis
+
+
         this.force(xForce, yForce);
       }
 
-      if(this.actions.spinClockwise)          this.spin(.2);
-      if(this.actions.spinCounterClockwise)   this.spin(-.2);
+      var spinSpeed = .2;
+      var spinVelocity = spinSpeed * (game.physicsStepMS / (1000/60));
+
+      // console.log(spinSpeed);
+      // console.log(spinVelocity);
+
+      if(this.actions.spinClockwise)          this.spin(spinVelocity);
+      if(this.actions.spinCounterClockwise)   this.spin(-spinVelocity);
 
       // Analog actions
       if(this.actions.moveX)                  this.force(maxForce* this.actions.moveX, 0);

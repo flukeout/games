@@ -7,6 +7,8 @@ var game =  {
     loser : false    // Holds the losing paddle object
   },
 
+  physicsStepMS: 1000/60,
+
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
@@ -159,9 +161,14 @@ var game =  {
     }
 
     // TODO - increase physics sampling rate
-    Engine.update(engine, 1000 / 60);
 
+    this.physicsStepMS = delta / 2;
+    // Engine.update(engine, 1000 / 60);
 
+    Engine.update(engine, this.physicsStepMS);
+    Engine.update(engine, this.physicsStepMS);
+    // Engine.update(engine, physicsStepMS);
+    // Engine.update(engine, physicsStepMS);
     // Tilts the board depending on where the ball is
 
     var deltaX = 0;
@@ -354,11 +361,30 @@ var game =  {
     // TODO - make this simpler?
     // * Ternamy operator vor y value?
     //
+
+
     var chance = Math.floor(getRandom(0,300));
+
+    // -.02 pixels per 1000 / 60 seconds.
+
+    // we want pixels per second
+    // .33 pixels per second
+    // var launchSpeed = -.02 pixels per 16ms.
+
+    var launchSpeed = .33; // Pixels Per Second
+    var launchForce = launchSpeed / this.physicsStepMS;
+
+    // velocity = distance / time;
+    // distance = time & velocity;
+    console.log(launchForce);
+
+
+
+
     if(chance === 0) {
-      ball.launch(0, -.02);
+      ball.launch(0, -launchForce);
     } else {
-      ball.launch(0, .02);
+      ball.launch(0, launchForce);
     }
   },
 

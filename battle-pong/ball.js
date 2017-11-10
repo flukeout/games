@@ -22,7 +22,7 @@ function createBall(options){
       label: "ball"
     },
     launch : function(x,y){
-      Matter.Body.applyForce(this.physics, this.physics.position, {x: x,y:y});
+      Matter.Body.applyForce(this.physics, this.physics.position, {x : x, y : y});
     },
     gotHit : false,
     gotPaddleHit : false,
