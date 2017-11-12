@@ -92,7 +92,7 @@ function createPaddle(options) {
 
     physicsOptions : {
       mass : 2,
-      frictionAir: 0.1,
+      frictionAir: 0.1 / game.physicsSamplingRatio,
       label: 'paddle-' + (['one', 'two'][options.player])
       // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3 (ha sic)
     },
@@ -220,13 +220,6 @@ function createPaddle(options) {
     // This gets called every frame of the game
     update(delta){
 
-
-      this.physics.frictionAir = .1 * (game.physicsStepMS / (1000/60)) || .05;
-      // console.log(game.physicsStepMS / (1000/60)  * .1);
-
-      // this.physics.frictionAir = .05;
-      // console.log(this.physics.frictionAir);
-
       if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {
         this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
       }
@@ -246,9 +239,9 @@ function createPaddle(options) {
       }
 
 
-      if(this.player == 0) {
+      // if(this.player == 0) {
         // console.log(this.spinPowerupRemaining, this.hasSpinPowerup);
-      }
+      // }
 
       // End spin stuff
 
@@ -289,19 +282,14 @@ function createPaddle(options) {
 
       var angleRad = Math.atan2(xDelta,yDelta);
 
-
-
-      // Only move if there is an input
       if(xDelta != 0 || yDelta != 0) {
-        var xForce = Math.sin(angleRad) * maxForce;
-        var yForce = Math.cos(angleRad) * -maxForce;  // Have to reverse Y axis
-
-
+        var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
+        var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
         this.force(xForce, yForce);
       }
 
       var spinSpeed = .2;
-      var spinVelocity = spinSpeed * (game.physicsStepMS / (1000/60));
+      var spinVelocity = spinSpeed / game.physicsSamplingRatio;
 
       // console.log(spinSpeed);
       // console.log(spinVelocity);
@@ -314,7 +302,7 @@ function createPaddle(options) {
       if(this.actions.moveY)                  this.force(0, maxForce * this.actions.moveY);
       if(this.actions.spin)                   this.spin(this.actions.spin * .2);
 
-      var forceModifier = 1.25;
+      var forceModifier = 1.25 * game.physicsSamplingRatio;
 
       // Movement bounds - keep the paddle in its zone
       if(this.physics.position.x > this.maxX && this.maxX) {

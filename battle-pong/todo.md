@@ -1,10 +1,26 @@
+### WORKING On
+
+* Increase physics sampling
+  * Need to update the friction every time we sample
+  * When applying force or velocity, need to adjust
+* Adjust the force applied when you cross the middle line
+* Seems like it needs to be doubled since we only apply the force once every two steps
+
+* Should I implement the old way?
+  * Where we have a separate "updatePhysics" method that gets called every frame
+  * And then a separate call to
+
+
+TODO
+* Figure out how to handle the speed thing when a ball hits the side..
+
 ### BUGS
 
 *
 
 ### TO-DO
 
-* Increase physics sampling
+
 * Change game to have player 1, 2, 3, 4 and Team 1, 2
 * Make board width & height variables that can be set in game.js
 

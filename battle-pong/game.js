@@ -7,12 +7,13 @@ var game =  {
     loser : false    // Holds the losing paddle object
   },
 
-  physicsStepMS: 1000/60,
+  physicsStepMS : 1000/60/2,
+  physicsSamplingRatio : 2, // TODO - this means twice as fast
 
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
-  powerupFrequency: 300, // A powerup appears once in every X frames
+  powerupFrequency: 3, // A powerup appears once in every X frames
 
   // running - game is playing
   // roundover - round is over (about to reset)
@@ -162,13 +163,16 @@ var game =  {
 
     // TODO - increase physics sampling rate
 
-    this.physicsStepMS = delta / 2;
+
+    this.physicsSamplingRatio = 2; // Twice as fast
+    this.physicsStepMS = 1000 / 60 / this.physicsSamplingRatio;
+    // this.physicsStepMS = delta / 2;
     // Engine.update(engine, 1000 / 60);
 
-    Engine.update(engine, this.physicsStepMS);
-    Engine.update(engine, this.physicsStepMS);
-    // Engine.update(engine, physicsStepMS);
-    // Engine.update(engine, physicsStepMS);
+    for(var i = 0; i < this.physicsSamplingRatio; i++){
+      Engine.update(engine, this.physicsStepMS);
+    }
+
     // Tilts the board depending on where the ball is
 
     var deltaX = 0;
@@ -358,28 +362,9 @@ var game =  {
       position: { x : x, y : y }
     });
 
-    // TODO - make this simpler?
-    // * Ternamy operator vor y value?
-    //
 
-
-    var chance = Math.floor(getRandom(0,300));
-
-    // -.02 pixels per 1000 / 60 seconds.
-
-    // we want pixels per second
-    // .33 pixels per second
-    // var launchSpeed = -.02 pixels per 16ms.
-
-    var launchSpeed = .33; // Pixels Per Second
-    var launchForce = launchSpeed / this.physicsStepMS;
-
-    // velocity = distance / time;
-    // distance = time & velocity;
-    console.log(launchForce);
-
-
-
+    var chance = Math.floor(getRandom(0,1));
+    var launchForce = .02 * this.physicsSamplingRatio;
 
     if(chance === 0) {
       ball.launch(0, -launchForce);
@@ -656,7 +641,7 @@ var game =  {
     // the faster it hits an endzone the more that
     // player wins.
 
-    var xForce = Math.abs(ball.physics.velocity.x);
+    var xForce = Math.abs(ball.physics.velocity.x * this.physicsSamplingRatio);
     var xForceRatio = xForce / 15;
 
     this.terrainChange = 5 + (xForceRatio * 15); // TODO - make the 5 a variable like (minChange)
