@@ -5,7 +5,7 @@ var paddleKeyboardActions = [
 
 var paddleGamepadActions = [
   // Fluid options that can use floats instead of booleans (e.g. joysticks)
-  'moveX', 'moveY', 'spin'
+  'moveX', 'moveY' //,'spin'
 ];
 
 var paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
@@ -187,11 +187,6 @@ function createPaddle(options) {
         this.element.classList.remove("powerup-spin");
       }
 
-
-      // if(this.player == 0) {
-        // console.log(this.spinPowerupRemaining, this.hasSpinPowerup);
-      // }
-
       // End spin stuff
 
       if(this.height < this.targetHeight) {
@@ -240,21 +235,40 @@ function createPaddle(options) {
       var spinSpeed = .2;
       var spinVelocity = spinSpeed / game.physicsSamplingRatio;
 
-      // console.log(spinSpeed);
-      // console.log(spinVelocity);
 
       if(this.actions.spinClockwise)          this.spin(spinVelocity);
       if(this.actions.spinCounterClockwise)   this.spin(-spinVelocity);
 
-      // Analog actions
-      if(this.actions.moveX)                  this.force(maxForce* this.actions.moveX, 0);
-      if(this.actions.moveY)                  this.force(0, maxForce * this.actions.moveY);
-      if(this.actions.spin)                   this.spin(this.actions.spin * .2);
+      // Analog movement
+      var xDelta = this.actions.moveX,
+          yDelta = this.actions.moveY;
 
-      var forceModifier = 1.25 * game.physicsSamplingRatio;
-      // var forceModifier = 0;
+      // If we are close to the edge, push it to max
+      if(xDelta > .9)  { xDelta = 1  }
+      if(xDelta < -.9) { xDelta = -1 }
+      if(yDelta > .9)  { yDelta = 1  }
+      if(yDelta < -.9) { yDelta = -1 }
+
+      var angleRad = Math.atan2(xDelta,yDelta);
+
+      // Here we limit the total force that can be applied to the paddle
+      var totalPowerRatio = Math.sqrt(Math.pow(Math.abs(xDelta),2) + Math.pow(Math.abs(yDelta),2)) || 1;
+      if(totalPowerRatio > 1) {
+        totalPowerRatio = 1;
+      }
+
+      var newForce = totalPowerRatio * maxForce;
+
+      if(xDelta != 0 || yDelta != 0) {
+        var xForce = Math.sin(angleRad) * newForce * game.physicsSamplingRatio;
+        var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio;
+        this.force(xForce, yForce);
+      }
 
       // Movement bounds - keep the paddle in its zone
+
+      var forceModifier = 1.25 * game.physicsSamplingRatio;
+
       if(this.physics.position.x > this.maxX && this.maxX) {
         this.force(-maxForce * forceModifier, 0);
       }
