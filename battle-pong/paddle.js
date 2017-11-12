@@ -1,6 +1,6 @@
-var paddleActions = [
+var paddleKeyboardActions = [
   // Discrete on/off buttons
-  'spinClockwise','spinCounterClockwise','up','down','left','right',
+  'up','left','down','right','spinClockwise','spinCounterClockwise',
 ];
 
 var paddleGamepadActions = [
@@ -8,48 +8,7 @@ var paddleGamepadActions = [
   'moveX', 'moveY', 'spin'
 ];
 
-var defaultPaddle1KeyboardActionMapping = {
-  "KeyW": "up",
-  "KeyS": "down",
-  "KeyA": "left",
-  "KeyD": "right",
-  "KeyC": "spinCounterClockwise",
-  "KeyV": "spinClockwise"
-};
-
-var defaultPaddle2KeyboardActionMapping = {
-  "ArrowUp":    "up",
-  "ArrowDown":  "down",
-  "ArrowLeft":  "left",
-  "ArrowRight": "right",
-  "Comma":      "spinCounterClockwise",
-  "Period":     "spinClockwise"
-};
-
-// var defaultPaddle1KeyboardActionMapping = {
-//   "ArrowUp":    "up",
-//   "ArrowDown":  "down",
-//   "ArrowLeft":  "left",
-//   "ArrowRight": "right",
-//   "KeyA":      "spinCounterClockwise",
-//   "KeyS":     "spinClockwise"
-// };
-
-var paddleGamepadActionMapping = {
-  buttons: {
-    "dPadUp": "up", // Just to try it :)
-    "dPadDown": "down",
-    "dPadLeft": "left",
-    "dPadRight": "right",
-    "bumperLeft": "spinCounterClockwise",
-    "bumperRight": "spinClockwise"
-  },
-  axes: {
-    "leftX": "moveX",
-    "leftY": "moveY",
-    "rightX": "spin"
-  }
-};
+var paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
 
 function createPaddle(options) {
   var maxForce = 0.004;

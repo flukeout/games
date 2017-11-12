@@ -51,10 +51,10 @@ window.MenuMachine = function (game) {
       var doneButton = sectionElement.querySelector('button.done');
 
       var activeLogician = null;
-
+      
       rightSwitcher.addEventListener('click', nextPlayer);
       leftSwitcher.addEventListener('click', lastPlayer);
-
+      
       var inputLogicians = {
 
         // Keyboard Logician for configuring keyboard controls
@@ -62,7 +62,7 @@ window.MenuMachine = function (game) {
           var playerControls = sectionElement.querySelector('.player-controls[data-input-type="keyboard"]');
           var paddle = paddles[currentPlayer];
           var keyActionMap = paddle.inputComponent.getInverseActionMapping();
-
+          
           // For keeping track if we're editing a key now or not
           var currentControlEditing = null;
           var currentControlKeyEditing = null;
@@ -115,7 +115,7 @@ window.MenuMachine = function (game) {
 
             // Needs to be refreshed for reverse lookup again
             keyActionMap = paddle.inputComponent.getInverseActionMapping();
-
+            
             localStorage.setItem('paddle' + currentPlayer + 'KeyboardActionMapping',
               JSON.stringify(paddle.inputComponent.actionMapping));
 
@@ -135,7 +135,7 @@ window.MenuMachine = function (game) {
                 stopEditingCurrentControl();
               }
               startEditingControl(container);
-            }
+            }            
           }
 
           function onSetAllButtonClicked() {
@@ -153,7 +153,7 @@ window.MenuMachine = function (game) {
                 if (paddle.inputComponent) {
                   controlKey.innerHTML = keyActionMap[action] ? translateKey(keyActionMap[action]) : '???';
                 }
-              }
+              }            
             });
           }
 
@@ -176,7 +176,7 @@ window.MenuMachine = function (game) {
               window.removeEventListener('keydown', onKeyDownWhileEditing);
 
               setAllButton.removeEventListener('click', onSetAllButtonClicked);
-
+              
               paddleKeyboardActions.forEach((action) => {
                 var container = playerControls.querySelector('li[data-name="' + action + '"]');
                 container.removeEventListener('click', onControlContainerClick);
@@ -195,7 +195,7 @@ window.MenuMachine = function (game) {
 
           var gamepads = GamepadManager.getGamepads();
           var gamepadIndicators = [];
-
+          
           var controlQueue = [];
           var currentControlEditing = null;
 
@@ -204,7 +204,7 @@ window.MenuMachine = function (game) {
           gamepads.forEach((gamepad) => {
             var span = document.createElement('span');
             span.classList.add('connected');
-
+            
             gamepadsList.appendChild(span);
             gamepadIndicators.push(span);
           });
@@ -233,7 +233,7 @@ window.MenuMachine = function (game) {
 
                     // Needs to be refreshed for reverse lookup again
                     keyActionMap = paddle.inputComponent.getInverseActionMapping();
-
+                    
                     localStorage.setItem('paddle' + currentPlayer + 'KeyboardActionMapping',
                       JSON.stringify(paddle.inputComponent.actionMapping));
 
@@ -243,7 +243,7 @@ window.MenuMachine = function (game) {
 
                       // TODO: Tighten this up
                       setTimeout(function () {
-                        startEditingControl(controlQueue.shift());
+                        startEditingControl(controlQueue.shift());  
                       }, 500);
                     }
                   }
@@ -266,7 +266,7 @@ window.MenuMachine = function (game) {
 
                     // Needs to be refreshed for reverse lookup again
                     keyActionMap = paddle.inputComponent.getInverseActionMapping();
-
+                    
                     localStorage.setItem('paddle' + currentPlayer + 'KeyboardActionMapping',
                       JSON.stringify(paddle.inputComponent.actionMapping));
 
@@ -276,11 +276,11 @@ window.MenuMachine = function (game) {
 
                       // TODO: Tighten this up
                       setTimeout(function () {
-                        startEditingControl(controlQueue.shift());
+                        startEditingControl(controlQueue.shift());  
                       }, 500);
                     }
                   }
-                }
+                }  
               }
             }, 50);
 
@@ -325,7 +325,7 @@ window.MenuMachine = function (game) {
                 stopEditingCurrentControl();
               }
               startEditingControl(container);
-            }
+            }            
 
           }
 
@@ -344,7 +344,7 @@ window.MenuMachine = function (game) {
                 if (paddle.inputComponent) {
                   controlKey.innerHTML = keyActionMap[action] || '???';
                 }
-              }
+              }            
             });
           }
 
@@ -366,7 +366,7 @@ window.MenuMachine = function (game) {
             destroy: function () {
               gamepadsList.innerHTML = '';
               playerControls.classList.remove('show');
-              stopEditingCurrentControl();
+              stopEditingCurrentControl(); 
               setAllButton.removeEventListener('click', onSetAllButtonClicked);
 
               paddleActions.forEach((action) => {
@@ -390,7 +390,7 @@ window.MenuMachine = function (game) {
 
       function onInputSwitcherChanged() {
         var paddle = paddles[currentPlayer];
-
+        
         // Gamepad
         if (inputSwitcher.checked === true) {
           var actionMapping = JSON.parse(localStorage.getItem('paddle' + currentPlayer + 'GamepadActionMapping'));
@@ -488,7 +488,7 @@ window.MenuMachine = function (game) {
     showSection(mainSection);
 
     game.pause();
-
+    
     document.removeEventListener('keydown', onKeyDownWhileWaiting);
     headerTitle.removeEventListener('click', onHeaderClickWhileWaiting);
     menuWrapper.classList.add('show');

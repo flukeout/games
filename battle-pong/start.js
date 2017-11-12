@@ -5,33 +5,89 @@ var paddles = [];
 var numPaddles = 2;
 var paddleDetails;
 
-function connectPaddlesToControls(){
-  // Let the first paddle use the keyboard regardless
-  paddles[0].setInputComponent(createKeyboardInputComponent(defaultPaddle1KeyboardActionMapping));
-  paddles[1].setInputComponent(createKeyboardInputComponent(defaultPaddle2KeyboardActionMapping));
-  // paddles[2].setInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
-  // paddles[3].setInputComponent(createKeyboardInputComponent(paddleKeyboardActionMapping));
-  // If there are more than 0 and less than 2 gamepads, hook them up to paddles!
-  // for (var i = 0; i < gamepads.length && i < numPaddles; ++i) {
-  //   connectGamepad(gamepads[i]);
-  // }
-}
-
-// See what gamepads are up for grabs
-var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-
-var connectedGamePads = 0;
-
-function connectGamepad(newGamepad) {
-  // Start from the last paddle and work backwards
-
-  paddles[paddles.length - connectedGamePads - 1].setInputComponent(createGamepadInputComponent(newGamepad, paddleGamepadActionMapping));
-  ++connectedGamePads;
-}
-
-window.addEventListener('gamepadconnected', function (e) {
-  connectGamepad(e.gamepad);
+[
+  {
+    "KeyW": "up",
+    "KeyS": "down",
+    "KeyA": "left",
+    "KeyD": "right",
+    "KeyC": "spinCounterClockwise",
+    "KeyV": "spinClockwise"
+  },
+  {
+    "ArrowUp":    "up",
+    "ArrowDown":  "down",
+    "ArrowLeft":  "left",
+    "ArrowRight": "right",
+    "Comma":      "spinCounterClockwise",
+    "Period":     "spinClockwise"
+  }
+].forEach(function (defaultKeyboardActionMapping, index) {
+  if (window.Settings.clearSavedControlSettings || !localStorage.getItem('paddle' + index + 'KeyboardActionMapping')) {
+    localStorage.setItem('paddle' + index + 'KeyboardActionMapping', JSON.stringify(defaultKeyboardActionMapping));
+  }
 });
+
+[
+  {
+    "dPadUp": "up",
+    "dPadDown": "down",
+    "dPadLeft": "left",
+    "dPadRight": "right",
+    "bumperLeft": "spinCounterClockwise",
+    "bumperRight": "spinClockwise",
+    "analogLeftX": "moveX",
+    "analogLeftY": "moveY",
+    "analogRightX": "spin"
+  },
+  {
+    "dPadUp": "up",
+    "dPadDown": "down",
+    "dPadLeft": "left",
+    "dPadRight": "right",
+    "bumperLeft": "spinCounterClockwise",
+    "bumperRight": "spinClockwise",
+    "analogLeftX": "moveX",
+    "analogLeftY": "moveY",
+    "analogRightX": "spin"
+  }
+].forEach(function (defaultGamepadActionMapping, index) {
+  if (window.Settings.clearSavedControlSettings || !localStorage.getItem('paddle' + index + 'GamepadActionMapping')) {
+    localStorage.setItem('paddle' + index + 'GamepadActionMapping', JSON.stringify(defaultGamepadActionMapping));
+  }
+});
+
+[
+  'keyboard',
+  'keyboard'
+].forEach(function (defaultInputType, index) {
+  if (window.Settings.clearSavedControlSettings || !localStorage.getItem('paddle' + index + 'InputType')) {
+    localStorage.setItem('paddle' + index + 'InputType', defaultInputType);
+  }
+});
+
+function connectPaddlesToControls(){
+  var gamepads = GamepadManager.getGamepads();
+
+  for (var i = 0; i < numPaddles; ++i) {
+
+    // Load settings are that were saved in localStorage
+    var type = localStorage.getItem('paddle' + i + 'InputType');
+    var savedGamepadActionMapping = JSON.parse(localStorage.getItem('paddle' + i + 'GamepadActionMapping'));
+    var savedKeyboardActionMapping = JSON.parse(localStorage.getItem('paddle' + i + 'KeyboardActionMapping'));
+
+    // If the saved input type is 'keyboard', or if there isn't a gamepad where there should be...
+    if (type === 'keyboard' || !gamepads[i]) {
+      // Plug in a keyboard input component
+      paddles[i].setInputComponent(createKeyboardInputComponent(savedKeyboardActionMapping));
+    }
+    else {
+      // Otherwise, plug in a gamepad input component
+      paddles[i].setInputComponent(createGamepadInputComponent(gamepads[i], savedGamepadActionMapping));
+    }
+  }
+}
+
 
 document.addEventListener('DOMContentLoaded', function () {
 

@@ -110,7 +110,7 @@
             </div>
           </label>
 
-          <ul class="player-controls">
+          <ul class="player-controls" data-input-type="keyboard">
             <li class="control" data-name="up">
               <span class="control-label">Up</span> <span class="control-key"></span>
             </li>
@@ -131,6 +131,39 @@
             </li>
           </ul>
 
+          <ul class="player-controls" data-input-type="gamepad">
+            <li class="gamepads">
+            </li>
+            <h3>Axes</h3>
+            <li class="control" data-name="moveX" data-type="analog">
+              <span class="control-label">Move X</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="moveY" data-type="analog">
+              <span class="control-label">Move Y</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="spin" data-type="analog">
+              <span class="control-label">Spin</span> <span class="control-key"></span>
+            </li>
+            <h3>Buttons</h3>
+            <li class="control" data-name="up" data-type="button">
+              <span class="control-label">Up</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="left" data-type="button">
+              <span class="control-label">Left</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="down" data-type="button">
+              <span class="control-label">Down</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="right" data-type="button">
+              <span class="control-label">Right</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="spinCounterClockwise" data-type="button">
+              <span class="control-label">Spin Left</span> <span class="control-key"></span>
+            </li>
+            <li class="control" data-name="spinClockwise" data-type="button">
+              <span class="control-label">Spin Right</span> <span class="control-key"></span>
+            </li>
+          </ul>
           <button class="set-all">Set All</button> <button class="done">Done</button>
         </div>
       </section>

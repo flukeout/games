@@ -24,7 +24,7 @@ function createObject(options){
 
     setInputComponent: function(inputComponent) {
       if (this.inputComponent) {
-        inputComponent.remove();
+        this.inputComponent.remove();
       }
 
       this.inputComponent = inputComponent;
