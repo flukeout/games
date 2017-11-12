@@ -13,7 +13,7 @@ var game =  {
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
-  powerupFrequency: 3, // A powerup appears once in every X frames
+  powerupFrequency: 300, // A powerup appears once in every X frames
 
   // running - game is playing
   // roundover - round is over (about to reset)
