@@ -1,16 +1,14 @@
 var powerUp;
 
-// var powerUpTypes = ["grow","spin"];
-var powerUpTypes = ["spin"];
+var powerUpTypes = ["grow","spin"];
+// var powerUpTypes = ["spin"];
 
 // Adds a random powerup
 function addPowerup(x, y){
   var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
   powerUp = createPowerup(x, y, type);
   powerUp.element.classList.add(type);
-  // powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
-
-  powerUp.launch(-.01,0);
+  powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
   playSound("bonus");
 }
 
@@ -31,16 +29,12 @@ function createPowerup(x, y, type){
       y : y
     },
 
-    run : function(){
-      this.physics.frictionAir = 0.015 * (game.physicsStepMS / (1000/60)) || 0.0075;
-    },
-
     launch : function(x,y){
       Matter.Body.applyForce(this.physics, this.physics.position, {x: x, y: y});
     },
 
     physicsOptions : {
-      frictionAir: 0.015,
+      frictionAir: 0.015 / game.physicsSamplingRatio,
       restitution: 1
     },
 

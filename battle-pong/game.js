@@ -7,8 +7,8 @@ var game =  {
     loser : false    // Holds the losing paddle object
   },
 
-  physicsStepMS : 1000/60/2,
-  physicsSamplingRatio : 2, // TODO - this means twice as fast
+  physicsStepMS : 1000 / 60 / 2,
+  physicsSamplingRatio : 2, // This means 2 times per frame
 
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
@@ -63,9 +63,9 @@ var game =  {
     document.addEventListener("ballHitSide", function(e) {
       if(ball.physics.speed > 4) {
         if(e.detail.side == "top") {
-          bumpScreen("up");
+          // bumpScreen("up");
         } else {
-          bumpScreen("down");
+          // bumpScreen("down");
         }
       }
     });
@@ -166,8 +166,6 @@ var game =  {
 
     this.physicsSamplingRatio = 2; // Twice as fast
     this.physicsStepMS = 1000 / 60 / this.physicsSamplingRatio;
-    // this.physicsStepMS = delta / 2;
-    // Engine.update(engine, 1000 / 60);
 
     for(var i = 0; i < this.physicsSamplingRatio; i++){
       Engine.update(engine, this.physicsStepMS);

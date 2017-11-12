@@ -8,26 +8,7 @@ var paddleGamepadActions = [
   'moveX', 'moveY', 'spin'
 ];
 
-// var defaultPaddle1KeyboardActionMapping = {
-//   "KeyW": "up",
-//   "KeyS": "down",
-//   "KeyA": "left",
-//   "KeyD": "right",
-//   "KeyC": "spinCounterClockwise",
-//   "KeyV": "spinClockwise"
-// };
-//
-// var defaultPaddle2KeyboardActionMapping = {
-//   "ArrowUp":    "up",
-//   "ArrowDown":  "down",
-//   "ArrowLeft":  "left",
-//   "ArrowRight": "right",
-//   "Comma":      "spinCounterClockwise",
-//   "Period":     "spinClockwise"
-// };
-
-
-var defaultPaddle2KeyboardActionMapping = {
+var defaultPaddle1KeyboardActionMapping = {
   "KeyW": "up",
   "KeyS": "down",
   "KeyA": "left",
@@ -36,14 +17,23 @@ var defaultPaddle2KeyboardActionMapping = {
   "KeyV": "spinClockwise"
 };
 
-var defaultPaddle1KeyboardActionMapping = {
+var defaultPaddle2KeyboardActionMapping = {
   "ArrowUp":    "up",
   "ArrowDown":  "down",
   "ArrowLeft":  "left",
   "ArrowRight": "right",
-  "KeyA":      "spinCounterClockwise",
-  "KeyS":     "spinClockwise"
+  "Comma":      "spinCounterClockwise",
+  "Period":     "spinClockwise"
 };
+
+// var defaultPaddle1KeyboardActionMapping = {
+//   "ArrowUp":    "up",
+//   "ArrowDown":  "down",
+//   "ArrowLeft":  "left",
+//   "ArrowRight": "right",
+//   "KeyA":      "spinCounterClockwise",
+//   "KeyS":     "spinClockwise"
+// };
 
 var paddleGamepadActionMapping = {
   buttons: {
@@ -303,6 +293,7 @@ function createPaddle(options) {
       if(this.actions.spin)                   this.spin(this.actions.spin * .2);
 
       var forceModifier = 1.25 * game.physicsSamplingRatio;
+      // var forceModifier = 0;
 
       // Movement bounds - keep the paddle in its zone
       if(this.physics.position.x > this.maxX && this.maxX) {

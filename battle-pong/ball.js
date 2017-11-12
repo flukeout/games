@@ -25,6 +25,7 @@ function createBall(options){
       Matter.Body.applyForce(this.physics, this.physics.position, {x : x, y : y});
     },
     gotHit : false,
+    timeSinceHit : 0,
     gotPaddleHit : false,
     wordSpeed : 11 / game.physicsSamplingRatio, // TODO - update
     phrases : [
@@ -60,7 +61,7 @@ function createBall(options){
     slowdownRatio: .995,
 
     delayBeforeCanSpinMS : 100,
-    goingFastSpeedThreshold: 3 / game.physicsSamplingRatio,
+    goingFastSpeedThreshold: 3,
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
 
     wooshPlayed: false,
@@ -78,44 +79,14 @@ function createBall(options){
         paddleHitCondition = true;
       }
 
-      // console.log(paddleHitCondition);
-
-      // We should give the ball a bit of time, if you hit the wall right away, i think it's OK
-      var hitHardCondition = false;
-      if(this.lastPaddleHitHard) {
-        hitHardCondition = true;
-      }
-
-      // Is the ball moving fast enough?
-      var speedCondition = false;
-
-      if(this.physics.speed > this.goingFastSpeedThreshold) {
-        this.timeSpentGoingFastMS = this.timeSpentGoingFastMS + delta;
-        speedCondition = true;
-      } else {
-        this.timeSpentGoingFastMS = 0;
-      }
-
-      // Has the ball been traveling long enough?
       var delayCondition = false;
-      if(this.timeSpentGoingFastMS > this.delayBeforeCanSpinMS) {
+      this.timeSinceHit = this.timeSinceHit + delta;
+
+      if(this.timeSinceHit > this.delayBeforeCanSpinMS) {
         delayCondition = true;
       }
 
-      // Has the ball been spinning less than the max amount of time it can spin?
-      var timeoutCondition = false;
-      if(this.timeSpentGoingFastMS < this.timeAllowedGoingFastMS - this.delayBeforeCanSpinMS) {
-        timeoutCondition = true;
-      }
-
-      // console.log("====");
-      // console.log("paddleHitCondition",paddleHitCondition);
-      // console.log("hitHardCondition",hitHardCondition);
-      // console.log("speedCondition",speedCondition);
-      // console.log("delayCondition",delayCondition);
-      // console.log("timeoutCondition",timeoutCondition);
-
-      if(paddleHitCondition && speedCondition && delayCondition && timeoutCondition && hitHardCondition){
+      if(paddleHitCondition && delayCondition){
         return true;
       }
 
@@ -213,10 +184,10 @@ function createBall(options){
 
 
         // While spinning...
-        if(this.physics.speed * game.physicsSamplingRate < 9) {
+        if((this.physics.speed * game.physicsSamplingRatio) < 9) {
           Matter.Body.setVelocity(this.physics, {
-            x : this.physics.velocity.x * 1.03,  // TODO - fix this
-            y : this.physics.velocity.y * 1.03   // TODO - fix this
+            x : this.physics.velocity.x * 1.06,  // TODO - fix this
+            y : this.physics.velocity.y * 1.06   // TODO - fix this
           });
         }
 
@@ -226,8 +197,8 @@ function createBall(options){
         }
       }
 
-      // What does this do??
-      if(this.frameTicks > 1 & this.physics.speed / game.physicsSamplingRatio > 7) {
+      // Adds trails after the ball when it's goign fast enough
+      if(this.frameTicks > 1 & this.physics.speed * game.physicsSamplingRatio > 7) {
         if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
           var options = {
             x : this.physics.position.x - 15,
@@ -249,9 +220,6 @@ function createBall(options){
       this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
 
       var rotationRatio = Math.abs(this.rotationVelocity) / this.rotationVelocityMax;
-
-      // wtf is the rotation ratio
-      console.log(rotationRatio);
 
       var scaleMin = .5;
       var scaleMax = 1.2;
@@ -275,11 +243,14 @@ function createBall(options){
       // document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
       // document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
 
-      var newX = Math.sin(a) *  .000075 * this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
-      var newY = Math.cos(a) * -.000075 * this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
+      var newX = Math.sin(a) *  .000075 * game.physicsSamplingRatio* this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
+      var newY = Math.cos(a) * -.000075 * game.physicsSamplingRatio * this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
 
       if(rotating && this.physics.speed * game.physicsSamplingRatio > 2) {
-        Matter.Body.applyForce(this.physics, this.physics.position, { x: newX, y: newY });
+        Matter.Body.applyForce(this.physics, this.physics.position, {
+          x : newX,
+          y : newY
+        });
       }
 
       // --Spinning ball garbage ends here.
@@ -290,6 +261,7 @@ function createBall(options){
       if(this.gotPaddleHit) {
         this.resolvePaddleHitFlag = true;
         this.gotPaddleHit = false;
+        this.timeSinceHit = 0;
       }
 
       if(this.wordInProgress){
@@ -311,12 +283,6 @@ function createBall(options){
       this.letterIndex = 0;
       var wordIndex = Math.floor(getRandom(0,this.phrases.length));
       this.wordString = JSON.parse(JSON.stringify(this.phrases[wordIndex]));
-
-      // In case we want to reverse the word letters...
-      // if(this.physics.velocity.x < 0) {
-      //   this.wordString = this.wordString.split("").reverse().join("");
-      //   console.log(this.wordString);
-      // }
     },
 
     drawLetter : function(){

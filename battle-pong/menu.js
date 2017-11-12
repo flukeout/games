@@ -64,7 +64,7 @@ window.MenuMachine = function (game) {
         this.playerNumber = this.playerIndicator.querySelector('.player-number');
         this.leftSwitcher = this.playerIndicator.querySelector('.switcher[data-direction="left"]');
         this.rightSwitcher = this.playerIndicator.querySelector('.switcher[data-direction="right"]');
-        
+
         this.inputSwitcher = this.playerIndicator.querySelector('.input-type');
         this.playerControls = this.sectionElement.querySelector('.player-controls');
 
@@ -121,7 +121,7 @@ window.MenuMachine = function (game) {
 
           // Needs to be refreshed for reverse lookup again
           keyActionMap = paddle.inputComponent.getInverseActionMapping();
-          
+
           console.log(action, key, keyActionMap);
 
           stopEditingCurrentControl();
@@ -207,11 +207,11 @@ window.MenuMachine = function (game) {
     showSection(mainSection);
 
     game.pause();
-    
+
     document.removeEventListener('keydown', onKeyDownWhileWaiting);
     headerTitle.removeEventListener('click', onHeaderClickWhileWaiting);
     menuWrapper.classList.add('show');
-    header.classList.remove('show');
+    // header.classList.remove('show');
   }
 
   function hideMenu() {
@@ -220,7 +220,7 @@ window.MenuMachine = function (game) {
     document.addEventListener('keydown', onKeyDownWhileWaiting);
     headerTitle.addEventListener('click', onHeaderClickWhileWaiting);
     menuWrapper.classList.remove('show');
-    header.classList.add('show');
+    // header.classList.add('show');
 
     game.run();
   }
