@@ -82,7 +82,7 @@ function createGamepadInputComponent(gamepad, actionMapping) {
       // It *looks* like there's a browser bug here, because without this line, no gamepad is detected, even though
       // we've already stored a reference to it...
       var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-      
+
       var gamepad = this.gamepad;
 
       // check buttons
@@ -103,7 +103,7 @@ function createGamepadInputComponent(gamepad, actionMapping) {
             tempActions[action] = axisValue;
           }
           else {
-            tempActions[action] = 0; 
+            tempActions[action] = 0;
           }
         }
       }

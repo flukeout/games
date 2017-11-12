@@ -1,10 +1,14 @@
+### WORKING On
+
+*
+
 ### BUGS
 
 *
 
 ### TO-DO
 
-* Increase physics sampling
+
 * Change game to have player 1, 2, 3, 4 and Team 1, 2
 * Make board width & height variables that can be set in game.js
 

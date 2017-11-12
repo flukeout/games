@@ -41,7 +41,7 @@ function createPaddle(options) {
 
     physicsOptions : {
       mass : 2,
-      frictionAir: 0.1,
+      frictionAir: 0.1 / game.physicsSamplingRatio,
       label: 'paddle-' + (['one', 'two'][options.player])
       // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3 (ha sic)
     },
@@ -188,9 +188,9 @@ function createPaddle(options) {
       }
 
 
-      if(this.player == 0) {
+      // if(this.player == 0) {
         // console.log(this.spinPowerupRemaining, this.hasSpinPowerup);
-      }
+      // }
 
       // End spin stuff
 
@@ -231,22 +231,28 @@ function createPaddle(options) {
 
       var angleRad = Math.atan2(xDelta,yDelta);
 
-      // Only move if there is an input
       if(xDelta != 0 || yDelta != 0) {
-        var xForce = Math.sin(angleRad) * maxForce;
-        var yForce = Math.cos(angleRad) * -maxForce;  // Have to reverse Y axis
+        var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
+        var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
         this.force(xForce, yForce);
       }
 
-      if(this.actions.spinClockwise)          this.spin(.2);
-      if(this.actions.spinCounterClockwise)   this.spin(-.2);
+      var spinSpeed = .2;
+      var spinVelocity = spinSpeed / game.physicsSamplingRatio;
+
+      // console.log(spinSpeed);
+      // console.log(spinVelocity);
+
+      if(this.actions.spinClockwise)          this.spin(spinVelocity);
+      if(this.actions.spinCounterClockwise)   this.spin(-spinVelocity);
 
       // Analog actions
       if(this.actions.moveX)                  this.force(maxForce* this.actions.moveX, 0);
       if(this.actions.moveY)                  this.force(0, maxForce * this.actions.moveY);
       if(this.actions.spin)                   this.spin(this.actions.spin * .2);
 
-      var forceModifier = 1.25;
+      var forceModifier = 1.25 * game.physicsSamplingRatio;
+      // var forceModifier = 0;
 
       // Movement bounds - keep the paddle in its zone
       if(this.physics.position.x > this.maxX && this.maxX) {

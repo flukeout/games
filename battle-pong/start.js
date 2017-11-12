@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var menu = new MenuMachine(game);
 
   function startGame () {
-    document.querySelector('.header').classList.add('show');
+    // document.querySelector('.header').classList.add('show');
 
     game.restart();
     game.run();

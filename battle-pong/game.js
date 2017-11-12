@@ -7,6 +7,9 @@ var game =  {
     loser : false    // Holds the losing paddle object
   },
 
+  physicsStepMS : 1000 / 60 / 2,
+  physicsSamplingRatio : 2, // This means 2 times per frame
+
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
@@ -60,9 +63,9 @@ var game =  {
     document.addEventListener("ballHitSide", function(e) {
       if(ball.physics.speed > 4) {
         if(e.detail.side == "top") {
-          bumpScreen("up");
+          // bumpScreen("up");
         } else {
-          bumpScreen("down");
+          // bumpScreen("down");
         }
       }
     });
@@ -159,8 +162,14 @@ var game =  {
     }
 
     // TODO - increase physics sampling rate
-    Engine.update(engine, 1000 / 60);
 
+
+    this.physicsSamplingRatio = 2; // Twice as fast
+    this.physicsStepMS = 1000 / 60 / this.physicsSamplingRatio;
+
+    for(var i = 0; i < this.physicsSamplingRatio; i++){
+      Engine.update(engine, this.physicsStepMS);
+    }
 
     // Tilts the board depending on where the ball is
 
@@ -351,14 +360,14 @@ var game =  {
       position: { x : x, y : y }
     });
 
-    // TODO - make this simpler?
-    // * Ternamy operator vor y value?
-    //
-    var chance = Math.floor(getRandom(0,300));
+
+    var chance = Math.floor(getRandom(0,1));
+    var launchForce = .02 * this.physicsSamplingRatio;
+
     if(chance === 0) {
-      ball.launch(0, -.02);
+      ball.launch(0, -launchForce);
     } else {
-      ball.launch(0, .02);
+      ball.launch(0, launchForce);
     }
   },
 
@@ -630,7 +639,7 @@ var game =  {
     // the faster it hits an endzone the more that
     // player wins.
 
-    var xForce = Math.abs(ball.physics.velocity.x);
+    var xForce = Math.abs(ball.physics.velocity.x * this.physicsSamplingRatio);
     var xForceRatio = xForce / 15;
 
     this.terrainChange = 5 + (xForceRatio * 15); // TODO - make the 5 a variable like (minChange)
