@@ -86,6 +86,21 @@ function connectPaddlesToControls(){
       paddles[i].setInputComponent(createGamepadInputComponent(gamepads[i], savedGamepadActionMapping));
     }
   }
+
+  function onGamepadDisconnected(e) {
+    var disconnectedGamepadId = e.gamepad.id;
+
+    // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
+    for (var i = 0; i < numPaddles; ++i ) {
+      if (paddles[i].inputComponent.type === 'gamepad' && paddles[i].inputComponent.gamepad.id === disconnectedGamepadId) {
+        let savedKeyboardActionMapping = JSON.parse(localStorage.getItem('paddle' + i + 'KeyboardActionMapping'));
+        paddles[i].setInputComponent(createKeyboardInputComponent(savedKeyboardActionMapping));
+        return;
+      }
+    }
+  }
+
+  window.addEventListener("gamepaddisconnected", onGamepadDisconnected);
 }
 
 
