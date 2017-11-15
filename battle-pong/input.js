@@ -63,6 +63,9 @@ window.GamepadManager = (function () {
   }
 
   return {
+    isThereAGamepadAvailable: function () {
+      return getGamepads.length > 0;
+    },
     refreshGamepads: refreshGamepads,
     useGamepad: function(id) {
       gamepadsInUse.push(id);
@@ -74,7 +77,7 @@ window.GamepadManager = (function () {
     },
     getGamepads: getGamepads,
     getUnusedGamepad: function () {
-      getGamepads();
+      refreshGamepads();
       for (var i = 0; i < gamepads.length; ++i) {
         if (!isGamepadInUse(gamepads[i])) {
           return gamepads[i];
@@ -84,8 +87,6 @@ window.GamepadManager = (function () {
     },
     isGamepadInUse: isGamepadInUse
   };
-
-  gamepads = this.getGamepads();
 })();
 
 function createInputComponent(actionMapping, options) {
@@ -152,7 +153,7 @@ function createGamepadInputComponent(gamepad, actionMapping) {
       // TODO: investigate why this is necessary
       // It *looks* like there's a browser bug here, because without this line, no gamepad is detected, even though
       // we've already stored a reference to it...
-      var gamepads = GamepadManager.getGamepads();
+      GamepadManager.refreshGamepads();
 
       var gamepad = this.gamepad;
 

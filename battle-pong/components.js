@@ -29,6 +29,8 @@ function createObject(options){
 
       this.inputComponent = inputComponent;
       inputComponent.register(this.actions);
+
+      document.dispatchEvent(new CustomEvent('inputcomponentchanged', {detail: {object: this, inputComponent: inputComponent}}));
     },
 
     updateActionsFromInputComponents: function () {
