@@ -46,7 +46,8 @@ window.MenuMachine = function (game) {
       var playerNumber = playerIndicator.querySelector('.player-number');
       var leftSwitcher = playerIndicator.querySelector('.switcher[data-direction="left"]');
       var rightSwitcher = playerIndicator.querySelector('.switcher[data-direction="right"]');
-      var inputSwitcher = sectionElement.querySelector('.input-type > input');
+      var inputSwitcherContainer = sectionElement.querySelector('.input-type');
+      var inputSwitcher = inputSwitcherContainer.querySelector('input');
       var setAllButton = sectionElement.querySelector('button.set-all');
       var doneButton = sectionElement.querySelector('button.done');
 
@@ -388,24 +389,30 @@ window.MenuMachine = function (game) {
         activeLogician = new inputLogicians[type]();
       }
 
-      function onInputSwitcherChanged() {
+      function setInputMode(mode) {
         var paddle = paddles[currentPlayer];
-        
-        // Gamepad
-        if (inputSwitcher.checked === true) {
+
+        if (mode === 'gamepad') {
           var actionMapping = JSON.parse(localStorage.getItem('paddle' + currentPlayer + 'GamepadActionMapping'));
-          paddle.setInputComponent(createGamepadInputComponent(GamepadManager.getUnusedGamepad(), actionMapping));
+          var nextGamepad = GamepadManager.getUnusedGamepad();
+          paddle.setInputComponent(createGamepadInputComponent(nextGamepad, actionMapping));
           localStorage.setItem('paddle' + currentPlayer + 'InputType', 'gamepad');
           activateInputLogician('gamepad');
         }
-
-        // Keyboard
-        else {
+        else if (mode === 'keyboard') {
           var actionMapping = JSON.parse(localStorage.getItem('paddle' + currentPlayer + 'KeyboardActionMapping'));
-
           paddle.setInputComponent(createKeyboardInputComponent(actionMapping));
           localStorage.setItem('paddle' + currentPlayer + 'InputType', 'keyboard');
           activateInputLogician('keyboard');
+        }
+      }
+
+      function onInputSwitcherChanged() {
+        if (inputSwitcher.checked === true) {
+          setInputMode('gamepad');
+        }
+        else {
+          setInputMode('keyboard');
         }
       }
 
@@ -426,6 +433,8 @@ window.MenuMachine = function (game) {
           inputSwitcher.checked = false;
           activateInputLogician('keyboard');
         }
+
+        checkGamepads();
       }
 
       function doneButtonClicked() {
@@ -444,14 +453,46 @@ window.MenuMachine = function (game) {
         showPlayer((((currentPlayer - 1) % numPlayers) + numPlayers) % numPlayers);
       }
 
+
+      function checkGamepads() {
+        if (GamepadManager.getUnusedGamepad()) {
+          // Disable the gamepad switch
+          inputSwitcherContainer.classList.remove('disabled');
+          inputSwitcher.disabled = false;
+        }
+        else {
+          // Enable the gamepad switch
+          inputSwitcherContainer.classList.add('disabled');
+          inputSwitcher.disabled = true;
+        }
+      }
+
+      function onInputComponentChanged(e) {
+        var player = paddles.indexOf(e.detail.object);
+        if (player > -1 && player === currentPlayer) {
+          console.log(e.detail, 'yay!');
+        }
+      }
+
       showPlayer(0);
 
+      // gamepadconnected event doesn't fire reliably in chrome, so using this...
+      var gamepadCheckInterval = setInterval(function () {
+        checkGamepads();
+      }, 1000);
+
+      window.addEventListener('gamepaddisconnected', checkGamepads);
+      document.addEventListener('inputcomponentchanged', onInputComponentChanged);
+
       this.close = function () {
+        clearInterval(gamepadCheckInterval);
         activeLogician && activeLogician.destroy();
         doneButton.removeEventListener('click', doneButtonClicked);
         rightSwitcher.removeEventListener('click', nextPlayer);
         leftSwitcher.removeEventListener('click', lastPlayer);
         inputSwitcher.removeEventListener('change', onInputSwitcherChanged);
+        window.removeEventListener('gamepaddisconnected', checkGamepads);
+        document.removeEventListener('inputcomponentchanged', onInputComponentChanged);
       };
     }
   };
