@@ -5,105 +5,6 @@ var paddles = [];
 var numPaddles = 2;
 var paddleDetails;
 
-[
-  {
-    "KeyW": "up",
-    "KeyS": "down",
-    "KeyA": "left",
-    "KeyD": "right",
-    "KeyC": "spinCounterClockwise",
-    "KeyV": "spinClockwise"
-  },
-  {
-    "ArrowUp":    "up",
-    "ArrowDown":  "down",
-    "ArrowLeft":  "left",
-    "ArrowRight": "right",
-    "Comma":      "spinCounterClockwise",
-    "Period":     "spinClockwise"
-  }
-].forEach(function (defaultKeyboardActionMapping, index) {
-  if (window.Settings.clearSavedControlSettings || !localStorage.getItem('paddle' + index + 'KeyboardActionMapping')) {
-    localStorage.setItem('paddle' + index + 'KeyboardActionMapping', JSON.stringify(defaultKeyboardActionMapping));
-  }
-});
-
-[
-  {
-    "dPadUp": "up",
-    "dPadDown": "down",
-    "dPadLeft": "left",
-    "dPadRight": "right",
-    "bumperLeft": "spinCounterClockwise",
-    "bumperRight": "spinClockwise",
-    "analogLeftX": "moveX",
-    "analogLeftY": "moveY",
-    "analogRightX": "spin"
-  },
-  {
-    "dPadUp": "up",
-    "dPadDown": "down",
-    "dPadLeft": "left",
-    "dPadRight": "right",
-    "bumperLeft": "spinCounterClockwise",
-    "bumperRight": "spinClockwise",
-    "analogLeftX": "moveX",
-    "analogLeftY": "moveY",
-    "analogRightX": "spin"
-  }
-].forEach(function (defaultGamepadActionMapping, index) {
-  if (window.Settings.clearSavedControlSettings || !localStorage.getItem('paddle' + index + 'GamepadActionMapping')) {
-    localStorage.setItem('paddle' + index + 'GamepadActionMapping', JSON.stringify(defaultGamepadActionMapping));
-  }
-});
-
-[
-  'keyboard',
-  'keyboard'
-].forEach(function (defaultInputType, index) {
-  if (window.Settings.clearSavedControlSettings || !localStorage.getItem('paddle' + index + 'InputType')) {
-    localStorage.setItem('paddle' + index + 'InputType', defaultInputType);
-  }
-});
-
-function connectPaddlesToControls(){
-  var gamepads = GamepadManager.getGamepads();
-
-  for (var i = 0; i < numPaddles; ++i) {
-
-    // Load settings are that were saved in localStorage
-    var type = localStorage.getItem('paddle' + i + 'InputType');
-    var savedGamepadActionMapping = JSON.parse(localStorage.getItem('paddle' + i + 'GamepadActionMapping'));
-    var savedKeyboardActionMapping = JSON.parse(localStorage.getItem('paddle' + i + 'KeyboardActionMapping'));
-
-    // If the saved input type is 'keyboard', or if there isn't a gamepad where there should be...
-    if (type === 'keyboard' || !gamepads[i]) {
-      // Plug in a keyboard input component
-      paddles[i].setInputComponent(createKeyboardInputComponent(savedKeyboardActionMapping));
-    }
-    else {
-      // Otherwise, plug in a gamepad input component
-      paddles[i].setInputComponent(createGamepadInputComponent(gamepads[i], savedGamepadActionMapping));
-    }
-  }
-
-  function onGamepadDisconnected(e) {
-    var disconnectedGamepadId = e.gamepad.id;
-
-    // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
-    for (var i = 0; i < numPaddles; ++i ) {
-      if (paddles[i].inputComponent.type === 'gamepad' && paddles[i].inputComponent.gamepad.id === disconnectedGamepadId) {
-        let savedKeyboardActionMapping = JSON.parse(localStorage.getItem('paddle' + i + 'KeyboardActionMapping'));
-        paddles[i].setInputComponent(createKeyboardInputComponent(savedKeyboardActionMapping));
-        return;
-      }
-    }
-  }
-
-  window.addEventListener("gamepaddisconnected", onGamepadDisconnected);
-}
-
-
 document.addEventListener('DOMContentLoaded', function () {
 
   paddleDetails = [
@@ -145,21 +46,31 @@ document.addEventListener('DOMContentLoaded', function () {
     paddles[i].init();
   }
 
-  connectPaddlesToControls();
+  var inputManager = new InputManager((paddle) => {
+    var playerNumber = paddles.indexOf(paddle);
+    var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
+    inputDisplayElement.setAttribute('data-type', paddle.inputComponent.type);
+
+    console.log('Input Changed:', playerNumber, paddle.inputComponent.type);
+  });
+
+  for (var i = 0; i < numPaddles; ++i) {
+    inputManager.setupInputForObject(paddles[i]);
+  }
 
   game.init();
 
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
   game.step();
 
-  var menu = new MenuMachine(game);
+  // var menu = new MenuMachine(game);
 
   function startGame () {
     // document.querySelector('.header').classList.add('show');
 
     game.restart();
     game.run();
-    menu.waitToBeSummoned();
+    // menu.waitToBeSummoned();
   }
 
   if (Settings.showIntro) {

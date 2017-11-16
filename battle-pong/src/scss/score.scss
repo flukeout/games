@@ -5,6 +5,37 @@
   width: 100%;
   padding: 8px 12px;
   box-sizing: border-box;
+
+
+  .input {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, .2);
+    background-size: 80%;
+    height: 50px;
+    width: 50px;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &[data-player="1"] {
+      float: left;
+      align-items: flex-end;
+    }
+
+    &[data-player="2"] {
+      float: right;
+      justify-content: flex-end;
+    }
+
+    &[data-type="keyboard"] {
+      background-image: url('assets/images/keyboard.svg');
+    }
+
+    &[data-type="gamepad"] {
+      background-image: url('assets/images/gamepad.svg');
+    }
+  }
+
+
 }
 
 .score {
