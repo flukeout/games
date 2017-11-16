@@ -51,8 +51,7 @@ var gamepadInputLabels = {
       3: "analogRightX",
       4: "analogRightY",
       5: "triggerRight"
-    },
-    ignoreAxes: [2, 5]
+    }
   }
 };
 
