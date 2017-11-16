@@ -73,7 +73,7 @@ window.KeyboardManager = (function() {
     this.inputToActionMapping = keyboardInputLabelToActionMappings[configIndex];
     this.id = configIndex;
     this.release = function () {
-      releaseConfig(configIndex);
+      releaseConfig(this);
     };
 
     configsInUse.push(this);
@@ -89,8 +89,9 @@ window.KeyboardManager = (function() {
   }
 
   function releaseConfig(config) {
-    if (isConfigInUse(config)) {
-      configsInUse.splice(configsInUse.indexOf(config), 1);
+    var index = configsInUse.indexOf(config);
+    if (index > -1) {
+      configsInUse.splice(index, 1);
     }
   }
 
@@ -139,7 +140,7 @@ window.GamepadManager = (function () {
     this.type = inputMappingLabelType;
     this.gamepad = gamepad;
     this.release = function () {
-      releaseGamepad(gamepadID);
+      releaseGamepad(this);
     };
 
     gamepadsInUse.push(this);
@@ -161,9 +162,10 @@ window.GamepadManager = (function () {
     gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
   }
 
-  function releaseGamepad(id) {
-    if (isGamepadInUse(id)) {
-      gamepadsInUse.splice(gamepadsInUse.indexOf(id), 1);
+  function releaseGamepad(config) {
+    var index = gamepadsInUse.indexOf(config);
+    if (index > -1) {
+      gamepadsInUse.splice(index, 1);
     }
   }
 
@@ -268,7 +270,7 @@ function createGamepadInputComponent(config) {
       return tempActions;
     },
     remove: function () {
-      console.log('%cDestroying Gamepad Input Component:', 'color: blue');
+      console.log('%cDestroying Gamepad Input Component:', 'color: red');
       console.log('  ID: ' + this.config.id);
       this.config.release();
     }
