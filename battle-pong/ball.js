@@ -21,12 +21,14 @@ function createBall(options){
       restitution: 1,
       label: "ball"
     },
+
     launch : function(x,y){
       Matter.Body.applyForce(this.physics, this.physics.position, {x : x, y : y});
     },
     gotHit : false,
     timeSinceHit : 0,
     gotPaddleHit : false,
+
     wordSpeed : 11 / game.physicsSamplingRatio, // TODO - update
     phrases : [
       "BOOOOOM",
@@ -47,6 +49,9 @@ function createBall(options){
     frameTick: 0,
     resolvePaddleHitFlag : false,
 
+    goalsBeforeSlowdown: 1,
+    goalsWhileFast : 0,
+
     displayAngle: 0,
     rotationVelocity: 0,
     rotationVelocityMax: 20,  // TODO - update
@@ -58,10 +63,16 @@ function createBall(options){
     timeSpentGoingFastMS: 0,
     timeAllowedGoingFastMS : 5000, // max time to have spinmode
 
-    slowdownRatio: .995,
+    // For slowing things down
+    slowdownRatio: .985,
+    slowSpeedTarget: 7 / game.physicsSamplingRatio,
+    applyBrakes : false,
 
     delayBeforeCanSpinMS : 100,
-    goingFastSpeedThreshold: 3,
+    goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
+
+
+
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
 
     wooshPlayed: false,
@@ -94,9 +105,23 @@ function createBall(options){
 
     },
 
+
+
     frameTicks : 0,
 
     run : function(delta) {
+
+      if(this.physics.speed < this.slowSpeedTarget) {
+        this.applyBrakes = false;
+      }
+
+      if(this.applyBrakes) {
+        Matter.Body.setVelocity(this.physics, {
+          x : this.physics.velocity.x * this.slowdownRatio,
+          y : this.physics.velocity.y * this.slowdownRatio
+        });
+      }
+
 
       this.canSpin = false;
 
@@ -121,13 +146,6 @@ function createBall(options){
         this.resolvePaddleHit();
       }
 
-      // Slowdown - TODO - make this a setting on the ball
-      // We can make it slow down if it's been traveling too fast for too long (or too far)
-      // Or maybe after two endzone hits in a row
-      // Matter.Body.setVelocity(this.physics, {
-      //   x : this.physics.velocity.x * this.slowdownRatio,
-      //   y : this.physics.velocity.y * this.slowdownRatio
-      // });
 
       // All this crap below just relates to curving the ball
       // and adding the spinning animation.
@@ -300,7 +318,6 @@ function createBall(options){
           o : 6,
           oV : -.1,
           height: 30,
-          // zV : 2,
           width: 30,
           scaleV : -.002,
           zR: movementAngle - 90,
@@ -331,6 +348,18 @@ function createBall(options){
         this.lastHitPaddle = false;
       }
 
+      if(obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("wall-left") > -1) {
+        if(this.physics.speed > this.goingFastSpeedThreshold) {
+          this.goalsWhileFast++;
+        } else {
+          this.goalsWhileFast = 0;
+        }
+
+        if(this.goalsWhileFast > 0) {
+          this.applyBrakes = true;
+        }
+      }
+
       this.velocityWhenHit = JSON.parse(JSON.stringify(this.physics.velocity));
 
       if(obj.name.indexOf("paddle") > -1) {
@@ -353,7 +382,10 @@ function createBall(options){
 
         this.speedWhenHit = JSON.parse(JSON.stringify(this.physics.speed));
         this.gotPaddleHit = true;
-        this.timeSpentGoingFastMS = 0; // Reset the counter
+      }
+
+      if(this.gotPaddleHit) {
+        this.applyBrakes = false;
       }
 
       if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {
