@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
     inputDisplayElement.setAttribute('data-type', paddle.inputComponent.type);
 
-    console.log('Input Changed:', playerNumber, paddle.inputComponent.type);
+    console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
   });
 
   for (var i = 0; i < numPaddles; ++i) {
