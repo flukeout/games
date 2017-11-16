@@ -9,7 +9,7 @@ window.InputManager = function (onInputChanged) {
   if (savedInputLabelToActionMappings) {
     savedInputLabelToActionMappings = JSON.parse(savedInputLabelToActionMappings);
     keyboardInputLabelToActionMappings = savedInputLabelToActionMappings.keyboard;
-    gamepadInputLabelToActionMappings = savedInputLabelToActionMappings.gamepad;
+    gamepadInputLabelToActionMapping = savedInputLabelToActionMappings.gamepad;
   }
 
   var maintainedObjects = [];
