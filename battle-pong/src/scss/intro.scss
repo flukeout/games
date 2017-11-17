@@ -19,16 +19,16 @@
     font-size: .7em;
     text-transform: uppercase;
   }
+}
 
-  .loading {
-    position: fixed;
-    top: 50%;
-    left: calc(50vh - .5em);
-    height: 1em;
-    text-align: center;
-    width: 100%;
-    left: 0;
-  }
+.loading {
+  position: fixed;
+  top: calc(50vh - .5em);
+  height: 1em;
+  text-align: center;
+  width: 100%;
+  left: 0;
+  color: white;
 }
 
 .intro-wrapper.show {

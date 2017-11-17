@@ -10,7 +10,7 @@ window.IntroMachine = function () {
   xhr.responseType = 'blob';
 
   xhr.onprogress = function (e) {
-    var loadingDisplay = document.querySelector('.intro-wrapper .loading');
+    var loadingDisplay = document.querySelector('.loading');
     if (loadingDisplay) {
       var p = e.loaded / e.total;
       loadingDisplay.innerHTML = (p * 100) + '%';
@@ -45,7 +45,7 @@ window.IntroMachine = function () {
         var startButton = document.querySelector('.intro-wrapper .start');
         var skipInstruction = document.querySelector('.skip-instruction');
         
-        var loadingDisplay = document.querySelector('.intro-wrapper .loading');
+        var loadingDisplay = document.querySelector('.loading');
         loadingDisplay.parentNode.removeChild(loadingDisplay);
 
         introWrapper.classList.add('show');
