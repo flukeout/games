@@ -49,7 +49,24 @@ document.addEventListener('DOMContentLoaded', function () {
   var inputManager = new InputManager((paddle) => {
     var playerNumber = paddles.indexOf(paddle);
     var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
+    var helpElement = inputDisplayElement.querySelector('.help');
     inputDisplayElement.setAttribute('data-type', paddle.inputComponent.type);
+
+    if (paddle.inputComponent.type === 'keyboard') {
+      helpElement.innerHTML = Object.keys(paddle.inputComponent.inputToActionMapping).map(function (key) {
+        return key
+              .replace('Key', '')
+              .replace('ArrowUp', '↑')
+              .replace('ArrowDown', '↓')
+              .replace('ArrowLeft', '←')
+              .replace('ArrowRight', '→')
+              .replace('Comma', ',')
+              .replace('Period', '.')
+      }).join('');
+    }
+    else {
+      helpElement.innerHTML = '';
+    }
 
     console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
   });
@@ -67,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function startGame () {
     // document.querySelector('.header').classList.add('show');
-
+    document.querySelector('.score-wrapper').classList.add('show');
     game.restart();
     game.run();
     // menu.waitToBeSummoned();

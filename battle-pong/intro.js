@@ -39,7 +39,7 @@ window.IntroMachine = function () {
       setTimeout(function () {
         title.classList.add('show');
         startButton.classList.add('show');
-      }, 7814);                       // also measured roughly
+      }, 7794);                       // also measured roughly
 
       startButton.addEventListener('click', function () {
         audio.pause();

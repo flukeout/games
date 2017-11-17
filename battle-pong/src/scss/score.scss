@@ -6,8 +6,14 @@
   padding: 8px 12px;
   box-sizing: border-box;
 
+  visibility: hidden;
+
+  &.show {
+    visibility: visible;
+  }
 
   .input {
+    position: relative;
     display: inline-block;
     background-color: rgba(0, 0, 0, .2);
     background-size: 80%;
@@ -32,6 +38,16 @@
 
     &[data-type="gamepad"] {
       background-image: url('assets/images/gamepad.svg');
+    }
+
+    .help {
+      color: white;
+      font-size: .5em;
+      text-align: center;
+      position: absolute;
+      width: 100%;
+      height: 1.5em;
+      top: calc(100% - 1em);
     }
   }
 
