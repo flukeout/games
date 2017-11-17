@@ -22,12 +22,16 @@ window.IntroMachine = function () {
 
   xhr.send();
 
+
+
+
   var machine = {
     start: function (onward) {
       var introWrapper = document.querySelector('.intro-wrapper');
       var boardWrapper = document.querySelector('.board-wrapper');
       var title = document.querySelector('.intro-wrapper .title');
       var startButton = document.querySelector('.intro-wrapper .start');
+      var skipInstruction = document.querySelector('.skip-instruction');
       
       introWrapper.classList.add('show');
       boardWrapper.classList.add('intro');
@@ -39,16 +43,30 @@ window.IntroMachine = function () {
       setTimeout(function () {
         title.classList.add('show');
         startButton.classList.add('show');
+        skipInstruction.parentNode.removeChild(skipInstruction);
+        document.removeEventListener('keydown', onKeyDown);
       }, 7794);                       // also measured roughly
 
       startButton.addEventListener('click', function () {
+        stopIntro();
+        onward();
+      });
+
+      function stopIntro () {
         audio.pause();
         title.classList.remove('show');
         startButton.classList.remove('show');
         introWrapper.classList.remove('show');
-        boardWrapper.classList.remove('intro');
+        boardWrapper.classList.remove('intro');        
+        document.removeEventListener('keydown', onKeyDown);
+      }
+
+      function onKeyDown () {
+        stopIntro();
         onward();
-      });
+      }
+
+      document.addEventListener('keydown', onKeyDown);
     }
   };
 
