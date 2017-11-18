@@ -67,11 +67,10 @@ function createBall(options){
     slowdownRatio: .985,
     slowSpeedTarget: 7 / game.physicsSamplingRatio,
     applyBrakes : false,
+    brakesModeEnabled : window.Settings.brakesModeEnabled,
 
     delayBeforeCanSpinMS : 100,
     goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
-
-
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
 
@@ -105,23 +104,21 @@ function createBall(options){
 
     },
 
-
-
     frameTicks : 0,
 
     run : function(delta) {
 
-      if(this.physics.speed < this.slowSpeedTarget) {
+      if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
         this.applyBrakes = false;
       }
 
-      if(this.applyBrakes) {
+
+      if(this.applyBrakes && this.brakesModeEnabled) {
         Matter.Body.setVelocity(this.physics, {
           x : this.physics.velocity.x * this.slowdownRatio,
           y : this.physics.velocity.y * this.slowdownRatio
         });
       }
-
 
       this.canSpin = false;
 

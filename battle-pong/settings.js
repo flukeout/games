@@ -1,5 +1,6 @@
 window.Settings = {
   clearSavedControlSettings: false,
   showIntro: false,
-  debug: true
+  debug: true,
+  brakesModeEnabled: true
 };
