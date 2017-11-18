@@ -13,6 +13,7 @@
     <script src="title.js"></script>        <!-- animates browser tab -->
     <script src="sounds.js"></script>       <!-- handles loading & playing sounds -->
     <script src="matter.min.js"></script>   <!-- physics engine -->
+    <script src="input-mappings.js"></script>
     <script src="input.js"></script>        <!-- keyboard and joystick controls -->
     <script src="game.js"></script>         <!-- main game loop -->
     <script src="collisions.js"></script>   <!-- handles collisions -->
@@ -53,6 +54,8 @@
     <div class="score-wrapper">
       <div class="score one"></div>
       <div class="score two"></div>
+      <div class="input" data-player="1"><div class="help"></div></div>
+      <div class="input" data-player="2"><div class="help"></div></div>
     </div>
 
 
@@ -85,96 +88,13 @@
         </div>
       </div>
     </div>
-    <div class="menu-wrapper">
-      <h1>BATTLE PONG</h1>
-      <section data-name="main">
-        <h2>SETTINGS</h2>
-        <ul>
-          <li data-goto="controls">Controls</li>
-          <li data-goto="game">Game Settings</li>
-          <li data-goto="exit">Return to Game</li>
-        </ul>
-      </section>
-      <section data-name="controls">
-        <h2>CONTROLS</h2>
-        <div class="player-indicator">
-          <span class="switcher" data-direction="left">&larr;</span>
-          Player <span class="player-number"></span>
-          <span class="switcher" data-direction="right">&rarr;</span>
-        </div>
-        <div class="menu-content">
-          <label class="input-type">
-            <input type="checkbox">
-            <div class="slider">
-              <span class="on">Gamepad</span><span class="off">Keyboard</span>
-            </div>
-          </label>
 
-          <ul class="player-controls" data-input-type="keyboard">
-            <li class="control" data-name="up">
-              <span class="control-label">Up</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="left">
-              <span class="control-label">Left</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="down">
-              <span class="control-label">Down</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="right">
-              <span class="control-label">Right</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="spinCounterClockwise">
-              <span class="control-label">Spin Left</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="spinClockwise">
-              <span class="control-label">Spin Right</span> <span class="control-key"></span>
-            </li>
-          </ul>
-
-          <ul class="player-controls" data-input-type="gamepad">
-            <li class="gamepads">
-            </li>
-            <h3>Axes</h3>
-            <li class="control" data-name="moveX" data-type="analog">
-              <span class="control-label">Move X</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="moveY" data-type="analog">
-              <span class="control-label">Move Y</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="spin" data-type="analog">
-              <span class="control-label">Spin</span> <span class="control-key"></span>
-            </li>
-            <h3>Buttons</h3>
-            <li class="control" data-name="up" data-type="button">
-              <span class="control-label">Up</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="left" data-type="button">
-              <span class="control-label">Left</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="down" data-type="button">
-              <span class="control-label">Down</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="right" data-type="button">
-              <span class="control-label">Right</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="spinCounterClockwise" data-type="button">
-              <span class="control-label">Spin Left</span> <span class="control-key"></span>
-            </li>
-            <li class="control" data-name="spinClockwise" data-type="button">
-              <span class="control-label">Spin Right</span> <span class="control-key"></span>
-            </li>
-          </ul>
-          <button class="set-all">Set All</button> <button class="done">Done</button>
-        </div>
-      </section>
-      <section data-name="game">
-
-      </section>
-    </div>
+    <div class="loading"></div>
 
     <div class="intro-wrapper">
       <div class="title">BATTLE<br/>PONG</div>
       <div class="start">start</div>
+      <div class="skip-instruction">Press any key to skip</div>
     </div>
 
     <div class="reaction-container one">

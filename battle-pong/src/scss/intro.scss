@@ -9,6 +9,26 @@
   text-align: center;
   flex-direction: column;
   color: white;
+
+  .skip-instruction {
+    position: fixed;
+    bottom: 1em;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: .7em;
+    text-transform: uppercase;
+  }
+}
+
+.loading {
+  position: fixed;
+  top: calc(50vh - .5em);
+  height: 1em;
+  text-align: center;
+  width: 100%;
+  left: 0;
+  color: white;
 }
 
 .intro-wrapper.show {
