@@ -1,6 +1,6 @@
 ### WORKING On
 
-*
+* Slowing down the ball after it scores while traveling fast
 
 ### BUGS
 
