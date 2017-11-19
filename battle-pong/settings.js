@@ -2,5 +2,8 @@ window.Settings = {
   clearSavedControlSettings: false,
   showIntro: false,
   debug: true,
-  brakesModeEnabled: true
+  powerUpTypes: ["grow"],
+  brakesModeEnabled: false,
+  playTo: 2,
+  goalTimeoutMS: 250
 };

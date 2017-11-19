@@ -5,7 +5,7 @@ var paddleKeyboardActions = [
 
 var paddleGamepadActions = [
   // Fluid options that can use floats instead of booleans (e.g. joysticks)
-  'moveX', 'moveY' //,'spin'
+  'moveX', 'moveY', 'spin'
 ];
 
 var paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
@@ -18,6 +18,8 @@ function createPaddle(options) {
   return createObject({
     selector: options.selector,
     player: options.player,
+    targetAngle : 0,
+    targetAngleSet : true,
 
     properties: {
       x: options.x || 0,
@@ -224,6 +226,8 @@ function createPaddle(options) {
       if(this.actions.up)     yDelta++;
       if(this.actions.down)   yDelta--;
 
+
+
       var angleRad = Math.atan2(xDelta,yDelta);
 
       if(xDelta != 0 || yDelta != 0) {
@@ -236,8 +240,74 @@ function createPaddle(options) {
       var spinVelocity = spinSpeed / game.physicsSamplingRatio;
 
 
-      if(this.actions.spinClockwise)          this.spin(spinVelocity);
-      if(this.actions.spinCounterClockwise)   this.spin(-spinVelocity);
+      var spinning = false;
+
+      this.currentAngle = this.physics.angle * 180/Math.PI;
+
+
+
+
+      if(this.actions.spinClockwise){
+        this.spin(spinVelocity);
+        spinning = true;
+      }
+
+      if(this.actions.spinCounterClockwise){
+        this.spin(-spinVelocity);
+        spinning = true;
+      }
+
+      if(spinning == true) {
+        this.targetAngleSet = false;
+      }
+
+
+
+      if(spinning == false && this.player == 0 && this.targetAngleSet == false) {
+
+        // if(this.physics.angularVelocity >= 0) {
+          var remainder = (this.physics.angle * 180/Math.PI) % 90;
+          // console.log(remainder);
+
+          this.targetAngle = Math.round(this.physics.angle * 180/Math.PI / 90) * 90;
+          // console.log(this.physics.angle * 180/Math.PI);
+          // console.log(this.targetAngle);
+          // if(remainder < 30) {
+          //   this.targetAngle = this.targetAngle + 90;
+          // }
+          // console.log()
+        // } //else {
+          // this.targetAngle = Math.floor(this.physics.angle * 180/Math.PI / 90) * 90;
+        // }
+        // this.targetAngleSet = true;
+        // console.log(delta);
+        // console.log("--=======--");
+      }
+
+      var delta = this.currentAngle - this.targetAngle;
+
+      var maxVel = 2;
+      var applyVel = -maxVel * delta/45;
+      if(applyVel > maxVel) {
+        applyVel = maxVel;
+      }
+
+
+      if(this.player == 0 && spinning == false) {
+
+        if(delta < 0) {
+          this.physics.torque = applyVel;
+        }
+        if(delta > 0) {
+          this.physics.torque = applyVel;
+        }
+      }
+
+      if(this.actions.spin > .1) {
+        this.spin(spinVelocity);
+      } else if (this.actions.spin < -.1) {
+        this.spin(-spinVelocity);
+      }
 
       // Analog movement
       var xDelta = this.actions.moveX,

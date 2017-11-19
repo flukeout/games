@@ -1,6 +1,6 @@
 var powerUp;
 
-var powerUpTypes = ["grow","spin"];
+var powerUpTypes = window.Settings.powerUpTypes;
 // var powerUpTypes = ["spin"];
 
 // Adds a random powerup

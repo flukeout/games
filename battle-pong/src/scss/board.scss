@@ -54,13 +54,13 @@
 .tilt-wrapper {
   position: absolute;
   top: calc(50vh - 275px);
-  left: calc(50vw - 450px);
+  left: calc(50vw - 425px);
   transform-style: preserve-3d;
   transform: rotateX(20deg) rotateY(0deg);
 }
 
 .world {
-  width: 900px; // 1000px
+  width: 850px; // 1000px
   height: 500px;
   position: relative;
   outline: solid 20px #222;

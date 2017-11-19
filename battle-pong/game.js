@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max : 2,         // First to this number wins
+    max : window.Settings.playTo || 2,         // First to this number wins
     winner : false,  // Holds the winning paddle object
     loser : false    // Holds the losing paddle object
   },
@@ -24,6 +24,9 @@ var game =  {
   // startup - kickstarting the game loop
   // off - ?
   mode : "off",
+
+  goalTimeoutMS: window.Settings.goalTimeoutMS,
+  timeSinceEndzoneHitMS: window.Settings.goalTimeoutMS,
 
   boardWidth : 0,
   boardHeight: 0,
@@ -57,6 +60,7 @@ var game =  {
       }
 
       that.playerScored(scoringPlayer);
+
     });
 
     // Adds a little effect when the ball hits the top or bottom side
@@ -140,7 +144,11 @@ var game =  {
 
   step : function(){
     var currentTime = Date.now();
-    var delta;
+    var delta = 16;
+
+
+
+    // console.log(this.timeSinceEndzoneHitMS);
 
     if(lastTime) {
       delta = currentTime - lastTime;
@@ -148,6 +156,7 @@ var game =  {
 
     lastTime = currentTime;
 
+    this.timeSinceEndzoneHitMS = this.timeSinceEndzoneHitMS + delta;
 
     if(!hasPowerup && game.mode == "running") {
       var chance = getRandom(0, this.powerupFrequency);
@@ -607,6 +616,17 @@ var game =  {
   flashTimeout : false, // Tracks if a flashing background animation is happening
 
   playerScored : function(player){
+
+    console.log(this.timeSinceEndzoneHitMS);
+
+    if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
+      return;
+      console.log("too soon");
+    }
+
+    console.log("OK");
+    this.timeSinceEndzoneHitMS = 0;
+
 
     // Only score when game is still on
     if(this.mode === "off" || this.mode === "finish") {

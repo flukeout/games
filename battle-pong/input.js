@@ -27,8 +27,8 @@ var gamepadInputMappings = {
     axes: {
       0: "analogLeftX",
       1: "analogLeftY",
-      2: "analogRightX",
-      3: "analogRightY"
+      3: "analogRightX"
+      // 3: "analogRightY"
     }
   }
 };
@@ -50,7 +50,7 @@ window.GamepadManager = (function () {
 
   function getGamepads() {
     var gamepadList = [];
-    
+
     refreshGamepads();
 
     for (var i = 0; i < gamepads.length; ++i) {
