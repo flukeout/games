@@ -171,6 +171,16 @@ function createPaddle(options) {
     // This gets called every frame of the game
     update(delta){
 
+
+
+        if(this.physics.angularVelocity > .0905) {
+          Matter.Body.setAngularVelocity(this.physics, .0905);
+        }
+        if(this.physics.angularVelocity < -.0905) {
+          Matter.Body.setAngularVelocity(this.physics, -.0905);
+        }
+
+
       if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {
         this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
       }
@@ -258,7 +268,7 @@ function createPaddle(options) {
         this.targetAngleSet = false;
       }
 
-      if(spinning == false && this.player == 0 && this.targetAngleSet == false) {
+      if(spinning == false && this.targetAngleSet == false) {
 
         var remainder = (this.physics.angle * 180/Math.PI) % 90;
         if(this.physics.angularVelocity >= 0) {
@@ -285,7 +295,7 @@ function createPaddle(options) {
         applyVel = maxVel;
       }
 
-      if(this.player == 0 && spinning == false) {
+      if(spinning == false) {
         if(delta < 0) {
           this.physics.torque = applyVel;
         }
