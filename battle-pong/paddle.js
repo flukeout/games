@@ -244,9 +244,6 @@ function createPaddle(options) {
 
       this.currentAngle = this.physics.angle * 180/Math.PI;
 
-
-
-
       if(this.actions.spinClockwise){
         this.spin(spinVelocity);
         spinning = true;
@@ -261,40 +258,34 @@ function createPaddle(options) {
         this.targetAngleSet = false;
       }
 
-
-
       if(spinning == false && this.player == 0 && this.targetAngleSet == false) {
 
-        // if(this.physics.angularVelocity >= 0) {
-          var remainder = (this.physics.angle * 180/Math.PI) % 90;
-          // console.log(remainder);
+        var remainder = (this.physics.angle * 180/Math.PI) % 90;
+        if(this.physics.angularVelocity >= 0) {
 
-          this.targetAngle = Math.round(this.physics.angle * 180/Math.PI / 90) * 90;
-          // console.log(this.physics.angle * 180/Math.PI);
-          // console.log(this.targetAngle);
-          // if(remainder < 30) {
-          //   this.targetAngle = this.targetAngle + 90;
-          // }
-          // console.log()
-        // } //else {
-          // this.targetAngle = Math.floor(this.physics.angle * 180/Math.PI / 90) * 90;
-        // }
-        // this.targetAngleSet = true;
-        // console.log(delta);
-        // console.log("--=======--");
+          this.targetAngle = Math.ceil(this.physics.angle * 180/Math.PI / 90) * 90;
+          if(Math.abs(remainder) < 30) {
+            this.targetAngle = this.targetAngle - 90;
+          }
+
+        } else {
+          this.targetAngle = Math.floor(this.physics.angle * 180/Math.PI / 90) * 90;
+          if(Math.abs(remainder) < 30) {
+            this.targetAngle = this.targetAngle + 90;
+          }
+        }
+        this.targetAngleSet = true;
       }
 
       var delta = this.currentAngle - this.targetAngle;
 
-      var maxVel = 2;
-      var applyVel = -maxVel * delta/45;
+      var maxVel = 3;
+      var applyVel = -maxVel * delta/90;
       if(applyVel > maxVel) {
         applyVel = maxVel;
       }
 
-
       if(this.player == 0 && spinning == false) {
-
         if(delta < 0) {
           this.physics.torque = applyVel;
         }
@@ -303,11 +294,11 @@ function createPaddle(options) {
         }
       }
 
-      if(this.actions.spin > .1) {
-        this.spin(spinVelocity);
-      } else if (this.actions.spin < -.1) {
-        this.spin(-spinVelocity);
-      }
+      // if(this.actions.spin > .1) {
+      //   this.spin(spinVelocity);
+      // } else if (this.actions.spin < -.1) {
+      //   this.spin(-spinVelocity);
+      // }
 
       // Analog movement
       var xDelta = this.actions.moveX,

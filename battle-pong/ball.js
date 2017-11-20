@@ -15,6 +15,7 @@ function createBall(options){
       width: 30,
       classNames : options.classNames || []
     },
+    lastStepSpeed : 0,
     bodyEL : false,
     physicsOptions : {
       frictionAir: 0.00001 / game.physicsSamplingRatio,
@@ -29,16 +30,15 @@ function createBall(options){
     timeSinceHit : 0,
     gotPaddleHit : false,
 
-    wordSpeed : 11 / game.physicsSamplingRatio, // TODO - update
+    wordSpeed : 15 / game.physicsSamplingRatio, // TODO - update
     phrases : [
-      "BOOOOOM",
+      "BOOOOOOOOM",
       "THHHHHWAP",
       "BA-DOOOM",
-      "BLAM!!!",
+      "KA-BLAAAAM",
       "FWOOOSH",
       "WHAAAAAAM",
-      "KA-POW!",
-      "BOOP!"
+      "KA-POOOOOOOW",
     ],
     wordInProgress : false,
 
@@ -47,7 +47,6 @@ function createBall(options){
     letterIndex : 0,
     startedGoingFast : false,
     frameTick: 0,
-    resolvePaddleHitFlag : false,
 
     goalsBeforeSlowdown: 1,
     goalsWhileFast : 0,
@@ -73,6 +72,7 @@ function createBall(options){
     goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
+    lastTouchedBy : false,
 
     wooshPlayed: false,
 
@@ -108,6 +108,7 @@ function createBall(options){
 
     run : function(delta) {
 
+
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
         this.applyBrakes = false;
       }
@@ -130,7 +131,7 @@ function createBall(options){
       }
 
       this.canSpin = this.checkSpinConditions(delta);
-      // console.log(this.canSpin);
+
 
       // TODO - fix how this is added / removed, we don't want to do it every frame
       if(this.canSpin){
@@ -138,11 +139,6 @@ function createBall(options){
       } else {
         this.element.querySelector(".body").classList.remove("canSpin");
       }
-
-      if(this.resolvePaddleHitFlag) {
-        this.resolvePaddleHit();
-      }
-
 
       // All this crap below just relates to curving the ball
       // and adding the spinning animation.
@@ -154,13 +150,6 @@ function createBall(options){
 
       var rotating = false;
       var direction;
-
-      // if(!this.lastHitPaddle) {
-      //   this.lastHitPaddle = 1;
-      // }
-      //   console.log(paddles[this.lastHitPaddle - 1].physics.angularVelocity / game.physicsSamplingRatio > .1);
-
-
 
       if(this.canSpin) {
 
@@ -270,11 +259,9 @@ function createBall(options){
 
       // --Spinning ball garbage ends here.
 
-
       // The paddle hit stuff needs a one frame delay before taking effect seemingly.
       // This is the way around that. Should be easier?
       if(this.gotPaddleHit) {
-        this.resolvePaddleHitFlag = true;
         this.gotPaddleHit = false;
         this.timeSinceHit = 0;
       }
@@ -282,11 +269,8 @@ function createBall(options){
       if(this.wordInProgress){
         this.drawLetter();
       }
-    },
 
-    resolvePaddleHit: function(){
-      this.checkSpeed();
-      this.resolvePaddleHitFlag = false;
+      this.lastStepSpeed = JSON.parse(JSON.stringify(this.physics.speed));
     },
 
     startWord: function(){
@@ -295,12 +279,14 @@ function createBall(options){
       }
 
       this.wordInProgress = true;
-      this.letterIndex = 0;
+      this.letterIndex = -1;
       var wordIndex = Math.floor(getRandom(0,this.phrases.length));
       this.wordString = JSON.parse(JSON.stringify(this.phrases[wordIndex]));
     },
 
     drawLetter : function(){
+
+
 
       var movementAngle = 180 + -Math.atan2(ball.physics.velocity.x, ball.physics.velocity.y) * 180/Math.PI;
 
@@ -337,6 +323,17 @@ function createBall(options){
 
     hit: function(obj){
 
+      // console.log("ball.hit");
+      // console.log("last", this.lastStepSpeed);
+      // console.log("now", this.physics.speed);
+
+      //--------
+      // Make smoke puffs around the explosion
+
+      // var degAngle = this.physics.angle * 180/Math.PI;
+      //--------
+
+
       if(this.lastHitPaddle == 1 && (obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("paddle-two") > -1)) {
         this.lastHitPaddle = false;
       }
@@ -357,8 +354,6 @@ function createBall(options){
         }
       }
 
-      this.velocityWhenHit = JSON.parse(JSON.stringify(this.physics.velocity));
-
       if(obj.name.indexOf("paddle") > -1) {
 
         if(obj.name.indexOf("one") > -1) {
@@ -367,6 +362,7 @@ function createBall(options){
           if(paddle.hasSpinPowerup) {
             this.lastHitPaddle = 1;
           }
+          this.lastTouchedPaddle = 1;
         }
 
         if(obj.name.indexOf("two") > -1) {
@@ -375,58 +371,23 @@ function createBall(options){
           if(paddle.hasSpinPowerup) {
             this.lastHitPaddle = 2;
           }
+          this.lastTouchedPaddle = 2;
         }
 
-        this.speedWhenHit = JSON.parse(JSON.stringify(this.physics.speed));
         this.gotPaddleHit = true;
+
+        this.checkSpeed();
+        this.applyBrakes = false;
+
       }
 
-      if(this.gotPaddleHit) {
-        this.applyBrakes = false;
-      }
 
       if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {
         game.loserLived();
       }
 
-      this.gotHit = true;
-    },
 
-    // After a paddle hit, we want to check if the ball is going
-    // fast enough, and if the hit imparted it with more speed.
-    // If so, we'll draw out a word.
-    checkSpeed: function(){
-
-      if(this.physics.speed > this.speedWhenHit) {
-        this.lastPaddleHitHard = true;
-      } else {
-        this.lastPaddleHitHard = false;
-      }
-
-      if(this.lastPaddleHitHard){
-        if(this.physics.speed > this.wordSpeed && !this.wordInProgress) {
-          this.startWord();
-        }
-      }
-    },
-
-    // This makes it so that the hit sound can't play in rapid crazy succession.
-    hitSoundTimeout: false,
-    hitSoundTimeoutMS: 100,
-
-    resolveHit : function(){
-
-      this.gotHit = false;
-
-      var start = this.velocityWhenHit;
-      var end = this.physics.velocity;
-
-      var deltaX = Math.abs(start.x - end.x);
-      var deltaY = Math.abs(start.y - end.y);
-
-      var totalDelta = deltaX + deltaY;
-
-      var percentage = totalDelta / 20; // Volume percentage
+      var percentage = this.physics.speed / 20; // Volume percentage
 
       if(percentage > 1) {
         percentage = 1;
@@ -443,6 +404,79 @@ function createBall(options){
           that.hitSoundTimeout = false;
         }, this.hitSoundTimeoutMS);
       }
+
+    },
+
+    // After a paddle hit, we want to check if the ball is going
+    // fast enough, and if the hit imparted it with more speed.
+    // If so, we'll draw out a word.
+    checkSpeed: function(){
+
+      if(this.physics.speed > this.lastStepSpeed) {
+        this.lastPaddleHitHard = true;
+      } else {
+        this.lastPaddleHitHard = false;
+      }
+
+      if(this.lastPaddleHitHard){
+        if(this.physics.speed > this.wordSpeed && !this.wordInProgress) {
+          this.startWord();
+
+          var xDelta = this.physics.velocity.x;
+          var yDelta = this.physics.velocity.y;
+          var degAngle = Math.atan2(xDelta,yDelta) * 180/ Math.PI;
+
+          for(var i = 0; i < 8; i++){
+
+            var options = {
+              x : this.physics.position.x - 3,
+              y : this.physics.position.y - 3,
+              angle: degAngle + 180,
+              zRv : getRandom(-5,5),
+              speedA: -.06,
+              oV : -.04,
+              o: 3,
+              width : 6,
+              height: 6,
+              className : 'puff',
+              lifespan: 200
+            }
+
+            var angleMod = getRandom(-20,20);
+            options.angle = options.angle + angleMod;
+            options.speed = 6 - 2 * (Math.abs(angleMod) / 20);
+
+            makeParticle(options);
+          }
+
+          var options = {
+            x : this.physics.position.x - 50,
+            y : this.physics.position.y - 240,
+            zR: -degAngle + 180,
+            width : 100,
+            height: 240,
+            o: 1,
+            oV: -.05,
+            className : 'fire',
+            lifespan: 200000
+          }
+
+          makeParticle(options);
+
+          playSound("thwap");
+        }
+      }
+    },
+
+    // This makes it so that the hit sound can't play in rapid crazy succession.
+    hitSoundTimeout: false,
+    hitSoundTimeoutMS: 100,
+
+    resolveHit : function(){
+
+      this.gotHit = false;
+
+
     }
   });
 

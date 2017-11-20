@@ -3,6 +3,8 @@
 
 function makeExplosion(xposition, yposition, size, blastDirection){
 
+  console.log(xposition);
+
   if(!blastDirection) {
     blastDirection = "all";
   }
@@ -41,27 +43,6 @@ function makeExplosion(xposition, yposition, size, blastDirection){
   }(particle.el),500);
 
   document.querySelector(".world").appendChild(particle.el);
-
-  // Make smoke puffs around the explosion
-  for(var i = 0; i < 8; i++){
-
-    var options = {
-      x : xposition,
-      y : yposition,
-      angle: getRandom(0,359),
-      zR : getRandom(-15,15),
-      oV : -.008,
-      width : getRandom(20,55),
-      className : 'puff',
-      lifespan: 125
-    }
-
-    options.x = options.x - (options.width/2) + 10;
-    options.y = options.y - (options.width/2) + 10;
-    options.height = options.width;
-    options.speed = 1 + (2 * (1 - options.width / 50)); // The bigger the particle, the lower the speed
-    // makeParticle(options);
-  }
 
 
   // Blast lines that eminate from the center of the bomb

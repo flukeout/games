@@ -8,6 +8,14 @@ var sounds = {
     url : "sounds/beep.mp3",
     volume : .15
   },
+  "thwap" : {
+    url : "sounds/thwap.wav",
+    volume : .15
+  },
+  "star-hit" : {
+    url : "sounds/star-hit.wav",
+    volume : .15
+  },
   "woosh" : {
     url : "sounds/woosh.wav",
     volume : .35

@@ -35,7 +35,8 @@ function createPowerup(x, y, type){
 
     physicsOptions : {
       frictionAir: 0.015 / game.physicsSamplingRatio,
-      restitution: 1
+      restitution: 1,
+      label: "powerup-" + type
     },
 
     hit : function(obj){
@@ -50,6 +51,10 @@ function createPowerup(x, y, type){
       if(obj.name == "wall-left") {
         playerAffected = 1;
         playerHit = true;
+      }
+
+      if(obj.name.indexOf("paddle") > -1 || obj.name.indexOf("ball") > -1 ){
+        playSound("star-hit");
       }
 
       if(playerHit){

@@ -15,6 +15,11 @@ var game =  {
 
   powerupFrequency: 300, // A powerup appears once in every X frames
 
+  freezeFrames : 0,
+
+  ownGoalCooldownMS: 1000,    // How much to wait before allowign consecutive own goal
+  ownGoalCooldownTimerMS : 0, // Keeps track of the cooldown for own goal
+
   // running - game is playing
   // roundover - round is over (about to reset)
   // gameover - game is over (loser screen)
@@ -54,25 +59,35 @@ var game =  {
     document.addEventListener("ballHitEndzone", function(e) {
 
       var scoringPlayer = 1;
-
       if(e.detail.side == "left") {
         scoringPlayer = 2;
       }
-
       that.playerScored(scoringPlayer);
+    });
 
+
+    document.addEventListener("ballHitPaddle", function(e) {
+      // console.log("ballhit paddle");
+      // game.freezeFrames = 30;
+
+      // console.log(e);
+      // var scoringPlayer = 1;
+      // if(e.detail.side == "left") {
+      //   scoringPlayer = 2;
+      // }
+      // that.playerScored(scoringPlayer);
     });
 
     // Adds a little effect when the ball hits the top or bottom side
-    document.addEventListener("ballHitSide", function(e) {
-      if(ball.physics.speed > 4) {
-        if(e.detail.side == "top") {
-          // bumpScreen("up");
-        } else {
-          // bumpScreen("down");
-        }
-      }
-    });
+    // document.addEventListener("ballHitSide", function(e) {
+    //   if(ball.physics.speed > 4) {
+    //     if(e.detail.side == "top") {
+    //       // bumpScreen("up");
+    //     } else {
+    //       // bumpScreen("down");
+    //     }
+    //   }
+    // });
   },
 
   loserLived: function(){
@@ -129,11 +144,16 @@ var game =  {
     var g = this;
     g.mode = 'startup';
     (function loop() {
+
+      if(g.freezeFrames == 0) {
+        g.step();
+      } else {
+        g.freezeFrames--;
+      }
+
       if (g.mode === 'paused') {
         return;
       }
-
-      g.step();
       requestAnimationFrame(loop);
     })();
   },
@@ -146,15 +166,19 @@ var game =  {
     var currentTime = Date.now();
     var delta = 16;
 
-
-
-    // console.log(this.timeSinceEndzoneHitMS);
-
     if(lastTime) {
       delta = currentTime - lastTime;
     }
 
     lastTime = currentTime;
+
+    if(this.ownGoalCooldownTimerMS > 0) {
+      this.ownGoalCooldownTimerMS = this.ownGoalCooldownTimerMS - delta;
+    }
+
+    if(this.ownGoalCooldownTimerMS < 0) {
+      this.ownGoalCooldownTimerMS = 0;
+    }
 
     this.timeSinceEndzoneHitMS = this.timeSinceEndzoneHitMS + delta;
 
@@ -176,9 +200,6 @@ var game =  {
     this.physicsSamplingRatio = 2; // Twice as fast
     this.physicsStepMS = 1000 / 60 / this.physicsSamplingRatio;
 
-    for(var i = 0; i < this.physicsSamplingRatio; i++){
-      Engine.update(engine, this.physicsStepMS);
-    }
 
     // Tilts the board depending on where the ball is
 
@@ -211,17 +232,10 @@ var game =  {
         }
       }
 
-
       // TODO - pick a name for this function and standardize
       // "step" might be better than run or update actually, since we use that for the game
       // maybe "frameStep" for clarity;
-      if(obj.run) {
-        obj.run(delta);
-      }
 
-      if(obj.update){
-        obj.update(delta);
-      }
 
       // Update the element position & angle
       var el = obj.element;
@@ -235,7 +249,20 @@ var game =  {
       } else {
         el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
       }
+
+      if(obj.update){
+        obj.update(delta);
+      }
+
+      if(obj.run) {
+        obj.run(delta);
+      }
+
     });
+
+    for(var i = 0; i < this.physicsSamplingRatio; i++){
+      Engine.update(engine, this.physicsStepMS);
+    }
 
     drawParticles(); // Updates any particles we might have
 
@@ -373,11 +400,13 @@ var game =  {
     var chance = Math.floor(getRandom(0,1));
     var launchForce = .02 * this.physicsSamplingRatio;
 
-    if(chance === 0) {
-      ball.launch(0, -launchForce);
-    } else {
-      ball.launch(0, launchForce);
-    }
+      ball.launch(-.02, 0);
+
+    // if(chance === 0) {
+    //   ball.launch(0, -launchForce);
+    // } else {
+    //   ball.launch(0, launchForce);
+    // }
   },
 
   showScore : function(){
@@ -617,16 +646,13 @@ var game =  {
 
   playerScored : function(player){
 
-    console.log(this.timeSinceEndzoneHitMS);
-
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;
-      console.log("too soon");
+      // console.log("too soon");
     }
 
-    console.log("OK");
+    // console.log("OK");
     this.timeSinceEndzoneHitMS = 0;
-
 
     // Only score when game is still on
     if(this.mode === "off" || this.mode === "finish") {
@@ -639,17 +665,33 @@ var game =  {
       scoredOnPlayerNum = 1;
     }
 
+    var goalAllowed = true;
+
+    if(ball.lastTouchedPaddle == scoredOnPlayerNum) {
+      if(this.ownGoalCooldownTimerMS != 0) {
+        goalAllowed = false;
+      }
+      this.ownGoalCooldownTimerMS = this.ownGoalCooldownMS;
+    }
+
+    if(!goalAllowed) {
+      return;
+    }
+
     // Make an explosion when someone scores
     var blastDirection = "left";
 
+
+    var xPos = game.boardWidth;
+
     if(scoredByPlayerNum == 2) {
       blastDirection = "right";
+      xPos = 0;
     }
 
-    makeExplosion(ball.physics.position.x, ball.physics.position.y, 75, blastDirection);
+    makeExplosion(xPos, ball.physics.position.y, 75, blastDirection);
 
-    // Flash some color on the body element to correspond to the player/team who scored.
-
+    // Flash some color on the body element to correspond to the player/team who scored .
 
     // TODO - remove 'red' and 'blue' reference, make it like team-one color, team-two etc
 

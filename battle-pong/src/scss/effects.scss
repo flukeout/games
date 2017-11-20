@@ -8,9 +8,8 @@
 }
 
 .puff {
-  background: rgba(255,255,255,.4);
-  background: #555;
-  z-index: 5;
+  background: rgba(255,255,255,.8);
+  z-index: 4;
 }
 
 
@@ -19,6 +18,15 @@
   z-index: 4;
 }
 
+.fire {
+  background-image: url(assets/images/fire.svg);
+  background-size: contain;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  transform-origin: bottom;
+  position: absolute;
+  z-index: 2;
+}
 
 .underblast {
   z-index: 2;
