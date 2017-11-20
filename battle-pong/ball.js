@@ -293,8 +293,6 @@ function createBall(options){
 
     drawLetter : function(){
 
-
-
       var movementAngle = 180 + -Math.atan2(ball.physics.velocity.x, ball.physics.velocity.y) * 180/Math.PI;
 
       if(movementAngle >= 360) {
@@ -320,12 +318,16 @@ function createBall(options){
         this.letterIndex++;
         this.frameTick = 0;
         if(this.letterIndex >= this.wordString.length) {
-          this.letterIndex = 0;
-          this.wordInProgress = false;
+          this.endWord();
         }
       }
 
       this.frameTick++;
+    },
+
+    endWord : function(){
+      this.letterIndex = 0;
+      this.wordInProgress = false;
     },
 
     hit: function(obj){
@@ -465,10 +467,25 @@ function createBall(options){
             o: 1,
             oV: -.05,
             className : 'fire',
-            lifespan: 200000
+            lifespan: 200
           }
 
           makeParticle(options);
+
+          var options = {
+            x : this.physics.position.x - 30,
+            y : this.physics.position.y - 100,
+            zR: -degAngle,
+            width : 60,
+            height: 100,
+            o: 1,
+            oV: -.05,
+            className : 'back-fire',
+            lifespan: 200
+          }
+
+          makeParticle(options);
+
 
           Matter.Body.setVelocity(this.physics, {
             x : this.physics.velocity.x * 1.25,

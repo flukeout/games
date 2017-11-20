@@ -28,6 +28,17 @@
   z-index: 2;
 }
 
+.back-fire {
+  background-image: url(assets/images/back-fire.svg);
+  background-size: contain;
+  background-position: top;
+  background-repeat: no-repeat;
+  transform-origin: bottom;
+  position: absolute;
+  z-index: 2;
+}
+
+
 .underblast {
   z-index: 2;
   position: absolute;
