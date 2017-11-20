@@ -30,7 +30,7 @@ function createBall(options){
     timeSinceHit : 0,
     gotPaddleHit : false,
 
-    wordSpeed : 15 / game.physicsSamplingRatio, // TODO - update
+    wordSpeed : 14 / game.physicsSamplingRatio, // TODO - update
     phrases : [
       "BOOOOOOOOM",
       "THHHHHWAP",
@@ -113,11 +113,18 @@ function createBall(options){
         this.applyBrakes = false;
       }
 
-
       if(this.applyBrakes && this.brakesModeEnabled) {
         Matter.Body.setVelocity(this.physics, {
           x : this.physics.velocity.x * this.slowdownRatio,
           y : this.physics.velocity.y * this.slowdownRatio
+        });
+      }
+
+      if(this.physics.speed > 8) {
+        console.log("brakes");
+        Matter.Body.setVelocity(this.physics, {
+          x : this.physics.velocity.x * .99,
+          y : this.physics.velocity.y * .99
         });
       }
 
@@ -462,6 +469,14 @@ function createBall(options){
           }
 
           makeParticle(options);
+
+          Matter.Body.setVelocity(this.physics, {
+            x : this.physics.velocity.x * 1.25,
+            y : this.physics.velocity.y * 1.25
+          });
+
+          console.log(this.physics.speed);
+
 
           playSound("thwap");
         }
