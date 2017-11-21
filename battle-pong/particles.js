@@ -66,7 +66,7 @@ function makeParticle(options){
     gravity : options.gravity || 0,
     className : options.className || false,
 
-    lifespan : options.lifespan || 0,
+    lifespan : options.lifespan || 200,
     delay : options.delay || 0,
   };
 

@@ -648,10 +648,8 @@ var game =  {
 
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;
-      // console.log("too soon");
     }
 
-    // console.log("OK");
     this.timeSinceEndzoneHitMS = 0;
 
     // Only score when game is still on
@@ -681,7 +679,6 @@ var game =  {
     // Make an explosion when someone scores
     var blastDirection = "left";
 
-
     var xPos = game.boardWidth;
 
     if(scoredByPlayerNum == 2) {
@@ -690,12 +687,7 @@ var game =  {
     }
 
     makeExplosion(xPos, ball.physics.position.y, 75, blastDirection);
-
-    // Flash some color on the body element to correspond to the player/team who scored .
-
-    // TODO - remove 'red' and 'blue' reference, make it like team-one color, team-two etc
-
-    addTemporaryClassName(this.bodyEl, "team-" + scoredByPlayerNum + "-scored-flash", 1000)
+    addTemporaryClassName(this.bodyEl, "team-" + scoredByPlayerNum + "-scored-flash", 1000);
 
     // Check horizontal velocity of the ball
     // the faster it hits an endzone the more that

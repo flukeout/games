@@ -13,6 +13,11 @@
       'happy-tongue-out.svg',
       'smiling.svg'
     ],
+    strong: [
+      'gun.svg',
+      'flex.svg'
+    ],
+
     scared: [
       'hands-praying.svg'
     ],

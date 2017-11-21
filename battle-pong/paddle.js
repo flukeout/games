@@ -172,7 +172,7 @@ function createPaddle(options) {
     update(delta){
 
 
-
+        // TODO - remove hardcoded max speed
         if(this.physics.angularVelocity > .0905) {
           Matter.Body.setAngularVelocity(this.physics, .0905);
         }
@@ -272,12 +272,10 @@ function createPaddle(options) {
 
         var remainder = (this.physics.angle * 180/Math.PI) % 90;
         if(this.physics.angularVelocity >= 0) {
-
           this.targetAngle = Math.ceil(this.physics.angle * 180/Math.PI / 90) * 90;
           if(Math.abs(remainder) < 30) {
             this.targetAngle = this.targetAngle - 90;
           }
-
         } else {
           this.targetAngle = Math.floor(this.physics.angle * 180/Math.PI / 90) * 90;
           if(Math.abs(remainder) < 30) {
@@ -290,17 +288,27 @@ function createPaddle(options) {
       var delta = this.currentAngle - this.targetAngle;
 
       var maxVel = 3;
-      var applyVel = -maxVel * delta/90;
+      var applyVel = -maxVel * delta/45;
       if(applyVel > maxVel) {
         applyVel = maxVel;
       }
 
+
+
       if(spinning == false) {
+
         if(delta < 0) {
           this.physics.torque = applyVel;
         }
         if(delta > 0) {
           this.physics.torque = applyVel;
+        }
+
+        if(delta > -2 && delta < 2 && delta != 0) {
+          if(this.physics.angularSpeed < .02) {
+            Matter.Body.setAngle(this.physics, this.targetAngle * Math.PI / 180);
+            Matter.Body.setAngularVelocity(this.physics, 0);
+          }
         }
       }
 

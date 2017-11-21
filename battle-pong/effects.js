@@ -149,6 +149,8 @@ function bumpScreen(direction){
 // we'll have to do the width trick.
 
 function addTemporaryClassName(element, className, durationMS){
+  console.log(className);
+
   element.classList.remove(className);
   element.style.width = element.clientWidth;
   element.classList.add(className);
@@ -156,6 +158,104 @@ function addTemporaryClassName(element, className, durationMS){
   setTimeout(function(){
     element.classList.remove(className);
   }, durationMS || 1000);
+}
+
+function addBallTrail(x,y){
+
+  var options = {
+    x : x - 15,
+    y : y - 15,
+    width : 30,
+    oV: -.02,
+    scaleV: -.01,
+    height: 30,
+    className : 'spinSquare',
+    lifespan: 125
+  }
+  makeParticle(options);
+
+}
+
+
+// When you blast a ball really hard
+function fireGun(x, y, angle, player){
+
+  for(var i = 0; i < 8; i++){
+
+    var options = {
+      x : x - 3,
+      y : y - 3,
+      angle: angle + 180,
+      zRv : getRandom(-5,5),
+      speedA: -.06,
+      oV : -.04,
+      o: 3,
+      width : 6,
+      height: 6,
+      className : 'puff'
+    }
+
+    var angleMod = getRandom(-20,20);
+    options.angle = options.angle + angleMod;
+    options.speed = 6 - 2 * (Math.abs(angleMod) / 20);
+
+    makeParticle(options);
+  }
+
+  // This is the front blast!
+  var options = {
+    x : x - 50,
+    y : y - 240,
+    zR: -angle + 180,
+    width : 100,
+    height: 240,
+    oV: -.05,
+    className : 'fire'
+  }
+
+  makeParticle(options);
+
+  // This is the back blast!
+  var options = {
+    x : x - 30,
+    y : y - 100,
+    zR: -angle,
+    width : 60,
+    height: 100,
+    oV: -.05,
+    className : 'back-fire'
+  }
+
+  makeParticle(options);
+
+  addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 1000);
+  shakeScreen();
+
+  playSound("thwap");
+
+  document.dispatchEvent(new CustomEvent("emotion", {detail: {
+    player: player,
+    type: "strong"
+  }}));
+}
+
+function drawLetter(x, y, angle, letter) {
+
+  var options = {
+    x : x - 15,
+    y : y - 15,
+    o : 6,
+    oV : -.1,
+    height: 30,
+    width: 30,
+    scaleV : -.002,
+    zR: angle - 90,
+    lifespan : 100,
+    className : "speedLetter",
+    text : letter
+  }
+
+  makeParticle(options);
 }
 
 

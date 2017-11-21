@@ -30,7 +30,16 @@ function createBall(options){
     timeSinceHit : 0,
     gotPaddleHit : false,
 
+    maxSpeed: 16 / game.physicsSamplingRatio,
+    maxSpeedSlowdownRatio : .99,
+
+    minSpeed: 4 / game.physicsSamplingRatio,
+    minSpeedSlowdownRatio : .96,
+
+    hardHitVelocityIncreaseRatio: 1.25,
+
     wordSpeed : 14 / game.physicsSamplingRatio, // TODO - update
+
     phrases : [
       "BOOOOOOOOM",
       "THHHHHWAP",
@@ -40,6 +49,7 @@ function createBall(options){
       "WHAAAAAAM",
       "KA-POOOOOOOW",
     ],
+
     wordInProgress : false,
 
     wordString : false,
@@ -51,6 +61,7 @@ function createBall(options){
     goalsBeforeSlowdown: 1,
     goalsWhileFast : 0,
 
+    // TODO - what are these for?
     displayAngle: 0,
     rotationVelocity: 0,
     rotationVelocityMax: 20,  // TODO - update
@@ -63,8 +74,10 @@ function createBall(options){
     timeAllowedGoingFastMS : 5000, // max time to have spinmode
 
     // For slowing things down
+    // TODO / remove
     slowdownRatio: .985,
     slowSpeedTarget: 7 / game.physicsSamplingRatio,
+
     applyBrakes : false,
     brakesModeEnabled : window.Settings.brakesModeEnabled,
 
@@ -73,6 +86,7 @@ function createBall(options){
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
     lastTouchedBy : false,
+    lastTouchedPaddle: false,
 
     wooshPlayed: false,
 
@@ -106,26 +120,31 @@ function createBall(options){
 
     frameTicks : 0,
 
-    run : function(delta) {
+    changeVelocityRatio: function(ratio) {
+      Matter.Body.setVelocity(this.physics, {
+        x : this.physics.velocity.x * ratio,
+        y : this.physics.velocity.y * ratio
+      });
+    },
 
+    run : function(delta) {
 
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
         this.applyBrakes = false;
       }
 
       if(this.applyBrakes && this.brakesModeEnabled) {
-        Matter.Body.setVelocity(this.physics, {
-          x : this.physics.velocity.x * this.slowdownRatio,
-          y : this.physics.velocity.y * this.slowdownRatio
-        });
+
       }
 
-      if(this.physics.speed > 8) {
-        console.log("brakes");
-        Matter.Body.setVelocity(this.physics, {
-          x : this.physics.velocity.x * .99,
-          y : this.physics.velocity.y * .99
-        });
+      // If it's going too fast, slow it down
+      if(this.physics.speed > this.maxSpeed) {
+        this.changeVelocityRatio(this.maxSpeedSlowdownRatio);
+      }
+
+      // If it's going too slow, slow it down
+      if(this.physics.speed < this.minSpeed) {
+        this.changeVelocityRatio(this.minSpeedSlowdownRatio);
       }
 
       this.canSpin = false;
@@ -138,7 +157,6 @@ function createBall(options){
       }
 
       this.canSpin = this.checkSpinConditions(delta);
-
 
       // TODO - fix how this is added / removed, we don't want to do it every frame
       if(this.canSpin){
@@ -193,7 +211,6 @@ function createBall(options){
         // TODO - make a separate function for decreasing / increasing velocity that accepts
         // a percentage?
 
-
         // While spinning...
         if((this.physics.speed * game.physicsSamplingRatio) < 9) {
           Matter.Body.setVelocity(this.physics, {
@@ -211,17 +228,7 @@ function createBall(options){
       // Adds trails after the ball when it's goign fast enough
       if(this.frameTicks > 1 & this.physics.speed * game.physicsSamplingRatio > 7) {
         if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
-          var options = {
-            x : this.physics.position.x - 15,
-            y : this.physics.position.y - 15,
-            width : 30,
-            oV: -.02,
-            scaleV: -.01,
-            height: 30,
-            className : 'spinSquare',
-            lifespan: 125
-          }
-          makeParticle(options);
+          addBallTrail(this.position.x, this.position.y);
         }
         this.frameTicks = 0;
       } else {
@@ -300,21 +307,10 @@ function createBall(options){
       }
 
       if(this.frameTick > 1) {
-        var options = {
-          x : this.physics.position.x - 15,
-          y : this.physics.position.y - 15,
-          o : 6,
-          oV : -.1,
-          height: 30,
-          width: 30,
-          scaleV : -.002,
-          zR: movementAngle - 90,
-          lifespan : 100,
-          className : "speedLetter",
-          text : this.wordString.charAt(this.letterIndex)
-        }
+        var letter = this.wordString.charAt(this.letterIndex);
 
-        makeParticle(options);
+        drawLetter(this.physics.position.x, this.physics.position.y, movementAngle, letter);
+
         this.letterIndex++;
         this.frameTick = 0;
         if(this.letterIndex >= this.wordString.length) {
@@ -332,17 +328,6 @@ function createBall(options){
 
     hit: function(obj){
 
-      // console.log("ball.hit");
-      // console.log("last", this.lastStepSpeed);
-      // console.log("now", this.physics.speed);
-
-      //--------
-      // Make smoke puffs around the explosion
-
-      // var degAngle = this.physics.angle * 180/Math.PI;
-      //--------
-
-
       if(this.lastHitPaddle == 1 && (obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("paddle-two") > -1)) {
         this.lastHitPaddle = false;
       }
@@ -351,18 +336,27 @@ function createBall(options){
         this.lastHitPaddle = false;
       }
 
+      if(obj.name.indexOf("paddle-one") > -1) {
+        this.lastTouchedBy = 1;
+      }
+
+      if(obj.name.indexOf("paddle-two") > -1) {
+        this.lastTouchedBy = 2;
+      }
+
       if(obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("wall-left") > -1) {
         if(this.physics.speed > this.goingFastSpeedThreshold) {
           this.goalsWhileFast++;
         } else {
           this.goalsWhileFast = 0;
         }
-
         if(this.goalsWhileFast > 0) {
           this.applyBrakes = true;
         }
       }
 
+
+      // TODO - WTF
       if(obj.name.indexOf("paddle") > -1) {
 
         if(obj.name.indexOf("one") > -1) {
@@ -384,10 +378,8 @@ function createBall(options){
         }
 
         this.gotPaddleHit = true;
-
         this.checkSpeed();
         this.applyBrakes = false;
-
       }
 
 
@@ -395,8 +387,8 @@ function createBall(options){
         game.loserLived();
       }
 
-
-      var percentage = this.physics.speed / 20; // Volume percentage
+      // Percentage of the volume sound
+      var percentage = this.physics.speed / 20;
 
       if(percentage > 1) {
         percentage = 1;
@@ -435,67 +427,11 @@ function createBall(options){
           var yDelta = this.physics.velocity.y;
           var degAngle = Math.atan2(xDelta,yDelta) * 180/ Math.PI;
 
-          for(var i = 0; i < 8; i++){
 
-            var options = {
-              x : this.physics.position.x - 3,
-              y : this.physics.position.y - 3,
-              angle: degAngle + 180,
-              zRv : getRandom(-5,5),
-              speedA: -.06,
-              oV : -.04,
-              o: 3,
-              width : 6,
-              height: 6,
-              className : 'puff',
-              lifespan: 200
-            }
-
-            var angleMod = getRandom(-20,20);
-            options.angle = options.angle + angleMod;
-            options.speed = 6 - 2 * (Math.abs(angleMod) / 20);
-
-            makeParticle(options);
-          }
-
-          var options = {
-            x : this.physics.position.x - 50,
-            y : this.physics.position.y - 240,
-            zR: -degAngle + 180,
-            width : 100,
-            height: 240,
-            o: 1,
-            oV: -.05,
-            className : 'fire',
-            lifespan: 200
-          }
-
-          makeParticle(options);
-
-          var options = {
-            x : this.physics.position.x - 30,
-            y : this.physics.position.y - 100,
-            zR: -degAngle,
-            width : 60,
-            height: 100,
-            o: 1,
-            oV: -.05,
-            className : 'back-fire',
-            lifespan: 200
-          }
-
-          makeParticle(options);
+          fireGun(this.physics.position.x, this.physics.position.y, degAngle, this.lastTouchedPaddle);
 
 
-          Matter.Body.setVelocity(this.physics, {
-            x : this.physics.velocity.x * 1.25,
-            y : this.physics.velocity.y * 1.25
-          });
-
-          console.log(this.physics.speed);
-
-
-          playSound("thwap");
+          this.changeVelocityRatio(this.hardHitVelocityIncreaseRatio);
         }
       }
     },
