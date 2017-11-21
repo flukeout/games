@@ -396,17 +396,14 @@ var game =  {
       position: { x : x, y : y }
     });
 
-
     var chance = Math.floor(getRandom(0,1));
     var launchForce = .02 * this.physicsSamplingRatio;
 
-      ball.launch(-.02, 0);
-
-    // if(chance === 0) {
-    //   ball.launch(0, -launchForce);
-    // } else {
-    //   ball.launch(0, launchForce);
-    // }
+    if(chance === 0) {
+      ball.launch(0, -launchForce);
+    } else {
+      ball.launch(0, launchForce);
+    }
   },
 
   showScore : function(){
