@@ -59,10 +59,10 @@ function createPowerup(x, y, type){
 
       if(playerHit){
 
-        for(var i = 0; i < paddles.length; i++){
+        for(var i = 0; i < 2; i++){
           var paddle = paddles[i];
           if(paddle.player == playerAffected) {
-            paddle.powerup(this.type);
+            paddles[0].powerup(this.type);
           }
         }
 

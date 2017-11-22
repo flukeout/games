@@ -3,42 +3,157 @@
 
 var axisThreshold = 0.1;
 
-var gamepadInputMappings = {
-  standard: {
-    buttons: {
-      0: "actionDown",
-      1: "actionRight",
-      2: "actionLeft",
-      3: "actionUp",
-      4: "bumperLeft",
-      5: "bumperRight",
-      6: "triggerLeft",
-      7: "triggerRight",
-      8: "select",
-      9: "start",
-      10: "analogLeft",
-      11: "analogRight",
-      12: "dPadUp",
-      13: "dPadDown",
-      14: "dPadLeft",
-      15: "dPadRight",
-      16: "home"
-    },
-    axes: {
-      0: "analogLeftX",
-      1: "analogLeftY",
-      3: "analogRightX"
-      // 3: "analogRightY"
+
+window.InputManager = function (onInputChanged) {
+  var savedInputLabelToActionMappings = localStorage.getItem('inputLabelToActionMappings');
+
+  if (savedInputLabelToActionMappings) {
+    savedInputLabelToActionMappings = JSON.parse(savedInputLabelToActionMappings);
+    keyboardInputLabelToActionMappings = savedInputLabelToActionMappings.keyboard;
+    gamepadInputLabelToActionMapping = savedInputLabelToActionMappings.gamepad;
+  }
+
+  var maintainedObjects = [];
+
+  this.setupInputForObject = function (object) {
+    object.setInputComponent(this.getComponentForNextAvailableInput());
+    maintainedObjects.push(object);
+    onInputChanged(object);
+  };
+
+  this.getComponentForNextAvailableInput = function(playerNumber) {
+    var unusedGamepad = GamepadManager.getUnusedGamepad();
+    if (unusedGamepad) {
+      return createGamepadInputComponent(unusedGamepad);
+    }
+    else {
+      return createKeyboardInputComponent(KeyboardManager.getUnusedConfig());
+    }
+  };
+
+  function onGamepadConnected(e) {
+    console.log('Gamepad Connected: ', e);
+  }
+
+  function checkGamepads() {
+    var unusedGamepad = GamepadManager.getUnusedGamepad();
+    if (unusedGamepad) {
+      for (var i = 0; i < maintainedObjects.length; ++i) {
+        let object = maintainedObjects[i];
+        if (object.inputComponent.type === 'keyboard') {
+          object.setInputComponent(createGamepadInputComponent(unusedGamepad));
+          onInputChanged(object);
+          return;
+        }
+      }
     }
   }
+
+  var gamepadCheckInterval = setInterval(function () {
+    checkGamepads();
+  }, 500);
+
+  window.addEventListener("gamepadconnected", onGamepadConnected);
+  window.addEventListener("gamepaddisconnected", (e) => {
+    // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
+    maintainedObjects.forEach((object) => {
+      if (object.inputComponent.type === 'gamepad' && object.inputComponent.gamepad.id === e.gamepad.id) {
+        object.setInputComponent(this.getComponentForNextAvailableInput());
+        onInputChanged(object);
+        return;
+      }
+    });
+  });
 };
+
+window.KeyboardManager = (function() {
+  var configs = keyboardInputLabelToActionMappings;
+  var configsInUse = [];
+
+  function Config(configIndex) {
+    this.inputToActionMapping = keyboardInputLabelToActionMappings[configIndex];
+    this.id = configIndex;
+    this.release = function () {
+      releaseConfig(this);
+    };
+
+    configsInUse.push(this);
+  }
+
+  function isConfigInUse(configIndex) {
+    for (var i = 0; i < configsInUse.length; ++i) {
+      if (configsInUse[i].id === configIndex) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function releaseConfig(config) {
+    var index = configsInUse.indexOf(config);
+    if (index > -1) {
+      configsInUse.splice(index, 1);
+    }
+  }
+
+  return {
+    getUnusedConfig: function () {
+      for (var i = 0; i < configs.length; ++i) {
+        if (!isConfigInUse(i)) {
+          return new Config(i);
+        }
+      }
+      return null;
+    }
+  };
+})();
 
 window.GamepadManager = (function () {
   var gamepads;
   var gamepadsInUse = [];
 
+  function Config(gamepad) {
+    var inputMappingLabelType = gamepad.mapping === 'standard' ? 'standard' : 'xbox';
+    var inputLabelSet = gamepadInputLabels[inputMappingLabelType];
+    var inputLabelToActionMappingKeys = Object.keys(gamepadInputLabelToActionMapping);
+    var inputToActionMapping = {buttons: {}, axes: {}};
+
+    Object.keys(inputLabelSet.buttons).forEach(function (inputNumber) {
+      var inputLabel = inputLabelSet.buttons[inputNumber];
+      if (inputLabelToActionMappingKeys.indexOf(inputLabel) > -1) {
+        var action = gamepadInputLabelToActionMapping[inputLabel];
+        inputToActionMapping.buttons[inputNumber] = action;
+      }
+    });
+
+    Object.keys(inputLabelSet.axes).forEach(function (inputNumber) {
+      var inputLabel = inputLabelSet.axes[inputNumber];
+      if (inputLabelToActionMappingKeys.indexOf(inputLabel) > -1) {
+        var action = gamepadInputLabelToActionMapping[inputLabel];
+        inputToActionMapping.axes[inputNumber] = action;
+      }
+    });
+
+    var gamepadID = gamepad.id;
+
+    this.inputToActionMapping = inputToActionMapping;
+    this.id = gamepadID;
+    this.type = inputMappingLabelType;
+    this.gamepad = gamepad;
+    this.release = function () {
+      releaseGamepad(this);
+    };
+
+    gamepadsInUse.push(this);
+  }
+
   function isGamepadInUse(id) {
-    return gamepadsInUse.indexOf(id) > -1;
+    for (var i = 0; i < gamepadsInUse.length; ++i) {
+      if (gamepadsInUse[i].id === id) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // This seems to fix a weird bug where values aren't actually updated if this isn't called each frame.
@@ -46,6 +161,13 @@ window.GamepadManager = (function () {
   // TODO: Investigate or maybe file a bug on Chrome or something.
   function refreshGamepads() {
     gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+  }
+
+  function releaseGamepad(config) {
+    var index = gamepadsInUse.indexOf(config);
+    if (index > -1) {
+      gamepadsInUse.splice(index, 1);
+    }
   }
 
   function getGamepads() {
@@ -63,58 +185,29 @@ window.GamepadManager = (function () {
   }
 
   return {
-    isThereAGamepadAvailable: function () {
-      return getGamepads.length > 0;
-    },
     refreshGamepads: refreshGamepads,
-    useGamepad: function(id) {
-      gamepadsInUse.push(id);
-    },
-    releaseGamepad: function(id) {
-      if (isGamepadInUse(id)) {
-        gamepadsInUse.splice(gamepadsInUse.indexOf(id), 1);
-      }
-    },
     getGamepads: getGamepads,
     getUnusedGamepad: function () {
       refreshGamepads();
       for (var i = 0; i < gamepads.length; ++i) {
-        if (!isGamepadInUse(gamepads[i])) {
-          return gamepads[i];
+        if (gamepads[i] && !isGamepadInUse(gamepads[i].id)) {
+          return new Config(gamepads[i]);
         }
       }
       return null;
-    },
-    isGamepadInUse: isGamepadInUse
+    }
   };
 })();
 
-function createInputComponent(actionMapping, options) {
-  if (!actionMapping) {
-    throw 'actionMapping is required to create an input component';
+function createInputComponent(inputToActionMapping, options) {
+  if (!inputToActionMapping) {
+    throw 'inputToActionMapping is required to create an input component';
   }
 
   var component = {
-    actionMapping: {},
+    inputToActionMapping: inputToActionMapping,
     actions: {},
-    update: function () {},
-    clearMappingForAction: function (action) {
-      Object.keys(this.actionMapping).forEach((key) => {
-        if (this.actionMapping[key] === action) {
-          delete this.actionMapping[key];
-        }
-      });
-    },
-    setMappingForAction: function (action, key) {
-      this.actionMapping[key] = action;
-    },
-    getInverseActionMapping: function () {
-      var inverseActionMapping = {};
-      Object.keys(this.actionMapping).forEach((key) => {
-        inverseActionMapping[this.actionMapping[key]] = key;
-      });
-      return inverseActionMapping;
-    },
+    update: function (actions) {},
     register: function (actions) {
       this.actions = actions;
       options.register && options.register.call(this, actions);
@@ -124,10 +217,6 @@ function createInputComponent(actionMapping, options) {
     }
   };
 
-  // Cheeky...
-  // Make a copy of this object for later use
-  component.actionMapping = JSON.parse(JSON.stringify(actionMapping));
-
   for(var k in options){
     if (k === 'register' || k === 'remove') continue;
     component[k] = options[k];
@@ -136,15 +225,16 @@ function createInputComponent(actionMapping, options) {
   return component;
 }
 
-function createGamepadInputComponent(gamepad, actionMapping) {
-  var component = createInputComponent(actionMapping, {
+function createGamepadInputComponent(config) {
+  console.log('%cInitializing Gamepad Input Component:', 'color: blue');
+  console.log('  ID: ' + config.id);
+  console.log('  Interpretted Type: %c' + config.type, 'background: #222; color: #bada55');
+  console.log('  Input->Action Mapping: ', config.inputToActionMapping);
+
+  var component = createInputComponent(config.inputToActionMapping, {
     type: 'gamepad',
-    inputMapping: gamepadInputMappings['standard'],
-    gamepad: null,
-    setGamepad: function (gamepad) {
-      this.gamepad = gamepad;
-      GamepadManager.useGamepad(gamepad.id);
-    },
+    config: config,
+    gamepad: config.gamepad,
     update: function () {
       if (!this.gamepad) return {};
 
@@ -155,19 +245,17 @@ function createGamepadInputComponent(gamepad, actionMapping) {
       // we've already stored a reference to it...
       GamepadManager.refreshGamepads();
 
-      var gamepad = this.gamepad;
-
       // check buttons
-      for (var i = 0; i < gamepad.buttons.length; ++i) {
-        var buttonValue = gamepad.buttons[i].pressed ? 1 : 0;
-        var action = this.actionMapping[this.inputMapping.buttons[i]];
+      for (var i = 0; i < this.gamepad.buttons.length; ++i) {
+        var buttonValue = this.gamepad.buttons[i].pressed ? 1 : 0;
+        var action = this.inputToActionMapping.buttons[i];
         tempActions[action] = buttonValue;
       }
 
       // check axes
-      for (var i = 0; i < gamepad.axes.length; ++i) {
-        var axisValue = gamepad.axes[i];
-        var action = this.actionMapping[this.inputMapping.axes[i]];
+      for (var i = 0; i < this.gamepad.axes.length; ++i) {
+        var axisValue = this.gamepad.axes[i];
+        var action = this.inputToActionMapping.axes[i];
 
         // if the actionMapping cares about this button...
         if (action) {
@@ -183,31 +271,36 @@ function createGamepadInputComponent(gamepad, actionMapping) {
       return tempActions;
     },
     remove: function () {
-      GamepadManager.releaseGamepad(gamepad.id);
+      console.log('%cDestroying Gamepad Input Component:', 'color: red');
+      console.log('  ID: ' + this.config.id);
+      this.config.release();
     }
   });
-
-  component.setGamepad(gamepad);
-
-  actionMapping.buttons = actionMapping.buttons || {};
-  actionMapping.axes = actionMapping.axes || {};
 
   return component;
 }
 
-function createKeyboardInputComponent(actionMapping) {
-  var component = createInputComponent(actionMapping, {
+function createKeyboardInputComponent(config) {
+  console.log('%cInitializing Keyboard Input Component:', 'color: blue');
+  console.log('  ID: ', config.id);
+  console.log('  Input->Action Mapping: ', config.inputToActionMapping);
+
+  var component = createInputComponent(config.inputToActionMapping, {
     type: 'keyboard',
+    config: config,
     register: function () {
       document.addEventListener("keydown", onKeyDown);
       document.addEventListener("keyup", onKeyUp);
     },
-    update: function () {
+    update: function (actions) {
       return tempActions;
     },
     remove: function () {
+      console.log('%cDestroying Keyboard Input Component:', 'color: red');
+      console.log('  ID: ' + this.config.id);
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
+      this.config.release();
     }
   });
 
@@ -215,16 +308,16 @@ function createKeyboardInputComponent(actionMapping) {
 
   function onKeyDown(e) {
     // If the user pushed a key we know about...
-    if (e.code in component.actionMapping)
+    if (e.code in component.inputToActionMapping)
       // ...then actions[mapping[keyCode]] = ...
-      tempActions[component.actionMapping[e.code]] = true;
+      tempActions[component.inputToActionMapping[e.code]] = true;
   }
 
   function onKeyUp(e) {
     // If the user pushed a key we know about...
-    if (e.code in component.actionMapping)
+    if (e.code in component.inputToActionMapping)
       // ...then actions[mapping[keyCode]] = ...
-      tempActions[component.actionMapping[e.code]] = false;
+      tempActions[component.inputToActionMapping[e.code]] = false;
   }
 
   return component;

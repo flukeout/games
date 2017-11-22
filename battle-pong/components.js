@@ -34,7 +34,6 @@ function createObject(options){
     },
 
     updateActionsFromInputComponents: function () {
-
       if (this.inputComponent) {
         var updatedActions = this.inputComponent.update();
 

@@ -427,7 +427,6 @@ var game =  {
   // Restarts a round
   restart : function(){
 
-
     var that = this;
     var messageDelay = 0;
 

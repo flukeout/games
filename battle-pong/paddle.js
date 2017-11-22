@@ -11,6 +11,9 @@ var paddleGamepadActions = [
 var paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
 
 function createPaddle(options) {
+
+  // debugger
+  console.log(options);
   var maxForce = 0.004;
 
   var options = options || {};
@@ -21,6 +24,8 @@ function createPaddle(options) {
     targetAngle : 0,
     targetAngleSet : true,
     lifeSpan : options.lifeSpan || "infinite",
+
+    movementRatio: 1,
 
     properties: {
       x: options.x || 0,
@@ -151,6 +156,38 @@ function createPaddle(options) {
       if(type == "spin") {
         this.spinPowerupRemaining = this.spinPowerupRemaining + this.spinPowerupTime;
       }
+
+      if(type == "clone") {
+        this.clonePaddle();
+      }
+    },
+
+    clonePaddle(){
+
+      var playerNum = this.player;
+
+      // TODO, testing paddles
+      // for(var i = 0; i < 5; i++) {
+
+        var newPaddle = createPaddle({
+          player: this.player,
+          x : this.physics.position.x,
+          y : this.physics.position.y,
+          height : 100,
+          width: 20,
+          classNames : ["paddle"],
+          lifeSpan: 10000,
+        });
+
+        // var maxRatio = 1.5;
+        // var minRatio = 1;
+        //
+        // newPaddle.movementRatio = 1.5 - (.5 * newPaddle.height / 100 + 1);
+
+        paddles.push(newPaddle);
+        newPaddle.setInputComponent(this.inputComponent);
+        newPaddle.init();
+      // }
 
     },
 
@@ -349,8 +386,8 @@ function createPaddle(options) {
       var newForce = totalPowerRatio * maxForce;
 
       if(xDelta != 0 || yDelta != 0) {
-        var xForce = Math.sin(angleRad) * newForce * game.physicsSamplingRatio;
-        var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio;
+        var xForce = Math.sin(angleRad) * newForce * game.physicsSamplingRatio * this.movementRatio;
+        var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio * this.movementRatio;
         this.force(xForce, yForce);
       }
 

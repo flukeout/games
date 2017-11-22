@@ -244,14 +244,14 @@ function createBall(options){
       }
 
       // Adds trails after the ball when it's goign fast enough
-      if(this.frameTicks > 1 & this.physics.speed * game.physicsSamplingRatio > 7) {
-        if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
-          addBallTrail(this.position.x, this.position.y);
-        }
-        this.frameTicks = 0;
-      } else {
-        this.frameTicks++;
-      }
+      // if(this.frameTicks > 1 & this.physics.speed * game.physicsSamplingRatio > 7) {
+      //   if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
+      //     addBallTrail(this.position.x, this.position.y);
+      //   }
+      //   this.frameTicks = 0;
+      // } else {
+      //   this.frameTicks++;
+      // }
 
       this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
 
@@ -448,7 +448,7 @@ function createBall(options){
           var degAngle = Math.atan2(xDelta,yDelta) * 180/ Math.PI;
 
           fireGun(this.physics.position.x, this.physics.position.y, degAngle, this.lastTouchedPaddle);
-
+          game.freezeFrames = 20;
           this.changeVelocityRatio(this.hardHitVelocityIncreaseRatio);
         }
       }

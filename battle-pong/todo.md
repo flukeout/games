@@ -1,6 +1,6 @@
 ### WORKING On
 
-* Slowing down the ball after it scores while traveling fast
+* When adding powerups and looping over the paddles, make it dynamic and not just 2
 
 ### BUGS
 
