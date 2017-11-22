@@ -167,6 +167,13 @@ function makeParticle(options){
       p.xV = 0;
     }
 
+    if(p.yV < 0 && p.yVa < 0) {
+      p.yVa = 0;
+      p.yV = 0;
+    } else if (p.yV > 0 && p.yVa > 0) {
+      p.yVa = 0;
+      p.yV = 0;
+    }
 
 
     if(p.scale <= 0 && p.scaleV <= 0) {

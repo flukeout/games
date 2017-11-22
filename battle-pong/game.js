@@ -13,7 +13,7 @@ var game =  {
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
-  powerupFrequency: 300, // A powerup appears once in every X frames
+  powerupFrequency: 3, // A powerup appears once in every X frames
 
   freezeFrames : 0,
 
@@ -57,7 +57,6 @@ var game =  {
 
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", function(e) {
-
       var scoringPlayer = 1;
       if(e.detail.side == "left") {
         scoringPlayer = 2;
@@ -65,29 +64,6 @@ var game =  {
       that.playerScored(scoringPlayer);
     });
 
-
-    document.addEventListener("ballHitPaddle", function(e) {
-      // console.log("ballhit paddle");
-      // game.freezeFrames = 30;
-
-      // console.log(e);
-      // var scoringPlayer = 1;
-      // if(e.detail.side == "left") {
-      //   scoringPlayer = 2;
-      // }
-      // that.playerScored(scoringPlayer);
-    });
-
-    // Adds a little effect when the ball hits the top or bottom side
-    // document.addEventListener("ballHitSide", function(e) {
-    //   if(ball.physics.speed > 4) {
-    //     if(e.detail.side == "top") {
-    //       // bumpScreen("up");
-    //     } else {
-    //       // bumpScreen("down");
-    //     }
-    //   }
-    // });
   },
 
   loserLived: function(){
@@ -132,7 +108,6 @@ var game =  {
   // TODO - change this to elapsedTimeInZone, it only keeps track of when a slow-moving
   // ball hangs out in one terrain too long
   elapsedTime : 0,
-
 
   // TODO - rename to reference 'terrain' maybe for consistency
   ballZone : false,
@@ -196,13 +171,10 @@ var game =  {
 
     // TODO - increase physics sampling rate
 
-
     this.physicsSamplingRatio = 2; // Twice as fast
     this.physicsStepMS = 1000 / 60 / this.physicsSamplingRatio;
 
-
     // Tilts the board depending on where the ball is
-
     var deltaX = 0;
     var deltaY = 0;
 
@@ -235,7 +207,6 @@ var game =  {
       // TODO - pick a name for this function and standardize
       // "step" might be better than run or update actually, since we use that for the game
       // maybe "frameStep" for clarity;
-
 
       // Update the element position & angle
       var el = obj.element;
@@ -455,6 +426,8 @@ var game =  {
 
   // Restarts a round
   restart : function(){
+
+
     var that = this;
     var messageDelay = 0;
 

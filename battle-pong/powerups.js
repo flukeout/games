@@ -68,11 +68,10 @@ function createPowerup(x, y, type){
 
         removalList.push(this);
         playSound("coin");
-        hasPowerup = false;
 
         var angle = Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180 / Math.PI;
 
-          for(var i = 0; i < 5; i++) {
+        for(var i = 0; i < 5; i++) {
           var options = {
             x : this.physics.position.x - 15,
             y : this.physics.position.y - 15,

@@ -4,7 +4,6 @@ function createBall(options){
 
   return createObject({
     ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
-    // selector: ".ball",
     innerHTML : "<div class='spinny'></div><div class='shadow'></div><div class='body'></div>",
     className: "ball",
     classNames : ["ball"],
@@ -15,8 +14,10 @@ function createBall(options){
       width: 30,
       classNames : options.classNames || []
     },
+    lifeSpan : options.lifeSpan || "infinite",
     lastStepSpeed : 0,
     bodyEL : false,
+
     physicsOptions : {
       frictionAir: 0.00001 / game.physicsSamplingRatio,
       restitution: 1,
@@ -26,7 +27,7 @@ function createBall(options){
     launch : function(x,y){
       Matter.Body.applyForce(this.physics, this.physics.position, {x : x, y : y});
     },
-    gotHit : false,
+
     timeSinceHit : 0,
     gotPaddleHit : false,
 
@@ -115,7 +116,6 @@ function createBall(options){
       }
 
       return false;
-
     },
 
     frameTicks : 0,
@@ -172,6 +172,24 @@ function createBall(options){
       var yV = -this.physics.velocity.y;
 
       var movementAngle = Math.atan2(xV, yV);
+
+      // TODO - do these better
+      var stretchScale = 1;
+      var maxStretch = 1.3;
+      var squashScale = 1;
+      var minSquash = .8;
+
+      var minStretchSpeed = 6;
+
+      var exceededBy = this.physics.speed - minStretchSpeed;
+      var exceedRatio = 0;
+      if(exceededBy > 0) {
+        exceedRatio = exceededBy / 5;
+        stretchScale = 1 + exceedRatio * .5;
+        squashScale = 1 - exceedRatio * .5;
+      }
+
+      this.element.querySelector(".body").style.transform = "rotate("+ movementAngle +"rad) scaleX(" + squashScale + ") scaleY("+stretchScale+")";
 
       var rotating = false;
       var direction;
@@ -254,7 +272,9 @@ function createBall(options){
       }
 
       this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
-      this.element.querySelector(".body").style.transform = "rotate("+ this.displayAngle +"deg)";
+
+      // this.element.querySelector(".body").style.transform = "rotate("+ this.displayAngle +"deg)";
+
       this.element.querySelector(".spinny").style.opacity = opacity;
 
       // For debugging, displays the angle of the ball movement and 'curve force'
@@ -427,9 +447,7 @@ function createBall(options){
           var yDelta = this.physics.velocity.y;
           var degAngle = Math.atan2(xDelta,yDelta) * 180/ Math.PI;
 
-
           fireGun(this.physics.position.x, this.physics.position.y, degAngle, this.lastTouchedPaddle);
-
 
           this.changeVelocityRatio(this.hardHitVelocityIncreaseRatio);
         }
@@ -438,14 +456,7 @@ function createBall(options){
 
     // This makes it so that the hit sound can't play in rapid crazy succession.
     hitSoundTimeout: false,
-    hitSoundTimeoutMS: 100,
-
-    resolveHit : function(){
-
-      this.gotHit = false;
-
-
-    }
+    hitSoundTimeoutMS: 100
   });
 
 }

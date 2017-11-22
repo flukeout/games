@@ -20,6 +20,7 @@ function createPaddle(options) {
     player: options.player,
     targetAngle : 0,
     targetAngleSet : true,
+    lifeSpan : options.lifeSpan || "infinite",
 
     properties: {
       x: options.x || 0,
@@ -171,14 +172,23 @@ function createPaddle(options) {
     // This gets called every frame of the game
     update(delta){
 
+      if(this.lifeSpan != "infinite") {
+        this.lifeSpan = this.lifeSpan - delta;
 
-        // TODO - remove hardcoded max speed
-        if(this.physics.angularVelocity > .0905) {
-          Matter.Body.setAngularVelocity(this.physics, .0905);
+        if(this.lifeSpan < 0) {
+          popPaddle(this.physics);
+          removalList.push(this);
         }
-        if(this.physics.angularVelocity < -.0905) {
-          Matter.Body.setAngularVelocity(this.physics, -.0905);
-        }
+      }
+
+
+      // TODO - remove hardcoded max speed
+      if(this.physics.angularVelocity > .0905) {
+        Matter.Body.setAngularVelocity(this.physics, .0905);
+      }
+      if(this.physics.angularVelocity < -.0905) {
+        Matter.Body.setAngularVelocity(this.physics, -.0905);
+      }
 
 
       if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {

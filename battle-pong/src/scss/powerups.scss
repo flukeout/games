@@ -53,7 +53,6 @@
     animation-delay: 0s, .5s;
   }
 
-
   .shadow {
     background-position: center;
     background-size: contain;
@@ -76,6 +75,86 @@
     }
   }
 
+  &.clone {
+    .shadow {
+      background: black;
+      border-radius: 50%;
+    }
+    .body {
+      background-image: url(assets/images/clone.svg);
+      //      background-color: #3ca4ff;
+      //      border-radius: 50%;
+
+      &:before, &:after {
+        //        content: "";
+        position: absolute;
+        background: white;
+        top: 6px;
+        left: 13px;
+        width: 4px;
+        height: 18px;
+      }
+
+      &:before {
+        animation: moveLeft 2s linear infinite;
+      };
+
+      @keyframes moveLeft {
+        0% {
+          transform: none;
+        }
+        20% {
+          transform: scaleY(.75);
+          animation-timing-function: ease-in-out;
+        }
+        40% {
+          transform: translateX(-4px) scaleY(1);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: none;
+        }
+        100% {
+          transform: none;
+        }
+      }
+
+      &:after {
+        animation: moveRight 2s linear infinite;
+      }
+
+      @keyframes moveRight {
+        0% {
+          transform: none;
+        }
+        20% {
+          transform: scaleY(.75);
+          animation-timing-function: ease-in-out;
+        }
+        40% {
+          transform: translateX(4px) scaleY(1);
+        }
+        60% {
+          transform: translateX(4px);
+        }
+        80% {
+          transform: none;
+        }
+        100% {
+          transform: none;
+        }
+
+      }
+
+
+
+
+    }
+  }
+
+
   &.spin {
     .shadow {
       background-image: url(assets/images/spinner-shadow.svg);
@@ -87,16 +166,13 @@
       background-size: 90%;
     }
   }
-
 }
 
-//.star {
-//  position: absolute;
-//  width: 30px;
-//  height: 30px;
-//  background-image: url(star.svg);
-//  background-position: center;
-//  background-size: contain;
-//  background-repeat: no-repeat;
-//}
-
+.star {
+  position: absolute;
+  background-image: url(assets/images/star.svg);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 5;
+}

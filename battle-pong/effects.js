@@ -3,8 +3,6 @@
 
 function makeExplosion(xposition, yposition, size, blastDirection){
 
-  console.log(xposition);
-
   if(!blastDirection) {
     blastDirection = "all";
   }
@@ -149,8 +147,6 @@ function bumpScreen(direction){
 // we'll have to do the width trick.
 
 function addTemporaryClassName(element, className, durationMS){
-  console.log(className);
-
   element.classList.remove(className);
   element.style.width = element.clientWidth;
   element.classList.add(className);
@@ -258,6 +254,30 @@ function drawLetter(x, y, angle, letter) {
   makeParticle(options);
 }
 
+function popPaddle(physics){
+
+  for(var i = 0; i < 5; i++) {
+    var options = {
+      // x : physics.position.x,
+      // y : physics.position.y,
+      x : getRandom(physics.bounds.min.x, physics.bounds.max.x) - 10,
+      y : getRandom(physics.bounds.min.y, physics.bounds.max.y) - 10,
+      zR : 0,
+      zRv : 0,
+      height: 20,
+      width: 20,
+      o: 1,
+      oV: -.03,
+      lifespan: 500,
+      speed: getRandom(4,6),
+      speedA : -.1,
+      angle: 1 +i * 360/5,
+      className : "paddleChunk"
+    }
+    makeParticle(options);
+  }
+
+}
 
 function explodePaddle(physics){
 
