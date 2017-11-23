@@ -33,6 +33,10 @@
     visibility: visible;
   }
 
+  &.clone-ball .body {
+    // opacity: .65;
+  }
+
   .spinny {
     opacity: .5;
     width: 200%;

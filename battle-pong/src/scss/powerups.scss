@@ -32,7 +32,6 @@
   position: absolute;
   top: 0;
   left: 0;
-  border-radius: 50%;
   transform-style: preserve-3d;
   z-index: 1000;
 
@@ -43,7 +42,7 @@
     width: 100%;
     height: 100%;
     background-position: center;
-    background-size: contain;
+    background-size: 100%;
     background-repeat: no-repeat;
     position: absolute;
     top: 0px;
@@ -82,89 +81,24 @@
     }
     .body {
       background-image: url(assets/images/clone.svg);
-
-      &:before, &:after {
-        position: absolute;
-        background: white;
-        top: 6px;
-        left: 13px;
-        width: 4px;
-        height: 18px;
-      }
-
-      &:before {
-        animation: moveLeft 2s linear infinite;
-      };
-
-      @keyframes moveLeft {
-        0% {
-          transform: none;
-        }
-        20% {
-          transform: scaleY(.75);
-          animation-timing-function: ease-in-out;
-        }
-        40% {
-          transform: translateX(-4px) scaleY(1);
-        }
-        60% {
-          transform: translateX(-4px);
-        }
-        80% {
-          transform: none;
-        }
-        100% {
-          transform: none;
-        }
-      }
-
-      &:after {
-        animation: moveRight 2s linear infinite;
-      }
-
-      @keyframes moveRight {
-        0% {
-          transform: none;
-        }
-        20% {
-          transform: scaleY(.75);
-          animation-timing-function: ease-in-out;
-        }
-        40% {
-          transform: translateX(4px) scaleY(1);
-        }
-        60% {
-          transform: translateX(4px);
-        }
-        80% {
-          transform: none;
-        }
-        100% {
-          transform: none;
-        }
-
-      }
     }
   }
+
+  &.multiball {
+    .shadow {
+      background: black;
+      border-radius: 50%;
+    }
+    .body {
+      background-image: url(assets/images/multiball.svg);
+    }
+  }
+
 
   &.mine {
     .shadow {
       background: black;
       border-radius: 50%;
-    }
-
-    .streak {
-      position: absolute;
-      height: 20px;
-      width: 8px;
-      background: #e5310e;
-      position: absolute;
-      left: calc(50% - 4px);
-      bottom: calc(50% + 10px);
-      border-radius: 5px;
-      z-index: 1000;
-      opacity: .5;
-      transform-origin: bottom;
     }
 
     .body {
@@ -322,3 +256,64 @@
 
 
 
+//&:before, &:after {
+//  position: absolute;
+//  background: white;
+//  top: 6px;
+//  left: 13px;
+//  width: 4px;
+//  height: 18px;
+//}
+//
+//&:before {
+//  animation: moveLeft 2s linear infinite;
+//};
+//
+//@keyframes moveLeft {
+//  0% {
+//    transform: none;
+//  }
+//  20% {
+//    transform: scaleY(.75);
+//    animation-timing-function: ease-in-out;
+//  }
+//  40% {
+//    transform: translateX(-4px) scaleY(1);
+//  }
+//  60% {
+//    transform: translateX(-4px);
+//  }
+//  80% {
+//    transform: none;
+//  }
+//  100% {
+//    transform: none;
+//  }
+//}
+//
+//&:after {
+//  animation: moveRight 2s linear infinite;
+//}
+//
+//@keyframes moveRight {
+//  0% {
+//    transform: none;
+//  }
+//  20% {
+//    transform: scaleY(.75);
+//    animation-timing-function: ease-in-out;
+//  }
+//  40% {
+//    transform: translateX(4px) scaleY(1);
+//  }
+//  60% {
+//    transform: translateX(4px);
+//  }
+//  80% {
+//    transform: none;
+//  }
+//  100% {
+//    transform: none;
+//  }
+//
+//}

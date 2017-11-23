@@ -308,16 +308,15 @@ function drawLetter(x, y, angle, letter) {
 
 function popPaddle(physics){
 
+  console.log(physics);
   for(var i = 0; i < 5; i++) {
     var options = {
-      // x : physics.position.x,
-      // y : physics.position.y,
-      x : getRandom(physics.bounds.min.x, physics.bounds.max.x) - 10,
-      y : getRandom(physics.bounds.min.y, physics.bounds.max.y) - 10,
+      x : getRandom(physics.bounds.min.x, physics.bounds.max.x) - 5,
+      y : getRandom(physics.bounds.min.y, physics.bounds.max.y) - 5,
       zR : 0,
       zRv : 0,
-      height: 20,
-      width: 20,
+      height: 10,
+      width: 10,
       o: 1,
       oV: -.03,
       lifespan: 500,

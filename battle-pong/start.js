@@ -1,6 +1,6 @@
 // Game components
 
-var ball;
+var ball = false;
 var paddles = [];
 var numPaddles = 2;
 var paddleDetails;

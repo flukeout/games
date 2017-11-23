@@ -40,6 +40,7 @@ function createBall(options){
     hardHitVelocityIncreaseRatio: 1.25,
 
     wordSpeed : 14 / game.physicsSamplingRatio, // TODO - update
+    minWordSpeed : 10 / game.physicsSamplingRatio, // TODO - update
 
     phrases : [
       "BOOOOOOOOM",
@@ -128,6 +129,14 @@ function createBall(options){
     },
 
     run : function(delta) {
+
+      if(this.lifeSpan != "infinite") {
+        this.lifeSpan--;
+        if(this.lifeSpan < 0) {
+          popPaddle(this.physics);
+          removalList.push(this);
+        }
+      }
 
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
         this.applyBrakes = false;
@@ -301,7 +310,14 @@ function createBall(options){
       }
 
       if(this.wordInProgress){
-        this.drawLetter();
+        if(this.physics.speed > this.minWordSpeed) {
+          this.drawLetter();
+        } else {
+          console.log("ended word early");
+          this.endWord();
+        }
+
+
       }
 
       this.lastStepSpeed = JSON.parse(JSON.stringify(this.physics.speed));

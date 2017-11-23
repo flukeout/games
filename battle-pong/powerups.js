@@ -14,6 +14,9 @@ function addPowerup(x, y){
 
 function createPowerup(x, y, type){
 
+  // var x = getRandom(50, game.boardWidth - 50);
+  // var y = getRandom(0, game.boardHeight);
+
   var properties = {
     width : 30,
     height : 30,
@@ -48,7 +51,9 @@ function createPowerup(x, y, type){
     properties.width = 55;
     properties.height = 55;
     properties.lifeSpan = getRandom(200, 500);
+    properties.ignoreRotation = true;
     physicsOptions.frictionAir = 0.035 / game.physicsSamplingRatio;
+
     properties.innerHTML = `
     <div class='shadow'></div>
     <div class='body'>
@@ -64,7 +69,7 @@ function createPowerup(x, y, type){
     hitBy : "",
     type : type,
     lifeSpan : properties.lifeSpan || "infinite",
-    ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
+    ignoreRotation: properties.ignoreRotation || false, // This means when we update the DOM x,y we don't also rotate this.
 
     beepTimeoutMS : 325, // Delay between playing the swish sound
     beepTimeout: false,
@@ -218,35 +223,42 @@ function createPowerup(x, y, type){
 
       if(playerHit && this.type != "mine"){
 
-        for(var i = 0; i < 2; i++){
-          var paddle = paddles[i];
-          if(paddle.player == playerAffected) {
-            paddles[i].powerup(this.type);
+        if(this.type == "clone" || this.type == "grow") {
+          for(var i = 0; i < 2; i++){
+            var paddle = paddles[i];
+            if(paddle.player == playerAffected) {
+              paddles[i].powerup(this.type);
+            }
           }
+        }
+
+        if(this.type == "multiball") {
+          game.cloneBall({
+            lifeSpan: getRandom(150,250)
+          });
         }
 
         game.activePowerupCount--;
         removalList.push(this);
         playSound("coin");
 
-        var angle = Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180 / Math.PI;
-
-        for(var i = 0; i < 5; i++) {
-          var options = {
-            x : this.physics.position.x - 15,
-            y : this.physics.position.y - 15,
-            o : 1,
-            scaleV : -.05,
-            angle : getRandom(0,360),
-            speed:  this.physics.speed * .5,
-            height: 30,
-            width: 30,
-            lifespan : 100,
-            className : "star",
-          }
-
-          makeParticle(options);
-        }
+        // var angle = Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180 / Math.PI;
+        // for(var i = 0; i < 5; i++) {
+        //   var options = {
+        //     x : this.physics.position.x - 15,
+        //     y : this.physics.position.y - 15,
+        //     o : 1,
+        //     scaleV : -.05,
+        //     angle : getRandom(0,360),
+        //     speed:  this.physics.speed * .5,
+        //     height: 30,
+        //     width: 30,
+        //     lifespan : 100,
+        //     className : "star",
+        //   }
+        //
+        //   makeParticle(options);
+        // }
       }
     }
   });

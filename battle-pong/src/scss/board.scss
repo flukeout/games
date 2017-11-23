@@ -45,10 +45,6 @@
   z-index: 2;
 }
 
-.paddleChunk {
-  z-index: 2;
-}
-
 .boom {
   z-index: 4;
 }
@@ -63,7 +59,7 @@
 
 .tilt-wrapper {
   position: absolute;
-  top: calc(50vh - 250px);
+  top: calc(50vh - 275px);
   left: calc(50vw - 425px);
   transform-style: preserve-3d;
   transform: rotateX(20deg) rotateY(0deg);

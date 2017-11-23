@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max : window.Settings.playTo || 2,         // First to this number wins
+    max : window.Settings.playTo || 3,         // First to this number wins
     winner : false,  // Holds the winning paddle object
     loser : false    // Holds the losing paddle object
   },
@@ -13,9 +13,9 @@ var game =  {
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
-  powerupFrequency: 300, // A powerup appears once in every X frames
+  powerupFrequency: window.Settings.powerupFrequency || 300, // A powerup appears once in every X frames
   activePowerupCount : 0,
-  maxPowerupCount: 3,
+  maxPowerupCount: window.Settings.maxPowerupCount || 2,
 
   freezeFrames : 0,
 
@@ -63,7 +63,7 @@ var game =  {
       if(e.detail.side == "left") {
         scoringPlayer = 2;
       }
-      that.playerScored(scoringPlayer);
+      that.playerScored(scoringPlayer, e.detail.ball);
     });
 
   },
@@ -351,14 +351,51 @@ var game =  {
   },
 
 
-  launchBall : function(){
-    ball = createBall();
+  // TODO - fix de-dupe
+  cloneBall : function(options){
+    if(!options){
+      options = {};
+    }
+
+    this.showMessage("MULTIBALL", 1500);
+
+    var newBall = createBall(options);
+
+    // TODO - Move a lot of this stuff to the ball object?
+    newBall.element.classList.add('show');
+    newBall.element.classList.add('clone-ball');
+
+    var y = this.boardHeight / 2 - 15;
+    var x = this.boardWidth * this.terrainLinePercent / 100;
+
+
+    Matter.Body.set(newBall.physics, {
+      position: { x : x, y : y }
+    });
+
+    var chance = Math.floor(getRandom(0,1));
+    var launchForce = .02 * this.physicsSamplingRatio;
+
+    if(chance === 0) {
+      newBall.launch(0, -launchForce);
+    } else {
+      newBall.launch(0, launchForce);
+    }
+  },
+
+
+  launchBall : function(options){
+    if(!options){
+      options = {};
+    }
+
+    ball = createBall(options);
 
     // TODO - Move a lot of this stuff to the ball object?
     ball.element.classList.add('show');
 
     var y = this.boardHeight / 2 - 15;
-    var x = this.boardWidth / 2;
+    var x = this.boardWidth * this.terrainLinePercent / 100;
 
 
     Matter.Body.set(ball.physics, {
@@ -451,6 +488,13 @@ var game =  {
     this.updateBounds();
 
     this.updateScoreDisplay();
+
+    var that = this;
+    setTimeout(function(){
+      that.showMessage("BATTLE TO DEATH!", 1500);
+    }, 1750)
+
+
   },
 
 
@@ -614,7 +658,9 @@ var game =  {
 
   flashTimeout : false, // Tracks if a flashing background animation is happening
 
-  playerScored : function(player){
+  playerScored : function(player, ballPhysics){
+
+    console.log("playerScored", player, ball);
 
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;
@@ -656,14 +702,13 @@ var game =  {
       xPos = 0;
     }
 
-    makeExplosion(xPos, ball.physics.position.y, 75, blastDirection);
-
+    makeExplosion(xPos, ballPhysics.position.y, 75, blastDirection);
 
     // Check horizontal velocity of the ball
     // the faster it hits an endzone the more that
     // player wins.
 
-    var xForce = Math.abs(ball.physics.velocity.x * this.physicsSamplingRatio);
+    var xForce = Math.abs(ballPhysics.velocity.x * this.physicsSamplingRatio);
     var xForceRatio = xForce / 15;
 
     this.terrainChange = 5 + (xForceRatio * 15); // TODO - make the 5 a variable like (minChange)
@@ -675,8 +720,8 @@ var game =  {
     if(this.terrainChange >= 10) {
       showMessage({
         text: "-" + Math.round(this.terrainChange) + "%",
-        x: ball.physics.position.x,
-        y: ball.physics.position.y,
+        x: ballPhysics.position.x,
+        y: ballPhysics.position.y,
         fontSize : (20 + 35 * xForceRatio),
         timeout: 2750
       });
@@ -690,15 +735,16 @@ var game =  {
     this.moveTerrain(scoredByPlayerNum, this.terrainChange);
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 1000);
 
-    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
-      this.roundOver();
-    }
 
   },
 
   // Moves the terrain & Score based on a goal or mine...
   // Rlayer ris 1 or 2
   moveTerrain(player, change) {
+
+    if(this.mode != "running") {
+      return;
+    }
 
     var modifier, className;
 
@@ -727,6 +773,10 @@ var game =  {
 
     // Changes the bounds of the paddles based on the terrain line...
     this.updateBounds();
+
+    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
+      this.roundOver();
+    }
   }
 }
 

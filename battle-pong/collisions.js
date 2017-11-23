@@ -37,7 +37,24 @@ Events.on(engine, 'collisionEnd', function(event) {
       var event = ballEvents[otherLabel];
 
       if (event) {
-        document.dispatchEvent(new CustomEvent(event.type, {detail: event.detail}));
+
+        var ballObj;
+
+        if(pair.bodyA.label == "ball") {
+          ballObj = pair.bodyA;
+        } else {
+          ballObj = pair.bodyB;
+        }
+
+        // var details = event.detail;
+        // details.ball = pair[0];
+        // console.log(ballObj);
+
+        event.detail.ball = ballObj;
+
+        document.dispatchEvent(new CustomEvent(event.type, {
+          detail: event.detail
+        }));
       }
     }
 
