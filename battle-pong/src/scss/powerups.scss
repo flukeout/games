@@ -40,11 +40,11 @@
     color: rgba(255,255,255,.4);
     z-index: 999;
     text-align: center;
-    width: 30px;
+    width: 100%;
+    height: 100%;
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
-    height: 30px;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -58,11 +58,11 @@
     background-size: contain;
     background-repeat: no-repeat;
     opacity: .2;
-    width: 40px;
-    height: 40px;
+    width: 110%;
+    height: 110%;
     position: absolute;
-    top: -5px;
-    left: -5px;
+    top: -5%;
+    left: -5%;
     animation: powerupAppear .2s ease-out;
   }
 
@@ -81,12 +81,9 @@
       border-radius: 50%;
     }
     .body {
-      background-image: url(assets/images/clone.svg);
-      //      background-color: #3ca4ff;
-      //      border-radius: 50%;
+      background-image: url(assets/images/mine.svg);
 
       &:before, &:after {
-        //        content: "";
         position: absolute;
         background: white;
         top: 6px;
@@ -147,13 +144,130 @@
         }
 
       }
-
-
-
-
     }
   }
 
+  &.mine {
+    .shadow {
+      background: black;
+      border-radius: 50%;
+    }
+
+    .streak {
+      position: absolute;
+      height: 20px;
+      width: 8px;
+      background: #e5310e;
+      position: absolute;
+      left: calc(50% - 4px);
+      bottom: calc(50% + 10px);
+      border-radius: 5px;
+      z-index: 1000;
+      opacity: .5;
+      transform-origin: bottom;
+    }
+
+    .body {
+      background-image: url(assets/images/mine.svg);
+
+      .light {
+        position: absolute;
+        top: calc(50% - 14px);
+        left: calc(50% - 5px);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #e5310e;
+        background: #ff5f4a;
+        animation: lightBlink 2s ease-in-out infinite;
+
+        @keyframes lightBlink {
+          50% {
+            opacity: 0;
+          }
+        }
+      }
+    }
+  }
+
+
+  &.bomb {
+    .shadow {
+      background: black;
+      border-radius: 50%;
+      width: 80%;
+      height: 80%;
+      left: 10%;
+      top: 20%;
+    }
+
+    .bomb-body {
+      position: absolute;
+      transform-origin: bottom;
+      width: 100%;
+      height: 100%;
+      transform: translateY(0px) rotateX(15deg);
+      background-image: url(assets/images/bomb.svg);
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
+    .spark {
+
+      background-size: contain;
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: -18px;
+      right: -22px;
+      background-position: center;
+      background-repeat: no-repeat;
+      animation: sparkMove 2s infinite linear;
+      transform-origin: bottom right;
+
+
+      @keyframes sparkMove {
+        80% {
+          transform: translateX(-10px) translateY(5px);
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(-10px) translateY(5px);
+          opacity: 0;
+        }
+      }
+
+
+      .flame {
+        width: 100%;
+        position: absolute;
+        height: 100%;
+        animation: sparkBurn .2s infinite;
+        background-image: url(assets/images/spark.svg);
+      }
+
+
+      @keyframes sparkBurn {
+        50% {
+          transform: scale(1.2);
+        }
+      }
+    }
+
+    .wick {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      top: -10px;
+      right: -15px;
+      border-radius: 2px;
+      background-image: url(assets/images/wick.svg);
+      transform: rotate(-5deg);
+    }
+  }
 
   &.spin {
     .shadow {
@@ -176,5 +290,37 @@
   background-repeat: no-repeat;
   z-index: 5;
 }
+
+.mine-chunk {
+  position: absolute;
+  background: #a0a0a0;
+  border-radius: 50%;
+  z-index: 999;
+}
+
+.mine-shadow {
+  position: absolute;
+  background: #848484;
+  border-radius: 50%;
+  background: rgba(0,0,0,.3);
+  z-index: 2;
+}
+
+.mine-chunk-two {
+  position: absolute;
+  background: #848484;
+  border-radius: 50%;
+  z-index: 999;
+}
+
+.mine-chunk-three {
+  position: absolute;
+  background: #a31f00;
+  border-radius: 50%;
+  z-index: 999;
+}
+
+
+
 
 

@@ -12,7 +12,7 @@ function makeExplosion(xposition, yposition, size, blastDirection){
 
   // Adds the orange blast
 
-  var blastOffset = (size - 20) / 2;
+  var blastOffset = size / 2;
   var x = xposition - blastOffset;
   var y = yposition - blastOffset;
 

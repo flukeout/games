@@ -479,23 +479,26 @@ var game =  {
   updateBounds : function(mode){
 
     for(var i = 0; i < paddles.length; i++) {
+
       var p = paddles[i];
 
-      if(this.mode == "running") {
-        if(p.player == 0) {
-          p.maxX = this.boardWidth * (this.terrainLinePercent/100);
-        } else if (p.player == 1) {
-          p.minX = this.boardWidth * (this.terrainLinePercent/100);
-        }
-      }
 
-      if(this.mode == "pregame") {
-        if(p.player == 0) {
-          p.maxX = this.boardWidth * .25;
-        } else if (p.player == 1) {
-          p.minX = this.boardWidth - (this.boardWidth * .25);
+        if(this.mode == "running") {
+          if(p.player == 0) {
+            p.maxX = this.boardWidth * (this.terrainLinePercent/100);
+          } else if (p.player == 1) {
+            p.minX = this.boardWidth * (this.terrainLinePercent/100);
+          }
         }
-      }
+
+        if(this.mode == "pregame") {
+          if(p.player == 0) {
+            p.maxX = this.boardWidth * .25;
+          } else if (p.player == 1) {
+            p.minX = this.boardWidth - (this.boardWidth * .25);
+          }
+        }
+
     }
 
     var leftWidth = Math.floor(this.boardWidth * this.terrainLinePercent/100);
@@ -656,7 +659,7 @@ var game =  {
     }
 
     makeExplosion(xPos, ball.physics.position.y, 75, blastDirection);
-    addTemporaryClassName(this.bodyEl, "team-" + scoredByPlayerNum + "-scored-flash", 1000);
+
 
     // Check horizontal velocity of the ball
     // the faster it hits an endzone the more that
@@ -673,7 +676,7 @@ var game =  {
     // TODO - make the 10 a variable up top somehwere
     if(this.terrainChange >= 10) {
       showMessage({
-        text: Math.round(this.terrainChange) + "%",
+        text: Math.round(this.terrainChange) + "-%",
         x: ball.physics.position.x,
         y: ball.physics.position.y,
         fontSize : (20 + 35 * xForceRatio),
@@ -686,7 +689,17 @@ var game =  {
       }}));
     }
 
-    // Add red or blue particles when the terrain line moves
+    this.moveTerrain(scoredByPlayerNum, this.terrainChange);
+
+    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
+      this.roundOver();
+    }
+
+  },
+
+  // Moves the terrain & Score based on a goal or mine...
+  // Rlayer ris 1 or 2
+  moveTerrain(player, change) {
 
     var modifier, className;
 
@@ -700,11 +713,13 @@ var game =  {
 
     makeTerrainChunks(this.terrainLinePercent, modifier, className, this.boardWidth, this.boardHeight);
 
+    addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 1000);
+
     // Move the terrain line accordingly
     if(player === 1) {
-      this.terrainLinePercent = this.terrainLinePercent + this.terrainChange;
+      this.terrainLinePercent = this.terrainLinePercent + change;
     } else {
-      this.terrainLinePercent = this.terrainLinePercent - this.terrainChange;
+      this.terrainLinePercent = this.terrainLinePercent - change;
     }
 
     if(this.terrainLinePercent > 100) {
@@ -713,13 +728,8 @@ var game =  {
       this.terrainLinePercent = 0;
     }
 
-    // Changes the
+    // Changes the bounds of the paddles based on the terrain line...
     this.updateBounds();
-
-    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
-      this.roundOver();
-    }
-
   }
 }
 

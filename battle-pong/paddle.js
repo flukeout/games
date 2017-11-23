@@ -26,6 +26,7 @@ function createPaddle(options) {
     lifeSpan : options.lifeSpan || "infinite",
 
     movementRatio: 1,
+    innerHTML : "<div class='body'></div>",
 
     properties: {
       x: options.x || 0,
@@ -55,6 +56,7 @@ function createPaddle(options) {
     },
 
     mode: "normal",
+    type: options.type || "player",
 
     powerupDuration : 5500, // How long powerups last
     targetHeight : options.height,          // Powerups affect this, then the paddle grows / shrinks
@@ -76,7 +78,7 @@ function createPaddle(options) {
     spin: function (v) {
       Matter.Body.setAngularVelocity(this.physics, v);
 
-      if(!this.swishTimeout) {
+      if(!this.swishTimeout && this.type == "player") {
         playSound("swish");
         var that = this;
         this.swishTimeout = setTimeout(function(){
@@ -159,6 +161,7 @@ function createPaddle(options) {
 
       if(type == "clone") {
         this.clonePaddle();
+        game.updateBounds();
       }
     },
 
@@ -166,28 +169,40 @@ function createPaddle(options) {
 
       var playerNum = this.player;
 
-      // TODO, testing paddles
-      // for(var i = 0; i < 5; i++) {
+      for(var i = 0; i < 1; i++) {
+
+        // if(this.player == 0) {
+        //   var minX = 0;
+        //   var maxX = game.boardWidth * game.terrainLinePercent / 100;
+        // }
+        //
+        // if(this.player == 1) {
+        //   var minX = game.boardWidth * game.terrainLinePercent / 100;
+        //   var maxX = game.boardWidth;
+        // }
+
+        var minX = game.boardWidth * game.terrainLinePercent / 100 + 40;
+        var maxX = game.boardWidth - 40;
+
+
+        var x = getRandom(minX, maxX);
+        var y = getRandom(50, game.boardHeight - 50);
 
         var newPaddle = createPaddle({
           player: this.player,
-          x : this.physics.position.x,
-          y : this.physics.position.y,
+          x : x,
+          y : y,
           height : 100,
           width: 20,
           classNames : ["paddle"],
           lifeSpan: 10000,
+          type: "clone"
         });
 
-        // var maxRatio = 1.5;
-        // var minRatio = 1;
-        //
-        // newPaddle.movementRatio = 1.5 - (.5 * newPaddle.height / 100 + 1);
-
         paddles.push(newPaddle);
+        popPaddle(newPaddle.physics);
         newPaddle.setInputComponent(this.inputComponent);
-        newPaddle.init();
-      // }
+      }
 
     },
 
@@ -283,14 +298,14 @@ function createPaddle(options) {
       if(this.actions.up)     yDelta++;
       if(this.actions.down)   yDelta--;
 
-
-
       var angleRad = Math.atan2(xDelta,yDelta);
 
       if(xDelta != 0 || yDelta != 0) {
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
-        this.force(xForce, yForce);
+        // if(this.type == "player") {
+          this.force(xForce, yForce);
+        // }
       }
 
       var spinSpeed = .2;
@@ -388,7 +403,9 @@ function createPaddle(options) {
       if(xDelta != 0 || yDelta != 0) {
         var xForce = Math.sin(angleRad) * newForce * game.physicsSamplingRatio * this.movementRatio;
         var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio * this.movementRatio;
-        this.force(xForce, yForce);
+        if(this.type == "player") {
+          this.force(xForce, yForce);
+        }
       }
 
       // Movement bounds - keep the paddle in its zone

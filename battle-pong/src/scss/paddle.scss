@@ -20,57 +20,53 @@
 }
 
 .paddle {
-  background: white;
   position: absolute;
   width: 20px;
   height: 100px;
-  transition: background .2s ease-out;
 
-  &:after {
-    //    content: "";
-    //    position: absolute;
-    //    width: 150%;
-    //    left: -25%;
-    //    height: 100%;
-    //
-    //    background-image: url(assets/images/bone.svg);
-    //    background-size: 100%;
-    //    background-position: center;
-    //    background-repeat: no-repeat;
+  .body {
+    position: absolute;
+    transition: background .2s ease-out;
+    animation: paddleAppear .3s ease-out;
+    background: white;
+    width: 100%;
+    height: 100%;
   }
 
-  &.loser {
+  @keyframes paddleAppear {
+    0% {
+      transform: scaleX(0) scaleY(0);
+      animation-timing-function: ease-out;
+    }
+    70% {
+      transform: scaleX(1.1) scaleY(1.2);
+      animation-timing-function: ease-in;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  &.loser .body {
     background: transparent;
     background: rgba(255,255,255,.2);
   }
 
-  &.shaking {
-    background: transparent;
-
-    &:after {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: white;
-      position: absolute;
-      content: "";
-      animation: scaredPaddle .1s linear infinite;
-      background: rgba(255,255,255,.2);
-    }
+  &.shaking .body {
+    animation: scaredPaddle .1s linear infinite;
+    background: rgba(255,255,255,.2);
   }
 
-  &.powerup-hit {
+  &.powerup-hit .body {
     animation: powerupHit .5s ease-out;
   }
 
-  &.powerup-spin {
+  &.powerup-spin .body {
     background: #5fffff;
     animation: spinPowerupOn .15s ease-out 4;
   }
 
-  &.dead {
+  &.dead .body {
     background: rgba(255,255,255,0);
   }
 }
@@ -86,9 +82,6 @@
   background: rgba(255,255,255,.2);
 }
 
-//.paddlePopChunk {
-//  background: rgba(255,255,255,1);
-//}
 
 
 .spinSquare {
