@@ -13,7 +13,7 @@ var game =  {
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
-  powerupFrequency: 3, // A powerup appears once in every X frames
+  powerupFrequency: 300, // A powerup appears once in every X frames
 
   freezeFrames : 0,
 
@@ -157,15 +157,10 @@ var game =  {
 
     this.timeSinceEndzoneHitMS = this.timeSinceEndzoneHitMS + delta;
 
-    if(!hasPowerup && game.mode == "running") {
+    if(game.mode == "running") {
       var chance = getRandom(0, this.powerupFrequency);
       if(chance < 1) {
-
-        // TODO - change to event, and add listener in powerup.js
         addPowerup(game.boardWidth * game.terrainLinePercent/100, getRandom(0, game.boardHeight - 50));
-
-        // TODO - make this a property of the game object, and rename to hasActivePowerup?
-        hasPowerup = true;
       }
     }
 
@@ -282,10 +277,10 @@ var game =  {
 
       if(this.ballState == "overtime") {
         if(this.elapsedTime > penaltyTimeoutMS) {
-          ball.element.classList.add("overtime");
-          this.playerDelay(this.ballZone, percentPenalty);
-          playSound("beep");
-          this.elapsedTime = 0;
+          // ball.element.classList.add("overtime");
+          // this.playerDelay(this.ballZone, percentPenalty);
+          // playSound("beep");
+          // this.elapsedTime = 0;
         }
       }
 
@@ -676,7 +671,7 @@ var game =  {
     // TODO - make the 10 a variable up top somehwere
     if(this.terrainChange >= 10) {
       showMessage({
-        text: Math.round(this.terrainChange) + "-%",
+        text: "-" + Math.round(this.terrainChange) + "%",
         x: ball.physics.position.x,
         y: ball.physics.position.y,
         fontSize : (20 + 35 * xForceRatio),
@@ -690,6 +685,7 @@ var game =  {
     }
 
     this.moveTerrain(scoredByPlayerNum, this.terrainChange);
+    addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 1000);
 
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver();
@@ -712,8 +708,6 @@ var game =  {
     }
 
     makeTerrainChunks(this.terrainLinePercent, modifier, className, this.boardWidth, this.boardHeight);
-
-    addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 1000);
 
     // Move the terrain line accordingly
     if(player === 1) {
@@ -847,7 +841,7 @@ function addWalls(options){
 // The main game engine, moves things around
 
 var letterIndex = 0;
-var hasPowerup = false; // TODO- make this part of the game object, yo
+
 var currentTime;
 var lastTime = false;
 var delta;

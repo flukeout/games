@@ -1,7 +1,53 @@
+function mineExplosion(xposition, yposition, size){
+
+
+  playSound("boom-mine");
+  shakeScreen();
+
+  // Adds the orange blast
+
+  var blastOffset = size / 2;
+  var x = xposition - blastOffset;
+  var y = yposition - blastOffset;
+
+  var particle = {};
+
+  particle.el = document.createElement("div");
+  particle.el.classList.add("boom");
+  particle.el.classList.add("round");
+
+
+  var shock = document.createElement("div");
+  shock.classList.add("shock");
+  particle.el.classList.add("round");
+
+  var body = document.createElement("div");
+  body.classList.add("body");
+
+  particle.el.appendChild(shock);
+  particle.el.appendChild(body);
+
+  particle.el.style.height = size + "px";
+  particle.el.style.width = size + "px";
+  particle.el.style.transform = "translate3d("+x+"px,"+y+"px,0)";
+
+  setTimeout(function(el) {
+    return function(){
+      el.remove();
+    };
+  }(particle.el),500);
+
+  document.querySelector(".world").appendChild(particle.el);
+
+
+
+}
+
+
 // Adds a bomb to the board at x,y
 // Pixel position, not grid position
 
-function makeExplosion(xposition, yposition, size, blastDirection){
+function makeExplosion(xposition, yposition, size, blastDirection, type){
 
   if(!blastDirection) {
     blastDirection = "all";
@@ -20,6 +66,12 @@ function makeExplosion(xposition, yposition, size, blastDirection){
 
   particle.el = document.createElement("div");
   particle.el.classList.add("boom");
+
+  console.log("round");
+  if(type == "round") {
+    particle.el.classList.add("round");
+  }
+
 
   var shock = document.createElement("div");
   shock.classList.add("shock");

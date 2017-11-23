@@ -34,6 +34,14 @@ var sounds = {
     url : "sounds/boom.wav",
     volume : .3
   },
+  "boom-mine" : {
+    url : "sounds/mine-explosion.mp3",
+    volume : .3
+  },
+  "clang" : {
+    url : "sounds/clang.mp3",
+    volume : .2
+  },
   "score" : {
     url : "sounds/score.mp3",
     volume:  .1

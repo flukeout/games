@@ -2,7 +2,7 @@ window.Settings = {
   clearSavedControlSettings: false,
   showIntro: false,
   debug: true,
-  powerUpTypes: ["grow"],
+  powerUpTypes: ["mine", "clone", "grow"],
   brakesModeEnabled: false,
   playTo: 2,
   goalTimeoutMS: 250

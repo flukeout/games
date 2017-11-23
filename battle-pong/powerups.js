@@ -29,7 +29,7 @@ function createPowerup(x, y, type){
 
   if(type == "bomb") {
     properties.width = 50;
-    properties.lifeSpan = 10000;
+    properties.lifeSpan = 500;
     properties.height = 50;
     physicsOptions.frictionAir = 0.035 / game.physicsSamplingRatio;
     properties.innerHTML = `
@@ -45,9 +45,9 @@ function createPowerup(x, y, type){
   }
 
   if(type == "mine") {
-    properties.width = 50;
-    properties.lifeSpan = 1000;
-    properties.height = 50;
+    properties.width = 55;
+    properties.height = 55;
+    properties.lifeSpan = getRandom(200, 500);
     physicsOptions.frictionAir = 0.035 / game.physicsSamplingRatio;
     properties.innerHTML = `
     <div class='shadow'></div>
@@ -66,6 +66,9 @@ function createPowerup(x, y, type){
     lifeSpan : properties.lifeSpan || "infinite",
     ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
 
+    beepTimeoutMS : 325, // Delay between playing the swish sound
+    beepTimeout: false,
+
     properties: properties,
     physicsOptions : physicsOptions,
 
@@ -78,10 +81,26 @@ function createPowerup(x, y, type){
     run : function(){
       if(this.lifeSpan != "infinite") {
         this.lifeSpan--;
+
+        if(this.lifeSpan < 125) {
+
+          if(!this.beepTimeout) {
+            playSound("beep");
+            var that = this;
+            this.beepTimeout = setTimeout(function(){
+              that.beepTimeout = false;
+            }, this.beepTimeoutMS);
+          }
+
+          this.element.querySelector(".light").classList.add("fastBlink");
+        }
+
         if(this.lifeSpan < 0) {
           this.explode();
         }
       }
+
+
     },
 
     // Explode this, if it is a mine!
@@ -99,7 +118,7 @@ function createPowerup(x, y, type){
 
       game.moveTerrain(scoringPlayer, 20);
 
-      makeExplosion(this.physics.position.x, this.physics.position.y, 80);
+      mineExplosion(this.physics.position.x, this.physics.position.y, 100);
 
         var mineOptions = {
           y : this.physics.position.y - 40,
@@ -107,12 +126,12 @@ function createPowerup(x, y, type){
 
           width: 60,
           height: 60,
-          zV : 11,
-          yV : 0,
+          zV : 3,
+          yV : -3,
           xV : 0,
           gravity : .2,
-          yRv : getRandom(-2,2),
-          xRv : getRandom(12,18),
+          yRv : getRandom(-1,1),
+          xRv : getRandom(10,16),
           oV: -.05,
           lifespan: 230,
           o: 2,
@@ -134,45 +153,25 @@ function createPowerup(x, y, type){
           className: "mine-shadow"
         }
 
-        makeParticle(options);
+        // makeParticle(options);
 
-        // var options = {
-       //    x : this.physics.position.x - 20,
-       //    y : this.physics.position.y - 20,
-       //    width: 40,
-       //    height: 40,
-       //    zV : 16,
-       //    yV : getRandom(-4,4),
-       //    xV : getRandom(-4,4),
-       //    gravity : .3,
-       //    yRv : getRandom(-4,4),
-       //    xRv : getRandom(-4,4),
-       //    oV: -.02,
-       //    lifespan: 200,
-       //    o: 1,
-       //    className: "mine-chunk-two"
-       //  }
-       //
-       //  makeParticle(options);
-       //
-       //  var options = {
-       //    x : this.physics.position.x - 5,
-       //    y : this.physics.position.y - 5,
-       //    width: 10,
-       //    height: 10,
-       //    zV : 18,
-       //    yV : getRandom(-4,4),
-       //    xV : getRandom(-4,4),
-       //    gravity : .3,
-       //    yRv : getRandom(-4,4),
-       //    xRv : getRandom(-4,4),
-       //    oV: -.02,
-       //    lifespan: 200,
-       //    o: 1,
-       //    className: "mine-chunk-three"
-       //  }
-       //
-       //  makeParticle(options);
+        var options = {
+          x : this.physics.position.x - 8,
+          y : this.physics.position.y - 8,
+          width: 16,
+          height: 16,
+          zV : 5,
+          gravity : .2,
+          // yRv : getRandom(-4,4),
+          yV : -3,
+          xV : getRandom(-2,2),
+          xRv : getRandom(10,14),
+          lifespan: 40,
+          o: 1,
+          className: "mine-chunk-light"
+        }
+
+        makeParticle(options);
 
 
 
@@ -196,10 +195,14 @@ function createPowerup(x, y, type){
       }
 
       if(obj.name.indexOf("paddle") > -1 || obj.name.indexOf("ball") > -1 ){
-        playSound("star-hit");
+        if(this.type == "mine") {
+          playSound("clang");
+        } else {
+         playSound("star-hit");
+        }
       }
 
-      if(playerHit){
+      if(playerHit && this.type != "mine"){
 
         for(var i = 0; i < 2; i++){
           var paddle = paddles[i];
