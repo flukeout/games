@@ -177,8 +177,8 @@ function createPowerup(x, y, type){
         makeParticle(options);
 
 
-
         removalList.push(this);
+        game.activePowerupCount--;
 
 
     },
@@ -216,9 +216,6 @@ function createPowerup(x, y, type){
         }, this.hitSoundTimeoutMS);
       }
 
-
-      console.log(playerAffected);
-
       if(playerHit && this.type != "mine"){
 
         for(var i = 0; i < 2; i++){
@@ -228,6 +225,7 @@ function createPowerup(x, y, type){
           }
         }
 
+        game.activePowerupCount--;
         removalList.push(this);
         playSound("coin");
 

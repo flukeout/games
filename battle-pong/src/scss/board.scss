@@ -8,6 +8,16 @@
   height: 100%;
 }
 
+.scoreboard {
+  font-size: 50px;
+  color: white;
+  text-align: center;
+
+  div {
+    display: inline-block;
+  }
+}
+
 .board-wrapper.hide {
   opacity: 0;
 }

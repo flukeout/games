@@ -14,6 +14,8 @@ var game =  {
   terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
 
   powerupFrequency: 300, // A powerup appears once in every X frames
+  activePowerupCount : 0,
+  maxPowerupCount: 3,
 
   freezeFrames : 0,
 
@@ -159,8 +161,9 @@ var game =  {
 
     if(game.mode == "running") {
       var chance = getRandom(0, this.powerupFrequency);
-      if(chance < 1) {
+      if(chance < 1 && this.activePowerupCount < this.maxPowerupCount) {
         addPowerup(game.boardWidth * game.terrainLinePercent/100, getRandom(0, game.boardHeight - 50));
+        this.activePowerupCount++;
       }
     }
 
