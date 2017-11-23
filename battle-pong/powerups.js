@@ -69,6 +69,9 @@ function createPowerup(x, y, type){
     beepTimeoutMS : 325, // Delay between playing the swish sound
     beepTimeout: false,
 
+    hitSoundTimeoutMS : 100, // Delay between playing the swish sound
+    hitSoundTimeout: false,
+
     properties: properties,
     physicsOptions : physicsOptions,
 
@@ -183,6 +186,7 @@ function createPowerup(x, y, type){
     hit : function(obj){
 
       var playerHit = false;
+      var playerAffected = false;
 
       if(obj.name == "wall-right") {
         playerAffected = 0;
@@ -194,20 +198,33 @@ function createPowerup(x, y, type){
         playerHit = true;
       }
 
+      var sound = false;
+
       if(obj.name.indexOf("paddle") > -1 || obj.name.indexOf("ball") > -1 ){
         if(this.type == "mine") {
-          playSound("clang");
+          sound = "clang";
         } else {
-         playSound("star-hit");
+          sound = "star-hit";
         }
       }
+
+      if(!this.hitSoundTimeout && sound) {
+        playSound(sound);
+        var that = this;
+        this.hitSoundTimeout = setTimeout(function(){
+          that.hitSoundTimeout = false;
+        }, this.hitSoundTimeoutMS);
+      }
+
+
+      console.log(playerAffected);
 
       if(playerHit && this.type != "mine"){
 
         for(var i = 0; i < 2; i++){
           var paddle = paddles[i];
           if(paddle.player == playerAffected) {
-            paddles[0].powerup(this.type);
+            paddles[i].powerup(this.type);
           }
         }
 

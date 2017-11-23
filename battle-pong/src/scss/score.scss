@@ -13,22 +13,24 @@
   }
 
   .input {
-    position: relative;
+    position: fixed;
     display: inline-block;
-    background-color: rgba(0, 0, 0, .2);
     background-size: 80%;
     height: 50px;
     width: 50px;
     background-position: center;
     background-repeat: no-repeat;
+    opacity: .4;
 
     &[data-player="1"] {
-      float: left;
+      left: 20px;
+      bottom: 20px;
       align-items: flex-end;
     }
 
     &[data-player="2"] {
-      float: right;
+      right: 20px;
+      bottom: 20px;
       justify-content: flex-end;
     }
 
