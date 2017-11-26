@@ -209,7 +209,6 @@ function addTemporaryClassName(element, className, durationMS){
 }
 
 function addBallTrail(x,y){
-
   var options = {
     x : x - 15,
     y : y - 15,
@@ -221,7 +220,6 @@ function addBallTrail(x,y){
     lifespan: 125
   }
   makeParticle(options);
-
 }
 
 
@@ -308,7 +306,6 @@ function drawLetter(x, y, angle, letter) {
 
 function popPaddle(physics){
 
-  console.log(physics);
   for(var i = 0; i < 5; i++) {
     var options = {
       x : getRandom(physics.bounds.min.x, physics.bounds.max.x) - 5,
@@ -327,8 +324,132 @@ function popPaddle(physics){
     }
     makeParticle(options);
   }
+}
+
+function popBall(physics){
+
+  for(var i = 0; i < 5; i++) {
+    var options = {
+      x : physics.position.x,
+      y : physics.position.y,
+      zR : 0,
+      zRv : 0,
+      height: 10,
+      width: 10,
+      o: 1,
+      oV: -.02,
+      lifespan: 500,
+      speed: 4,
+      speedA : -.1,
+      angle: 1 +i * 360/5,
+      className : "ballCloneChunk"
+    }
+    makeParticle(options);
+  }
+}
+
+
+// Ball breaks through the wall on a hard shot...
+function addFakeBall(ballPhysics) {
+
+  var direction = "right";
+  var baseX = game.boardWidth;
+  var patchColor = "pink";
+
+  if(ball.physics.position.x < game.boardWidth / 2) {
+    direction = "left";
+    baseX = -20;
+    patchColor = "green";
+  }
+
+  var lifeSpan = 120;
+
+  var movementAngle = -(Math.atan2(ballPhysics.velocity.x, ballPhysics.velocity.y) * 180/Math.PI + 180);
+  if(movementAngle < 0) {
+    movementAngle = movementAngle + 360;
+  }
+
+  // Add teh ball
+  var options = {
+    x : ballPhysics.position.x - 15,
+    y : ballPhysics.position.y - 15,
+    height: 30,
+    width: 30,
+    lifespan: 20000,
+    angle: movementAngle,
+    speed: ballPhysics.speed * 2,
+    className : "fake-ball"
+  }
+
+  makeParticle(options);
+
+  // Add board chunks
+  for(var i = 0; i < 5; i++) {
+    var options = {
+      x : baseX,
+      y : ballPhysics.position.y - 15 + getRandom(-20,20),
+      height: 20,
+      width: 20,
+      lifespan: 20000,
+      angle: movementAngle + getRandom(-25,25),
+      speed: ballPhysics.speed + getRandom(-2,2),
+      className : "boardChunk"
+    }
+
+    makeParticle(options);
+  }
+
+
+  // Add a patch
+  var options = {
+    x : baseX,
+    y : ballPhysics.position.y - 30,
+    width: 20,
+    height: 60,
+    lifespan: lifeSpan,
+    className : patchColor + "Patch"
+  }
+
+  makeParticle(options);
+
+  // Top Shrapnel
+  var options = {
+    x : baseX,
+    y : ballPhysics.position.y - 50,
+    width: 120,
+    height: 40,
+    lifespan: lifeSpan,
+    className : patchColor + "Shrapnel",
+    zR: -(movementAngle - 90) + 180 - 10
+  }
+
+  if(direction == "left") {
+    options.x = -120;
+    options.zR = options.zR - 180 + 20;
+  }
+
+  makeParticle(options);
+
+  // Bottom Shrapnel
+  var options = {
+    x : baseX,
+    y : ballPhysics.position.y + 10,
+    width: 120,
+    height: 40,
+    lifespan: lifeSpan,
+    className : patchColor + "Shrapnel",
+    zR: -(movementAngle - 90) + 180 + 10
+  }
+
+  if(direction == "left") {
+    options.x = -120;
+    options.zR = options.zR - 180 - 20;
+  }
+
+  makeParticle(options);
 
 }
+
 
 function explodePaddle(physics){
 

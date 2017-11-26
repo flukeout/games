@@ -11,7 +11,7 @@ var game =  {
   physicsSamplingRatio : 2, // This means 2 times per frame
 
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
-  terrainChange : 5, // base terrain change TODO - this does nothing, it gets overwritten later
+  minTerrainChange : 5,
 
   powerupFrequency: window.Settings.powerupFrequency || 300, // A powerup appears once in every X frames
   activePowerupCount : 0,
@@ -43,7 +43,7 @@ var game =  {
   worldE : "",
   bodyEl : "",
 
-  timeBetweenRoundsMS: 1000, // Time between rounds of the game
+  timeBetweenRoundsMS: 2000, // Time between rounds of the game
 
   init: function(){
     this.worldEl = document.querySelector(".world");
@@ -139,6 +139,8 @@ var game =  {
     this.mode = "paused";
   },
 
+  ticks : 0,
+
   step : function(){
     var currentTime = Date.now();
     var delta = 16;
@@ -162,7 +164,18 @@ var game =  {
     if(game.mode == "running") {
       var chance = getRandom(0, this.powerupFrequency);
       if(chance < 1 && this.activePowerupCount < this.maxPowerupCount) {
-        addPowerup(game.boardWidth * game.terrainLinePercent/100, getRandom(0, game.boardHeight - 50));
+
+        var x = game.boardWidth * game.terrainLinePercent/100;
+
+        if(x < 50) {
+          x = 50;
+        } else if ( x > game.boardWidth - 50) {
+          x = game.boardWidth - 50;
+        }
+
+        var y = getRandom(50, game.boardHeight - 50);
+
+        addPowerup(x, y);
         this.activePowerupCount++;
       }
     }
@@ -176,11 +189,34 @@ var game =  {
     var deltaX = 0;
     var deltaY = 0;
 
+    var wind = -.1;
+
     if(ball) {
       if(ball.deleted != true) {
         deltaX = this.boardWidth / 2 - ball.physics.position.x;
         deltaY = this.boardHeight / 2 - ball.physics.position.y;
       }
+
+    }
+    this.ticks++;
+    if(wind < 0 && this.ticks > 20) {
+
+      this.ticks = 0;
+        var options = {
+          x : getRandom(-40, this.boardWidth + 40),
+          y : -200,
+          z: getRandom(-100,100),
+          zR : getRandom(-20,20),
+          angle: 180,
+          height: 30,
+          width: 30,
+          o: .8,
+          speed : 20,
+          lifespan: 1500,
+          className : "paddleChunk"
+        }
+
+        options.z = 0;
     }
 
     var maxRotation = 20;
@@ -188,7 +224,7 @@ var game =  {
     var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
 
     if(game.mode != "off") {
-      tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
+      // tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
     }
 
     // Iterate over all of the objects are are updating on screen
@@ -200,7 +236,18 @@ var game =  {
         if(obj.gotHit) {
           obj.resolveHit();
         }
+        // Matter.Body.applyForce(obj.physics, obj.physics.position, {
+        //   x : 0,
+        //   y : 0.001
+        // });
       }
+
+
+      // Matter.Body.setVelocity(obj.physics,{
+      //   x: obj.physics.velocity.x,
+      //   y: obj.physics.velocity.y - wind
+      // })
+
 
       // TODO - pick a name for this function and standardize
       // "step" might be better than run or update actually, since we use that for the game
@@ -353,6 +400,9 @@ var game =  {
 
   // TODO - fix de-dupe
   cloneBall : function(options){
+
+    if(!ball) { return }
+
     if(!options){
       options = {};
     }
@@ -361,26 +411,23 @@ var game =  {
 
     var newBall = createBall(options);
 
-    // TODO - Move a lot of this stuff to the ball object?
-    newBall.element.classList.add('show');
+    setTimeout(function(){
+      newBall.element.classList.add('show');
+    },0)
+
     newBall.element.classList.add('clone-ball');
 
-    var y = this.boardHeight / 2 - 15;
-    var x = this.boardWidth * this.terrainLinePercent / 100;
-
+    var x = ball.physics.position.x;
+    var y = ball.physics.position.y;
 
     Matter.Body.set(newBall.physics, {
       position: { x : x, y : y }
     });
 
+    popBall(ball.physics);
+
     var chance = Math.floor(getRandom(0,1));
     var launchForce = .02 * this.physicsSamplingRatio;
-
-    if(chance === 0) {
-      newBall.launch(0, -launchForce);
-    } else {
-      newBall.launch(0, launchForce);
-    }
   },
 
 
@@ -491,10 +538,8 @@ var game =  {
 
     var that = this;
     setTimeout(function(){
-      that.showMessage("BATTLE TO DEATH!", 1500);
-    }, 1750)
-
-
+      that.showMessage("GAME ON!", 1500);
+    }, 1400)
   },
 
 
@@ -614,6 +659,10 @@ var game =  {
     paddles[0].maxX = false;
     paddles[1].minX = false;
 
+    if(ball.physics.speed > ball.wordSpeed) {
+      addFakeBall(ball.physics);
+    }
+
     removalList.push(ball);
 
     this.mode = "roundover";
@@ -652,15 +701,12 @@ var game =  {
       },this.timeBetweenRoundsMS);
     }
 
-
   },
 
 
   flashTimeout : false, // Tracks if a flashing background animation is happening
 
   playerScored : function(player, ballPhysics){
-
-    console.log("playerScored", player, ball);
 
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;
@@ -711,15 +757,15 @@ var game =  {
     var xForce = Math.abs(ballPhysics.velocity.x * this.physicsSamplingRatio);
     var xForceRatio = xForce / 15;
 
-    this.terrainChange = 5 + (xForceRatio * 15); // TODO - make the 5 a variable like (minChange)
-
+    var terrainChange = this.minTerrainChange + (xForceRatio * 15);
+    // this.terrainChange = 50;
     // Add a message near the impact that indicates
     // the force of the hit (in percentage points)
 
     // TODO - make the 10 a variable up top somehwere
-    if(this.terrainChange >= 10) {
+    if(terrainChange >= 10) {
       showMessage({
-        text: "-" + Math.round(this.terrainChange) + "%",
+        text: "-" + Math.round(terrainChange) + "%",
         x: ballPhysics.position.x,
         y: ballPhysics.position.y,
         fontSize : (20 + 35 * xForceRatio),
@@ -732,7 +778,7 @@ var game =  {
       }}));
     }
 
-    this.moveTerrain(scoredByPlayerNum, this.terrainChange);
+    this.moveTerrain(scoredByPlayerNum, terrainChange);
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 1000);
 
 
@@ -776,6 +822,8 @@ var game =  {
 
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver();
+      playSound("win-round");
+      this.showMessage("NICE", 1500);
     }
   }
 }
@@ -823,7 +871,11 @@ function setupRenderer(worldSelector){
   world.bounds.max.x = sBox.clientWidth;
   world.bounds.min.y = 0;
   world.bounds.max.y = sBox.clientHeight;
+
+  // TODO - mess with world gravity?
   world.gravity.y = 0;
+  world.gravity.x = 0;
+
   Matter.Resolver._restingThresh = 0.1;
 
   //Render.run(render); // TODO - since this is for debugging only, we should make it a flag

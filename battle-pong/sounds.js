@@ -12,6 +12,10 @@ var sounds = {
     url : "sounds/thwap.wav",
     volume : .15
   },
+  "win-round" : {
+    url : "sounds/crowd.wav",
+    volume : .15
+  },
   "star-hit" : {
     url : "sounds/star-hit.wav",
     volume : .15

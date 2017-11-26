@@ -168,21 +168,19 @@ function createPaddle(options) {
     clonePaddle(){
 
       var playerNum = this.player;
-      var numClones = getRandom(2,6);
+      var numClones = getRandom(3,6);
 
       game.showMessage("SPOOOOKY!", 1500);
 
-      for(var i = 0; i < numClones; i++) {
+      for(var i = 0; i <= numClones; i++) {
 
         var minX, maxX;
 
         if(this.player == 0) {
           minX = 0;
-          maxX = 100;
-          // maxX = game.boardWidth * game.terrainLinePercent / 100;
+          maxX = 150;
         } else {
-          // minX = game.boardWidth * game.terrainLinePercent / 100;
-          minX = game.boardWidth - 100;
+          minX = game.boardWidth - 150;
           maxX = game.boardWidth;
         }
 
@@ -196,7 +194,7 @@ function createPaddle(options) {
           height : 65,
           width: 20,
           classNames : ["paddle", "skeleton"],
-          lifeSpan: getRandom(2500,6500),
+          lifeSpan: getRandom(4500,7500),
           movementRatio : 1.2,
           type: "clone"
         });
@@ -211,15 +209,15 @@ function createPaddle(options) {
     init: function(){
 
       // This ends the spin powerup when a ball hits the endzone
-      var that = this;
+      // var that = this;
 
-      document.addEventListener("ballHitEndzone", function(e) {
+      // document.addEventListener("ballHitEndzone", function(e) {
         // if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
         //   that.spinPowerupRemaining = 0;
         //   that.hasSpinPowerup = false;
         //   that.spinPowerupCountdown = false;
         // }
-      });
+      // });
     },
 
     // This gets called every frame of the game

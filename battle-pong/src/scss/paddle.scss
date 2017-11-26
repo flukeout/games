@@ -101,6 +101,28 @@
   z-index: 2;
 }
 
+.gravityChunk {
+  background: rgba(0,0,0,.4);
+  z-index: 2;
+}
+
+
+.cloud {
+  z-index: 3;
+  background-image: url(assets/images/cloud.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.cloud-shadow {
+  z-index: 2;
+  background-image: url(assets/images/cloud-shadow.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .boneChunk {
   background: rgba(255,255,255,.2);
   border-radius: 50%;

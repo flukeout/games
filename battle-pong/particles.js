@@ -41,8 +41,10 @@ function makeParticle(options){
 
     xR : options.xR || 0,
     xRv : options.xRv || 0,
+
     yR : options.yR || 0,
     yRv : options.yRv || 0,
+
     zR : options.zR || 0,
     zRv : options.zRv || 0,
 
@@ -167,13 +169,13 @@ function makeParticle(options){
       p.xV = 0;
     }
 
-    if(p.yV < 0 && p.yVa < 0) {
-      p.yVa = 0;
-      p.yV = 0;
-    } else if (p.yV > 0 && p.yVa > 0) {
-      p.yVa = 0;
-      p.yV = 0;
-    }
+    // if(p.yV < 0 && p.yVa < 0) {
+    //   p.yVa = 0;
+    //   p.yV = 0;
+    // } else if (p.yV > 0 && p.yVa > 0) {
+    //   p.yVa = 0;
+    //   p.yV = 0;
+    // }
 
 
     if(p.scale <= 0 && p.scaleV <= 0) {

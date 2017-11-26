@@ -171,3 +171,46 @@
     opacity: 0;
   }
 }
+
+.ballCloneChunk {
+  background: #3ca4ff;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.boardChunk {
+  background: #bd71b0;
+  z-index: 2;
+}
+
+.pinkShrapnel {
+  background-image: url(assets/images/pinkShrapnel.svg);
+  background-position: left;
+  background-repeat: no-repeat;
+  transform-origin: 10px 20px;
+  z-index: 2;
+}
+
+.greenShrapnel {
+  background-image: url(assets/images/greenShrapnel.svg);
+  background-position: right;
+  background-repeat: no-repeat;
+  transform-origin: 110px 20px;
+  z-index: 2;
+}
+
+
+// Patches over the game board whe it
+// rips through the side of the board.
+
+.pinkPatch {
+  z-index: 2;
+  position: absolute;
+  background-color: #ac4d9d;
+}
+
+.greenPatch {
+  z-index: 2;
+  position: absolute;
+  background-color: #3faa7f;
+}

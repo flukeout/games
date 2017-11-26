@@ -82,3 +82,14 @@
     border-radius: 50%;
   }
 }
+
+
+
+.fake-ball {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 15px;
+  z-index: 9999999;
+}

@@ -5,10 +5,13 @@ var powerUpTypes = window.Settings.powerUpTypes;
 
 // Adds a random powerup
 function addPowerup(x, y){
+
   var type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+
   powerUp = createPowerup(x, y, type);
   powerUp.element.classList.add(type);
-  powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
+
+  // powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
   playSound("bonus");
 }
 
@@ -233,32 +236,12 @@ function createPowerup(x, y, type){
         }
 
         if(this.type == "multiball") {
-          game.cloneBall({
-            lifeSpan: getRandom(150,250)
-          });
+          game.cloneBall();
         }
 
         game.activePowerupCount--;
         removalList.push(this);
         playSound("coin");
-
-        // var angle = Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180 / Math.PI;
-        // for(var i = 0; i < 5; i++) {
-        //   var options = {
-        //     x : this.physics.position.x - 15,
-        //     y : this.physics.position.y - 15,
-        //     o : 1,
-        //     scaleV : -.05,
-        //     angle : getRandom(0,360),
-        //     speed:  this.physics.speed * .5,
-        //     height: 30,
-        //     width: 30,
-        //     lifespan : 100,
-        //     className : "star",
-        //   }
-        //
-        //   makeParticle(options);
-        // }
       }
     }
   });

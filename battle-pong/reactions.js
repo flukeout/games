@@ -14,7 +14,7 @@
       'smiling.svg'
     ],
     strong: [
-      'gun.svg',
+      // 'gun.svg',
       'flex.svg'
     ],
 

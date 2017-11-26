@@ -1,13 +1,28 @@
 ### WORKING On
 
-* When adding powerups and looping over the paddles, make it dynamic and not just 2
+* Press both spin buttons at once...
+  * Could do some kind of action?
+  * Shoot a projectile?
+
+* Wind
+  * How to implement visuals?
+  * What elements to affect?
+  * Force vs manual velocity udpates
+
+* Multiball - figure out the best way to do this
+  * Should clone balls look differently?
+  * Should they disappear after scoring once?
+
+* Mines?
+  * Make them a bit smaller
+  * Make them be able to shoot farter
+  * Make them slow down faster
 
 ### BUGS
 
 *
 
 ### TO-DO
-
 
 * Change game to have player 1, 2, 3, 4 and Team 1, 2
 * Make board width & height variables that can be set in game.js

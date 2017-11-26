@@ -152,7 +152,7 @@ function createBall(options){
       }
 
       // If it's going too slow, slow it down
-      if(this.physics.speed < this.minSpeed) {
+      if(this.physics.speed < this.minSpeed && game.wind == 0) {
         this.changeVelocityRatio(this.minSpeedSlowdownRatio);
       }
 
@@ -336,7 +336,7 @@ function createBall(options){
 
     drawLetter : function(){
 
-      var movementAngle = 180 + -Math.atan2(ball.physics.velocity.x, ball.physics.velocity.y) * 180/Math.PI;
+      var movementAngle = 180 + -Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180/Math.PI;
 
       if(movementAngle >= 360) {
         movementAngle = movementAngle - 360;
