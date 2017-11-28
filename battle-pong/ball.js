@@ -7,6 +7,7 @@ function createBall(options){
     innerHTML : "<div class='spinny'></div><div class='shadow'></div><div class='body'></div>",
     className: "ball",
     classNames : ["ball"],
+
     properties : {
       x: options.x || 0,
       y: options.y || 0,
@@ -14,6 +15,7 @@ function createBall(options){
       width: 30,
       classNames : options.classNames || []
     },
+
     lifeSpan : options.lifeSpan || "infinite",
     lastStepSpeed : 0,
     bodyEL : false,
@@ -39,12 +41,13 @@ function createBall(options){
 
     hardHitVelocityIncreaseRatio: 1.25,
 
-    wordSpeed : 14 / game.physicsSamplingRatio, // TODO - update
+    wordSpeed : 13 / game.physicsSamplingRatio,    // TODO - update // used to be 14
     minWordSpeed : 10 / game.physicsSamplingRatio, // TODO - update
 
     phrases : [
       "BOOOOOOOOM",
       "THHHHHWAP",
+      "KA-JAAAAAAAAANG",
       "BA-DOOOM",
       "KA-BLAAAAM",
       "FWOOOSH",
@@ -132,8 +135,13 @@ function createBall(options){
 
       if(this.lifeSpan != "infinite") {
         this.lifeSpan--;
+
+        if(this.lifeSpan < 75) {
+          this.element.classList.add("blinkBall");
+        }
+
         if(this.lifeSpan < 0) {
-          popPaddle(this.physics);
+          popBall(this.physics);
           removalList.push(this);
         }
       }
@@ -143,7 +151,7 @@ function createBall(options){
       }
 
       if(this.applyBrakes && this.brakesModeEnabled) {
-
+        // who knows?
       }
 
       // If it's going too fast, slow it down
@@ -152,8 +160,9 @@ function createBall(options){
       }
 
       // If it's going too slow, slow it down
-      if(this.physics.speed < this.minSpeed && game.wind == 0) {
-        this.changeVelocityRatio(this.minSpeedSlowdownRatio);
+      if(this.physics.speed < this.minSpeed) {
+        // this.changeVelocityRatio(this.minSpeedSlowdownRatio);
+        // TODO - this slows id down if you want it back
       }
 
       this.canSpin = false;
@@ -167,11 +176,12 @@ function createBall(options){
 
       this.canSpin = this.checkSpinConditions(delta);
 
+
       // TODO - fix how this is added / removed, we don't want to do it every frame
       if(this.canSpin){
-        this.element.querySelector(".body").classList.add("canSpin");
+        this.element.classList.add("canSpin");
       } else {
-        this.element.querySelector(".body").classList.remove("canSpin");
+        this.element.classList.remove("canSpin");
       }
 
       // All this crap below just relates to curving the ball
@@ -253,14 +263,14 @@ function createBall(options){
       }
 
       // Adds trails after the ball when it's goign fast enough
-      // if(this.frameTicks > 1 & this.physics.speed * game.physicsSamplingRatio > 7) {
-      //   if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
-      //     addBallTrail(this.position.x, this.position.y);
-      //   }
-      //   this.frameTicks = 0;
-      // } else {
-      //   this.frameTicks++;
-      // }
+      if(this.frameTicks > 1 & this.physics.speed * game.physicsSamplingRatio > 7) {
+        if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
+          addBallTrail(this.physics.position.x, this.physics.position.y);
+        }
+        this.frameTicks = 0;
+      } else {
+        this.frameTicks++;
+      }
 
       this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
 
@@ -394,7 +404,6 @@ function createBall(options){
 
       // TODO - WTF
       if(obj.name.indexOf("paddle") > -1) {
-
         if(obj.name.indexOf("one") > -1) {
           var paddleIndex = 1;
           var paddle = paddles[paddleIndex - 1];
@@ -417,7 +426,6 @@ function createBall(options){
         this.checkSpeed();
         this.applyBrakes = false;
       }
-
 
       if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {
         game.loserLived();
@@ -448,7 +456,6 @@ function createBall(options){
     // fast enough, and if the hit imparted it with more speed.
     // If so, we'll draw out a word.
     checkSpeed: function(){
-
       if(this.physics.speed > this.lastStepSpeed) {
         this.lastPaddleHitHard = true;
       } else {

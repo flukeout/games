@@ -67,7 +67,6 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
   particle.el = document.createElement("div");
   particle.el.classList.add("boom");
 
-  console.log("round");
   if(type == "round") {
     particle.el.classList.add("round");
   }
@@ -197,6 +196,7 @@ function bumpScreen(direction){
 // Used to add animations by applying a class, then removing it
 // If this happens in rapid succession (less than 1000ms apart,
 // we'll have to do the width trick.
+// TODO - fix the timeout
 
 function addTemporaryClassName(element, className, durationMS){
   element.classList.remove(className);

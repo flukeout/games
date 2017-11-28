@@ -1,12 +1,14 @@
 window.Settings = {
-  clearSavedControlSettings : false,
+  clearSavedControlSettings : true,
   showIntro : false,
   debug : true,
-  powerUpTypes : ["mine", "clone", "grow", "multiball"],
-  // powerUpTypes: ["clone"],
+  powerUpTypes : ["mine", "clone", "grow", "spin"], //"multiball"
+  // powerUpTypes: ["mine"],
   brakesModeEnabled : false,
   goalTimeoutMS : 250,
-  powerupFrequency : 250, // 250
+  powerupFrequency : 300,
   maxPowerupCount : 2,
-  playTo : 3
+  playTo : 9,
+  mineForceRadius: 175,
+  mineForceMultiplier: 0.00075
 };

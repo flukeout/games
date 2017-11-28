@@ -91,6 +91,7 @@ function createPaddle(options) {
       // If I'm a ghost and I get hit by a ball I die (at the end of a game)
 
       if(obj.name == "ball" && this.spinPowerupRemaining > 0 && this.spinPowerupCountdown == false) {
+        console.log('starting coutndown');
         this.spinPowerupCountdown = true;
       }
 
@@ -209,15 +210,15 @@ function createPaddle(options) {
     init: function(){
 
       // This ends the spin powerup when a ball hits the endzone
-      // var that = this;
+      var that = this;
 
-      // document.addEventListener("ballHitEndzone", function(e) {
-        // if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
-        //   that.spinPowerupRemaining = 0;
-        //   that.hasSpinPowerup = false;
-        //   that.spinPowerupCountdown = false;
-        // }
-      // });
+      document.addEventListener("ballHitEndzone", function(e) {
+        if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
+          that.spinPowerupRemaining = 0;
+          that.hasSpinPowerup = false;
+          that.spinPowerupCountdown = false;
+        }
+      });
     },
 
     // This gets called every frame of the game
@@ -242,6 +243,7 @@ function createPaddle(options) {
       }
 
 
+
       if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {
         this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
       }
@@ -253,7 +255,7 @@ function createPaddle(options) {
         this.hasSpinPowerup = true;
       }
 
-      if(this.spinPowerupRemaining <= 0 && this.hasSpinPowerup) {
+      if(this.spinPowerupRemaining <= 0) {
         this.spinPowerupRemaining = 0;
         this.hasSpinPowerup = false;
         this.spinPowerupCountdown = false;
@@ -313,6 +315,14 @@ function createPaddle(options) {
 
       this.currentAngle = this.physics.angle * 180/Math.PI;
 
+      if(this.actions.spin > .1) {
+        this.spin(spinVelocity);
+        spinning = true;
+      } else if (this.actions.spin < -.1) {
+        this.spin(-spinVelocity);
+        spinning = true;
+      }
+
       if(this.actions.spinClockwise){
         this.spin(spinVelocity);
         spinning = true;
@@ -330,16 +340,17 @@ function createPaddle(options) {
       if(spinning == false && this.targetAngleSet == false) {
 
         var remainder = (this.physics.angle * 180/Math.PI) % 90;
+
         if(this.physics.angularVelocity >= 0) {
           this.targetAngle = Math.ceil(this.physics.angle * 180/Math.PI / 90) * 90;
-          if(Math.abs(remainder) < 30) {
-            this.targetAngle = this.targetAngle - 90;
-          }
+          // if(Math.abs(remainder) < 30) {
+          //   this.targetAngle = this.targetAngle - 90;
+          // }
         } else {
           this.targetAngle = Math.floor(this.physics.angle * 180/Math.PI / 90) * 90;
-          if(Math.abs(remainder) < 30) {
-            this.targetAngle = this.targetAngle + 90;
-          }
+          // if(Math.abs(remainder) < 30) {
+          //   this.targetAngle = this.targetAngle + 90;
+          // }
         }
         this.targetAngleSet = true;
       }
@@ -371,11 +382,6 @@ function createPaddle(options) {
         }
       }
 
-      // if(this.actions.spin > .1) {
-      //   this.spin(spinVelocity);
-      // } else if (this.actions.spin < -.1) {
-      //   this.spin(-spinVelocity);
-      // }
 
       // Analog movement
       var xDelta = this.actions.moveX,

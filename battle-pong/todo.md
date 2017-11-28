@@ -1,5 +1,11 @@
 ### WORKING On
 
+**BEFORE DEMOS**
+* Make powerups slightly easier to score with?
+  * Reduce friction or mass a tiny bit
+* Make it best of 3
+* Make board a bit narrower
+
 * Press both spin buttons at once...
   * Could do some kind of action?
   * Shoot a projectile?

@@ -33,28 +33,14 @@ function createPowerup(x, y, type){
     label: "powerup-" + type
   }
 
-  if(type == "bomb") {
-    properties.width = 50;
-    properties.lifeSpan = 500;
-    properties.height = 50;
-    physicsOptions.frictionAir = 0.035 / game.physicsSamplingRatio;
-    properties.innerHTML = `
-    <div class='shadow'></div>
-    <div class='body'>
-      <div class='wick'></div>
-      <div class='bomb-body'>
-        <div class='spark'>
-          <div class='flame'></div>
-        </div>
-      </div>
-    </div>`;
-  }
-
   if(type == "mine") {
-    properties.width = 55;
-    properties.height = 55;
-    properties.lifeSpan = getRandom(200, 500);
+    properties.width = 56;
+    properties.height = 56;
+    properties.lifeSpan = getRandom(150, 350);
     properties.ignoreRotation = true;
+
+    properties.x = x - properties.width/2;
+
     physicsOptions.frictionAir = 0.035 / game.physicsSamplingRatio;
 
     properties.innerHTML = `
@@ -125,9 +111,27 @@ function createPowerup(x, y, type){
         scoringPlayer = 1;
       } else if(thisX < boardMiddle) {
         scoringPlayer = 2;
+      } else {
+        scoringPlayer = Math.round(Math.random()) + 1;
       }
 
       game.moveTerrain(scoringPlayer, 20);
+
+      objectsToRender.forEach((obj) => {
+        if (obj === this) return;
+
+        var distanceX = obj.physics.position.x - this.physics.position.x;
+        var distanceY = obj.physics.position.y - this.physics.position.y;
+
+        var radius = window.Settings.mineForceRadius || 175;
+
+        if (distanceX * distanceX + distanceY * distanceY > radius*radius) return;
+
+        distanceX *= (window.Settings.mineForceMultiplier || 0.0005) * obj.physics.mass;
+        distanceY *= (window.Settings.mineForceMultiplier || 0.0005) * obj.physics.mass;
+
+        Matter.Body.applyForce(obj.physics, obj.physics.position, {x: distanceX, y: distanceY});
+      });
 
       mineExplosion(this.physics.position.x, this.physics.position.y, 100);
 
@@ -226,7 +230,7 @@ function createPowerup(x, y, type){
 
       if(playerHit && this.type != "mine"){
 
-        if(this.type == "clone" || this.type == "grow") {
+        if(this.type == "clone" || this.type == "grow" || this.type == "spin") {
           for(var i = 0; i < 2; i++){
             var paddle = paddles[i];
             if(paddle.player == playerAffected) {

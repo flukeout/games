@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
       y : paddleDetails[i].y,
       height : paddleDetails[i].height || 100,
       width: 20,
-      classNames : ["paddle"]
+      classNames : ["paddle", "paddle-" + i]
     });
 
     paddles[i].init();

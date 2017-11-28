@@ -134,7 +134,7 @@ window.GamepadManager = (function () {
       }
     });
 
-    var gamepadID = gamepad.id;
+    var gamepadID = gamepad.id + gamepad.timestamp;
 
     this.inputToActionMapping = inputToActionMapping;
     this.id = gamepadID;
@@ -190,7 +190,7 @@ window.GamepadManager = (function () {
     getUnusedGamepad: function () {
       refreshGamepads();
       for (var i = 0; i < gamepads.length; ++i) {
-        if (gamepads[i] && !isGamepadInUse(gamepads[i].id)) {
+        if (gamepads[i] && !isGamepadInUse(gamepads[i].id + gamepads[i].timestamp)) {
           return new Config(gamepads[i]);
         }
       }

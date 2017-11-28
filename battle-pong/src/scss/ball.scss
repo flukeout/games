@@ -34,7 +34,17 @@
   }
 
   &.clone-ball .body {
-    // opacity: .65;
+     opacity: .5;
+  }
+
+  &.blinkBall .body {
+    animation: blinkBall .15s ease-in-out infinite;
+
+    @keyframes blinkBall {
+      50% {
+        opacity: 0;
+      }
+    }
   }
 
   .spinny {
@@ -50,6 +60,11 @@
     background-repeat: no-repeat;
   }
 
+  &.canSpin .body {
+    background: #5fffff;
+  }
+
+
   .body {
     background: white;
     border-radius: 15px;
@@ -63,9 +78,6 @@
     transition: background .2s ease-out;
     box-sizing: border-box;
 
-    &.canSpin {
-      background: #5fffff;
-    }
   }
 
   &.overtime:before {

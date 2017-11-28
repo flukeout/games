@@ -131,6 +131,7 @@ var game =  {
       if (g.mode === 'paused') {
         return;
       }
+
       requestAnimationFrame(loop);
     })();
   },
@@ -196,7 +197,6 @@ var game =  {
         deltaX = this.boardWidth / 2 - ball.physics.position.x;
         deltaY = this.boardHeight / 2 - ball.physics.position.y;
       }
-
     }
     this.ticks++;
     if(wind < 0 && this.ticks > 20) {
@@ -236,12 +236,12 @@ var game =  {
         if(obj.gotHit) {
           obj.resolveHit();
         }
+
         // Matter.Body.applyForce(obj.physics, obj.physics.position, {
         //   x : 0,
         //   y : 0.001
         // });
       }
-
 
       // Matter.Body.setVelocity(obj.physics,{
       //   x: obj.physics.velocity.x,
@@ -407,6 +407,8 @@ var game =  {
       options = {};
     }
 
+    options.lifeSpan = 250;
+
     this.showMessage("MULTIBALL", 1500);
 
     var newBall = createBall(options);
@@ -420,14 +422,17 @@ var game =  {
     var x = ball.physics.position.x;
     var y = ball.physics.position.y;
 
+
     Matter.Body.set(newBall.physics, {
       position: { x : x, y : y }
     });
 
-    popBall(ball.physics);
+    Matter.Body.setVelocity(newBall.physics, {
+      x : ball.physics.velocity.x,
+      y : ball.physics.velocity.y
+    });
 
-    var chance = Math.floor(getRandom(0,1));
-    var launchForce = .02 * this.physicsSamplingRatio;
+    popBall(ball.physics);
   },
 
 
