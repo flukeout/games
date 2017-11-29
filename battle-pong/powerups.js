@@ -28,7 +28,7 @@ function createPowerup(x, y, type){
   }
 
   var physicsOptions = {
-    frictionAir: 0.015 / game.physicsSamplingRatio,
+    frictionAir: 0.0075 / game.physicsSamplingRatio,
     restitution: 1,
     label: "powerup-" + type
   }
