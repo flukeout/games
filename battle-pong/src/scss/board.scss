@@ -226,7 +226,7 @@
 }
 
 .team-1-scored-flash {
-  animation: team-1-scored-flash 1s ease-out;
+  animation: team-1-scored-flash .5s ease-out;
 }
 
 @keyframes team-1-scored-flash {
@@ -234,7 +234,7 @@
 }
 
 .team-2-scored-flash {
-  animation: team-2-scored-flash 1s ease-out;
+  animation: team-2-scored-flash .5s ease-out;
 }
 
 @keyframes team-2-scored-flash {

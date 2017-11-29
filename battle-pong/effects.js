@@ -199,6 +199,8 @@ function bumpScreen(direction){
 // TODO - fix the timeout
 
 function addTemporaryClassName(element, className, durationMS){
+
+
   element.classList.remove(className);
   element.style.width = element.clientWidth;
   element.classList.add(className);
@@ -274,7 +276,7 @@ function fireGun(x, y, angle, player){
 
   makeParticle(options);
 
-  addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 1000);
+  addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
   shakeScreen();
 
   playSound("thwap");

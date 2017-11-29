@@ -143,6 +143,7 @@ function createPaddle(options) {
       if(type == "grow") {
         this.targetHeight = this.height * 1.5;
         this.element.classList.add("powerup-hit");
+        game.showMessage("ENHANCE!", 1500);
 
         var that = this;
 
@@ -161,6 +162,7 @@ function createPaddle(options) {
       }
 
       if(type == "clone") {
+        game.showMessage("SPOOOOKY!", 1500);
         this.clonePaddle();
         game.updateBounds();
       }
@@ -170,8 +172,6 @@ function createPaddle(options) {
 
       var playerNum = this.player;
       var numClones = getRandom(3,6);
-
-      game.showMessage("SPOOOOKY!", 1500);
 
       for(var i = 0; i <= numClones; i++) {
 

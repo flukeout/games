@@ -43,7 +43,7 @@ var sounds = {
     volume : .3
   },
   "clang" : {
-    url : "sounds/clang.mp3",
+    url : "sounds/clang-2.mp3",
     volume : .2
   },
   "score" : {
