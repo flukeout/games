@@ -195,7 +195,7 @@ function createPaddle(options) {
           height : 65,
           width: 20,
           classNames : ["paddle", "skeleton"],
-          lifeSpan: getRandom(4500,7500),
+          lifeSpan: getRandom(3500,5500),
           movementRatio : 1.2,
           type: "clone"
         });
