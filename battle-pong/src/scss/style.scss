@@ -69,3 +69,13 @@ canvas {
   }
 
 }
+
+#fps {
+  position: fixed;
+  top: 0;
+  right: 0;
+  text-align: right;
+  color: white;
+  font-size: 1.2em;
+  font-family: 'Courier New';
+}

@@ -75,6 +75,10 @@ document.addEventListener('DOMContentLoaded', function () {
     inputManager.setupInputForObject(paddles[i]);
   }
 
+  if (Settings.showFrameRate) {
+    var frameRateMonitor  = new FrameRateMonitor();
+  }
+
   game.init();
 
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
