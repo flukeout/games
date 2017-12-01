@@ -29,7 +29,7 @@ window.FrameRateMonitor = function () {
 
     if (delta > 1000) {
       lastTime = thisTime;
-      samples[sampleIndex++] = numFrames;
+      samples[sampleIndex] = numFrames;
   
       ++samplesSoFar;
 
@@ -43,9 +43,10 @@ window.FrameRateMonitor = function () {
       container.textContent = sampleAnimation[samplesSoFar % 4] + currentMeasuredFPS;
 
       numFrames = 0;
+
+      sampleIndex = (sampleIndex + 1) % numSamples;
     }
 
-  
     requestAnimationFrame(loop);
   })();
 };
