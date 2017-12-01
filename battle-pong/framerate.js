@@ -29,8 +29,9 @@ window.FrameRateMonitor = function () {
 
     if (delta > 1000) {
       lastTime = thisTime;
+
       samples[sampleIndex] = numFrames;
-  
+
       ++samplesSoFar;
 
       let average = samples[0];
@@ -45,6 +46,8 @@ window.FrameRateMonitor = function () {
       numFrames = 0;
 
       sampleIndex = (sampleIndex + 1) % numSamples;
+    }
+
     }
 
     requestAnimationFrame(loop);
