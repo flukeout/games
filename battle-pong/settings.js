@@ -10,7 +10,8 @@ window.Settings = {
   maxPowerupCount : 2, // 2
   playTo : 2,
   mineForceRadius: 175,
-  mineForceMultiplier: 0.00075
+  mineForceMultiplier: 0.00075,
+  showFrameRate: false
 };
 
 var queryStringParts = window.location.search.substr(1).split('&');
