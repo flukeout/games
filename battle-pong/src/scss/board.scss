@@ -241,6 +241,7 @@
   height: 100vh;
   opacity: 0;
   will-change: opacity;
+  transform: translateZ(0);
 }
 
 .team-1-flash {
