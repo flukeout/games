@@ -229,18 +229,37 @@
   z-index: 99999999;
 }
 
-.team-1-scored-flash {
+.team-1-scored-flash .team-1-flash {
   animation: team-1-scored-flash .5s ease-out;
 }
 
-@keyframes team-1-scored-flash {
-  5% { background: #ac4d9d; }
+.flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0;
+  will-change: opacity;
 }
 
-.team-2-scored-flash {
+.team-1-flash {
+  background: #ac4d9d;
+}
+
+.team-2-flash {
+  background: #3faa7f;
+}
+
+
+@keyframes team-1-scored-flash {
+  5% { opacity: 1; }
+}
+
+.team-2-scored-flash .team-2-flash {
   animation: team-2-scored-flash .5s ease-out;
 }
 
 @keyframes team-2-scored-flash {
-  5% { background: #3faa7f; }
+  5% { opacity: 1; }
 }

@@ -784,7 +784,7 @@ var game =  {
     }
 
     this.moveTerrain(scoredByPlayerNum, terrainChange);
-    // addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
+    addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
   },
 
   // Moves the terrain & Score based on a goal or mine...
