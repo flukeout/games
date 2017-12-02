@@ -54,7 +54,9 @@ function getElementProperties(element){
 
   var bodyType = "rectangle";
 
-  var borderRadius = parseInt(styles.borderRadius);
+  var borderRadius = parseInt(styles.borderTopLeftRadius); // TODO - this is a hack
+  // Firefox doesn't have a 'borderRadius', only individual radiuses, so we are just using the top left for now
+
   var sizeRatio = height/width;
 
   // Check if it is square enought

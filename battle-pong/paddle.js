@@ -26,7 +26,7 @@ function createPaddle(options) {
     lifeSpan : options.lifeSpan || "infinite",
 
     movementRatio: options.movementRatio || 1,
-    innerHTML : "<div class='body'></div>",
+    innerHTML : "<div class='body'><div class='bone'></div></div>",
 
     properties: {
       x: options.x || 0,
@@ -195,7 +195,7 @@ function createPaddle(options) {
           height : 65,
           width: 20,
           classNames : ["paddle", "skeleton"],
-          lifeSpan: getRandom(3500,5500),
+          lifeSpan: getRandom(113500,115500),
           movementRatio : 1.2,
           type: "clone"
         });

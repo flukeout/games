@@ -3,10 +3,10 @@ window.Settings = {
   showIntro : false,
   debug : true,
   powerUpTypes : ["mine", "clone", "grow", "spin"], //"multiball"
-  // powerUpTypes : ["mine"],
+  powerUpTypes : ["clone"],
   brakesModeEnabled : false,
   goalTimeoutMS : 250,
-  powerupFrequency : 300,
+  powerupFrequency : 3,
   maxPowerupCount : 2,
   playTo : 2,
   mineForceRadius: 175,

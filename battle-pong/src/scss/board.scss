@@ -59,22 +59,25 @@
 
 .tilt-wrapper {
   position: absolute;
-  top: calc(50vh - 275px);
-  left: calc(50vw - 425px);
+  top: calc(50vh - 295px);
+  left: calc(50vw - 445px);
   transform-style: preserve-3d;
   transform: rotateX(20deg) rotateY(0deg);
 }
 
 .world {
-  width: 850px; // 1000px
-  height: 500px;
+  width: 890px; // 1000px
+  height: 540px;
   position: relative;
-  outline: solid 20px #222;
+  border: solid 20px #222;
   box-sizing: border-box;
+  -moz-transform-style: preserve-3d;
 }
 
+
+
 .winner-screen .world {
-  outline: solid 20px rgba(255,255,255,.2);
+  border: solid 20px rgba(255,255,255,.2);
 }
 
 .terrain {
@@ -110,6 +113,7 @@
 
 .winner-one {
   background: #ac4d9d;
+
 }
 
 .red-chunk {
