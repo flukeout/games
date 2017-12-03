@@ -90,10 +90,9 @@ function createPaddle(options) {
     hit: function(obj) {
       // If I'm a ghost and I get hit by a ball I die (at the end of a game)
 
-      if(obj.name == "ball" && this.spinPowerupRemaining > 0 && this.spinPowerupCountdown == false) {
-        console.log('starting coutndown');
-        this.spinPowerupCountdown = true;
-      }
+      // if(obj.name == "ball" && this.spinPowerupRemaining > 0 && this.spinPowerupCountdown == false) {
+        // this.spinPowerupCountdown = true;
+      // }
 
       if(this.mode == "ghost" && obj.name.indexOf("ball") > -1) {
         this.element.classList.add("dead");
@@ -158,6 +157,11 @@ function createPaddle(options) {
       // For this powerup, we treat it as having a 'time remaining'
       // Gets reduced every frame, and added to when we hit a powerup.
       if(type == "spin") {
+        for(var i = 0; i < paddles.length; i++) {
+          var p = paddles[i];
+          p.hasSpinPowerup = false;
+          p.spinPowerupRemaining = 0;
+        }
         this.spinPowerupRemaining = this.spinPowerupRemaining + this.spinPowerupTime;
       }
 
@@ -195,7 +199,7 @@ function createPaddle(options) {
           height : 65,
           width: 20,
           classNames : ["paddle", "skeleton"],
-          lifeSpan: getRandom(113500,115500),
+          lifeSpan: getRandom(3500, 5500),
           movementRatio : 1.2,
           type: "clone"
         });
@@ -210,15 +214,15 @@ function createPaddle(options) {
     init: function(){
 
       // This ends the spin powerup when a ball hits the endzone
-      var that = this;
+      // var that = this;
 
-      document.addEventListener("ballHitEndzone", function(e) {
-        if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
-          that.spinPowerupRemaining = 0;
-          that.hasSpinPowerup = false;
-          that.spinPowerupCountdown = false;
-        }
-      });
+      // document.addEventListener("ballHitEndzone", function(e) {
+        // if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
+          // that.spinPowerupRemaining = 0;
+          // that.hasSpinPowerup = false;
+          // that.spinPowerupCountdown = false;
+        // }
+      // });
     },
 
     // This gets called every frame of the game
@@ -242,9 +246,7 @@ function createPaddle(options) {
         Matter.Body.setAngularVelocity(this.physics, -.0905);
       }
 
-
-
-      if(this.spinPowerupRemaining > 0 && this.spinPowerupCountdown) {
+      if(this.spinPowerupRemaining > 0) {
         this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
       }
 

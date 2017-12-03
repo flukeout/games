@@ -40,6 +40,7 @@
 
     var machine = {
       react: function (player, emotion) {
+        // console.log(player,emotion);
         var emotionalPool = emojis[emotion];
         var randomEmotion = emotionalPool[Math.floor(Math.random() * emotionalPool.length)];
 
