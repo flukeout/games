@@ -17,7 +17,7 @@ var ballEvents = {
 Events.on(engine, 'collisionEnd', function(event) {
   var pairs = event.pairs;
   var physicsObjectA;
-  var physicsObjectA;
+  var physicsObjectB;
 
 
   for (var i = 0, j = pairs.length; i != j; ++i) {
