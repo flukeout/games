@@ -147,9 +147,11 @@ window.GamepadManager = (function () {
     gamepadsInUse.push(this);
   }
 
-  function isGamepadInUse(id) {
-    for (var i = 0; i < gamepadsInUse.length; ++i) {
-      if (gamepadsInUse[i].id === id) {
+  function isGamepadInUse(gamepad) {
+    let gamepadHandle = gamepad.id + gamepad.timestamp;
+
+    for (let i = 0; i < gamepadsInUse.length; ++i) {
+      if (gamepadsInUse[i].id === gamepadHandle) {
         return true;
       }
     }
@@ -190,7 +192,7 @@ window.GamepadManager = (function () {
     getUnusedGamepad: function () {
       refreshGamepads();
       for (var i = 0; i < gamepads.length; ++i) {
-        if (gamepads[i] && !isGamepadInUse(gamepads[i].id + gamepads[i].timestamp)) {
+        if (gamepads[i] && !isGamepadInUse(gamepads[i])) {
           return new Config(gamepads[i]);
         }
       }
