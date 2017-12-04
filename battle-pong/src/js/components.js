@@ -35,10 +35,10 @@ function createObject(options){
 
     updateActionsFromInputComponents: function () {
       if (this.inputComponent) {
-        var updatedActions = this.inputComponent.update();
+        let updatedActions = this.inputComponent.update();
 
         // For each action, see if the input component registered anything
-        for (action in this.actions) {
+        for (let action in this.actions) {
 
           // Reset
           this.actions[action] = 0;

@@ -90,37 +90,10 @@ function createBall(options){
     goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
-    lastTouchedBy : false,
+    // lastTouchedBy : false,
     lastTouchedPaddle: false,
 
     wooshPlayed: false,
-
-    // Checks all the conditions for the ball to be allowed to spin
-    checkSpinConditions : function(delta){
-
-      // These are all of the conditions required for the ball to be able to spin
-
-      // Was the ball last hit by a paddle
-      // We should give the ball a bit of time, if you hit the wall right away, i think it's OK
-      var paddleHitCondition = false;
-
-      if(this.lastHitPaddle) {
-        paddleHitCondition = true;
-      }
-
-      var delayCondition = false;
-      this.timeSinceHit = this.timeSinceHit + delta;
-
-      if(this.timeSinceHit > this.delayBeforeCanSpinMS) {
-        delayCondition = true;
-      }
-
-      if(paddleHitCondition && delayCondition){
-        return true;
-      }
-
-      return false;
-    },
 
     frameTicks : 0,
 
@@ -165,18 +138,6 @@ function createBall(options){
         // TODO - this slows id down if you want it back
       }
 
-      this.canSpin = false;
-
-      if(this.lastHitPaddle != false) {
-        var relatedPaddle = paddles[this.lastHitPaddle- 1];
-        if(relatedPaddle.hasSpinPowerup == true) {
-          this.canSpin = true;
-        }
-      }
-
-      this.canSpin = this.checkSpinConditions(delta);
-
-
       // TODO - fix how this is added / removed, we don't want to do it every frame
       if(this.canSpin){
         this.element.classList.add("canSpin");
@@ -213,18 +174,30 @@ function createBall(options){
       var rotating = false;
       var direction;
 
+      this.canSpin = false;
+
+      // this.lastHitPaddle = 1;
+
+      var controlPaddle = false;
+
+      for(var i = 0; i < paddles.length; i++) {
+        var p = paddles[i];
+        if(p.hasSpinPowerup == true) {
+          this.canSpin = true;
+          controlPaddle = p;
+        }
+      }
+
       if(this.canSpin) {
 
-        if (paddles[this.lastHitPaddle - 1].physics.angularVelocity * game.physicsSamplingRatio > .1) {
-          // Clockwise
+        if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio > .1) {
           var a = movementAngle + Math.PI / 2;
           rotating = true;
           this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
           if(this.rotationVelocity > this.rotationVelocityMax){
             this.rotationVelocity = this.rotationVelocityMax;
           }
-        } else if (paddles[this.lastHitPaddle - 1].physics.angularVelocity * game.physicsSamplingRatio < -.1) {
-          // Counter-clockwise
+        } else if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio < -.1) {
           var a = movementAngle - Math.PI / 2;
           rotating = true;
           this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
@@ -374,22 +347,6 @@ function createBall(options){
 
     hit: function(obj){
 
-      if(this.lastHitPaddle == 1 && (obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("paddle-two") > -1)) {
-        this.lastHitPaddle = false;
-      }
-
-      if(this.lastHitPaddle == 2 && (obj.name.indexOf("wall-left") > -1 || obj.name.indexOf("paddle-one") > -1)) {
-        this.lastHitPaddle = false;
-      }
-
-      if(obj.name.indexOf("paddle-one") > -1) {
-        this.lastTouchedBy = 1;
-      }
-
-      if(obj.name.indexOf("paddle-two") > -1) {
-        this.lastTouchedBy = 2;
-      }
-
       if(obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("wall-left") > -1) {
         if(this.physics.speed > this.goingFastSpeedThreshold) {
           this.goalsWhileFast++;
@@ -405,24 +362,14 @@ function createBall(options){
       // TODO - WTF
       if(obj.name.indexOf("paddle") > -1) {
         if(obj.name.indexOf("one") > -1) {
-          var paddleIndex = 1;
-          var paddle = paddles[paddleIndex - 1];
-          if(paddle.hasSpinPowerup) {
-            this.lastHitPaddle = 1;
-          }
           this.lastTouchedPaddle = 1;
         }
 
         if(obj.name.indexOf("two") > -1) {
-          var paddleIndex = 2;
-          var paddle = paddles[paddleIndex - 1];
-          if(paddle.hasSpinPowerup) {
-            this.lastHitPaddle = 2;
-          }
           this.lastTouchedPaddle = 2;
         }
 
-        this.gotPaddleHit = true;
+        // this.gotPaddleHit = true;
         this.checkSpeed();
         this.applyBrakes = false;
       }

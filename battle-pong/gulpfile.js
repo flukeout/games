@@ -1,18 +1,14 @@
 var gulp         = require('gulp'),
     plumber      = require('gulp-plumber'),
-    sass         = require('gulp-sass');
+    sass         = require('gulp-sass'),
+    replace      = require('gulp-replace');
 
-// gulp.task('html', function () {
-//   gulp.src('src/**/*.html')
-//     .pipe(plumber())
-//     .pipe(gulp.dest('dist/'))
-// });
-
-// gulp.task('assets', function () {
-//   gulp.src('src/assets/**/*')
-//     .pipe(plumber())
-//     .pipe(gulp.dest('dist/assets'))
-// });
+gulp.task('html', function () {
+  gulp.src('index.html')
+    .pipe(replace(/<base href=".+">/g, ''))
+    .pipe(plumber())
+    .pipe(gulp.dest('src/'))
+});
 
 gulp.task('css', function () {
   gulp.src('src/scss/style.scss')
@@ -20,19 +16,15 @@ gulp.task('css', function () {
     .pipe(sass({
       outputStyle: 'compressed'
     }))
-    .pipe(gulp.dest('./'))
+    .pipe(gulp.dest('./src'))
 });
 
-// Watch asset folder for changes
 gulp.task('watch', [
   'css', 
-  // 'html', 
-  // 'assets'
+  'html', 
   ], function () {
   gulp.watch('src/scss/**/*', ['css']);
-  // gulp.watch('src/js/**/*', ['webpack']);
-  // gulp.watch('src/assets/**/*', ['assets']);
-  // gulp.watch('src/**/*', ['html']);
+  gulp.watch('index.html', ['html']);
 });
 
 gulp.task('default', ['watch']);
