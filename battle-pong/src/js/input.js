@@ -57,10 +57,13 @@ window.InputManager = function (onInputChanged) {
   window.addEventListener("gamepaddisconnected", (e) => {
     // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
     maintainedObjects.forEach((object) => {
-      if (object.inputComponent.type === 'gamepad' && object.inputComponent.gamepad.id === e.gamepad.id) {
-        object.setInputComponent(this.getComponentForNextAvailableInput());
-        onInputChanged(object);
-        return;
+      if (object.inputComponent.type === 'gamepad') {
+        let gamepadId = e.gamepad.id + e.gamepad.index;
+        if (object.inputComponent.config.id === gamepadId) {
+          object.setInputComponent(this.getComponentForNextAvailableInput());
+          onInputChanged(object);
+          return;
+        }
       }
     });
   });
@@ -113,7 +116,15 @@ window.GamepadManager = (function () {
   var gamepadsInUse = [];
 
   function Config(gamepad) {
-    var inputMappingLabelType = gamepad.mapping === 'standard' ? 'standard' : 'xbox';
+    var inputMappingLabelType = 'standard';
+
+    if (gamepad.mapping) {
+      inputMappingLabelType = gamepad.mapping;
+    }
+    else if (gamepad.id.toLowerCase().indexOf('xbox') > -1) {
+      inputMappingLabelType = 'xbox';
+    }
+
     var inputLabelSet = gamepadInputLabels[inputMappingLabelType];
     var inputLabelToActionMappingKeys = Object.keys(gamepadInputLabelToActionMapping);
     var inputToActionMapping = {buttons: {}, axes: {}};
@@ -134,7 +145,7 @@ window.GamepadManager = (function () {
       }
     });
 
-    var gamepadID = gamepad.id + gamepad.timestamp;
+    var gamepadID = gamepad.id + gamepad.index;
 
     this.inputToActionMapping = inputToActionMapping;
     this.id = gamepadID;
@@ -148,7 +159,7 @@ window.GamepadManager = (function () {
   }
 
   function isGamepadInUse(gamepad) {
-    let gamepadHandle = gamepad.id + gamepad.timestamp;
+    let gamepadHandle = gamepad.id + gamepad.index;
 
     for (let i = 0; i < gamepadsInUse.length; ++i) {
       if (gamepadsInUse[i].id === gamepadHandle) {
