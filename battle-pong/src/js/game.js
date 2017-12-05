@@ -224,7 +224,7 @@ var game =  {
     var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
 
     if(game.mode != "off") {
-      // tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
+      tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
     }
 
     // Iterate over all of the objects are are updating on screen
