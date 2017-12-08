@@ -57,14 +57,14 @@
 
   .small-moon {
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     left: 30px;
     top: 30px;
     background-image: url(assets/images/small-moon.svg);
     background-position: center;
     background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: contain;
     animation: largeMoon 10s ease-in-out infinite;
 
 
