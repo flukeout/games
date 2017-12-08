@@ -590,7 +590,6 @@ var game =  {
             p.minX = this.boardWidth - (this.boardWidth * .25);
           }
         }
-
     }
 
     var leftWidth = Math.floor(this.boardWidth * this.terrainLinePercent/100);
@@ -598,6 +597,11 @@ var game =  {
 
     this.terrainOneEl.style.width = leftWidth + "px";
     this.terrainTwoEl.style.width = rightWidth + "px";
+
+    var maxRotation = 4.5;
+    var delta = 50 - this.terrainLinePercent;
+    var planetRotation = -delta / 50 * 4.5;
+    document.querySelector(".surface").style.transform = "rotate(" + planetRotation + "deg)";
   },
 
 

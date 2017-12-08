@@ -7,7 +7,7 @@
 
   .sky {
     background-image: url(assets/images/sky.svg);
-    background-position: 0 -200px;
+    background-position: bottom;
     background-repeat: repeat;
     background-size: 100%;
     width: 200vw;
@@ -17,28 +17,47 @@
   }
 
   .stars {
-    background-image: url(assets/images/stars.svg);
-    background-position: 0px;
-    background-repeat: repeat;
-    background-size: 100%;
+//    background-image: url(assets/images/stars.svg);
+//    background-position: 0px;
+//    background-repeat: repeat;
+//    background-size: 120%;
     width: 100vw;
     left: 0;
-    opacity: .5;
-    height: 25vh;
+//    opacity: .2;
+    height: 40vh;
     position: absolute;
     top: 0;
-  }
 
+    img {
+      position: absolute;
+      width: 100%;
+    }
+  }
 
   .surface {
     background-image: url(assets/images/surface.svg);
     background-position: top;
     background-repeat: no-repeat;
     background-size: 100%;
-    width: 100vw;
-    height: 75vh;
+    width: 230vw;
+    height: 150vh;
     position: absolute;
-    top: 25vh;
+    top: 30vh;
+    left: -65vw;
+    transform-origin: 50% 800%;
+    transition: transform 10s ease-out;
+
+    @keyframes rotateSurface {
+      0% {
+        transform: rotate(-5deg);
+      }
+      50% {
+        transform: rotate(5deg);
+      }
+      100% {
+        transform: rotate(-5deg);
+      }
+    }
   }
 
   .small-moon {
