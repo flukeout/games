@@ -1,3 +1,23 @@
+setTimeout(function(){
+  makeStars();
+},100);
+
+function makeStars() {
+  var stars = document.querySelector(".stars svg");
+
+  for(var i = 0; i < 300; i++) {
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    svg.setAttribute('fill', '#fff');
+    svg.setAttribute('fill-opacity', getRandom(.2,.6));
+    svg.setAttribute('cx', getRandom(0,1200));
+    svg.setAttribute('cy', getRandom(0,400));
+    svg.setAttribute('r', getRandom(1.5,2.5));
+    stars.appendChild(svg);
+  }
+}
+
+
+
 function mineExplosion(xposition, yposition, size){
 
 
