@@ -48,8 +48,6 @@ window.FrameRateMonitor = function () {
       sampleIndex = (sampleIndex + 1) % numSamples;
     }
 
-    }
-
     requestAnimationFrame(loop);
   })();
 };

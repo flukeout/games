@@ -1,0 +1,56 @@
+{
+  "name": "battle-pong",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./app/electron.js",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "npm"
+      },
+      "electronWinstallerConfig": {
+        "name": "battle_pong"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "battlepong"
+      }
+    }
+  },
+  "dependencies": {
+    "electron-compile": "6.4.2",
+    "electron-squirrel-startup": "1.0.0"
+  },
+  "devDependencies": {
+    "electron-forge": "4.1.5",
+    "electron-prebuilt-compile": "1.7.9"
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint src --color"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
