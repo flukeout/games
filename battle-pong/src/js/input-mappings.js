@@ -83,5 +83,6 @@ var gamepadInputLabelToActionMapping = {
   "bumperRight": "spinClockwise",
   "analogLeftX": "moveX",
   "analogLeftY": "moveY",
-  "analogRightX": "spin"
+  "analogRightX": "spinX",
+  "analogRightY": "spinY"
 };

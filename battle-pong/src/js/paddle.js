@@ -1,20 +1,144 @@
-var paddleKeyboardActions = [
+const paddleKeyboardActions = [
   // Discrete on/off buttons
   'up','left','down','right','spinClockwise','spinCounterClockwise',
 ];
 
-var paddleGamepadActions = [
+const paddleGamepadActions = [
   // Fluid options that can use floats instead of booleans (e.g. joysticks)
-  'moveX', 'moveY', 'spin'
+  'moveX', 'moveY', 'spinX', 'spinY'
 ];
 
-var paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
+const paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
+
+const maxForce = 0.004;
+const HALF_PI = Math.PI / 2;
+const QUARTER_PI = Math.PI / 4;
+const spinSpeed = .2;
+const spinVelocity = spinSpeed / game.physicsSamplingRatio;
+const maxSpinVelocity = 0.05235987755982988; // From 3 / 180 * Math.PI
+const angularSpeedThreshold = .02;
+const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
+
+const inputDriverComponents = {
+  moveXY: function (paddle) {
+    // We want to calculate a movement angle based on
+    // the directional inputs.
+    var xDelta = 0,
+        yDelta = 0;
+
+    if(paddle.actions.left)   xDelta--;
+    if(paddle.actions.right)  xDelta++;
+
+    if(paddle.actions.up)     yDelta++;
+    if(paddle.actions.down)   yDelta--;
+
+    var angleRad = Math.atan2(xDelta, yDelta);
+
+    if(xDelta != 0 || yDelta != 0) {
+      var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
+      var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
+      paddle.force(xForce, yForce);
+    }
+  },
+  stagedSpin: function (paddle) {
+    let spinning = false;
+    let currentAngle = paddle.physics.angle;
+    let spinDirection = 0;
+
+    if (paddle.actions.spin > .1)             spinDirection =  1;
+    if (paddle.actions.spin < -.1)            spinDirection = -1;
+    if (paddle.actions.spinClockwise)         spinDirection =  1;
+    if (paddle.actions.spinCounterClockwise)  spinDirection = -1;
+
+    if (spinDirection !== 0) {
+      paddle.spin(spinDirection * spinVelocity);
+      paddle.targetAngleSet = false;
+    }
+
+    if(paddle.targetAngleSet == false) {
+      let remainder = (paddle.physics.angle % HALF_PI);
+
+      if(paddle.physics.angularVelocity >= 0) {
+        paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);
+      } else {
+        paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
+      }
+      paddle.targetAngleSet = true;
+    }
+
+    let delta = (currentAngle - paddle.targetAngle);
+    let applyVel = -maxSpinVelocity * delta/(QUARTER_PI);
+
+    applyVel = Math.min(applyVel, maxSpinVelocity);
+
+    if(spinning == false && paddle.type == "player") {
+      if(delta !== 0) {
+        paddle.physics.torque = applyVel;
+
+        if(delta > -spinDeltaThreshold && delta < spinDeltaThreshold) {
+          if(paddle.physics.angularSpeed < angularSpeedThreshold) {
+            Matter.Body.setAngle(paddle.physics, paddle.targetAngle);
+            Matter.Body.setAngularVelocity(paddle.physics, 0);
+          }
+        }
+      }
+    }
+  },
+  continuousSpin: function (paddle) {
+    // if (paddle.actions.spinX !== 0 && paddleActions.spinY !== 0) {
+    //   let angleFromInput = Math.atan2(-paddle.actions.spinX, paddle.actions.spinY);
+    //   let oldAngle = paddle.physics.angle;
+    //   let difference = oldAngle - angleFromInput;
+    //   let newAngle = oldAngle - difference * 0.15;
+
+    //   Matter.Body.setAngle(paddle.physics, newAngle);
+    //   Matter.Body.setAngularVelocity(paddle.physics, 0);
+    // }
+  },
+  limitXY: function (paddle) {
+    // Analog movement
+    var xDelta = paddle.actions.moveX,
+        yDelta = paddle.actions.moveY;
+
+    // If we are close to the edge, push it to max
+    if (xDelta > .9)    xDelta =  1;
+    if (xDelta < -.9)   xDelta = -1;
+    if (yDelta > .9)    yDelta =  1;
+    if (yDelta < -.9)   yDelta = -1;
+
+    var angleRad = Math.atan2(xDelta,yDelta);
+
+    // Here we limit the total force that can be applied to the paddle
+    var totalPowerRatio = Math.sqrt(Math.pow(Math.abs(xDelta),2) + Math.pow(Math.abs(yDelta),2)) || 1;
+    if(totalPowerRatio > 1) {
+      totalPowerRatio = 1;
+    }
+
+    var newForce = totalPowerRatio * maxForce;
+
+    if(xDelta != 0 || yDelta != 0) {
+      var xForce = Math.sin(angleRad) * newForce * game.physicsSamplingRatio * paddle.movementRatio;
+      var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio * paddle.movementRatio;
+      paddle.force(xForce, yForce);
+    }
+
+    // Movement bounds - keep the paddle in its zone
+    var forceModifier = 1.25 * game.physicsSamplingRatio;
+
+    if(paddle.physics.position.x > paddle.maxX && paddle.maxX) {
+      paddle.force(-maxForce * forceModifier, 0);
+    }
+
+    if(paddle.physics.position.x < paddle.minX && paddle.minX) {
+      paddle.force(maxForce * forceModifier, 0);
+    }
+  }
+};
 
 function createPaddle(options) {
 
   // debugger
   console.log(options);
-  var maxForce = 0.004;
 
   var options = options || {};
 
@@ -80,9 +204,8 @@ function createPaddle(options) {
 
       if(!this.swishTimeout && this.type == "player") {
         playSound("swish");
-        var that = this;
-        this.swishTimeout = setTimeout(function(){
-          that.swishTimeout = false;
+        this.swishTimeout = setTimeout(() => {
+          this.swishTimeout = false;
         }, this.swishTimeoutMS);
       }
     },
@@ -212,7 +335,6 @@ function createPaddle(options) {
     },
 
     init: function(){
-
       // This ends the spin powerup when a ball hits the endzone
       // var that = this;
 
@@ -236,7 +358,6 @@ function createPaddle(options) {
           removalList.push(this);
         }
       }
-
 
       // TODO - remove hardcoded max speed
       if(this.physics.angularVelocity > .0905) {
@@ -282,146 +403,15 @@ function createPaddle(options) {
         this.updateActionsFromInputComponents();
       } else {
         // Set all actions to false
-        this.actions.up = false;
-        this.actions.down = false;
-        this.actions.left = false;
-        this.actions.right = false;
-        this.actions.spinClockwise = false;
-        this.actions.spinCounterClockwise = false;
-      }
-
-      // We want to calculate a movement angle based on
-      // the directional inputs.
-      var xDelta = 0,
-          yDelta = 0;
-
-      if(this.actions.left)   xDelta--;
-      if(this.actions.right)  xDelta++;
-
-      if(this.actions.up)     yDelta++;
-      if(this.actions.down)   yDelta--;
-
-      var angleRad = Math.atan2(xDelta,yDelta);
-
-      if(xDelta != 0 || yDelta != 0) {
-        var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
-        var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
-        this.force(xForce, yForce);
-      }
-
-      var spinSpeed = .2;
-      var spinVelocity = spinSpeed / game.physicsSamplingRatio;
-
-
-      var spinning = false;
-
-      this.currentAngle = this.physics.angle * 180/Math.PI;
-
-      if(this.actions.spin > .1) {
-        this.spin(spinVelocity);
-        spinning = true;
-      } else if (this.actions.spin < -.1) {
-        this.spin(-spinVelocity);
-        spinning = true;
-      }
-
-      if(this.actions.spinClockwise){
-        this.spin(spinVelocity);
-        spinning = true;
-      }
-
-      if(this.actions.spinCounterClockwise){
-        this.spin(-spinVelocity);
-        spinning = true;
-      }
-
-      if(spinning == true) {
-        this.targetAngleSet = false;
-      }
-
-      if(spinning == false && this.targetAngleSet == false) {
-
-        var remainder = (this.physics.angle * 180/Math.PI) % 90;
-
-        if(this.physics.angularVelocity >= 0) {
-          this.targetAngle = Math.ceil(this.physics.angle * 180/Math.PI / 90) * 90;
-          // if(Math.abs(remainder) < 30) {
-          //   this.targetAngle = this.targetAngle - 90;
-          // }
-        } else {
-          this.targetAngle = Math.floor(this.physics.angle * 180/Math.PI / 90) * 90;
-          // if(Math.abs(remainder) < 30) {
-          //   this.targetAngle = this.targetAngle + 90;
-          // }
-        }
-        this.targetAngleSet = true;
-      }
-
-      var delta = this.currentAngle - this.targetAngle;
-
-      var maxVel = 3;
-      var applyVel = -maxVel * delta/45;
-
-      if(applyVel > maxVel) {
-        applyVel = maxVel;
-      }
-
-
-      if(spinning == false && this.type == "player") {
-
-        if(delta < 0) {
-          this.physics.torque = applyVel;
-        }
-        if(delta > 0) {
-          this.physics.torque = applyVel;
-        }
-
-        if(delta > -2 && delta < 2 && delta != 0) {
-          if(this.physics.angularSpeed < .02) {
-            Matter.Body.setAngle(this.physics, this.targetAngle * Math.PI / 180);
-            Matter.Body.setAngularVelocity(this.physics, 0);
-          }
+        for (let key in this.actions) {
+          this.actions[key] = 0;
         }
       }
 
-
-      // Analog movement
-      var xDelta = this.actions.moveX,
-          yDelta = this.actions.moveY;
-
-      // If we are close to the edge, push it to max
-      if(xDelta > .9)  { xDelta = 1  }
-      if(xDelta < -.9) { xDelta = -1 }
-      if(yDelta > .9)  { yDelta = 1  }
-      if(yDelta < -.9) { yDelta = -1 }
-
-      var angleRad = Math.atan2(xDelta,yDelta);
-
-      // Here we limit the total force that can be applied to the paddle
-      var totalPowerRatio = Math.sqrt(Math.pow(Math.abs(xDelta),2) + Math.pow(Math.abs(yDelta),2)) || 1;
-      if(totalPowerRatio > 1) {
-        totalPowerRatio = 1;
-      }
-
-      var newForce = totalPowerRatio * maxForce;
-
-      if(xDelta != 0 || yDelta != 0) {
-        var xForce = Math.sin(angleRad) * newForce * game.physicsSamplingRatio * this.movementRatio;
-        var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio * this.movementRatio;
-        this.force(xForce, yForce);
-      }
-
-      // Movement bounds - keep the paddle in its zone
-
-      var forceModifier = 1.25 * game.physicsSamplingRatio;
-
-      if(this.physics.position.x > this.maxX && this.maxX) {
-        this.force(-maxForce * forceModifier, 0);
-      }
-
-      if(this.physics.position.x < this.minX && this.minX) {
-        this.force(maxForce * forceModifier, 0);
-      }
+      inputDriverComponents.moveXY(this);
+      inputDriverComponents.stagedSpin(this);
+      inputDriverComponents.continuousSpin(this);
+      inputDriverComponents.limitXY(this);
     }
   });
 }
