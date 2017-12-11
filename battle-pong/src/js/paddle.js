@@ -15,7 +15,7 @@ const HALF_PI = Math.PI / 2;
 const QUARTER_PI = Math.PI / 4;
 const spinSpeed = .2;
 const spinVelocity = spinSpeed / game.physicsSamplingRatio;
-const maxSpinVelocity = 0.05235987755982988; // From 3 / 180 * Math.PI
+const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
 const angularSpeedThreshold = .02;
 const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
 
@@ -41,7 +41,6 @@ const inputDriverComponents = {
     }
   },
   stagedSpin: function (paddle) {
-    let spinning = false;
     let currentAngle = paddle.physics.angle;
     let spinDirection = 0;
 
@@ -67,11 +66,11 @@ const inputDriverComponents = {
     }
 
     let delta = (currentAngle - paddle.targetAngle);
-    let applyVel = -maxSpinVelocity * delta/(QUARTER_PI);
+    let applyVel = -maxSpinVelocity * delta;
 
     applyVel = Math.min(applyVel, maxSpinVelocity);
 
-    if(spinning == false && paddle.type == "player") {
+    if(paddle.type == "player") {
       if(delta !== 0) {
         paddle.physics.torque = applyVel;
 
@@ -94,6 +93,9 @@ const inputDriverComponents = {
     //   Matter.Body.setAngle(paddle.physics, newAngle);
     //   Matter.Body.setAngularVelocity(paddle.physics, 0);
     // }
+  },
+  snapSpin: function (paddle) {
+
   },
   limitXY: function (paddle) {
     // Analog movement
@@ -411,6 +413,7 @@ function createPaddle(options) {
       inputDriverComponents.moveXY(this);
       inputDriverComponents.stagedSpin(this);
       inputDriverComponents.continuousSpin(this);
+      inputDriverComponents.snapSpin(this);
       inputDriverComponents.limitXY(this);
     }
   });
