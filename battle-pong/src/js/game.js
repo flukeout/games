@@ -224,7 +224,7 @@ var game =  {
     var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
 
     if(game.mode != "off") {
-      // tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
+      tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
     }
 
     // Iterate over all of the objects are are updating on screen
@@ -550,20 +550,8 @@ var game =  {
 
   // Updates the score display in the corners of the game
   updateScoreDisplay: function(){
-    var scoreEls = document.querySelectorAll(".score");
-
-    for(var i = 1; i < 3; i++) {
-      var scoreEl = scoreEls[i-1];
-      scoreEl.innerHTML = "";
-      var playerScore = this.score["player" + i];
-      for(var j = 0; j < this.score.max; j++) {
-        if(j < this.score["player" + i]) {
-          scoreEl.innerHTML = scoreEl.innerHTML + " <span class='scored'>&middot;</span>";
-        } else {
-          scoreEl.innerHTML = scoreEl.innerHTML + " <span>&middot;</span>";
-        }
-      }
-    }
+    document.querySelector(".player-1-score").innerText =this.score["player1"];
+    document.querySelector(".player-2-score").innerText =this.score["player2"];
   },
 
 
@@ -590,7 +578,6 @@ var game =  {
             p.minX = this.boardWidth - (this.boardWidth * .25);
           }
         }
-
     }
 
     var leftWidth = Math.floor(this.boardWidth * this.terrainLinePercent/100);
@@ -598,6 +585,12 @@ var game =  {
 
     this.terrainOneEl.style.width = leftWidth + "px";
     this.terrainTwoEl.style.width = rightWidth + "px";
+
+    var maxRotation = 2; // Max rotation of the angle when someone is winning
+    var overlayOpacity = this.terrainLinePercent / 100;
+
+    // var planetRotation = -delta / 50 * maxRotation;
+    document.querySelector(".surface .overlay").style.opacity = 1 - overlayOpacity;
   },
 
 
@@ -881,7 +874,7 @@ function setupRenderer(worldSelector){
 
   Matter.Resolver._restingThresh = 0.1;
 
-  //Render.run(render); // TODO - since this is for debugging only, we should make it a flag
+  // Render.run(render); // TODO - since this is for debugging only, we should make it a flag
 }
 
 var Engine = Matter.Engine,
