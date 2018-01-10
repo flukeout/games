@@ -1,6 +1,6 @@
 const paddleKeyboardActions = [
   // Discrete on/off buttons
-  'up','left','down','right','spinClockwise','spinCounterClockwise',
+  'up','left','down','right','spinClockwise','spinCounterClockwise', 'dash'
 ];
 
 const paddleGamepadActions = [
@@ -40,6 +40,52 @@ const inputDriverComponents = {
       var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
       var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
       paddle.force(xForce, yForce);
+    }
+  },
+  dash: function (paddle) {
+    // We want to calculate a movement angle based on
+    // the directional inputs.
+    var xDelta = 0,
+        yDelta = 0;
+
+    if(paddle.actions.left)   xDelta--;
+    if(paddle.actions.right)  xDelta++;
+
+    if(paddle.actions.up)     yDelta++;
+    if(paddle.actions.down)   yDelta--;
+
+    var angleRad = Math.atan2(xDelta,yDelta);
+
+    if(xDelta != 0 || yDelta != 0) {
+      var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
+      var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
+
+      if(paddle.actions.dash && paddle.dashDelay == 0){
+        paddle.dashDelay = 750;
+        xForce = xForce * 20;
+        yForce = yForce * 20;
+        paddle.force(xForce, yForce);
+      }
+
+      if(paddle.dashDelay == 0) {
+        paddle.force(xForce, yForce);
+        paddle.physics.frictionAir = 0.1 / game.physicsSamplingRatio;
+      }
+    }
+
+    if(paddle.dashDelay > 0 && paddle.frameTicks % 1 == 0 && paddle.physics.speed > 1) {
+      var options = {
+        x : paddle.physics.position.x - 10,
+        y : paddle.physics.position.y - 50,
+        width : 20,
+        height: 100,
+        zR : paddle.currentAngle,
+        // oV: -.02,
+        // scaleV: -.02,
+        className : 'paddleTrail',
+        lifespan: 20
+      }
+      makeParticle(options);
     }
   },
   stagedSpin: function (paddle) {
@@ -371,8 +417,18 @@ function createPaddle(options) {
       // });
     },
 
+
+    dashDelay : 0,
     // This gets called every frame of the game
+    frameTicks: 0,
     update(delta){
+
+      this.frameTicks++;
+
+      this.dashDelay = this.dashDelay - delta;
+      if(this.dashDelay < 0) {
+        this.dashDelay = 0;
+      }
 
       if(this.lifeSpan != "infinite") {
         this.lifeSpan = this.lifeSpan - delta;
@@ -443,6 +499,9 @@ function createPaddle(options) {
       default: function(paddle) {
         // Move
         inputDriverComponents.moveXY(paddle);
+        
+        // Dash
+        inputDriverComponents.dash(paddle);
 
         // See if we're going to be snapping *next* frame
         inputDriverComponents.snapBackSpinCheck(paddle);

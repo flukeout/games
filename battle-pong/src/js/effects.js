@@ -16,8 +16,6 @@ function makeStars() {
   }
 }
 
-
-
 function mineExplosion(xposition, yposition, size){
 
 
