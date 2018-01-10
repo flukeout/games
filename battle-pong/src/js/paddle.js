@@ -18,6 +18,8 @@ const spinVelocity = spinSpeed / game.physicsSamplingRatio;
 const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
 const angularSpeedThreshold = .02;
 const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
+const maxSnapSpinSpeedBoost = 3;
+const snapSpinSpeedBoostReductionFactor = 0.25;
 
 const inputDriverComponents = {
   moveXY: function (paddle) {
@@ -41,61 +43,61 @@ const inputDriverComponents = {
     }
   },
   stagedSpin: function (paddle) {
-    let currentAngle = paddle.physics.angle;
+    if (paddle.spinLockAngle !== false) return;
+
     let spinDirection = 0;
 
-    if (paddle.actions.spin > .1)             spinDirection =  1;
-    if (paddle.actions.spin < -.1)            spinDirection = -1;
+    // See if there was any actionable input
     if (paddle.actions.spinClockwise)         spinDirection =  1;
     if (paddle.actions.spinCounterClockwise)  spinDirection = -1;
 
+    // If there was...
     if (spinDirection !== 0) {
-      paddle.spin(spinDirection * spinVelocity);
-      paddle.targetAngleSet = false;
-    }
 
-    if(paddle.targetAngleSet == false) {
-      let remainder = (paddle.physics.angle % HALF_PI);
+      // Set the angular velocity of the paddle
+      let angularVelocity = spinDirection * spinVelocity;
+      paddle.spin(angularVelocity);
 
-      if(paddle.physics.angularVelocity >= 0) {
+      if(angularVelocity >= 0) {
+        // If there is enough velocity to jump to the next 90° (half PI)...
         paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);
       } else {
+        // And if not, settle back to the original state
         paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
       }
-      paddle.targetAngleSet = true;
-    }
-
-    let delta = (currentAngle - paddle.targetAngle);
-    let applyVel = -maxSpinVelocity * delta;
-
-    applyVel = Math.min(applyVel, maxSpinVelocity);
-
-    if(paddle.type == "player") {
-      if(delta !== 0) {
-        paddle.physics.torque = applyVel;
-
-        if(delta > -spinDeltaThreshold && delta < spinDeltaThreshold) {
-          if(paddle.physics.angularSpeed < angularSpeedThreshold) {
-            Matter.Body.setAngle(paddle.physics, paddle.targetAngle);
-            Matter.Body.setAngularVelocity(paddle.physics, 0);
-          }
-        }
-      }
     }
   },
-  continuousSpin: function (paddle) {
-    // if (paddle.actions.spinX !== 0 && paddleActions.spinY !== 0) {
-    //   let angleFromInput = Math.atan2(-paddle.actions.spinX, paddle.actions.spinY);
-    //   let oldAngle = paddle.physics.angle;
-    //   let difference = oldAngle - angleFromInput;
-    //   let newAngle = oldAngle - difference * 0.15;
-
-    //   Matter.Body.setAngle(paddle.physics, newAngle);
-    //   Matter.Body.setAngularVelocity(paddle.physics, 0);
-    // }
+  snapBackSpinCheck: function (paddle) {
+    // Only activate this if there's a real desire to do so :)
+    if (Math.abs(paddle.actions.spinX) > 0.2) {
+      paddle.inputDriverUpdateRoute = 'snapBack';
+    }
   },
-  snapSpin: function (paddle) {
+  snapBackSpin: function (paddle) {
+    // If this feature isn't already happening, start it by remembering the last known angle
+    if (paddle.spinLockAngle === false) {
 
+      // Save the angle the paddle should snap back to
+      paddle.spinLockAngle = paddle.targetAngle;
+    }
+
+    // Set the target angle to 90° (half PI) forward or backward, waiting for the user to let go...
+    paddle.targetAngle = paddle.spinLockAngle + paddle.actions.spinX * HALF_PI;
+
+    // If the user has let go...
+    if (Math.abs(paddle.actions.spinX) < 0.2) {
+      // Roll back to the original angle
+      paddle.targetAngle = paddle.spinLockAngle;
+
+      // Telle everything else that we're not in this state anymore
+      paddle.spinLockAngle = false;
+
+      // Boost the angular speed temporarily
+      paddle.snapSpinSpeedBoost = maxSnapSpinSpeedBoost;
+
+      // Avoid calling this function by switching back to original input driver stream
+      paddle.inputDriverUpdateRoute = 'default';
+    }
   },
   limitXY: function (paddle) {
     // Analog movement
@@ -134,21 +136,39 @@ const inputDriverComponents = {
     if(paddle.physics.position.x < paddle.minX && paddle.minX) {
       paddle.force(maxForce * forceModifier, 0);
     }
+  },
+  spinToTarget: function (paddle) {
+    let currentAngle = paddle.physics.angle;
+    let delta = (currentAngle - paddle.targetAngle);
+    let torque = -maxSpinVelocity * delta;
+
+    torque = Math.min(torque, maxSpinVelocity) * paddle.snapSpinSpeedBoost;
+
+    if (paddle.spinLockAngle === false)
+      paddle.snapSpinSpeedBoost -= (paddle.snapSpinSpeedBoost - 1) * snapSpinSpeedBoostReductionFactor;
+
+    if(paddle.type == "player") {
+      if(delta !== 0) {
+        paddle.physics.torque = torque;
+
+        if(delta > -spinDeltaThreshold && delta < spinDeltaThreshold) {
+          if(paddle.physics.angularSpeed < angularSpeedThreshold) {
+            Matter.Body.setAngle(paddle.physics, paddle.targetAngle);
+            Matter.Body.setAngularVelocity(paddle.physics, 0);
+          }
+        }
+      }
+    }
   }
 };
 
 function createPaddle(options) {
-
-  // debugger
-  console.log(options);
-
   var options = options || {};
 
   return createObject({
     selector: options.selector,
     player: options.player,
     targetAngle : 0,
-    targetAngleSet : true,
     lifeSpan : options.lifeSpan || "infinite",
 
     movementRatio: options.movementRatio || 1,
@@ -197,6 +217,10 @@ function createPaddle(options) {
     swishTimeoutMS : 260, // Delay between playing the swish sound
     actions: paddleActions.concat(paddleGamepadActions),
 
+    // Regulates whether or not we should try to spin back to targetAngle
+    spinLockAngle: false,
+    snapSpinSpeedBoost: 1,
+
     force: function (x, y) {
       Matter.Body.applyForce(this.physics, this.physics.position, { x: x * this.movementRatio, y: y * this.movementRatio});
     },
@@ -236,7 +260,6 @@ function createPaddle(options) {
 
     // When we have to grow or shrink a paddle after getting a powerup
     changeHeight(type){
-
       var modifier = .05;
 
       if(type == "shrink"){
@@ -259,7 +282,6 @@ function createPaddle(options) {
     spinPowerupRemaining : 0,
     spinPowerupCountdown: false,
     spinPowerupTime : 5500,
-
 
     // When we get a powerup
     powerup(type){
@@ -410,12 +432,41 @@ function createPaddle(options) {
         }
       }
 
-      inputDriverComponents.moveXY(this);
-      inputDriverComponents.stagedSpin(this);
-      inputDriverComponents.continuousSpin(this);
-      inputDriverComponents.snapSpin(this);
-      inputDriverComponents.limitXY(this);
-    }
+      // Run whichever driver route is currently assigned
+      this.inputDriverUpdateRoutes[this.inputDriverUpdateRoute](this);
+    },
+    
+    // These routes let you programmatically insert or omit stages that govern the movement
+    // of the paddle. By switching between them, you can cleanly decide which features
+    // are available for paddle movement at any one time.
+    inputDriverUpdateRoutes: {
+      default: function(paddle) {
+        // Move
+        inputDriverComponents.moveXY(paddle);
+
+        // See if we're going to be snapping *next* frame
+        inputDriverComponents.snapBackSpinCheck(paddle);
+
+        // Spin the paddle 90 degrees
+        inputDriverComponents.stagedSpin(paddle);
+
+        // Make sure the paddle stays in bounds
+        inputDriverComponents.limitXY(paddle);
+
+        // Resolve the paddle's rotation to the specified targetAngle
+        inputDriverComponents.spinToTarget(paddle);
+      },
+      snapBack: function (paddle) {
+        inputDriverComponents.moveXY(paddle);
+
+        // Listen to gamepad for amount of winding up to do, and prepare to unleash fury!
+        inputDriverComponents.snapBackSpin(paddle);
+
+        inputDriverComponents.limitXY(paddle);
+        inputDriverComponents.spinToTarget(paddle);
+      }
+    },
+    inputDriverUpdateRoute: 'default'
   });
 }
 
