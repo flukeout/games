@@ -225,6 +225,21 @@ var game =  {
 
     if(game.mode != "off") {
       tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
+      var xTilt = rotateXDeg - 20;
+      var xTiltRatio = (rotateXDeg - 20) / 4;
+
+      var yTilt = rotateYDeg;
+      var yTiltRatio = -rotateYDeg / 4;
+      var opacity = ((yTiltRatio + xTiltRatio) / 2 );
+      document.querySelector(".shiny-corner-left").style.opacity = opacity * .75;
+
+      var yTilt = rotateYDeg;
+      var yTiltRatio = rotateYDeg / 4;
+      var opacity = ((yTiltRatio + xTiltRatio) / 2 );
+
+      document.querySelector(".shiny-corner-right").style.opacity = opacity * .75;
+
+
     }
 
     // Iterate over all of the objects are are updating on screen
@@ -598,9 +613,9 @@ var game =  {
     this.terrainOneEl.style.width = leftWidth + "px";
     this.terrainTwoEl.style.width = rightWidth + "px";
 
-    var maxRotation = 4.5;
+    var maxRotation = 2; // Max rotation of the angle when someone is winning
     var delta = 50 - this.terrainLinePercent;
-    var planetRotation = -delta / 50 * 4.5;
+    var planetRotation = -delta / 50 * maxRotation;
     document.querySelector(".surface").style.transform = "rotate(" + planetRotation + "deg)";
   },
 
@@ -885,7 +900,7 @@ function setupRenderer(worldSelector){
 
   Matter.Resolver._restingThresh = 0.1;
 
-  //Render.run(render); // TODO - since this is for debugging only, we should make it a flag
+  // Render.run(render); // TODO - since this is for debugging only, we should make it a flag
 }
 
 var Engine = Matter.Engine,

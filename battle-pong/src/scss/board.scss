@@ -6,12 +6,13 @@
   left: 0;
 
   .sky {
-    background-image: url(assets/images/sky.svg);
+    //  background-image: url(assets/images/sky.svg);
+    background-image: url(assets/images/sky-dual.svg);
     background-position: bottom;
-    background-repeat: repeat;
+    background-repeat: no-repeat;
     background-size: 100%;
-    width: 200vw;
-    height: 50vh;
+    width: 100vw;
+    height: 48vh;
     position: absolute;
     top: 0;
   }
@@ -31,6 +32,7 @@
 
   .surface {
     background-image: url(assets/images/surface.svg);
+    background-image: url(assets/images/moon-neutral.png);
     background-position: top;
     background-repeat: no-repeat;
     background-size: 100%;
@@ -67,10 +69,9 @@
     background-size: contain;
     animation: largeMoon 10s ease-in-out infinite;
 
-
     @keyframes largeMoon {
       50% {
-        transform: translateY(-10px);
+        transform: translateY(-10px) rotateZ(-5deg);
       }
     }
   }
@@ -78,17 +79,17 @@
     position: absolute;
     width: 500px;
     height: 500px;
-    right: 50px;
-    top: -90px;
+    right: -50px;
+    top: 45px;
     background-image: url(assets/images/green-moon.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
-    animation: largeMoon 5s ease-in-out infinite;
+    animation: largerMoon 5s ease-in-out infinite;
 
-    @keyframes largeMoon {
+    @keyframes largerMoon {
       50% {
-        transform: translateY(-20px);
+        transform: translateY(-30px) rotateZ(3deg);
       }
     }
   }
@@ -191,10 +192,35 @@
   -moz-transform-style: preserve-3d;
 }
 
+.shiny-corner-left {
+  background-image: url(assets/images/board-corner-left.svg);
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-size: 250px;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 400px;
+  height: 200px;
+  transform-origin: top left;
+}
 
+.shiny-corner-right {
+  background-image: url(assets/images/board-corner-right.svg);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: 250px;
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 400px;
+  height: 200px;
+  transform-origin: top right;
+
+}
 
 .winner-screen .world {
-  border: solid 20px rgba(255,255,255,.2);
+  border: solid 20px rgba(255,255,255,1);
 }
 
 .terrain {
@@ -225,11 +251,14 @@
 .terrain.one {
   left: 0;
   background-color: #ac4d9d;
+  background-image: url(assets/images/board-corner-left.svg);
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-size: 350px;
 }
 
 .winner-one {
   background: #ac4d9d;
-
 }
 
 .red-chunk {
@@ -240,6 +269,11 @@
 .terrain.two {
   background-color: #3faa7f;
   right: 0;
+  background-image: url(assets/images/board-corner-right.svg);
+  background-position: top right;
+  background-repeat: no-repeat;
+  background-size: 350px;
+
 }
 
 .winner-two {

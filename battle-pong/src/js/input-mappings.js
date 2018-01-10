@@ -62,7 +62,8 @@ var keyboardInputLabelToActionMappings = [
     "KeyA": "left",
     "KeyD": "right",
     "KeyC": "spinCounterClockwise",
-    "KeyV": "spinClockwise"
+    "KeyV": "spinClockwise",
+    "KeyB": "dash"
   },
   {
     "ArrowUp":    "up",

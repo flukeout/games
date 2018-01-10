@@ -1,6 +1,6 @@
 var paddleKeyboardActions = [
   // Discrete on/off buttons
-  'up','left','down','right','spinClockwise','spinCounterClockwise',
+  'up','left','down','right','spinClockwise','spinCounterClockwise', 'dash'
 ];
 
 var paddleGamepadActions = [
@@ -225,8 +225,18 @@ function createPaddle(options) {
       // });
     },
 
+
+    dashDelay : 0,
     // This gets called every frame of the game
+    frameTicks: 0,
     update(delta){
+
+      this.frameTicks++;
+
+      this.dashDelay = this.dashDelay - delta;
+      if(this.dashDelay < 0) {
+        this.dashDelay = 0;
+      }
 
       if(this.lifeSpan != "infinite") {
         this.lifeSpan = this.lifeSpan - delta;
@@ -306,7 +316,33 @@ function createPaddle(options) {
       if(xDelta != 0 || yDelta != 0) {
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
-        this.force(xForce, yForce);
+
+        if(this.actions.dash && this.dashDelay == 0){
+          this.dashDelay = 750;
+          xForce = xForce * 20;
+          yForce = yForce * 20;
+          this.force(xForce, yForce);
+        }
+
+        if(this.dashDelay == 0) {
+          this.force(xForce, yForce);
+          this.physics.frictionAir = 0.1 / game.physicsSamplingRatio;
+        }
+      }
+
+      if(this.dashDelay > 0 && this.frameTicks % 1 == 0 && this.physics.speed > 1) {
+        var options = {
+          x : this.physics.position.x - 10,
+          y : this.physics.position.y - 50,
+          width : 20,
+          height: 100,
+          zR : this.currentAngle,
+          // oV: -.02,
+          // scaleV: -.02,
+          className : 'paddleTrail',
+          lifespan: 20
+        }
+        makeParticle(options);
       }
 
       var spinSpeed = .2;
@@ -329,6 +365,8 @@ function createPaddle(options) {
         this.spin(spinVelocity);
         spinning = true;
       }
+
+
 
       if(this.actions.spinCounterClockwise){
         this.spin(-spinVelocity);
