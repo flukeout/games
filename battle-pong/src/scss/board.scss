@@ -7,7 +7,7 @@
 
   .sky {
     //  background-image: url(assets/images/sky.svg);
-    background-image: url(assets/images/sky-dual.svg);
+//    background-image: url(assets/images/sky-dual.svg);
     background-position: bottom;
     background-repeat: no-repeat;
     background-size: 100%;
@@ -31,18 +31,37 @@
   }
 
   .surface {
-    background-image: url(assets/images/surface.svg);
-    background-image: url(assets/images/moon-neutral.png);
+    background-image: url(assets/images/surface-purple.svg);
     background-position: top;
     background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: 70%;
     width: 230vw;
     height: 150vh;
     position: absolute;
     top: 30vh;
     left: -65vw;
     transform-origin: 50% 800%;
-    transition: transform 10s ease-out;
+    animation: surfaceHover 10s ease-in-out;
+
+    .overlay {
+      width: 100%;
+      height: 100%;
+      background-image: url(assets/images/surface-green.svg);
+      background-position: top;
+      background-repeat: no-repeat;
+      background-size: 70%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      transition: opacity .2s ease-out;
+    }
+
+    @keyframes surfaceHover {
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
 
     @keyframes rotateSurface {
       0% {
@@ -59,19 +78,21 @@
 
   .small-moon {
     position: absolute;
-    width: 140px;
-    height: 140px;
-    left: 30px;
-    top: 50px;
+    width: 200px;
+    height: 100px;
+    left: 0px;
+    top: 20px;
     background-image: url(assets/images/small-moon.svg);
+    background-image: url(assets/images/score.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    animation: largeMoon 10s ease-in-out infinite;
+    animation: smallMoon 6.5s ease-out infinite;
 
-    @keyframes largeMoon {
+
+    @keyframes smallMoon {
       50% {
-        transform: translateY(-10px) rotateZ(-5deg);
+        transform: translateY(-10px) rotateZ(2deg);
       }
     }
   }
@@ -107,12 +128,10 @@
     background-image: url(assets/images/board-shadow.svg);
     background-size: 100%;
     background-position: bottom;
-//    transform-style: preserve-3d;
-//background: black;
+    //  transform-style: preserve-3d;
+    //  background: black;
 
     transform: rotateX(20deg) rotateY(0deg);
-
-
 }
 
 
@@ -125,6 +144,23 @@
   width: 100%;
   height: 100%;
 }
+
+.score-screen {
+  color: white;
+  position: absolute;
+  font-size: 45px;
+  width: 110px;
+  left: 55px;
+  top: 22px;
+  text-align: center;
+  transform: rotateZ(-10deg) skew(-5deg);
+
+  .colon {
+    transform: translateY(-4px);
+    display: inline-block;
+  }
+}
+
 
 .scoreboard {
   font-size: 50px;
@@ -192,36 +228,14 @@
   -moz-transform-style: preserve-3d;
 }
 
-.shiny-corner-left {
-  background-image: url(assets/images/board-corner-left.svg);
-  background-position: top left;
-  background-repeat: no-repeat;
-  background-size: 250px;
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  width: 400px;
-  height: 200px;
-  transform-origin: top left;
+.winner-screen.winner-one .world {
+  border: solid 20px #bd71b0;
 }
 
-.shiny-corner-right {
-  background-image: url(assets/images/board-corner-right.svg);
-  background-position: top right;
-  background-repeat: no-repeat;
-  background-size: 250px;
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 400px;
-  height: 200px;
-  transform-origin: top right;
-
+.winner-screen.winner-two .world {
+  border: solid 20px #66bb98;
 }
 
-.winner-screen .world {
-  border: solid 20px rgba(255,255,255,1);
-}
 
 .terrain {
   position: absolute;
