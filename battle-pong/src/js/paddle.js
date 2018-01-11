@@ -60,7 +60,7 @@ const inputDriverComponents = {
       paddle.element.classList.add("tired");
     }
 
-    if(paddle.dashDelay > 0 && paddle.frameTicks % 3 == 0 && paddle.physics.speed > 1) {
+    if(paddle.dashDelay > 0 && paddle.frameTicks % 3 == 0 && paddle.physics.speed > 0) {
       let options = {
         x : paddle.physics.position.x - 10,
         y : paddle.physics.position.y - (paddle.height / 2),
@@ -548,6 +548,7 @@ function createPaddle(options) {
       dashing: function (paddle) {
         inputDriverComponents.dashing(paddle);
         inputDriverComponents.spinToTarget(paddle);
+        inputDriverComponents.limitXY(paddle);
       }
     },
     inputDriverUpdateRoute: 'default'
