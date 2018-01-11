@@ -55,15 +55,13 @@ var game =  {
     this.terrainOneEl = document.querySelector(".terrain.one");
     this.terrainTwoEl = document.querySelector(".terrain.two");
 
-    var that = this;
-
     // Event listener for ball hitting an Endzone
-    document.addEventListener("ballHitEndzone", function(e) {
+    document.addEventListener("ballHitEndzone", e => {
       var scoringPlayer = 1;
       if(e.detail.side == "left") {
         scoringPlayer = 2;
       }
-      that.playerScored(scoringPlayer, e.detail.ball);
+      this.playerScored(scoringPlayer, e.detail.ball);
     });
 
   },
@@ -81,24 +79,20 @@ var game =  {
       removalList.push(ball);
     }, 1500);
 
-    var that = this;
-
-    setTimeout(function(){
-      that.restart();
+    setTimeout(() => {
+      this.restart();
     }, 2500);
   },
 
   loserDied: function(){
     removalList.push(ball);
 
-    var that = this;
-
-    setTimeout(function(){
-      that.showMessage("YOU MONSTER", 1750);
+    setTimeout(() => {
+      this.showMessage("YOU MONSTER", 1750);
     }, 1000);
 
-    setTimeout(function(){
-      that.restart()
+    setTimeout(() => {
+      this.restart();
     }, 3000);
   },
 
