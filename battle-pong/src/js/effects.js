@@ -295,7 +295,7 @@ function fireGun(x, y, angle, player){
   addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
   shakeScreen();
 
-  playSound("thwap");
+  playRandomSoundFromSoundBank("super-hard-shot");
 
   document.dispatchEvent(new CustomEvent("emotion", {detail: {
     player: player,
