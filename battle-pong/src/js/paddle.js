@@ -60,7 +60,7 @@ const inputDriverComponents = {
       paddle.element.classList.add("tired");
     }
 
-    if(paddle.dashDelay > 0 && paddle.frameTicks % 1 == 0 && paddle.physics.speed > 1) {
+    if(paddle.dashDelay > 0 && paddle.frameTicks % 3 == 0 && paddle.physics.speed > 1) {
       let options = {
         x : paddle.physics.position.x - 10,
         y : paddle.physics.position.y - (paddle.height / 2),
@@ -69,6 +69,12 @@ const inputDriverComponents = {
         zR : paddle.physics.angle * 180 / Math.PI,
         className : 'paddleTrail',
         lifespan: 20
+      }
+
+      if(paddle.player == 0) {
+        options.color =  "#bf62b4";
+      } else {
+        options.color =  "#51bc8e";
       }
 
       makeParticle(options);
@@ -98,7 +104,7 @@ const inputDriverComponents = {
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
 
-        paddle.dashDelay = 1000;
+        paddle.dashDelay = 2000;
         xForce = xForce * 20;
         yForce = yForce * 20;
         paddle.force(xForce, yForce);
