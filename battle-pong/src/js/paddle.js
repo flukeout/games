@@ -535,6 +535,7 @@ function createPaddle(options) {
       },
       dashing: function (paddle) {
         inputDriverComponents.dashing(paddle);
+        inputDriverComponents.spinToTarget(paddle);
       }
     },
     inputDriverUpdateRoute: 'default'
