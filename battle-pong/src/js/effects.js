@@ -55,8 +55,7 @@ function mineExplosion(xposition, yposition, size){
 
   document.querySelector(".world").appendChild(particle.el);
 
-
-
+  temporaryLowPass();
 }
 
 
