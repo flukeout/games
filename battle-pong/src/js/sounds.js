@@ -61,9 +61,34 @@ var sounds = {
   "hit" : {
     url : "sounds/hit.mp3",
     volume : 1
+  },
+  "Power_Shot_V1" : {
+    url : "sounds/Power_Shot_V1.mp3",
+    volume : 1
+  },
+  "Power_Shot_V2" : {
+    url : "sounds/Power_Shot_V2.mp3",
+    volume : 1
+  },
+  "Power_Shot_V3" : {
+    url : "sounds/Power_Shot_V3.mp3",
+    volume : 1
+  },
+  "Power_Shot_V4" : {
+    url : "sounds/Power_Shot_V4.mp3",
+    volume : 1
   }
 };
 
+var soundBanks = {
+  "super-hard-shot": [
+    // "thwap",
+    "Power_Shot_V1",
+    "Power_Shot_V2",
+    "Power_Shot_V3",
+    "Power_Shot_V4"
+  ]
+};
 
 var soundContext = new AudioContext();
 
@@ -89,6 +114,17 @@ function loadSound(name){
   }
 
   request.send();
+}
+
+function playRandomSoundFromSoundBank(soundBankName) {
+  let soundBank = soundBanks[soundBankName];
+  if (soundBank) {
+    let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
+    playSound(sound);
+  }
+  else {
+    console.warn('No soundbank for soundbank name: ' + soundBankName);
+  }
 }
 
 function playSound(name, options){

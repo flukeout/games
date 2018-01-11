@@ -16,12 +16,13 @@ const QUARTER_PI = Math.PI / 4;
 const spinSpeed = .2;
 const spinVelocity = spinSpeed / game.physicsSamplingRatio;
 const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
+const maxAngularVelocity = .0905;
 const angularSpeedThreshold = .02;
 const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
 const maxSnapSpinSpeedBoost = 3;
 const snapSpinSpeedBoostReductionFactor = 0.25;
 
-const inputDriverComponents = {
+const updateFunctions = {
   moveXY: function (paddle) {
     // We want to calculate a movement angle based on
     // the directional inputs.
@@ -50,8 +51,8 @@ const inputDriverComponents = {
 
     if(paddle.dashDelay < 0) {
       paddle.dashDelay = 0;
-      paddle.inputDriverUpdateRoute = 'default';
       paddle.element.classList.remove("tired");
+      paddle.updateRoute = 'default';
       // Don't bother dashing anymore
       return;
     }
@@ -109,7 +110,7 @@ const inputDriverComponents = {
         yForce = yForce * 20;
         paddle.force(xForce, yForce);
 
-        paddle.inputDriverUpdateRoute = 'dashing';
+        paddle.updateRoute = 'dashing';
       }
     }
   },
@@ -141,7 +142,7 @@ const inputDriverComponents = {
   snapBackSpinCheck: function (paddle) {
     // Only activate this if there's a real desire to do so :)
     if (Math.abs(paddle.actions.spinX) > 0.2) {
-      paddle.inputDriverUpdateRoute = 'snapBack';
+      paddle.updateRoute = 'snapBack';
     }
   },
   snapBackSpin: function (paddle) {
@@ -167,7 +168,7 @@ const inputDriverComponents = {
       paddle.snapSpinSpeedBoost = maxSnapSpinSpeedBoost;
 
       // Avoid calling this function by switching back to original input driver stream
-      paddle.inputDriverUpdateRoute = 'default';
+      paddle.updateRoute = 'default';
     }
   },
   limitXY: function (paddle) {
@@ -228,6 +229,46 @@ const inputDriverComponents = {
             Matter.Body.setAngularVelocity(paddle.physics, 0);
           }
         }
+      }
+    }
+  },
+  capAngularVelocity: function (paddle) {
+    if(paddle.physics.angularVelocity > maxAngularVelocity) {
+      Matter.Body.setAngularVelocity(paddle.physics, maxAngularVelocity);
+    }
+    else if(paddle.physics.angularVelocity < -maxAngularVelocity) {
+      Matter.Body.setAngularVelocity(paddle.physics, -maxAngularVelocity);
+    }
+  },
+  spinPowerup: function (paddle) {
+    if(paddle.spinPowerupRemaining > 0) {
+      paddle.spinPowerupRemaining = paddle.spinPowerupRemaining - paddle.dt;
+    }
+
+    if(paddle.spinPowerupRemaining > 0) {
+      if(paddle.hasSpinPowerup == false) {
+        paddle.element.classList.add("powerup-spin");
+      }
+      paddle.hasSpinPowerup = true;
+    }
+
+    if(paddle.spinPowerupRemaining <= 0) {
+      paddle.spinPowerupRemaining = 0;
+      paddle.hasSpinPowerup = false;
+      paddle.spinPowerupCountdown = false;
+      paddle.element.classList.remove("powerup-spin");
+    }
+  },
+  expandPowerup: function (paddle) {
+    if(paddle.height < paddle.targetHeight) {
+      paddle.changeHeight("grow");
+      if(paddle.height > paddle.targetHeight) {
+        paddle.targetHeight = paddle.height;
+      }
+    } else if (paddle.height > paddle.targetHeight) {
+      paddle.changeHeight("shrink");
+      if(paddle.height < paddle.targetHeight) {
+        paddle.targetHeight = paddle.height;
       }
     }
   }
@@ -442,7 +483,6 @@ function createPaddle(options) {
       // });
     },
 
-
     dashDelay : 0,
     // This gets called every frame of the game
     frameTicks: 0,
@@ -460,46 +500,6 @@ function createPaddle(options) {
         }
       }
 
-      // TODO - remove hardcoded max speed
-      if(this.physics.angularVelocity > .0905) {
-        Matter.Body.setAngularVelocity(this.physics, .0905);
-      }
-      if(this.physics.angularVelocity < -.0905) {
-        Matter.Body.setAngularVelocity(this.physics, -.0905);
-      }
-
-      if(this.spinPowerupRemaining > 0) {
-        this.spinPowerupRemaining = this.spinPowerupRemaining - delta;
-      }
-
-      if(this.spinPowerupRemaining > 0) {
-        if(this.hasSpinPowerup == false) {
-          this.element.classList.add("powerup-spin");
-        }
-        this.hasSpinPowerup = true;
-      }
-
-      if(this.spinPowerupRemaining <= 0) {
-        this.spinPowerupRemaining = 0;
-        this.hasSpinPowerup = false;
-        this.spinPowerupCountdown = false;
-        this.element.classList.remove("powerup-spin");
-      }
-
-      // End spin stuff
-
-      if(this.height < this.targetHeight) {
-        this.changeHeight("grow");
-        if(this.height > this.targetHeight) {
-          this.targetHeight = this.height;
-        }
-      } else if (this.height > this.targetHeight) {
-        this.changeHeight("shrink");
-        if(this.height < this.targetHeight) {
-          this.targetHeight = this.height;
-        }
-      }
-
       if(this.mode != "ghost") {
         this.updateActionsFromInputComponents();
       } else {
@@ -510,48 +510,58 @@ function createPaddle(options) {
       }
 
       // Run whichever driver route is currently assigned
-      this.inputDriverUpdateRoutes[this.inputDriverUpdateRoute](this);
+      this.updateRoutes[this.updateRoute](this);
     },
 
     // These routes let you programmatically insert or omit stages that govern the movement
     // of the paddle. By switching between them, you can cleanly decide which features
     // are available for paddle movement at any one time.
-    inputDriverUpdateRoutes: {
+    updateRoutes: {
       default: function(paddle) {
-        // Move
-        inputDriverComponents.moveXY(paddle);
+        // Maintenance for powerups
+        updateFunctions.expandPowerup(paddle);
+        updateFunctions.spinPowerup(paddle);
+        updateFunctions.moveXY(paddle);
 
-        // Dash
-        inputDriverComponents.dashStart(paddle);
+        // See if we're about to start a dash
+        updateFunctions.dashStart(paddle);
 
         // See if we're going to be snapping *next* frame
-        inputDriverComponents.snapBackSpinCheck(paddle);
+        updateFunctions.snapBackSpinCheck(paddle);
 
         // Spin the paddle 90 degrees
-        inputDriverComponents.stagedSpin(paddle);
+        updateFunctions.stagedSpin(paddle);
 
         // Make sure the paddle stays in bounds
-        inputDriverComponents.limitXY(paddle);
+        updateFunctions.limitXY(paddle);
 
         // Resolve the paddle's rotation to the specified targetAngle
-        inputDriverComponents.spinToTarget(paddle);
+        updateFunctions.spinToTarget(paddle);
+
+        // Make sure the paddle's spin speed isn't insane
+        updateFunctions.capAngularVelocity(paddle);
       },
       snapBack: function (paddle) {
-        inputDriverComponents.moveXY(paddle);
+        updateFunctions.expandPowerup(paddle);
+        updateFunctions.spinPowerup(paddle);
+
+        updateFunctions.moveXY(paddle);
 
         // Listen to gamepad for amount of winding up to do, and prepare to unleash fury!
-        inputDriverComponents.snapBackSpin(paddle);
+        updateFunctions.snapBackSpin(paddle);
 
-        inputDriverComponents.limitXY(paddle);
-        inputDriverComponents.spinToTarget(paddle);
+        updateFunctions.limitXY(paddle);
+        updateFunctions.spinToTarget(paddle);
       },
       dashing: function (paddle) {
-        inputDriverComponents.dashing(paddle);
-        inputDriverComponents.spinToTarget(paddle);
-        inputDriverComponents.limitXY(paddle);
+        updateFunctions.expandPowerup(paddle);
+        updateFunctions.spinToTarget(paddle);
+        updateFunctions.limitXY(paddle);
+        updateFunctions.spinPowerup(paddle);
+        updateFunctions.dashing(paddle);
       }
     },
-    inputDriverUpdateRoute: 'default'
+    updateRoute: 'default'
   });
 }
 

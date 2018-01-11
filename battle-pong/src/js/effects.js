@@ -1,6 +1,4 @@
-setTimeout(function(){
-  makeStars();
-},100);
+document.addEventListener('DOMContentLoaded', makeStars);
 
 function makeStars() {
   var stars = document.querySelector(".stars svg");
@@ -297,7 +295,7 @@ function fireGun(x, y, angle, player){
   addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
   shakeScreen();
 
-  playSound("thwap");
+  playRandomSoundFromSoundBank("super-hard-shot");
 
   document.dispatchEvent(new CustomEvent("emotion", {detail: {
     player: player,
@@ -545,3 +543,9 @@ function makeTerrainChunks(terrainLine, modifier, className, boardWidth, boardHe
     makeParticle(options);
   }
 }
+
+document.addEventListener('DOMContentLoaded', e => {
+  if (Settings.showBackground === false) {
+    document.querySelector('.scene').style.display = 'none';
+  }
+});
