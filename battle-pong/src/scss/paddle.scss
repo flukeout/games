@@ -24,24 +24,9 @@
   width: 20px;
   height: 100px;
 
-//  &:after {
-//    content: "";
-//    width: 100px;
-//    height: 100px;
-//    position: absolute;
-//    top: 0;
-//    left: calc(50% - 50px);
-//    border-radius: 50;
-//    background-position: center;
-//    background-repeat: no-repeat;
-//    background-image: url(assets/images/swirls.svg);
-//    background-image: url(assets/images/paddle-spin.svg);
-//    background-size: contain;
-//  }
-
   .body {
     position: absolute;
-    transition: background .2s ease-out;
+    transition: background .15s ease-out;
     animation: paddleAppear .3s ease-out;
 
     -moz-animation: none;
@@ -107,6 +92,13 @@
 
   &.dead .body {
     background: rgba(255,255,255,0);
+  }
+
+
+  &.tired .body {
+    //  background: rgba(200,200,200,1);
+    background: #222;
+    display: block;
   }
 }
 

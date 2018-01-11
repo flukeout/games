@@ -51,12 +51,16 @@ const inputDriverComponents = {
     if(paddle.dashDelay < 0) {
       paddle.dashDelay = 0;
       paddle.inputDriverUpdateRoute = 'default';
+      paddle.element.classList.remove("tired");
       // Don't bother dashing anymore
       return;
     }
 
-    if(paddle.dashDelay > 0 && paddle.frameTicks % 1 == 0 && paddle.physics.speed > 1) {
+    if(paddle.dashDelay > 0) {
+      paddle.element.classList.add("tired");
+    }
 
+    if(paddle.dashDelay > 0 && paddle.frameTicks % 1 == 0 && paddle.physics.speed > 1) {
       let options = {
         x : paddle.physics.position.x - 10,
         y : paddle.physics.position.y - (paddle.height / 2),
@@ -71,9 +75,8 @@ const inputDriverComponents = {
     }
   },
   dashStart: function (paddle) {
-    if(paddle.actions.dash) {
 
-      playSound("dash");
+    if(paddle.actions.dash && paddle.type == "player") {
 
       // We want to calculate a movement angle based on
       // the directional inputs.
@@ -89,10 +92,13 @@ const inputDriverComponents = {
       var angleRad = Math.atan2(xDelta,yDelta);
 
       if(xDelta != 0 || yDelta != 0) {
+
+        playSound("dash");
+
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
 
-        paddle.dashDelay = 750;
+        paddle.dashDelay = 1000;
         xForce = xForce * 20;
         yForce = yForce * 20;
         paddle.force(xForce, yForce);
