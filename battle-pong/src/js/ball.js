@@ -127,6 +127,11 @@ function createBall(options){
         // who knows?
       }
 
+      // Reduce ball rotation speed
+      if(this.physics.angularSpeed > 0) {
+        Matter.Body.setAngularVelocity(this.physics, this.physics.angularVelocity * .95 );
+      }
+
       // If it's going too fast, slow it down
       if(this.physics.speed > this.maxSpeed) {
         this.changeVelocityRatio(this.maxSpeedSlowdownRatio);

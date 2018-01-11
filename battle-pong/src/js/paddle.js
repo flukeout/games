@@ -42,7 +42,7 @@ const inputDriverComponents = {
       paddle.force(xForce, yForce);
 
       //TODO: see if this is needed elsewhere
-      paddle.physics.frictionAir = 0.1 / game.physicsSamplingRatio;  
+      paddle.physics.frictionAir = 0.1 / game.physicsSamplingRatio;
     }
   },
   dashing: function (paddle) {
@@ -51,20 +51,18 @@ const inputDriverComponents = {
     if(paddle.dashDelay < 0) {
       paddle.dashDelay = 0;
       paddle.inputDriverUpdateRoute = 'default';
-
       // Don't bother dashing anymore
       return;
     }
 
     if(paddle.dashDelay > 0 && paddle.frameTicks % 1 == 0 && paddle.physics.speed > 1) {
+
       let options = {
         x : paddle.physics.position.x - 10,
-        y : paddle.physics.position.y - 50,
+        y : paddle.physics.position.y - (paddle.height / 2),
         width : 20,
-        height: 100,
-        zR : paddle.currentAngle,
-        // oV: -.02,
-        // scaleV: -.02,
+        height: paddle.height,
+        zR : paddle.physics.angle * 180 / Math.PI,
         className : 'paddleTrail',
         lifespan: 20
       }
@@ -74,6 +72,8 @@ const inputDriverComponents = {
   },
   dashStart: function (paddle) {
     if(paddle.actions.dash) {
+
+      playSound("dash");
 
       // We want to calculate a movement angle based on
       // the directional inputs.
@@ -500,7 +500,7 @@ function createPaddle(options) {
       // Run whichever driver route is currently assigned
       this.inputDriverUpdateRoutes[this.inputDriverUpdateRoute](this);
     },
-    
+
     // These routes let you programmatically insert or omit stages that govern the movement
     // of the paddle. By switching between them, you can cleanly decide which features
     // are available for paddle movement at any one time.
@@ -508,7 +508,7 @@ function createPaddle(options) {
       default: function(paddle) {
         // Move
         inputDriverComponents.moveXY(paddle);
-        
+
         // Dash
         inputDriverComponents.dashStart(paddle);
 

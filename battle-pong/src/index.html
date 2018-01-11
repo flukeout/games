@@ -5,7 +5,7 @@
   <head>
     <title></title>
     <!-- <link href="https://fonts.googleapis.com/css?family=Teko" rel="stylesheet"> -->
-    <base href="src/">
+    
     <link rel="stylesheet" href="style.css"/>
     <!-- insert minified source here -->
     <script src="js/settings.js"></script>
@@ -33,26 +33,24 @@
   <body>
 
 
-    <div class="scene">
-      <div class="sky"></div>
-      <div class="stars">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"></svg>
-      </div>
+      <div class="scene">
+        <div class="sky"></div>
+        <div class="stars">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"></svg>
+        </div>
 
-      <div class="large-moon"></div>
-      <div class="surface">
-        <div class="overlay"></div>
+        <div class="small-moon">
+          <div class="score-screen">
+            <span class="player-1-score">3</span>
+            <span class="colon">:</span>
+            <span class="player-2-score">2</span>
+          </div>
+        </div>
+        <div class="large-moon"></div>
+        <div class="surface">
+          <div class="overlay"></div>
+        </div>
       </div>
-    </div>
-
-
-    <div class="score-satellite">
-      <div class="score-screen">
-        <span class="player-1-score">3</span>
-        <span class="colon">:</span>
-        <span class="player-2-score">2</span>
-      </div>
-    </div>
 
     <div class="flash team-1-flash"></div>
     <div class="flash team-2-flash"></div>

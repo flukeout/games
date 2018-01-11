@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max : window.Settings.playTo || 3,         // First to this number wins
+    max : window.Settings.playTo || 2,         // First to this number wins
     winner : false,  // Holds the winning paddle object
     loser : false    // Holds the losing paddle object
   },
@@ -513,6 +513,11 @@ var game =  {
 
   // Restarts a round
   restart : function(){
+    console.log("restart");
+
+    setTimeout(function(){
+      playSound("round-start");
+    }, 80)
 
     var that = this;
     var messageDelay = 0;
