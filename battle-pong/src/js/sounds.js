@@ -14,7 +14,7 @@ const temporaryLowPassQuality = 10;
 
 let limitedSoundTimeouts = {};
 let temporaryLowpassTimeout = null;
-let temporaryLowpassInterval = null;
+let temporaryLowpassComebackTimeout = null;
 
 var sounds = {
   "beep" : {
@@ -224,42 +224,26 @@ function playLimitedRandomSoundFromBank(soundBankName) {
 
 function temporaryLowPass() {
 
-  // Set up the initial effect
-  globalBiquadFilter.type = 'lowpass';
-  globalBiquadFilter.frequency.value = temporaryLowPassStartFrequency;
-  
   // If this effect is already happening, reset it (which effectively extends it)
   if (temporaryLowpassTimeout) {
     clearTimeout(temporaryLowpassTimeout);
-    clearInterval(temporaryLowpassInterval);
+    clearTimeout(temporaryLowpassComebackTimeout);
+    globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
   }
 
-  // Keep track of start/end times so that calculations are easy
-  let startTime = Date.now();
-  let comebackTime = Date.now() + temporaryLowPassDuration / 2;
-  let endTime = Date.now() + temporaryLowPassDuration;
-  let comebackDuration = endTime - comebackTime;
+    // Set up the initial effect
+  globalBiquadFilter.type = 'lowpass';
+  globalBiquadFilter.frequency.value = temporaryLowPassStartFrequency;
 
-  temporaryLowpassInterval = setInterval(() => {
-    var currentTime = Date.now();
-    var dt = currentTime - startTime;
-
-    // Wait until `comebackTime` has passed to start returning to normal
-    if (startTime + dt < comebackTime) return;
-
-    // See how far along the effect is between combackTime and endTime
-    var p = 1 - (dt - comebackDuration) / (comebackDuration);
-
-    // Change the frequency according to percentage computed above with the start/exit envelope defined by constants above
-    globalBiquadFilter.frequency.value = temporaryLowPassExitFrequency - (temporaryLowPassExitFrequency - temporaryLowPassStartFrequency) * p;
-  }, 10);
+  temporaryLowpassComebackTimeout = setTimeout(() => {
+    // Decrease the effect over time
+    globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassExitFrequency, soundContext.currentTime + (temporaryLowPassDuration / 2) / 1000);
+  }, temporaryLowPassDuration / 2);  
 
   // When the timeout happens, reset the biquadFilter
   temporaryLowpassTimeout = setTimeout(() => {
-    // Reset timers
-    clearInterval(temporaryLowpassInterval);    
+    // Reset timer
     temporaryLowpassTimeout = null;
-    temporaryLowpassInterval = null;
 
     // Reset the filter
     globalBiquadFilter.type = 'allpass';
