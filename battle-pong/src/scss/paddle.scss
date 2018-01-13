@@ -28,15 +28,10 @@
     position: absolute;
     transition: background .15s ease-out;
     animation: paddleAppear .3s ease-out;
-
     -moz-animation: none;
     background-color: white;
     width: 100%;
     height: 100%;
-
-    .bone {
-//      display: none;
-    }
   }
 
   &.skeleton .body {
@@ -95,9 +90,6 @@
   }
 
 
-  .body {
-//    z-index: 1;
-  }
 
     .dash-broad {
       display: none;
@@ -131,38 +123,44 @@
 //  transform-origin: bottom;
 //  left: -60px;
 //  animation: dashFade .5s ease-out;
-//}
+
 
     .dash-narrow {
-      background-image: url(assets/images/thrust.svg);
-      background-repeat: no-repeat;
-      background-position: top;
-      background-size: 55%;
+      //  background-image: url(assets/images/thrust.svg);
+      //  background-repeat: no-repeat;
+      //  background-position: top;
+      //  background-size: 55%;
       display: block;
+      background: black;
       position: absolute;
-      width: 140px;
-      height: 200px;
-//      background-color: blue;
-//      opacity: 0;
-      bottom: 50%;
-      transform-origin: bottom;
-      left: -60px;
-//      animation: dashFade .5s ease-out;
+      width: calc(100% + 14px);
+      height: calc(100% + 14px);
+      left: -7px;
+      top: -7px;
+      border-radius: 3px;
+      opacity: 0;
+      background: #913987;
+      transition: opacity .2s ease-out;
+      //      width: 140px;
+      //      height: 200px;
+      //      background-color: blue;
+      //      opacity: 0;
+      //      bottom: 50%;
+      //      transform-origin: bottom;
+      //      left: -60px;
+      //      animation: dashFade .5s ease-out;
     }
-
-.dash-narrow {
-  display: none;
-}
   &.tired {
 
-
+    .dash-narrow {
+      opacity: 1;
+    }
 
 
     @keyframes dashFade {
       0% {
         opacity: 1;
       }
-
       50% {
         opacity: 1;
       }

@@ -61,22 +61,22 @@ const updateFunctions = {
       paddle.element.classList.add("tired");
     }
 
-    if(paddle.dashDelay > 350 && paddle.frameTicks % 2 == 0) {
+    if(paddle.dashDelay > 350 && paddle.frameTicks % 2 == 0 && paddle.physics.speed > 1) {
 
-      let angle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
-      var size = getRandom(10,25);
+      let movementAngle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
+      var size = getRandom(15,25);
 
       let options = {
-        x : paddle.physics.position.x - size / 2,
-        y : paddle.physics.position.y - size / 2,
+        x : getRandom(paddle.physics.bounds.min.x, paddle.physics.bounds.max.x) - size/2,
+        y : getRandom(paddle.physics.bounds.min.y, paddle.physics.bounds.max.y) - size/2,
         width: size,
         height: size,
         className: 'paddlePuff',
         lifespan: 50,
         color: "#fff",
-        angle : angle + getRandom(-20,20),
-        speed: 6 - (4 * size/25),
-        speedA: -.02,
+        angle : movementAngle + getRandom(-10,10),
+        speed: 7.5 - (5 * size/25),
+        speedA: -.02 - (.02 * size/25),
       }
 
       options.height = options.width;
@@ -215,9 +215,9 @@ const updateFunctions = {
       var slidePowerPercent = 1 - Math.abs(horizontalOrientationRatio - horizontalMovementRatio);
 
       if(slidePowerPercent < .25) {
-        paddle.element.querySelector(".dash-narrow").style.height = "160px";
+        // paddle.element.querySelector(".dash-narrow").style.height = "160px";
       } else {
-        paddle.element.querySelector(".dash-narrow").style.height = "200px";
+        // paddle.element.querySelector(".dash-narrow").style.height = "200px";
       }
 
       if(xDelta != 0 || yDelta != 0) {

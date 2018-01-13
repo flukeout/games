@@ -60,10 +60,28 @@ function mineExplosion(xposition, yposition, size){
 }
 
 
+function makeCracks(x, y){
+  var cracks = document.createElement("div");
+  cracks.classList.add("cracks");
+  cracks.style.width = "300px";
+  cracks.style.height = "300px";
+  cracks.style.transform = "translate3d(" + (x - 150) + "px, " + (y - 150) + "px , 0) rotate("+getRandom(0,360)+"deg)";
+
+  document.querySelector(".blast-zone").appendChild(cracks);
+
+  setTimeout(function(el) {
+    return function(){
+      el.remove();
+    };
+  }(cracks),1500);
+}
+
 // Adds a bomb to the board at x,y
 // Pixel position, not grid position
 
 function makeExplosion(xposition, yposition, size, blastDirection, type){
+
+  makeCracks(xposition,yposition);
 
   if(!blastDirection) {
     blastDirection = "all";
@@ -108,6 +126,8 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
   }(particle.el),500);
 
   document.querySelector(".world").appendChild(particle.el);
+
+
 
 
   // Blast lines that eminate from the center of the bomb
