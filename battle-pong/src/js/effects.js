@@ -156,7 +156,7 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
 
     var percentage = 5; // Percent along blast line where the white should start.
     options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
-    makeParticle(options);
+    // makeParticle(options); TODO - temporarily removing blast lines from scoring
   }
 }
 

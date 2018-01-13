@@ -51,14 +51,14 @@ const updateFunctions = {
 
     if(paddle.dashDelay < 0) {
       paddle.dashDelay = 0;
-      paddle.element.classList.remove("tired");
+      paddle.element.classList.remove("dashing");
       paddle.updateRoute = 'default';
       // Don't bother dashing anymore
       return;
     }
 
     if(paddle.dashDelay > 0) {
-      paddle.element.classList.add("tired");
+      paddle.element.classList.add("dashing");
     }
 
     if(paddle.dashDelay > 350 && paddle.frameTicks % 2 == 0 && paddle.physics.speed > 1) {
@@ -140,64 +140,10 @@ const updateFunctions = {
       // Movement
       let angle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
 
-      // var paddleAngle = paddle.physics.angle * 180 / Math.PI;
-     //    if(Math.abs(paddleAngle) > 360) {
-     //      paddleAngle = paddleAngle % 360;
-     //    }
-     //
-     //    if(paddleAngle < 0) {
-     //      paddleAngle = paddleAngle + 360;
-     //    }
-
-      // So we have the paddle Angle??
-      // console.log(paddleAngle);
-
-      // Dash Angle (movement angle)
-      // let dashAngle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
-
-      // let dashAngle = angleRad * 180 / Math.PI;
-      //
-      //
-      // if(dashAngle < 0) {
-      //   dashAngle = dashAngle + 360;
-      // }
-
-      // var dA = -paddleAngle;
-    //   var direction;
-    //
-    //   if(dashAngle >= 45 && dashAngle < 135) {
-    //     dA = dA - 90;
-    //     direction = "right";
-    //   }
-    //
-    //   if(dashAngle >= 135 && dashAngle < 225) {
-    //     dA = dA - 180;
-    //     direction = "up";
-    //   }
-    //
-    //   if(dashAngle >= 225 && dashAngle < 315 ) {
-    //     dA = dA + 90;
-    //     direction = "left";
-    //   }
-    //
-    //   if((dashAngle >= 315 && dashAngle < 360) || (dashAngle >= 0 && dashAngle < 45)) {
-    //     direction = "down";
-    //   }
-    //
-    //   console.log(dashAngle);
-    //   console.log(direction);
-    //
-    //   dA = dA - dA % 90;
-    //
-    //   paddle.element.querySelector(".dash-narrow").style.transform = "rotate(" + dA +"deg)";
-
-
-
       angle = Math.abs(angle);
       if(angle > 180) {
         angle = angle % 180;
       }
-
 
       var horizontalMovementRatio = (90 - Math.abs(angle - 90)) / 90
 
@@ -213,12 +159,6 @@ const updateFunctions = {
 
       // This is how hard we can boost the dash based on the orientation and movement...
       var slidePowerPercent = 1 - Math.abs(horizontalOrientationRatio - horizontalMovementRatio);
-
-      if(slidePowerPercent < .25) {
-        // paddle.element.querySelector(".dash-narrow").style.height = "160px";
-      } else {
-        // paddle.element.querySelector(".dash-narrow").style.height = "200px";
-      }
 
       if(xDelta != 0 || yDelta != 0) {
 
@@ -410,7 +350,7 @@ function createPaddle(options) {
     lifeSpan : options.lifeSpan || "infinite",
 
     movementRatio: options.movementRatio || 1,
-    innerHTML : "<div class='dash-narrow'></div><div class='dash-broad'></div><div class='body'><div class='bone'></div></div>",
+    innerHTML : "<div class='dash-indicator'></div><div class='body'><div class='bone'></div></div>",
 
     properties: {
       x: options.x || 0,

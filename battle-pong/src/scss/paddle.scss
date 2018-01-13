@@ -89,85 +89,24 @@
     background: rgba(255,255,255,0);
   }
 
+  .dash-indicator {
+    display: block;
+    background: black;
+    position: absolute;
+    width: calc(100% + 14px);
+    height: calc(100% + 14px);
+    left: -7px;
+    top: -7px;
+    border-radius: 3px;
+    opacity: 0;
+    background: #913987;
+    transition: opacity .2s ease-out;
+  }
 
-
-    .dash-broad {
-      display: none;
-      background-image: url(assets/images/thrust-side.svg);
-      background-repeat: no-repeat;
-      background-position: left;
-      background-size: contain;
-      background-color: orange;
-//      display: block;
-      position: absolute;
-      width: 100px;
-      height: 100px;
-
-      right: 50%;
-      transform-origin: bottom;
-
-    }
-
-//.dash-narrow {
-//  background-image: url(assets/images/thrust.svg);
-//  background-repeat: no-repeat;
-//  background-position: top;
-//  background-size: 55%;
-//  display: block;
-//  position: absolute;
-//  background-color: blue;
-//  width: 140px;
-//  height: 200px;
-//  opacity: 0;
-//  bottom: 50%;
-//  transform-origin: bottom;
-//  left: -60px;
-//  animation: dashFade .5s ease-out;
-
-
-    .dash-narrow {
-      //  background-image: url(assets/images/thrust.svg);
-      //  background-repeat: no-repeat;
-      //  background-position: top;
-      //  background-size: 55%;
-      display: block;
-      background: black;
-      position: absolute;
-      width: calc(100% + 14px);
-      height: calc(100% + 14px);
-      left: -7px;
-      top: -7px;
-      border-radius: 3px;
-      opacity: 0;
-      background: #913987;
-      transition: opacity .2s ease-out;
-      //      width: 140px;
-      //      height: 200px;
-      //      background-color: blue;
-      //      opacity: 0;
-      //      bottom: 50%;
-      //      transform-origin: bottom;
-      //      left: -60px;
-      //      animation: dashFade .5s ease-out;
-    }
-  &.tired {
-
-    .dash-narrow {
+  &.dashing {
+    .dash-indicator {
       opacity: 1;
     }
-
-
-    @keyframes dashFade {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 1;
-      }
-
-    }
-
-
   }
 }
 
