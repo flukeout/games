@@ -205,7 +205,6 @@ function playLimitedSound(sound, category, options) {
 }
 
 function playLimitedRandomSoundFromBank(soundBankName) {
-  console.log('ownowef', soundBankName)
   let soundBank = soundBanks[soundBankName];
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
