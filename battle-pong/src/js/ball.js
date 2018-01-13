@@ -389,14 +389,12 @@ function createBall(options){
 
       var pan = .8 * (-game.boardWidth/2 + this.physics.position.x) / game.boardWidth/2;
 
-      if(!this.hitSoundTimeout) {
-        playSound("hit", { volume: percentage, pan : pan });
-        var that = this;
-        this.hitSoundTimeout = setTimeout(function(){
-          that.hitSoundTimeout = false;
-        }, this.hitSoundTimeoutMS);
+      if (obj.name.indexOf("wall") > -1) {
+        playLimitedSound("Ball_Bounce_Wall", null, { volume: percentage, pan : pan });
       }
-
+      else {
+        playLimitedSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
+      }
     },
 
     // After a paddle hit, we want to check if the ball is going
@@ -423,10 +421,6 @@ function createBall(options){
         }
       }
     },
-
-    // This makes it so that the hit sound can't play in rapid crazy succession.
-    hitSoundTimeout: false,
-    hitSoundTimeoutMS: 100
   });
 
 }

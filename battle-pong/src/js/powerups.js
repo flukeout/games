@@ -63,9 +63,6 @@ function createPowerup(x, y, type){
     beepTimeoutMS : 325, // Delay between playing the swish sound
     beepTimeout: false,
 
-    hitSoundTimeoutMS : 100, // Delay between playing the swish sound
-    hitSoundTimeout: false,
-
     properties: properties,
     physicsOptions : physicsOptions,
 
@@ -214,18 +211,10 @@ function createPowerup(x, y, type){
 
       if(obj.name.indexOf("paddle") > -1 || obj.name.indexOf("ball") > -1 ){
         if(this.type == "mine") {
-          sound = "clang";
+          playLimitedRandomSoundFromBank("mine-collision");
         } else {
-          sound = "star-hit";
+          playLimitedSound("star-hit");
         }
-      }
-
-      if(!this.hitSoundTimeout && sound) {
-        playSound(sound);
-        var that = this;
-        this.hitSoundTimeout = setTimeout(function(){
-          that.hitSoundTimeout = false;
-        }, this.hitSoundTimeoutMS);
       }
 
       if(playerHit && this.type != "mine"){

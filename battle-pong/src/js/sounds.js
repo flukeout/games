@@ -3,6 +3,12 @@
 // * Remove the timeout stuff? Should just move it to the object that calls it?
 // * That would allow us to not have two hit sounds...
 
+(function () {
+
+const limitedSoundTimeoutMS = 100;
+
+limitedSoundTimeouts = {};
+
 var sounds = {
   "beep" : {
     url : "sounds/beep.mp3",
@@ -54,6 +60,7 @@ var sounds = {
     url : "sounds/hit.mp3",
     volume : 1
   },
+
   "Power_Shot_V1" : {
     url : "sounds/Power_Shot_V1.mp3",
     volume : 1
@@ -69,16 +76,83 @@ var sounds = {
   "Power_Shot_V4" : {
     url : "sounds/Power_Shot_V4.mp3",
     volume : 1
-  }
+  },
+
+  "Ball_Score_V1" : {
+    url : "sounds/Ball_Score_V1.mp3",
+    volume : 1
+  },
+  "Ball_Score_V2" : {
+    url : "sounds/Ball_Score_V2.mp3",
+    volume : 1
+  },
+  "Ball_Score_V3" : {
+    url : "sounds/Ball_Score_V3.mp3",
+    volume : 1
+  },
+  "Ball_Score_V4" : {
+    url : "sounds/Ball_Score_V4.mp3",
+    volume : 1
+  },
+
+
+  "Bomb_Impact_High_V1" : {
+    url : "sounds/Bomb_Impact_High_V1.mp3",
+    volume : 1
+  },
+  "Bomb_Impact_High_V2" : {
+    url : "sounds/Bomb_Impact_High_V2.mp3",
+    volume : 1
+  },
+  "Bomb_Impact_High_V3" : {
+    url : "sounds/Bomb_Impact_High_V3.mp3",
+    volume : 1
+  },
+  "Bomb_Impact_Low_V1" : {
+    url : "sounds/Bomb_Impact_Low_V1.mp3",
+    volume : 1
+  },
+  "Bomb_Impact_Low_V2" : {
+    url : "sounds/Bomb_Impact_Low_V2.mp3",
+    volume : 1
+  },
+  "Bomb_Impact_Low_V3" : {
+    url : "sounds/Bomb_Impact_Low_V3.mp3",
+    volume : 1
+  },
+
+  "Ball_Bounce_Paddle" : {
+    url : "sounds/Ball_Bounce_Paddle 1.2.mp3",
+    volume : 1
+  },
+  "Ball_Bounce_Wall" : {
+    url : "sounds/Ball_Bounce_Wall 1.2.mp3",
+    volume : 1
+  },
+
 };
 
 var soundBanks = {
+  "score": [
+    "Ball_Score_V1",
+    "Ball_Score_V2",
+    "Ball_Score_V3",
+    "Ball_Score_V4"
+  ],
   "super-hard-shot": [
     // "thwap",
     "Power_Shot_V1",
     "Power_Shot_V2",
     "Power_Shot_V3",
     "Power_Shot_V4"
+  ],
+  "mine-collision": [
+    "Bomb_Impact_High_V1",
+    "Bomb_Impact_High_V2",
+    "Bomb_Impact_High_V3",
+    "Bomb_Impact_Low_V1",
+    "Bomb_Impact_Low_V2",
+    "Bomb_Impact_Low_V3"
   ]
 };
 
@@ -89,8 +163,6 @@ for(var key in sounds) {
 }
 
 function loadSound(name){
-
-
   var sound = sounds[name];
   var url = sound.url;
   var buffer = sound.buffer;
@@ -108,11 +180,33 @@ function loadSound(name){
   request.send();
 }
 
-function playRandomSoundFromSoundBank(soundBankName) {
+function playRandomSoundFromBank(soundBankName) {
   let soundBank = soundBanks[soundBankName];
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
     playSound(sound);
+  }
+  else {
+    console.warn('No soundbank for soundbank name: ' + soundBankName);
+  }
+}
+
+function playLimitedSound(sound, category, options) {
+  category = category || sound;
+
+  if(!limitedSoundTimeouts[category]) {
+    playSound(sound, options);
+    limitedSoundTimeouts[category] = setTimeout(() => {
+      limitedSoundTimeouts[category] = false;
+    }, limitedSoundTimeoutMS);
+  }
+}
+
+function playLimitedRandomSoundFromBank(soundBankName) {
+  let soundBank = soundBanks[soundBankName];
+  if (soundBank) {
+    let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
+    playLimitedSound(sound, soundBankName);
   }
   else {
     console.warn('No soundbank for soundbank name: ' + soundBankName);
@@ -153,3 +247,10 @@ function playSound(name, options){
   source.start(0);
 
 }
+
+  window.playSound = playSound;
+  window.playLimitedSound = playLimitedSound;
+  window.playRandomSoundFromBank = playRandomSoundFromBank;
+  window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
+
+})();
