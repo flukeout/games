@@ -5,7 +5,7 @@ const paddleKeyboardActions = [
 
 const paddleGamepadActions = [
   // Fluid options that can use floats instead of booleans (e.g. joysticks)
-  'moveX', 'moveY', 'spinX', 'spinY'
+  'moveX', 'moveY', 'spinX', 'spinY', 'dash'
 ];
 
 const paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
@@ -92,21 +92,47 @@ const updateFunctions = {
 
   },
   dashStart: function (paddle) {
-
     if(paddle.actions.dash && paddle.type == "player") {
 
       // We want to calculate a movement angle based on
       // the directional inputs.
+      // Directional Movement...
       var xDelta = 0,
-          yDelta = 0;
+          yDelta = 0,
+          hasMovement = false;
 
-      if(paddle.actions.left)   xDelta--;
-      if(paddle.actions.right)  xDelta++;
-
-      if(paddle.actions.up)     yDelta--;
-      if(paddle.actions.down)   yDelta++;
+      if(paddle.actions.left) {
+        xDelta--;
+        hasMovement = true;
+      }
+      if(paddle.actions.right) {
+        xDelta++;
+        hasMovement = true;
+      }
+      if(paddle.actions.up){
+        yDelta--;
+        hasMovement = true;
+      }
+      if(paddle.actions.down){
+        yDelta++;
+        hasMovement = true;
+      }
 
       var angleRad = Math.atan2(xDelta,yDelta);
+
+      if(hasMovement == false) {
+        // Analog movement
+        xDelta = paddle.actions.moveX,
+        yDelta = paddle.actions.moveY;
+
+        // If we are close to the edge, push it to max
+        if (xDelta > .9)    xDelta =  1;
+        if (xDelta < -.9)   xDelta = -1;
+        if (yDelta > .9)    yDelta =  1;
+        if (yDelta < -.9)   yDelta = -1;
+
+        angleRad = Math.atan2(xDelta,yDelta);
+      }
 
       // Calculuating how different the orientation of the paddle is
       // from it's movement direction to see how hard we can dash.
@@ -269,7 +295,7 @@ const updateFunctions = {
       paddle.updateRoute = 'default';
     }
   },
-  limitXY: function (paddle) {
+  moveAnalog : function(paddle) {
     // Analog movement
     var xDelta = paddle.actions.moveX,
         yDelta = paddle.actions.moveY;
@@ -295,6 +321,8 @@ const updateFunctions = {
       var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio * paddle.movementRatio;
       paddle.force(xForce, yForce);
     }
+  },
+  limitXY: function (paddle) {
 
     // Movement bounds - keep the paddle in its zone
     var forceModifier = 1.25 * game.physicsSamplingRatio;
@@ -620,6 +648,7 @@ function createPaddle(options) {
         updateFunctions.expandPowerup(paddle);
         updateFunctions.spinPowerup(paddle);
         updateFunctions.moveXY(paddle);
+        updateFunctions.moveAnalog(paddle);
 
         // See if we're about to start a dash
         updateFunctions.dashStart(paddle);
@@ -644,7 +673,7 @@ function createPaddle(options) {
         updateFunctions.spinPowerup(paddle);
 
         updateFunctions.moveXY(paddle);
-
+        updateFunctions.moveAnalog(paddle);
         // Listen to gamepad for amount of winding up to do, and prepare to unleash fury!
         updateFunctions.snapBackSpin(paddle);
 
