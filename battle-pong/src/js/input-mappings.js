@@ -72,7 +72,7 @@ var keyboardInputLabelToActionMappings = [
     "ArrowRight": "right",
     "Comma":      "spinCounterClockwise",
     "Period":     "spinClockwise",
-    "KeyM": "dash"
+    "KeyM":       "dash"
   }
 ];
 
