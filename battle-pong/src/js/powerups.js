@@ -63,6 +63,8 @@ function createPowerup(x, y, type){
     beepTimeoutMS : 325, // Delay between playing the swish sound
     beepTimeout: false,
 
+    mineSpeedSoundThreshold: 1.2,
+
     properties: properties,
     physicsOptions : physicsOptions,
 
@@ -197,21 +199,24 @@ function createPowerup(x, y, type){
       var playerHit = false;
       var playerAffected = false;
 
-      if(obj.name == "wall-right") {
+      if(obj.label == "wall-right") {
         playerAffected = 0;
         playerHit = true;
       }
 
-      if(obj.name == "wall-left") {
+      if(obj.label == "wall-left") {
         playerAffected = 1;
         playerHit = true;
       }
 
       var sound = false;
 
-      if(obj.name.indexOf("paddle") > -1 || obj.name.indexOf("ball") > -1 ){
+      if(obj.label.indexOf("paddle") > -1 || obj.label.indexOf("ball") > -1 ){
         if(this.type == "mine") {
-          playLimitedRandomSoundFromBank("mine-collision");
+          let ds = Math.abs(this.physics.speed - obj.speed);
+          
+          // TODO: take angular velocity into account because paddles can hit with higher speed by spinning
+          playLimitedRandomSoundFromBank("mine-collision-" + (ds > this.mineSpeedSoundThreshold ? "high" : "low"));
         } else {
           playLimitedSound("star-hit");
         }

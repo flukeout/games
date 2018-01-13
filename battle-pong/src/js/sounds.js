@@ -146,13 +146,15 @@ var soundBanks = {
     "Power_Shot_V3",
     "Power_Shot_V4"
   ],
-  "mine-collision": [
-    "Bomb_Impact_High_V1",
-    "Bomb_Impact_High_V2",
-    "Bomb_Impact_High_V3",
+  "mine-collision-low": [
     "Bomb_Impact_Low_V1",
     "Bomb_Impact_Low_V2",
     "Bomb_Impact_Low_V3"
+  ],
+  "mine-collision-high": [
+    "Bomb_Impact_High_V1",
+    "Bomb_Impact_High_V2",
+    "Bomb_Impact_High_V3"
   ]
 };
 
@@ -203,6 +205,7 @@ function playLimitedSound(sound, category, options) {
 }
 
 function playLimitedRandomSoundFromBank(soundBankName) {
+  console.log('ownowef', soundBankName)
   let soundBank = soundBanks[soundBankName];
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
