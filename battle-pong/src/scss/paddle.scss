@@ -35,7 +35,7 @@
     height: 100%;
 
     .bone {
-      display: none;
+//      display: none;
     }
   }
 
@@ -95,10 +95,60 @@
   }
 
 
-  &.tired .body {
-    //  background: rgba(200,200,200,1);
-    background: #222;
-    display: block;
+  .body {
+//    z-index: 1;
+  }
+
+
+  &.tired {
+    .dash {
+      background-image: url(assets/images/dash.svg);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      display: block;
+      position: absolute;
+      opacity: 0;
+      width: 270%;
+      height: 180%;
+//      top: -40%;
+      left: -135%;
+      transform-origin: center;
+      animation: dashFade .5s ease-out;
+    }
+
+
+    .dash {
+      background-image: url(assets/images/thrust.svg);
+      background-repeat: no-repeat;
+      background-position: top;
+      background-size: 45%;
+//      background-color: blue;
+      display: block;
+      position: absolute;
+      width: 140px;
+      height: 140px;
+
+
+      bottom: 50%;
+      transform-origin: bottom;
+      left: -60px;
+    }
+
+    @keyframes dashFade {
+      0% {
+        opacity: .3;
+//        transform: scaleX(.6);
+      }
+
+      50% {
+        opacity: 1;
+//        transform: scaleX(1);
+      }
+
+    }
+
+
   }
 }
 
@@ -116,6 +166,11 @@
 
 .paddleTrail {
   z-index: 2;
+}
+
+.paddlePuff {
+  z-index: 2;
+//  border-radius: 50%;
 }
 
 

@@ -61,25 +61,49 @@ const updateFunctions = {
       paddle.element.classList.add("tired");
     }
 
-    if(paddle.dashDelay > 0 && paddle.frameTicks % 3 == 0 && paddle.physics.speed > 0) {
-      let options = {
-        x : paddle.physics.position.x - 10,
-        y : paddle.physics.position.y - (paddle.height / 2),
-        width : 20,
-        height: paddle.height,
-        zR : paddle.physics.angle * 180 / Math.PI,
-        className : 'paddleTrail',
-        lifespan: 20
-      }
+    // if(paddle.dashDelay > 0 && paddle.frameTicks % 3 == 0 && paddle.physics.speed > 0) {
+    //   let options = {
+    //     x : paddle.physics.position.x - 10,
+    //     y : paddle.physics.position.y - (paddle.height / 2),
+    //     width : 20,
+    //     height: paddle.height,
+    //     zR : paddle.physics.angle * 180 / Math.PI,
+    //     className : 'paddleTrail',
+    //     lifespan: 20
+    //   }
+    //
+    //   if(paddle.player == 0) {
+    //     options.color =  "#bf62b4";
+    //   } else {
+    //     options.color =  "#51bc8e";
+    //   }
 
-      if(paddle.player == 0) {
-        options.color =  "#bf62b4";
-      } else {
-        options.color =  "#51bc8e";
-      }
-
-      makeParticle(options);
-    }
+    // if(paddle.dashDelay > 550 && paddle.frameTicks % 1 == 0) {
+    // if(paddle.dashDelay > 550) {
+    //   let options = {
+    //     x : getRandom(paddle.physics.bounds.min.x, paddle.physics.bounds.max.x) - 15,
+    //     y : getRandom(paddle.physics.bounds.min.y, paddle.physics.bounds.max.y) - 15,
+    //     width : 20,
+    //     height: 20,
+    //     className : 'paddlePuff',
+    //     zR : paddle.physics.angle * 180 / Math.PI,
+    //     lifespan: 50,
+    //     color: "#fff",
+    //     // o: .4,
+    //     xV : -paddle.physics.velocity.x * .5,
+    //     yV: -paddle.physics.velocity.y * .5,
+    //     oV: -0.02,
+    //     // scaleV: .01,
+    //   }
+    //
+    //   if(paddle.player == 0) {
+    //     options.color =  "#bf62b4";
+    //   } else {
+    //     options.color =  "#51bc8e";
+    //   }
+    //
+    //   makeParticle(options);
+    // }
   },
   dashStart: function (paddle) {
 
@@ -98,16 +122,109 @@ const updateFunctions = {
 
       var angleRad = Math.atan2(xDelta,yDelta);
 
+      // Calculuating how different the orientation of the paddle is
+      // from it's movement direction to see how hard we can dash.
+
+      // Movement
+      let angle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
+
+
+      var paddleAngle = paddle.physics.angle * 180 / Math.PI;
+      if(Math.abs(paddleAngle) > 360) {
+        paddleAngle = paddleAngle % 360;
+      }
+
+      if(paddleAngle < 0) {
+        paddleAngle = paddleAngle + 360;
+      }
+
+      // So we have the paddle Angle??
+      console.log(paddleAngle);
+
+      // Dash Angle
+      let dashAngle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
+
+      if(dashAngle < 0) {
+        dashAngle = dashAngle + 360;
+      }
+
+      if(dashAngle > 45 && dashAngle < 135) {
+        console.log("right");
+      }
+
+      if(dashAngle > 225 && dashAngle < 315 ) {
+        console.log("left");
+      }
+
+      var dA = -paddleAngle - dashAngle;
+      // console.log(dashAngle);
+      // if(dashAngle < 0) {
+        paddle.element.querySelector(".dash").style.transform = "rotate(" + dA + "deg)";
+      // } else {
+      //   paddle.element.querySelector(".dash").style.transform = "rotate(0deg)";
+      // }
+
+      angle = Math.abs(angle);
+      if(angle > 180) {
+        angle = angle % 180;
+      }
+
+      var horizontalMovementRatio = (90 - Math.abs(angle - 90)) / 90
+
+      // Orientation
+      var orientationAngle = Math.abs(paddle.physics.angle * 180 / Math.PI);
+
+      if(orientationAngle > 180) {
+        orientationAngle = orientationAngle % 180;
+      }
+
+      var horizontalOrientationRatio = (90 - Math.abs(orientationAngle - 90)) / 90
+
+      // This is how hard we can boost the dash based on the orientation and movement...
+      var slidePowerPercent = 1 - Math.abs(horizontalOrientationRatio - horizontalMovementRatio);
+
       if(xDelta != 0 || yDelta != 0) {
+
+        for(var i = 0; i < 10; i++) {
+
+          angle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
+
+          var size = getRandom(10,25);
+
+          let options = {
+            x : getRandom(paddle.physics.bounds.min.x, paddle.physics.bounds.max.x) - size/2,
+            y : getRandom(paddle.physics.bounds.min.y, paddle.physics.bounds.max.y) - size/2,
+            width: size,
+            height: size,
+            className: 'paddlePuff',
+            lifespan: 50,
+            color: "#fff",
+            angle : angle + getRandom(-10,10),
+            speed: 5 - (3 * size/25),
+            speedA: -.02,
+          }
+
+          options.height = options.width;
+
+          if(paddle.player == 0) {
+            options.color =  "#bf62b4";
+          } else {
+            options.color =  "#51bc8e";
+          }
+
+          makeParticle(options);
+        }
+
+
 
         playSound("dash");
 
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
 
-        paddle.dashDelay = 2000;
-        xForce = xForce * 20;
-        yForce = yForce * 20;
+        paddle.dashDelay = 650;
+        xForce = xForce * (5 + (20 * slidePowerPercent));
+        yForce = yForce * (5 + (20 * slidePowerPercent));
         paddle.force(xForce, yForce);
 
         paddle.updateRoute = 'dashing';
@@ -284,7 +401,7 @@ function createPaddle(options) {
     lifeSpan : options.lifeSpan || "infinite",
 
     movementRatio: options.movementRatio || 1,
-    innerHTML : "<div class='body'><div class='bone'></div></div>",
+    innerHTML : "<div class='dash'></div><div class='body'><div class='bone'></div></div>",
 
     properties: {
       x: options.x || 0,

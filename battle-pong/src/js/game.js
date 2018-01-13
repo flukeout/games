@@ -546,13 +546,11 @@ var game =  {
     }, 1400)
   },
 
-
   // Updates the score display in the corners of the game
   updateScoreDisplay: function(){
     document.querySelector(".player-1-score").innerText =this.score["player1"];
     document.querySelector(".player-2-score").innerText =this.score["player2"];
   },
-
 
   // Updates the terrain widths and paddle movement restrictions
   updateBounds : function(mode){
@@ -560,7 +558,6 @@ var game =  {
     for(var i = 0; i < paddles.length; i++) {
 
       var p = paddles[i];
-
 
         if(this.mode == "running") {
           if(p.player == 0) {
