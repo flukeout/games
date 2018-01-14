@@ -5,7 +5,7 @@ const paddleKeyboardActions = [
 
 const paddleGamepadActions = [
   // Fluid options that can use floats instead of booleans (e.g. joysticks)
-  'moveX', 'moveY', 'spinX', 'spinY'
+  'moveX', 'moveY', 'spinX', 'spinY', 'dash'
 ];
 
 const paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
@@ -43,7 +43,7 @@ const updateFunctions = {
       paddle.force(xForce, yForce);
 
       //TODO: see if this is needed elsewhere
-      paddle.physics.frictionAir = 0.1 / game.physicsSamplingRatio;  
+      paddle.physics.frictionAir = 0.1 / game.physicsSamplingRatio;
     }
   },
   dashing: function (paddle) {
@@ -51,51 +51,127 @@ const updateFunctions = {
 
     if(paddle.dashDelay < 0) {
       paddle.dashDelay = 0;
+      paddle.element.classList.remove("dashing");
       paddle.updateRoute = 'default';
-
       // Don't bother dashing anymore
       return;
     }
 
-    if(paddle.dashDelay > 0 && paddle.frameTicks % 1 == 0 && paddle.physics.speed > 1) {
+    if(paddle.dashDelay > 0) {
+      paddle.element.classList.add("dashing");
+    }
+
+    if(paddle.dashDelay > 350 && paddle.frameTicks % 2 == 0 && paddle.physics.speed > 1) {
+
+      let movementAngle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
+      var size = getRandom(15,25);
+
       let options = {
-        x : paddle.physics.position.x - 10,
-        y : paddle.physics.position.y - 50,
-        width : 20,
-        height: 100,
-        zR : paddle.currentAngle,
-        // oV: -.02,
-        // scaleV: -.02,
-        className : 'paddleTrail',
-        lifespan: 20
+        x : getRandom(paddle.physics.bounds.min.x, paddle.physics.bounds.max.x) - size/2,
+        y : getRandom(paddle.physics.bounds.min.y, paddle.physics.bounds.max.y) - size/2,
+        width: size,
+        height: size,
+        className: 'paddlePuff',
+        lifespan: 50,
+        color: "#fff",
+        angle : movementAngle + getRandom(-10,10),
+        speed: 7.5 - (5 * size/25),
+        speedA: -.02 - (.02 * size/25),
+      }
+
+      options.height = options.width;
+
+      if(paddle.player == 0) {
+        options.color = "#913987";
+      } else {
+        options.color =  "#2b8e63";
       }
 
       makeParticle(options);
     }
+
   },
   dashStart: function (paddle) {
-    if(paddle.actions.dash) {
+    if(paddle.actions.dash && paddle.type == "player") {
 
       // We want to calculate a movement angle based on
       // the directional inputs.
+      // Directional Movement...
       var xDelta = 0,
-          yDelta = 0;
+          yDelta = 0,
+          hasMovement = false;
 
-      if(paddle.actions.left)   xDelta--;
-      if(paddle.actions.right)  xDelta++;
-
-      if(paddle.actions.up)     yDelta++;
-      if(paddle.actions.down)   yDelta--;
+      if(paddle.actions.left) {
+        xDelta--;
+        hasMovement = true;
+      }
+      if(paddle.actions.right) {
+        xDelta++;
+        hasMovement = true;
+      }
+      if(paddle.actions.up){
+        yDelta--;
+        hasMovement = true;
+      }
+      if(paddle.actions.down){
+        yDelta++;
+        hasMovement = true;
+      }
 
       var angleRad = Math.atan2(xDelta,yDelta);
 
-      if(xDelta != 0 || yDelta != 0) {
-        var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
-        var yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
+      if(hasMovement == false) {
+        // Analog movement
+        xDelta = paddle.actions.moveX,
+        yDelta = paddle.actions.moveY;
 
-        paddle.dashDelay = 750;
-        xForce = xForce * 20;
-        yForce = yForce * 20;
+        // If we are close to the edge, push it to max
+        if (xDelta > .9)    xDelta =  1;
+        if (xDelta < -.9)   xDelta = -1;
+        if (yDelta > .9)    yDelta =  1;
+        if (yDelta < -.9)   yDelta = -1;
+
+        angleRad = Math.atan2(xDelta,yDelta);
+      }
+
+      // Calculuating how different the orientation of the paddle is
+      // from it's movement direction to see how hard we can dash.
+
+      // Movement
+      let angle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
+
+      angle = Math.abs(angle);
+      if(angle > 180) {
+        angle = angle % 180;
+      }
+
+      var horizontalMovementRatio = (90 - Math.abs(angle - 90)) / 90
+
+
+      // Orientation
+      var orientationAngle = Math.abs(paddle.physics.angle * 180 / Math.PI);
+
+      if(orientationAngle > 180) {
+        orientationAngle = orientationAngle % 180;
+      }
+
+      var horizontalOrientationRatio = (90 - Math.abs(orientationAngle - 90)) / 90
+
+      // This is how hard we can boost the dash based on the orientation and movement...
+      var slidePowerPercent = 1 - Math.abs(horizontalOrientationRatio - horizontalMovementRatio);
+
+      if(xDelta != 0 || yDelta != 0) {
+
+        playSound("dash");
+
+        var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
+        var yForce = Math.cos(angleRad) * maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
+
+        paddle.dashDelay = 650;
+
+        xForce = xForce * (10 + (20 * slidePowerPercent));
+        yForce = yForce * (10 + (20 * slidePowerPercent));
+
         paddle.force(xForce, yForce);
 
         paddle.updateRoute = 'dashing';
@@ -159,7 +235,7 @@ const updateFunctions = {
       paddle.updateRoute = 'default';
     }
   },
-  limitXY: function (paddle) {
+  moveAnalog : function(paddle) {
     // Analog movement
     var xDelta = paddle.actions.moveX,
         yDelta = paddle.actions.moveY;
@@ -185,6 +261,8 @@ const updateFunctions = {
       var yForce = Math.cos(angleRad) * newForce * game.physicsSamplingRatio * paddle.movementRatio;
       paddle.force(xForce, yForce);
     }
+  },
+  limitXY: function (paddle) {
 
     // Movement bounds - keep the paddle in its zone
     var forceModifier = 1.25 * game.physicsSamplingRatio;
@@ -272,7 +350,7 @@ function createPaddle(options) {
     lifeSpan : options.lifeSpan || "infinite",
 
     movementRatio: options.movementRatio || 1,
-    innerHTML : "<div class='body'><div class='bone'></div></div>",
+    innerHTML : "<div class='dash-indicator'></div><div class='body'><div class='bone'></div></div>",
 
     properties: {
       x: options.x || 0,
@@ -500,7 +578,7 @@ function createPaddle(options) {
       // Run whichever driver route is currently assigned
       this.updateRoutes[this.updateRoute](this);
     },
-    
+
     // These routes let you programmatically insert or omit stages that govern the movement
     // of the paddle. By switching between them, you can cleanly decide which features
     // are available for paddle movement at any one time.
@@ -509,11 +587,10 @@ function createPaddle(options) {
         // Maintenance for powerups
         updateFunctions.expandPowerup(paddle);
         updateFunctions.spinPowerup(paddle);
-
-        // Move
         updateFunctions.moveXY(paddle);
+        updateFunctions.moveAnalog(paddle);
 
-        // See if we're about to start a dash        
+        // See if we're about to start a dash
         updateFunctions.dashStart(paddle);
 
         // See if we're going to be snapping *next* frame
@@ -534,9 +611,9 @@ function createPaddle(options) {
       snapBack: function (paddle) {
         updateFunctions.expandPowerup(paddle);
         updateFunctions.spinPowerup(paddle);
-        
-        updateFunctions.moveXY(paddle);
 
+        updateFunctions.moveXY(paddle);
+        updateFunctions.moveAnalog(paddle);
         // Listen to gamepad for amount of winding up to do, and prepare to unleash fury!
         updateFunctions.snapBackSpin(paddle);
 
@@ -545,6 +622,8 @@ function createPaddle(options) {
       },
       dashing: function (paddle) {
         updateFunctions.expandPowerup(paddle);
+        updateFunctions.spinToTarget(paddle);
+        updateFunctions.limitXY(paddle);
         updateFunctions.spinPowerup(paddle);
         updateFunctions.dashing(paddle);
       }

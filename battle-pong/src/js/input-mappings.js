@@ -71,7 +71,8 @@ var keyboardInputLabelToActionMappings = [
     "ArrowLeft":  "left",
     "ArrowRight": "right",
     "Comma":      "spinCounterClockwise",
-    "Period":     "spinClockwise"
+    "Period":     "spinClockwise",
+    "KeyM":       "dash"
   }
 ];
 
@@ -85,5 +86,6 @@ var gamepadInputLabelToActionMapping = {
   "analogLeftX": "moveX",
   "analogLeftY": "moveY",
   "analogRightX": "spinX",
-  "analogRightY": "spinY"
+  "analogRightY": "spinY",
+  "actionLeft": "dash"
 };

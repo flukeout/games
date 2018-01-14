@@ -6,11 +6,6 @@
   left: 0;
 
   .sky {
-    //  background-image: url(assets/images/sky.svg);
-//    background-image: url(assets/images/sky-dual.svg);
-    background-position: bottom;
-    background-repeat: no-repeat;
-    background-size: 100%;
     width: 100vw;
     height: 48vh;
     position: absolute;
@@ -76,26 +71,6 @@
     }
   }
 
-  .small-moon {
-    position: absolute;
-    width: 200px;
-    height: 100px;
-    left: 0px;
-    top: 20px;
-    background-image: url(assets/images/small-moon.svg);
-    background-image: url(assets/images/score.svg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    animation: smallMoon 6.5s ease-out infinite;
-
-
-    @keyframes smallMoon {
-      50% {
-        transform: translateY(-10px) rotateZ(2deg);
-      }
-    }
-  }
   .large-moon {
     position: absolute;
     width: 500px;
@@ -106,11 +81,11 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
-    animation: largerMoon 5s ease-in-out infinite;
+    animation: largerMoon 15s ease-in-out infinite;
 
     @keyframes largerMoon {
       50% {
-        transform: translateY(-30px) rotateZ(3deg);
+        transform: translateY(-20px) rotateZ(3deg);
       }
     }
   }
@@ -118,7 +93,6 @@
 }
 
 .board-shadow {
-
     position: absolute;
     width: 800px;
     height: 500px;
@@ -128,9 +102,6 @@
     background-image: url(assets/images/board-shadow.svg);
     background-size: 100%;
     background-position: bottom;
-    //  transform-style: preserve-3d;
-    //  background: black;
-
     transform: rotateX(20deg) rotateY(0deg);
 }
 
@@ -145,22 +116,70 @@
   height: 100%;
 }
 
-.score-screen {
-  color: white;
-  position: absolute;
-  font-size: 45px;
-  width: 110px;
-  left: 55px;
-  top: 22px;
-  text-align: center;
-  transform: rotateZ(-10deg) skew(-5deg);
 
-  .colon {
-    transform: translateY(-4px);
-    display: inline-block;
+.score-satellite {
+  position: absolute;
+  width: 200px;
+  height: 140px;
+  left: 20px;
+  top: 20px;
+  background-image: url(assets/images/score.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  animation: satelliteDrift 6.5s ease-out infinite;
+
+  @keyframes satelliteDrift {
+    50% {
+      transform: translateY(-10px) rotateZ(2deg);
+    }
+  }
+
+  .score-screen {
+    color: white;
+    position: absolute;
+    font-size: 36px;
+    width: 140px;
+    left: 38px;
+    top: 46px;
+    opacity: .5;
+    text-align: center;
+    transform: rotateZ(-10deg) skew(-6deg);
+    animation: screenFlicker .1s linear infinite;
+
+    .player-1-score {
+      color: #ca59b7;
+    }
+
+    .colon {
+      opacity: .4;
+    }
+
+    .player-2-score {
+      color: #3faa7f;
+    }
+
+    .colon {
+      transform: translateY(-4px);
+      display: inline-block;
+    }
+
+    @keyframes screenFlicker {
+      0% {
+        opacity: .5;
+      }
+      10% {
+        opacity: .75;
+      }
+      20% {
+        opacity: .5;
+      }
+
+    }
+
+
   }
 }
-
 
 .scoreboard {
   font-size: 50px;
@@ -193,6 +212,16 @@
 
 .terrain {
   z-index: 1;
+}
+
+.blast-zone {
+  z-index: 3;
+  position: absolute;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .red-chunk, .blue-chunk {
@@ -228,12 +257,27 @@
   -moz-transform-style: preserve-3d;
 }
 
-.winner-screen.winner-one .world {
-  border: solid 20px #bd71b0;
+.winner-screen.winner-one  {
+  background-image: radial-gradient(
+    200% 100% at bottom,
+    #540c56 55%,
+    #000 100%);
+
+  .world {
+    border: solid 20px #bd71b0;
+  }
 }
 
-.winner-screen.winner-two .world {
-  border: solid 20px #66bb98;
+
+.winner-screen.winner-two {
+  background-image: radial-gradient(
+    200% 100% at bottom,
+    #0b3322 55%,
+    #000 100%);
+
+  .world {
+    border: solid 20px #66bb98;
+  }
 }
 
 
@@ -244,14 +288,6 @@
   width: 50%;
   transition: width .25s ease-out;
   background-size: 200px;
-
-  animation: bgArrow .5s ease-in-out infinite;
-
-  @keyframes bgArrow {
-    50% {
-//      background-position: 0 5px;
-    }
-  }
 }
 
 .terrain.one .bigscore {
@@ -271,9 +307,6 @@
   background-size: 350px;
 }
 
-.winner-one {
-  background: #ac4d9d;
-}
 
 .red-chunk {
   z-index: 2;
@@ -287,18 +320,12 @@
   background-position: top right;
   background-repeat: no-repeat;
   background-size: 350px;
-
-}
-
-.winner-two {
-  background: #3faa7f;
 }
 
 .blue-chunk {
   z-index: 1;
   background: #3faa7f;
 }
-
 
 .bestof.hide-animation {
   opacity: 0;
