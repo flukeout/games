@@ -17,7 +17,7 @@ function makeStars() {
 function mineExplosion(xposition, yposition, size){
 
 
-  playSound("boom-mine");
+  playSound("boom-mine", {excludeFromLowPassFilter: true});
   shakeScreen();
 
   // Adds the orange blast
@@ -55,8 +55,7 @@ function mineExplosion(xposition, yposition, size){
 
   document.querySelector(".world").appendChild(particle.el);
 
-
-
+  temporaryLowPass();
 }
 
 
@@ -87,7 +86,7 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
     blastDirection = "all";
   }
 
-  playSound("boom");
+  // playSound("boom");
   shakeScreen();
 
   // Adds the orange blast
@@ -315,7 +314,7 @@ function fireGun(x, y, angle, player){
   addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
   shakeScreen();
 
-  playRandomSoundFromSoundBank("super-hard-shot");
+  playRandomSoundFromBank("super-hard-shot");
 
   document.dispatchEvent(new CustomEvent("emotion", {detail: {
     player: player,

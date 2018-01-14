@@ -355,7 +355,7 @@ function createBall(options){
 
     hit: function(obj){
 
-      if(obj.name.indexOf("wall-right") > -1 || obj.name.indexOf("wall-left") > -1) {
+      if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
         if(this.physics.speed > this.goingFastSpeedThreshold) {
           this.goalsWhileFast++;
         } else {
@@ -368,12 +368,12 @@ function createBall(options){
 
 
       // TODO - WTF
-      if(obj.name.indexOf("paddle") > -1) {
-        if(obj.name.indexOf("one") > -1) {
+      if(obj.label.indexOf("paddle") > -1) {
+        if(obj.label.indexOf("one") > -1) {
           this.lastTouchedPaddle = 1;
         }
 
-        if(obj.name.indexOf("two") > -1) {
+        if(obj.label.indexOf("two") > -1) {
           this.lastTouchedPaddle = 2;
         }
 
@@ -382,7 +382,7 @@ function createBall(options){
         this.applyBrakes = false;
       }
 
-      if(game.mode == "finish" && obj.name.indexOf("wall") > -1) {
+      if(game.mode == "finish" && obj.label.indexOf("wall") > -1) {
         game.loserLived();
       }
 
@@ -397,14 +397,12 @@ function createBall(options){
 
       var pan = .8 * (-game.boardWidth/2 + this.physics.position.x) / game.boardWidth/2;
 
-      if(!this.hitSoundTimeout) {
-        playSound("hit", { volume: percentage, pan : pan });
-        var that = this;
-        this.hitSoundTimeout = setTimeout(function(){
-          that.hitSoundTimeout = false;
-        }, this.hitSoundTimeoutMS);
+      if (obj.label.indexOf("wall") > -1) {
+        playLimitedSound("Ball_Bounce_Wall", null, { volume: percentage, pan : pan });
       }
-
+      else {
+        playLimitedSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
+      }
     },
 
     // After a paddle hit, we want to check if the ball is going
@@ -431,10 +429,6 @@ function createBall(options){
         }
       }
     },
-
-    // This makes it so that the hit sound can't play in rapid crazy succession.
-    hitSoundTimeout: false,
-    hitSoundTimeoutMS: 100
   });
 
 }
