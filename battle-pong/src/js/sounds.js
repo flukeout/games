@@ -7,9 +7,9 @@
 (function () {
 
 const temporaryLowPassSettings = {
-  recoveryDuration: 1666,
-  recoveryDelay: 1000,
-  startFrequency: 1000,
+  recoveryDuration: 2333,
+  recoveryDelay: 1666,
+  startFrequency: 500,
   endFrequency: 20000,
   Q: 10
 };
