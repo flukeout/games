@@ -227,6 +227,15 @@ var sounds = {
     volume : 1
   },
 
+  "Bomb_Explosion_V1" : {
+    url : "sounds/Bomb_Explosion_V1.mp3",
+    volume : 1
+  },
+  "Bomb_Explosion_V2" : {
+    url : "sounds/Bomb_Explosion_V2.mp3",
+    volume : 1
+  },
+
 };
 
 var soundBanks = {
@@ -252,6 +261,10 @@ var soundBanks = {
     "Bomb_Impact_High_V1",
     "Bomb_Impact_High_V2",
     "Bomb_Impact_High_V3"
+  ],
+  "mine-explosion": [
+    "Bomb_Explosion_V1",
+    "Bomb_Explosion_V2"
   ],
   "bones-collide": [
     "Powerup_Bones_Collision_Low_V1",
