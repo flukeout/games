@@ -6,8 +6,6 @@
 // Prevent all of these variables and constants from polluting the global scope
 (function () {
 
-const limitedSoundTimeoutMS = 100;
-
 const temporaryLowPassSettings = {
   recoveryDuration: 1666,
   recoveryDelay: 1000,
@@ -16,6 +14,7 @@ const temporaryLowPassSettings = {
   Q: 10
 };
 
+const limitedSoundTimeoutMS = 100;
 let limitedSoundTimeouts = {};
 let temporaryLowpassTimeout = null;
 let temporaryLowpassComebackTimeout = null;
