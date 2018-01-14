@@ -343,6 +343,11 @@ function createPaddle(options) {
         // this.spinPowerupCountdown = true;
       // }
 
+      // If this is a clone (bone)
+      if (this.cloneIndex) {
+        playRandomSoundFromBank("bones-collide");
+      }
+
       if(this.mode == "ghost" && obj.label.indexOf("ball") > -1) {
         this.element.classList.add("dead");
         this.element.classList.remove("shaking");

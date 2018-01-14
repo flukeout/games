@@ -165,6 +165,59 @@ var sounds = {
     volume : 1
   },
 
+  "Powerup_Bones_Collision_Low_V1" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V1.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V2" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V2.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V3" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V3.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V4" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V4.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V5" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V5.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V6" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V6.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V7" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V7.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V8" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V8.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V9" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V9.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V10" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V10.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V11" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V11.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V12" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V12.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V13" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V13.mp3",
+    volume : 1
+  },
+
 };
 
 var soundBanks = {
@@ -190,6 +243,21 @@ var soundBanks = {
     "Bomb_Impact_High_V1",
     "Bomb_Impact_High_V2",
     "Bomb_Impact_High_V3"
+  ],
+  "bones-collide": [
+    "Powerup_Bones_Collision_Low_V1",
+    "Powerup_Bones_Collision_Low_V2",
+    "Powerup_Bones_Collision_Low_V3",
+    "Powerup_Bones_Collision_Low_V4",
+    "Powerup_Bones_Collision_Low_V5",
+    "Powerup_Bones_Collision_Low_V6",
+    "Powerup_Bones_Collision_Low_V7",
+    "Powerup_Bones_Collision_Low_V8",
+    "Powerup_Bones_Collision_Low_V9",
+    "Powerup_Bones_Collision_Low_V10",
+    "Powerup_Bones_Collision_Low_V11",
+    "Powerup_Bones_Collision_Low_V12",
+    "Powerup_Bones_Collision_Low_V13"
   ]
 };
 
