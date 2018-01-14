@@ -64,9 +64,12 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
   });
 
-  for (var i = 0; i < numPaddles; ++i) {
-    inputManager.setupInputForObject(game.paddles[i]);
-  }
+  // for (var i = 0; i < numPaddles; ++i) {
+  //   inputManager.setupInputForObject(game.paddles[i]);
+  // }
+
+  inputManager.setupInputForObject(paddles[1]);
+  game.aiPlayer = new AI(engine, paddles[0]);
 
   if (Settings.showFrameRate) {
     var frameRateMonitor  = new FrameRateMonitor();

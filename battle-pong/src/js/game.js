@@ -428,6 +428,7 @@ var game =  {
 
     this.ball = createBall(options);
     SoundManager.playSound('Ball_Spawn');
+    this.aiPlayer.setBall(this.ball);
 
     // TODO - Move a lot of this stuff to the ball object?
     this.ball.element.classList.add('show');
@@ -633,6 +634,7 @@ var game =  {
       SoundManager.playSound('Ball_Spawn');
 
       SoundManager.fireEvent('Finish_It_Heartbeat_Start');
+      this.aiPlayer.setBall(this.ball);
 
     }, 2000);
 
