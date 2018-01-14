@@ -7,10 +7,14 @@
 (function () {
 
 const limitedSoundTimeoutMS = 100;
-const temporaryLowPassDuration = 5000;
-const temporaryLowPassExitFrequency = 20000;
-const temporaryLowPassStartFrequency = 1000;
-const temporaryLowPassQuality = 10;
+
+const temporaryLowPassSettings = {
+  recoveryDuration: 1666,
+  recoveryDelay: 1000,
+  startFrequency: 1000,
+  endFrequency: 20000,
+  Q: 10
+};
 
 let limitedSoundTimeouts = {};
 let temporaryLowpassTimeout = null;
@@ -233,12 +237,13 @@ function temporaryLowPass() {
 
     // Set up the initial effect
   globalBiquadFilter.type = 'lowpass';
-  globalBiquadFilter.frequency.value = temporaryLowPassStartFrequency;
+  globalBiquadFilter.frequency.value = temporaryLowPassSettings.startFrequency;
 
   temporaryLowpassComebackTimeout = setTimeout(() => {
     // Decrease the effect over time
-    globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassExitFrequency, soundContext.currentTime + (temporaryLowPassDuration / 2) / 1000);
-  }, temporaryLowPassDuration / 2);  
+    globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency,
+      soundContext.currentTime + temporaryLowPassSettings.recoveryDuration / 1000);
+  }, temporaryLowPassSettings.recoveryDelay);
 
   // When the timeout happens, reset the biquadFilter
   temporaryLowpassTimeout = setTimeout(() => {
@@ -247,14 +252,14 @@ function temporaryLowPass() {
 
     // Reset the filter
     globalBiquadFilter.type = 'allpass';
-    globalBiquadFilter.frequency.value = temporaryLowPassExitFrequency;
-  }, temporaryLowPassDuration);
+    globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
+  }, temporaryLowPassSettings.recoveryDelay + temporaryLowPassSettings.recoveryDuration);
 }
 
 var globalBiquadFilter = soundContext.createBiquadFilter();
 globalBiquadFilter.type = 'allpass';
-globalBiquadFilter.Q.value = temporaryLowPassQuality;
-globalBiquadFilter.frequency.value = temporaryLowPassExitFrequency;
+globalBiquadFilter.Q.value = temporaryLowPassSettings.Q;
+globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
 
 globalBiquadFilter.connect(soundContext.destination);
 
@@ -299,6 +304,21 @@ function playSound(name, options){
   volume.connect(panNode);
   source.connect(volume);
   source.start(0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ʕ •ᴥ•ʔゝ☆ */
 }
 
 window.playSound = playSound;
