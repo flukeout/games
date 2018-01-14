@@ -30,7 +30,6 @@ queryStringParts.forEach(function (pair) {
   if (value === 'true') value = true;
 
   if (key in window.Settings) window.Settings[key] = value;
-  console.log(key, key in window.Settings, Settings[key]);
 });
 
 console.log(Settings);

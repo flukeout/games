@@ -3,6 +3,13 @@ var powerUp;
 var powerUpTypes = window.Settings.powerUpTypes;
 // var powerUpTypes = ["spin"];
 
+const mineSpeedVolumeMultiplier = 0.5;
+
+const powerUpScoreSoundNames = {
+  clone: 'Powerup_Bones_Score',
+  grow: 'Powerup_Enhance_Score'
+};
+
 // Adds a random powerup
 function addPowerup(x, y){
 
@@ -62,8 +69,6 @@ function createPowerup(x, y, type){
 
     beepTimeoutMS : 325, // Delay between playing the swish sound
     beepTimeout: false,
-
-    mineSpeedSoundThreshold: 1.2,
 
     properties: properties,
     physicsOptions : physicsOptions,
@@ -195,7 +200,6 @@ function createPowerup(x, y, type){
     },
 
     hit : function(obj){
-
       var playerHit = false;
       var playerAffected = false;
 
@@ -214,9 +218,10 @@ function createPowerup(x, y, type){
       if(obj.label.indexOf("paddle") > -1 || obj.label.indexOf("ball") > -1 ){
         if(this.type == "mine") {
           let ds = Math.abs(this.physics.speed - obj.speed);
+          let volume = Math.min(1, Math.log(1 + ds * mineSpeedVolumeMultiplier));
           
           // TODO: take angular velocity into account because paddles can hit with higher speed by spinning
-          playLimitedRandomSoundFromBank("mine-collision-" + (ds > this.mineSpeedSoundThreshold ? "high" : "low"));
+          playLimitedRandomSoundFromBank("mine-collision", {volume: volume});
         } else {
           playLimitedSound("star-hit");
         }
@@ -239,7 +244,8 @@ function createPowerup(x, y, type){
 
         game.activePowerupCount--;
         removalList.push(this);
-        playSound("coin");
+        
+        playSound(powerUpScoreSoundNames[this.type] || "coin");
       }
     }
   });

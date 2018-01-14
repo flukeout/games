@@ -421,6 +421,11 @@ function createPaddle(options) {
         // this.spinPowerupCountdown = true;
       // }
 
+      // If this is a clone (bone)
+      if (this.cloneIndex) {
+        playRandomSoundFromBank("bones-collide");
+      }
+
       if(this.mode == "ghost" && obj.label.indexOf("ball") > -1) {
         this.element.classList.add("dead");
         this.element.classList.remove("shaking");
@@ -532,6 +537,9 @@ function createPaddle(options) {
         paddles.push(newPaddle);
         popPaddle(newPaddle.physics);
         newPaddle.setInputComponent(this.inputComponent);
+
+        // Used for bone cleanup
+        newPaddle.cloneIndex = i;
       }
 
     },
@@ -563,6 +571,11 @@ function createPaddle(options) {
         if(this.lifeSpan < 0) {
           popPaddle(this.physics);
           removalList.push(this);
+  
+          // If lifeSpan is being used, we're assuming that it's a clone (a bone)
+          if (this.cloneIndex) {
+            playSound('Powerup_Bones_Disapear_' + this.cloneIndex);
+          }
         }
       }
 

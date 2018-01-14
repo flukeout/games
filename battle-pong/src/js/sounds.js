@@ -32,10 +32,6 @@ var sounds = {
     url : "sounds/beep.mp3",
     volume : .15
   },
-  "thwap" : {
-    url : "sounds/thwap.wav",
-    volume : .15
-  },
   "win-round" : {
     url : "sounds/crowd.wav",
     volume : .15
@@ -62,21 +58,9 @@ var sounds = {
     url : "sounds/boom.wav",
     volume : .3
   },
-  "boom-mine" : {
-    url : "sounds/mine-explosion.mp3",
-    volume : .3
-  },
-  "clang" : {
-    url : "sounds/mine-clang.mp3",
-    volume : .2
-  },
   "score" : {
     url : "sounds/score.mp3",
     volume:  .1
-  },
-  "hit" : {
-    url : "sounds/hit.mp3",
-    volume : 1
   },
 
   "Power_Shot_V1" : {
@@ -114,18 +98,6 @@ var sounds = {
   },
 
 
-  "Bomb_Impact_High_V1" : {
-    url : "sounds/Bomb_Impact_High_V1.mp3",
-    volume : 1
-  },
-  "Bomb_Impact_High_V2" : {
-    url : "sounds/Bomb_Impact_High_V2.mp3",
-    volume : 1
-  },
-  "Bomb_Impact_High_V3" : {
-    url : "sounds/Bomb_Impact_High_V3.mp3",
-    volume : 1
-  },
   "Bomb_Impact_Low_V1" : {
     url : "sounds/Bomb_Impact_Low_V1.mp3",
     volume : 1
@@ -148,6 +120,102 @@ var sounds = {
     volume : 1
   },
 
+  "Powerup_Bones_Disapear_1" : {
+    url : "sounds/Powerup_Bones_Disapear_1.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_2" : {
+    url : "sounds/Powerup_Bones_Disapear_2.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_3" : {
+    url : "sounds/Powerup_Bones_Disapear_3.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_4" : {
+    url : "sounds/Powerup_Bones_Disapear_4.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_5" : {
+    url : "sounds/Powerup_Bones_Disapear_5.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_6" : {
+    url : "sounds/Powerup_Bones_Disapear_6.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bones_Collision_Low_V1" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V1.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V2" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V2.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V3" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V3.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V4" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V4.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V5" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V5.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V6" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V6.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V7" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V7.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V8" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V8.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V9" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V9.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V10" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V10.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V11" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V11.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V12" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V12.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Collision_Low_V13" : {
+    url : "sounds/Powerup_Bones_Collision_Low_V13.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bones_Score" : {
+    url : "sounds/Powerup_Bones_Score.mp3",
+    volume : 1
+  },
+  "Powerup_Enhance_Score" : {
+    url : "sounds/Powerup_Enhance_Score.mp3",
+    volume : 1
+  },
+
+  "Bomb_Explosion_V1" : {
+    url : "sounds/Bomb_Explosion_V1.mp3",
+    volume : 1
+  },
+  "Bomb_Explosion_V2" : {
+    url : "sounds/Bomb_Explosion_V2.mp3",
+    volume : 1
+  },
+
 };
 
 var soundBanks = {
@@ -158,21 +226,34 @@ var soundBanks = {
     "Ball_Score_V4"
   ],
   "super-hard-shot": [
-    // "thwap",
     "Power_Shot_V1",
     "Power_Shot_V2",
     "Power_Shot_V3",
     "Power_Shot_V4"
   ],
-  "mine-collision-low": [
+  "mine-collision": [
     "Bomb_Impact_Low_V1",
     "Bomb_Impact_Low_V2",
     "Bomb_Impact_Low_V3"
   ],
-  "mine-collision-high": [
-    "Bomb_Impact_High_V1",
-    "Bomb_Impact_High_V2",
-    "Bomb_Impact_High_V3"
+  "mine-explosion": [
+    "Bomb_Explosion_V1",
+    "Bomb_Explosion_V2"
+  ],
+  "bones-collide": [
+    "Powerup_Bones_Collision_Low_V1",
+    "Powerup_Bones_Collision_Low_V2",
+    "Powerup_Bones_Collision_Low_V3",
+    "Powerup_Bones_Collision_Low_V4",
+    "Powerup_Bones_Collision_Low_V5",
+    "Powerup_Bones_Collision_Low_V6",
+    "Powerup_Bones_Collision_Low_V7",
+    "Powerup_Bones_Collision_Low_V8",
+    "Powerup_Bones_Collision_Low_V9",
+    "Powerup_Bones_Collision_Low_V10",
+    "Powerup_Bones_Collision_Low_V11",
+    "Powerup_Bones_Collision_Low_V12",
+    "Powerup_Bones_Collision_Low_V13"
   ]
 };
 
@@ -222,11 +303,11 @@ function playLimitedSound(sound, category, options) {
   }
 }
 
-function playLimitedRandomSoundFromBank(soundBankName) {
+function playLimitedRandomSoundFromBank(soundBankName, options) {
   let soundBank = soundBanks[soundBankName];
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
-    playLimitedSound(sound, soundBankName);
+    playLimitedSound(sound, soundBankName, options);
   }
   else {
     console.warn('No soundbank for soundbank name: ' + soundBankName);
