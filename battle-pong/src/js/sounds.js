@@ -3,11 +3,21 @@
 // * Remove the timeout stuff? Should just move it to the object that calls it?
 // * That would allow us to not have two hit sounds...
 
+// Prevent all of these variables and constants from polluting the global scope
 (function () {
 
-const limitedSoundTimeoutMS = 100;
+const temporaryLowPassSettings = {
+  recoveryDuration: 2333,
+  recoveryDelay: 1666,
+  startFrequency: 500,
+  endFrequency: 20000,
+  Q: 10
+};
 
-limitedSoundTimeouts = {};
+const limitedSoundTimeoutMS = 100;
+let limitedSoundTimeouts = {};
+let temporaryLowpassTimeout = null;
+let temporaryLowpassComebackTimeout = null;
 
 var sounds = {
   "beep" : {
@@ -215,9 +225,48 @@ function playLimitedRandomSoundFromBank(soundBankName) {
   }
 }
 
+function temporaryLowPass() {
+
+  // If this effect is already happening, reset it (which effectively extends it)
+  if (temporaryLowpassTimeout) {
+    clearTimeout(temporaryLowpassTimeout);
+    clearTimeout(temporaryLowpassComebackTimeout);
+    globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  }
+
+    // Set up the initial effect
+  globalBiquadFilter.type = 'lowpass';
+  globalBiquadFilter.frequency.value = temporaryLowPassSettings.startFrequency;
+
+  temporaryLowpassComebackTimeout = setTimeout(() => {
+    // Decrease the effect over time
+    globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency,
+      soundContext.currentTime + temporaryLowPassSettings.recoveryDuration / 1000);
+  }, temporaryLowPassSettings.recoveryDelay);
+
+  // When the timeout happens, reset the biquadFilter
+  temporaryLowpassTimeout = setTimeout(() => {
+    // Reset timer
+    temporaryLowpassTimeout = null;
+
+    // Reset the filter
+    globalBiquadFilter.type = 'allpass';
+    globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
+  }, temporaryLowPassSettings.recoveryDelay + temporaryLowPassSettings.recoveryDuration);
+}
+
+var globalBiquadFilter = soundContext.createBiquadFilter();
+globalBiquadFilter.type = 'allpass';
+globalBiquadFilter.Q.value = temporaryLowPassSettings.Q;
+globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
+
+globalBiquadFilter.connect(soundContext.destination);
+
 function playSound(name, options){
   var sound = sounds[name];
   var buffer = sound.buffer;
+
+  options = options || {};
 
   if(!buffer){ return; }
 
@@ -243,16 +292,38 @@ function playSound(name, options){
 
   volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
 
-  panNode.connect(soundContext.destination);
+  // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
+  if (options.excludeFromLowPassFilter) {
+    panNode.connect(soundContext.destination);
+  }
+  else {
+    panNode.connect(globalBiquadFilter);
+  }
+
   volume.connect(panNode);
   source.connect(volume);
   source.start(0);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ʕ •ᴥ•ʔゝ☆ */
 }
 
-  window.playSound = playSound;
-  window.playLimitedSound = playLimitedSound;
-  window.playRandomSoundFromBank = playRandomSoundFromBank;
-  window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
+window.playSound = playSound;
+window.playLimitedSound = playLimitedSound;
+window.playRandomSoundFromBank = playRandomSoundFromBank;
+window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
+window.temporaryLowPass = temporaryLowPass;
 
 })();

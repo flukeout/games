@@ -21,8 +21,16 @@ queryStringParts.forEach(function (pair) {
   var key = pairParts[0];
   var value = pairParts[1];
 
+  try {
+    value = JSON.parse(unescape(value));
+  }
+  catch (e) {}
+
   if (value === 'false') value = false;
   if (value === 'true') value = true;
 
   if (key in window.Settings) window.Settings[key] = value;
+  console.log(key, key in window.Settings, Settings[key]);
 });
+
+console.log(Settings);
