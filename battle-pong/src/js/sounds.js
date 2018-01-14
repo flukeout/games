@@ -218,6 +218,15 @@ var sounds = {
     volume : 1
   },
 
+  "Powerup_Bones_Score" : {
+    url : "sounds/Powerup_Bones_Score.mp3",
+    volume : 1
+  },
+  "Powerup_Enhance_Score" : {
+    url : "sounds/Powerup_Enhance_Score.mp3",
+    volume : 1
+  },
+
 };
 
 var soundBanks = {

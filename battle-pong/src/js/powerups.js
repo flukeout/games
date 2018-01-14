@@ -3,6 +3,11 @@ var powerUp;
 var powerUpTypes = window.Settings.powerUpTypes;
 // var powerUpTypes = ["spin"];
 
+const powerUpScoreSoundNames = {
+  clone: 'Powerup_Bones_Score',
+  grow: 'Powerup_Enhance_Score'
+};
+
 // Adds a random powerup
 function addPowerup(x, y){
 
@@ -195,7 +200,6 @@ function createPowerup(x, y, type){
     },
 
     hit : function(obj){
-
       var playerHit = false;
       var playerAffected = false;
 
@@ -239,7 +243,8 @@ function createPowerup(x, y, type){
 
         game.activePowerupCount--;
         removalList.push(this);
-        playSound("coin");
+        
+        playSound(powerUpScoreSoundNames[this.type] || "coin");
       }
     }
   });
