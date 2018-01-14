@@ -454,6 +454,9 @@ function createPaddle(options) {
         paddles.push(newPaddle);
         popPaddle(newPaddle.physics);
         newPaddle.setInputComponent(this.inputComponent);
+
+        // Used for bone cleanup
+        newPaddle.cloneIndex = i;
       }
 
     },
@@ -485,6 +488,11 @@ function createPaddle(options) {
         if(this.lifeSpan < 0) {
           popPaddle(this.physics);
           removalList.push(this);
+  
+          // If lifeSpan is being used, we're assuming that it's a clone (a bone)
+          if (this.cloneIndex) {
+            playSound('Powerup_Bones_Disapear_' + this.cloneIndex);
+          }
         }
       }
 

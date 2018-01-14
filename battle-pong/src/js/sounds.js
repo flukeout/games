@@ -140,6 +140,31 @@ var sounds = {
     volume : 1
   },
 
+  "Powerup_Bones_Disapear_1" : {
+    url : "sounds/Powerup_Bones_Disapear_1.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_2" : {
+    url : "sounds/Powerup_Bones_Disapear_2.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_3" : {
+    url : "sounds/Powerup_Bones_Disapear_3.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_4" : {
+    url : "sounds/Powerup_Bones_Disapear_4.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_5" : {
+    url : "sounds/Powerup_Bones_Disapear_5.mp3",
+    volume : 1
+  },
+  "Powerup_Bones_Disapear_6" : {
+    url : "sounds/Powerup_Bones_Disapear_6.mp3",
+    volume : 1
+  },
+
 };
 
 var soundBanks = {
