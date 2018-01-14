@@ -17,7 +17,7 @@ function makeStars() {
 function mineExplosion(xposition, yposition, size){
 
 
-  playSound("boom-mine");
+  playSound("boom-mine", {excludeFromLowPassFilter: true});
   shakeScreen();
 
   // Adds the orange blast

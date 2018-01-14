@@ -262,6 +262,8 @@ function playSound(name, options){
   var sound = sounds[name];
   var buffer = sound.buffer;
 
+  options = options || {};
+
   if(!buffer){ return; }
 
   var soundOptions = {
@@ -286,7 +288,14 @@ function playSound(name, options){
 
   volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
 
-  panNode.connect(globalBiquadFilter);
+  // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
+  if (options.excludeFromLowPassFilter) {
+    panNode.connect(soundContext.destination);
+  }
+  else {
+    panNode.connect(globalBiquadFilter);
+  }
+
   volume.connect(panNode);
   source.connect(volume);
   source.start(0);
@@ -296,5 +305,6 @@ window.playSound = playSound;
 window.playLimitedSound = playLimitedSound;
 window.playRandomSoundFromBank = playRandomSoundFromBank;
 window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
+window.temporaryLowPass = temporaryLowPass;
 
 })();
