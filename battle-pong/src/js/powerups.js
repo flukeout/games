@@ -3,7 +3,7 @@ var powerUp;
 var powerUpTypes = window.Settings.powerUpTypes;
 // var powerUpTypes = ["spin"];
 
-const mineSpeedVolumeMultiplier = 0.75;
+const mineSpeedVolumeMultiplier = 0.5;
 
 const powerUpScoreSoundNames = {
   clone: 'Powerup_Bones_Score',
@@ -218,7 +218,7 @@ function createPowerup(x, y, type){
       if(obj.label.indexOf("paddle") > -1 || obj.label.indexOf("ball") > -1 ){
         if(this.type == "mine") {
           let ds = Math.abs(this.physics.speed - obj.speed);
-          let volume = Math.min(1, ds * mineSpeedVolumeMultiplier);
+          let volume = Math.min(1, Math.log(1 + ds * mineSpeedVolumeMultiplier));
           
           // TODO: take angular velocity into account because paddles can hit with higher speed by spinning
           playLimitedRandomSoundFromBank("mine-collision", {volume: volume});
