@@ -24,10 +24,6 @@ var sounds = {
     url : "sounds/beep.mp3",
     volume : .15
   },
-  "thwap" : {
-    url : "sounds/thwap.wav",
-    volume : .15
-  },
   "win-round" : {
     url : "sounds/crowd.wav",
     volume : .15
@@ -54,21 +50,9 @@ var sounds = {
     url : "sounds/boom.wav",
     volume : .3
   },
-  "boom-mine" : {
-    url : "sounds/mine-explosion.mp3",
-    volume : .3
-  },
-  "clang" : {
-    url : "sounds/clang-2.mp3",
-    volume : .2
-  },
   "score" : {
     url : "sounds/score.mp3",
     volume:  .1
-  },
-  "hit" : {
-    url : "sounds/hit.mp3",
-    volume : 1
   },
 
   "Power_Shot_V1" : {
@@ -106,18 +90,6 @@ var sounds = {
   },
 
 
-  "Bomb_Impact_High_V1" : {
-    url : "sounds/Bomb_Impact_High_V1.mp3",
-    volume : 1
-  },
-  "Bomb_Impact_High_V2" : {
-    url : "sounds/Bomb_Impact_High_V2.mp3",
-    volume : 1
-  },
-  "Bomb_Impact_High_V3" : {
-    url : "sounds/Bomb_Impact_High_V3.mp3",
-    volume : 1
-  },
   "Bomb_Impact_Low_V1" : {
     url : "sounds/Bomb_Impact_Low_V1.mp3",
     volume : 1
@@ -246,21 +218,15 @@ var soundBanks = {
     "Ball_Score_V4"
   ],
   "super-hard-shot": [
-    // "thwap",
     "Power_Shot_V1",
     "Power_Shot_V2",
     "Power_Shot_V3",
     "Power_Shot_V4"
   ],
-  "mine-collision-low": [
+  "mine-collision": [
     "Bomb_Impact_Low_V1",
     "Bomb_Impact_Low_V2",
     "Bomb_Impact_Low_V3"
-  ],
-  "mine-collision-high": [
-    "Bomb_Impact_High_V1",
-    "Bomb_Impact_High_V2",
-    "Bomb_Impact_High_V3"
   ],
   "mine-explosion": [
     "Bomb_Explosion_V1",
@@ -329,11 +295,11 @@ function playLimitedSound(sound, category, options) {
   }
 }
 
-function playLimitedRandomSoundFromBank(soundBankName) {
+function playLimitedRandomSoundFromBank(soundBankName, options) {
   let soundBank = soundBanks[soundBankName];
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
-    playLimitedSound(sound, soundBankName);
+    playLimitedSound(sound, soundBankName, options);
   }
   else {
     console.warn('No soundbank for soundbank name: ' + soundBankName);
