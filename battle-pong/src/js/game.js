@@ -772,6 +772,8 @@ var game =  {
 
     this.moveTerrain(scoredByPlayerNum, terrainChange);
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
+
+    playRandomSoundFromBank('score');
   },
 
   // Moves the terrain & Score based on a goal or mine...

@@ -58,21 +58,18 @@ Events.on(engine, 'collisionEnd', function(event) {
       }
     }
 
-    physicsObjectA = { name : pair.bodyA.label };
-    physicsObjectB = { name : pair.bodyB.label };
-
     /// TODO - we can still make this easier somehow, have a way to do lookups
     for(var k = 0; k < objectsToRender.length; k++) {
       if(objectsToRender[k].physics === pair.bodyA){
         var gameObject = objectsToRender[k];
         if(gameObject.hit){
-          gameObject.hit(physicsObjectB);
+          gameObject.hit(pair.bodyB);
         }
       }
       if(objectsToRender[k].physics === pair.bodyB){
         var gameObject = objectsToRender[k];
         if(gameObject.hit){
-          gameObject.hit(physicsObjectA);
+          gameObject.hit(pair.bodyA);
         }
       }
     }

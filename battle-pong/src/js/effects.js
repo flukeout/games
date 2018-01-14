@@ -69,7 +69,7 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
     blastDirection = "all";
   }
 
-  playSound("boom");
+  // playSound("boom");
   shakeScreen();
 
   // Adds the orange blast
@@ -295,7 +295,7 @@ function fireGun(x, y, angle, player){
   addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
   shakeScreen();
 
-  playRandomSoundFromSoundBank("super-hard-shot");
+  playRandomSoundFromBank("super-hard-shot");
 
   document.dispatchEvent(new CustomEvent("emotion", {detail: {
     player: player,

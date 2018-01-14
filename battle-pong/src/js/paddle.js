@@ -343,7 +343,7 @@ function createPaddle(options) {
         // this.spinPowerupCountdown = true;
       // }
 
-      if(this.mode == "ghost" && obj.name.indexOf("ball") > -1) {
+      if(this.mode == "ghost" && obj.label.indexOf("ball") > -1) {
         this.element.classList.add("dead");
         this.element.classList.remove("shaking");
         explodePaddle(this.physics);
