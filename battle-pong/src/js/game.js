@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max : window.Settings.playTo || 3,         // First to this number wins
+    max : window.Settings.playTo || 2,         // First to this number wins
     winner : false,  // Holds the winning paddle object
     loser : false    // Holds the losing paddle object
   },
@@ -507,6 +507,11 @@ var game =  {
 
   // Restarts a round
   restart : function(){
+    console.log("restart");
+
+    setTimeout(function(){
+      playSound("round-start");
+    }, 80)
 
     var that = this;
     var messageDelay = 0;
@@ -541,13 +546,11 @@ var game =  {
     }, 1400)
   },
 
-
   // Updates the score display in the corners of the game
   updateScoreDisplay: function(){
     document.querySelector(".player-1-score").innerText =this.score["player1"];
     document.querySelector(".player-2-score").innerText =this.score["player2"];
   },
-
 
   // Updates the terrain widths and paddle movement restrictions
   updateBounds : function(mode){
@@ -555,7 +558,6 @@ var game =  {
     for(var i = 0; i < paddles.length; i++) {
 
       var p = paddles[i];
-
 
         if(this.mode == "running") {
           if(p.player == 0) {

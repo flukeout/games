@@ -58,10 +58,28 @@ function mineExplosion(xposition, yposition, size){
 }
 
 
+function makeCracks(x, y){
+  var cracks = document.createElement("div");
+  cracks.classList.add("cracks");
+  cracks.style.width = "300px";
+  cracks.style.height = "300px";
+  cracks.style.transform = "translate3d(" + (x - 150) + "px, " + (y - 150) + "px , 0) rotate("+getRandom(0,360)+"deg)";
+
+  document.querySelector(".blast-zone").appendChild(cracks);
+
+  setTimeout(function(el) {
+    return function(){
+      el.remove();
+    };
+  }(cracks),1500);
+}
+
 // Adds a bomb to the board at x,y
 // Pixel position, not grid position
 
 function makeExplosion(xposition, yposition, size, blastDirection, type){
+
+  makeCracks(xposition,yposition);
 
   if(!blastDirection) {
     blastDirection = "all";
@@ -108,6 +126,8 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
   document.querySelector(".world").appendChild(particle.el);
 
 
+
+
   // Blast lines that eminate from the center of the bomb
   for(var i = 0; i < getRandom(8,12); i++){
     var options = {
@@ -134,7 +154,7 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
 
     var percentage = 5; // Percent along blast line where the white should start.
     options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
-    makeParticle(options);
+    // makeParticle(options); TODO - temporarily removing blast lines from scoring
   }
 }
 

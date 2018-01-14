@@ -20,6 +20,14 @@ let temporaryLowpassTimeout = null;
 let temporaryLowpassComebackTimeout = null;
 
 var sounds = {
+  "round-start" : {
+    url : "sounds/round-start.mp3",
+    volume : .25
+  },
+  "dash" : {
+    url : "sounds/dash.wav",
+    volume : .15
+  },
   "beep" : {
     url : "sounds/beep.mp3",
     volume : .15
@@ -344,6 +352,7 @@ globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
 globalBiquadFilter.connect(soundContext.destination);
 
 function playSound(name, options){
+
   var sound = sounds[name];
   var buffer = sound.buffer;
 
@@ -384,19 +393,6 @@ function playSound(name, options){
   volume.connect(panNode);
   source.connect(volume);
   source.start(0);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /* ʕ •ᴥ•ʔゝ☆ */
 }

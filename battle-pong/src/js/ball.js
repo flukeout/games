@@ -127,6 +127,11 @@ function createBall(options){
         // who knows?
       }
 
+      // Reduce ball rotation speed
+      if(this.physics.angularSpeed > 0) {
+        Matter.Body.setAngularVelocity(this.physics, this.physics.angularVelocity * .95 );
+      }
+
       // If it's going too fast, slow it down
       if(this.physics.speed > this.maxSpeed) {
         this.changeVelocityRatio(this.maxSpeedSlowdownRatio);
@@ -155,9 +160,9 @@ function createBall(options){
 
       // TODO - do these better
       var stretchScale = 1;
-      var maxStretch = 1.3;
+      var maxStretch = 1.5;
       var squashScale = 1;
-      var minSquash = .8;
+      var minSquash = .75;
 
       var minStretchSpeed = 6;
 
@@ -167,6 +172,13 @@ function createBall(options){
         exceedRatio = exceededBy / 5;
         stretchScale = 1 + exceedRatio * .5;
         squashScale = 1 - exceedRatio * .5;
+      }
+
+      if(stretchScale > maxStretch) {
+        stretchScale = maxStretch
+      }
+      if(squashScale < minSquash) {
+        squashScale = minSquash
       }
 
       this.element.querySelector(".body").style.transform = "rotate("+ movementAngle +"rad) scaleX(" + squashScale + ") scaleY("+stretchScale+")";
@@ -296,11 +308,8 @@ function createBall(options){
         if(this.physics.speed > this.minWordSpeed) {
           this.drawLetter();
         } else {
-          console.log("ended word early");
           this.endWord();
         }
-
-
       }
 
       this.lastStepSpeed = JSON.parse(JSON.stringify(this.physics.speed));
@@ -318,7 +327,6 @@ function createBall(options){
     },
 
     drawLetter : function(){
-
       var movementAngle = 180 + -Math.atan2(this.physics.velocity.x, this.physics.velocity.y) * 180/Math.PI;
 
       if(movementAngle >= 360) {

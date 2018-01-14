@@ -191,7 +191,7 @@ function createPowerup(x, y, type){
         }
 
         makeParticle(options);
-
+        makeCracks(this.physics.position.x, this.physics.position.y);
 
         removalList.push(this);
         game.activePowerupCount--;

@@ -79,6 +79,24 @@
   border-radius: 50%;
 }
 
+.cracks {
+  position: absolute;
+  background-image: url(assets/images/blast.svg);
+  z-index: 1;
+  opacity: 1;
+  opacity: 0;
+  transform-style: preserve-3d;
+  animation: crackFade 1.5s ease-out;
+}
+
+@keyframes crackFade {
+  0% {
+    opacity: .15;
+  }
+  80% {
+    opacity: .15;
+  }
+}
 
 @keyframes boom {
   0% {
