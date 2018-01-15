@@ -339,6 +339,22 @@ const updateFunctions = {
         paddle.targetHeight = paddle.height;
       }
     }
+  },
+  cloneCleanup: function (paddle) {
+    if(paddle.lifeSpan != "infinite") {
+      paddle.lifeSpan = paddle.lifeSpan - paddle.dt;
+
+      if(paddle.lifeSpan < 0) {
+        popPaddle(paddle.physics);
+        removalList.push(paddle);
+
+        // If lifeSpan is being used, we're assuming that it's a clone (a bone)
+        if (paddle.cloneIndex !== undefined) {
+          let soundIndex = Math.min(boneDissapearSounds.length, paddle.cloneIndex + 1);
+          playSound('Powerup_Bones_Disapear_' + soundIndex);
+        }
+      }
+    }
   }
 };
 
@@ -573,29 +589,15 @@ function createPaddle(options) {
     // This gets called every frame of the game
     frameTicks: 0,
     update(delta){
+      // Save these on the object so that they're accessible to update functions
       this.dt = delta;
-
       this.frameTicks++;
 
-      if(this.lifeSpan != "infinite") {
-        this.lifeSpan = this.lifeSpan - delta;
-
-        if(this.lifeSpan < 0) {
-          popPaddle(this.physics);
-          removalList.push(this);
-  
-          // If lifeSpan is being used, we're assuming that it's a clone (a bone)
-          if (this.cloneIndex !== undefined) {
-            let soundIndex = Math.min(boneDissapearSounds.length, this.cloneIndex + 1);
-            playSound('Powerup_Bones_Disapear_' + soundIndex);
-          }
-        }
-      }
-
+      // Ghosts are just there to be scared and die. They can't move.
       if(this.mode != "ghost") {
         this.updateActionsFromInputComponents();
       } else {
-        // Set all actions to false
+        // Set all actions to false because ghosts can't move.
         for (let key in this.actions) {
           this.actions[key] = 0;
         }
@@ -633,6 +635,9 @@ function createPaddle(options) {
 
         // Make sure the paddle's spin speed isn't insane
         updateFunctions.capAngularVelocity(paddle);
+
+        // Check if this is a clone and remove it if necessary
+        updateFunctions.cloneCleanup(paddle);
       },
       snapBack: function (paddle) {
         updateFunctions.expandPowerup(paddle);
