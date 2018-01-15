@@ -1,6 +1,6 @@
 const paddleKeyboardActions = [
   // Discrete on/off buttons
-  'up','left','down','right','spinClockwise','spinCounterClockwise', 'dash'
+  'up','left','down','right','spinClockwise','spinCounterClockwise', 'dash', 'windupClockwise', 'windupCounterClockwise'
 ];
 
 const paddleGamepadActions = [
@@ -207,7 +207,7 @@ const updateFunctions = {
   },
   snapBackSpinCheck: function (paddle) {
     // Only activate this if there's a real desire to do so :)
-    if (Math.abs(paddle.actions.spinX) > 0.2) {
+    if (Math.abs(paddle.actions.spinX) > 0.2 || paddle.actions.windupClockwise || paddle.actions.windupCounterClockwise) {
       paddle.updateRoute = 'snapBack';
     }
   },
@@ -219,11 +219,19 @@ const updateFunctions = {
       paddle.spinLockAngle = paddle.targetAngle;
     }
 
+    let windupAmount;
+
+    // The user can either be pushing a button or using an analog stick, so figure out which one
+    // and use the appropriate value.
+    if (paddle.actions.windupCounterClockwise) windupAmount = -HALF_PI;
+    else if (paddle.actions.windupClockwise) windupAmount = HALF_PI;
+    else paddle.actions.spinX * HALF_PI;
+
     // Set the target angle to 90° (half PI) forward or backward, waiting for the user to let go...
-    paddle.targetAngle = paddle.spinLockAngle + paddle.actions.spinX * HALF_PI;
+    paddle.targetAngle = paddle.spinLockAngle + windupAmount;
 
     // If the user has let go...
-    if (Math.abs(paddle.actions.spinX) < 0.2) {
+    if (Math.abs(paddle.actions.spinX) < 0.2 && !(paddle.actions.windupClockwise || paddle.actions.windupCounterClockwise)) {
       // Roll back to the original angle
       paddle.targetAngle = paddle.spinLockAngle;
 
