@@ -57,13 +57,15 @@ var gamepadInputLabels = {
 
 var keyboardInputLabelToActionMappings = [
   {
-    "KeyW": "up",
-    "KeyS": "down",
-    "KeyA": "left",
-    "KeyD": "right",
-    "KeyC": "spinCounterClockwise",
-    "KeyV": "spinClockwise",
-    "KeyB": "dash"
+    "KeyW":       "up",
+    "KeyS":       "down",
+    "KeyA":       "left",
+    "KeyD":       "right",
+    "KeyC":       "spinCounterClockwise",
+    "KeyV":       "spinClockwise",
+    "KeyB":       "dash",
+    "KeyF":       "windupCounterClockwise",
+    "KeyG":       "windupClockwise"
   },
   {
     "ArrowUp":    "up",
@@ -72,7 +74,9 @@ var keyboardInputLabelToActionMappings = [
     "ArrowRight": "right",
     "Comma":      "spinCounterClockwise",
     "Period":     "spinClockwise",
-    "KeyM":       "dash"
+    "KeyM":       "dash",
+    "KeyJ":       "windupCounterClockwise",
+    "KeyK":       "windupClockwise"
   }
 ];
 
