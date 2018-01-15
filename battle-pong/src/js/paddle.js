@@ -586,7 +586,7 @@ function createPaddle(options) {
   
           // If lifeSpan is being used, we're assuming that it's a clone (a bone)
           if (this.cloneIndex !== undefined) {
-            let soundIndex = Math.max(1, boneDissapearSounds.length - this.cloneIndex);
+            let soundIndex = Math.min(boneDissapearSounds.length, this.cloneIndex + 1);
             playSound('Powerup_Bones_Disapear_' + soundIndex);
           }
         }
