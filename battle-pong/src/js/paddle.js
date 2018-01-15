@@ -22,6 +22,8 @@ const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
 const maxSnapSpinSpeedBoost = 3;
 const snapSpinSpeedBoostReductionFactor = 0.25;
 
+const boneDissapearSounds = findSounds('Powerup_Bones_Disapear_');
+
 const updateFunctions = {
   moveXY: function (paddle) {
     // We want to calculate a movement angle based on
@@ -507,6 +509,8 @@ function createPaddle(options) {
       var playerNum = this.player;
       var numClones = getRandom(3,6);
 
+      let clones = [];
+
       for(var i = 0; i <= numClones; i++) {
 
         var minX, maxX;
@@ -538,10 +542,18 @@ function createPaddle(options) {
         popPaddle(newPaddle.physics);
         newPaddle.setInputComponent(this.inputComponent);
 
-        // Used for bone cleanup
-        newPaddle.cloneIndex = i;
+        clones.push(newPaddle);
       }
 
+      // Sort the clones to give an index for disappearing which will play their
+      // hilarious bone disappearing noise in the right order.
+      clones = clones.sort((a, b) => {
+        if (a.lifeSpan > b.lifeSpan) return 1;
+        if (a.lifeSpan < b.lifeSpan) return -1;
+        return 0;
+      });
+
+      clones.forEach((c, i) => c.cloneIndex = i);
     },
 
     init: function(){
@@ -573,8 +585,9 @@ function createPaddle(options) {
           removalList.push(this);
   
           // If lifeSpan is being used, we're assuming that it's a clone (a bone)
-          if (this.cloneIndex) {
-            playSound('Powerup_Bones_Disapear_' + this.cloneIndex);
+          if (this.cloneIndex !== undefined) {
+            let soundIndex = Math.max(1, boneDissapearSounds.length - this.cloneIndex);
+            playSound('Powerup_Bones_Disapear_' + soundIndex);
           }
         }
       }

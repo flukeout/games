@@ -354,6 +354,12 @@ globalBiquadFilter.connect(soundContext.destination);
 function playSound(name, options){
 
   var sound = sounds[name];
+
+  if (!sound) {
+    console.warn('No sound with name ' + name);
+    return;
+  }
+
   var buffer = sound.buffer;
 
   options = options || {};
@@ -397,10 +403,21 @@ function playSound(name, options){
   /* ʕ •ᴥ•ʔゝ☆ */
 }
 
+function findSounds(name) {
+  let foundSounds = [];
+  for (let sound in sounds) {
+    if (sound.indexOf(name) > -1) {
+      foundSounds.push(sound);
+    }
+  }
+  return foundSounds;
+}
+
 window.playSound = playSound;
 window.playLimitedSound = playLimitedSound;
 window.playRandomSoundFromBank = playRandomSoundFromBank;
 window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
 window.temporaryLowPass = temporaryLowPass;
+window.findSounds = findSounds;
 
 })();
