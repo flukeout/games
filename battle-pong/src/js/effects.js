@@ -315,6 +315,8 @@ function fireGun(x, y, angle, player){
 
   playRandomSoundFromBank("super-hard-shot");
 
+  music.setMoodTemporarily('intense');
+
   document.dispatchEvent(new CustomEvent("emotion", {detail: {
     player: player,
     type: "strong"

@@ -73,6 +73,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var frameRateMonitor  = new FrameRateMonitor();
   }
 
+  var music = new Music();
+  music.load().then(() => music.start());
+
+  window.music = music;
+
   game.init();
 
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
