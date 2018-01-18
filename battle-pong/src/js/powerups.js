@@ -10,30 +10,37 @@
   const maxPowerupCount = Settings.maxPowerupCount || 2;
 
   function PowerupManager(game) {
-    let activePowerupCount = 0;
+    let activePowerups = [];
+    
+    this.automaticSpawning = true;
+
+    Object.defineProperty(this, 'activePowerups', {
+      get: () => {return activePowerups;}
+    });
 
     this.update = () => {
-      let chance = getRandom(0, powerupFrequency);
-      
-      if(chance < 1 && activePowerupCount < maxPowerupCount) {
-        var x = game.boardWidth * game.terrainLinePercent/100;
+      if (this.automaticSpawning) {
+        let chance = getRandom(0, powerupFrequency);
 
-        if(x < 50) {
-          x = 50;
-        } else if ( x > game.boardWidth - 50) {
-          x = game.boardWidth - 50;
+        if(chance < 1 && activePowerups.length < maxPowerupCount) {
+          var x = game.boardWidth * game.terrainLinePercent/100;
+
+          if(x < 50) {
+            x = 50;
+          } else if ( x > game.boardWidth - 50) {
+            x = game.boardWidth - 50;
+          }
+
+          var y = getRandom(50, game.boardHeight - 50);
+
+          this.addPowerup(x, y);
+          activePowerups.push(this);
         }
-
-        var y = getRandom(50, game.boardHeight - 50);
-
-        this.addPowerup(x, y);
-        activePowerupCount++;
       }
     }
 
     // Adds a random powerup
     this.addPowerup = (x, y) => {
-
       let type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
 
       let powerUp = this.createPowerup(x, y, type);
@@ -215,7 +222,7 @@
           makeCracks(this.physics.position.x, this.physics.position.y);
 
           game.removeObject(this);
-          activePowerupCount--;
+          activePowerups.splice(activePowerups.indexOf(this), 1);
         },
 
         hit : function(obj) {
@@ -259,9 +266,9 @@
               game.cloneBall();
             }
 
-            activePowerupCount--;
             game.removeObject(this);
-            
+            activePowerups.splice(activePowerups.indexOf(this), 1);
+
             playSound(powerUpScoreSoundNames[this.type] || "coin");
           }
         }
