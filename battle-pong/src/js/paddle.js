@@ -513,8 +513,8 @@ function createPaddle(options) {
       // For this powerup, we treat it as having a 'time remaining'
       // Gets reduced every frame, and added to when we hit a powerup.
       if(type == "spin") {
-        for(var i = 0; i < paddles.length; i++) {
-          var p = paddles[i];
+        for(var i = 0; i < game.paddles.length; i++) {
+          var p = game.paddles[i];
           p.hasSpinPowerup = false;
           p.spinPowerupRemaining = 0;
         }
@@ -562,7 +562,7 @@ function createPaddle(options) {
           type: "clone"
         });
 
-        paddles.push(newPaddle);
+        game.paddles.push(newPaddle);
         popPaddle(newPaddle.physics);
         newPaddle.setInputComponent(this.inputComponent);
 

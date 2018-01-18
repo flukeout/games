@@ -28,8 +28,8 @@ var game =  {
   // off - ?
   mode : "off",
 
-  goalTimeoutMS: window.Settings.goalTimeoutMS,
-  timeSinceEndzoneHitMS: window.Settings.goalTimeoutMS,
+  goalTimeoutMS: Settings.goalTimeoutMS,
+  timeSinceEndzoneHitMS: Settings.goalTimeoutMS,
 
   boardWidth : 0,
   boardHeight: 0,
@@ -43,8 +43,10 @@ var game =  {
 
   powerupManager: null,
 
+  paddles: [],
+  ball: null,
+
   init: function(){
-    this.powerupManager = new PowerupManager(this);
     this.worldEl = document.querySelector(".world");
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
@@ -63,6 +65,7 @@ var game =  {
       this.playerScored(scoringPlayer, e.detail.ball);
     });
 
+    this.powerupManager = new PowerupManager(this);
   },
 
   loserLived: function(){
@@ -74,8 +77,8 @@ var game =  {
     this.score.loser.element.classList.remove("loser");
     this.score.loser.element.classList.remove("shaking");
 
-    setTimeout(function(){
-      removalList.push(ball);
+    setTimeout(() => {
+      removalList.push(this.ball);
     }, 1500);
 
     setTimeout(() => {
@@ -84,7 +87,7 @@ var game =  {
   },
 
   loserDied: function(){
-    removalList.push(ball);
+    removalList.push(this.ball);
 
     setTimeout(() => {
       this.showMessage("YOU MONSTER", 1750);
@@ -155,7 +158,7 @@ var game =  {
 
     this.timeSinceEndzoneHitMS = this.timeSinceEndzoneHitMS + delta;
 
-    if(game.mode == "running") {
+    if(this.mode == "running") {
       this.powerupManager.update();
     }
 
@@ -170,10 +173,10 @@ var game =  {
 
     var wind = -.1;
 
-    if(ball) {
-      if(ball.deleted != true) {
-        deltaX = this.boardWidth / 2 - ball.physics.position.x;
-        deltaY = this.boardHeight / 2 - ball.physics.position.y;
+    if(this.ball) {
+      if(this.ball.deleted != true) {
+        deltaX = this.boardWidth / 2 - this.ball.physics.position.x;
+        deltaY = this.boardHeight / 2 - this.ball.physics.position.y;
       }
     }
     this.ticks++;
@@ -206,11 +209,11 @@ var game =  {
     }
 
     // Iterate over all of the objects are are updating on screen
-    objectsToRender.forEach(function (obj) {
+    objectsToRender.forEach((obj) => {
 
       // TODO - remove this because the ball has a function that runs every frame anyway now
       // so we can add that logic internally in the ball.
-      if(obj == ball) {
+      if(obj == this.ball) {
         if(obj.gotHit) {
           obj.resolveHit();
         }
@@ -270,10 +273,10 @@ var game =  {
 
     var terrainCenterX = this.boardWidth * this.terrainLinePercent/100;
 
-    if (ball) {
+    if (this.ball) {
 
       // Figure out what player zone we are in
-      if(ball.physics.position.x < terrainCenterX) {
+      if(this.ball.physics.position.x < terrainCenterX) {
         this.ballZone = 1;
       } else {
         this.ballZone = 2;
@@ -282,7 +285,7 @@ var game =  {
       if(this.ballZone != this.lastBallZone) {
         this.elapsedTime = 0;
         this.ballState = "neutral";
-        ball.element.classList.remove("overtime");
+        this.ball.element.classList.remove("overtime");
       }
 
       this.lastBallZone = this.ballZone;
@@ -290,12 +293,12 @@ var game =  {
       // If the ball is going slower than 2.5
       // We start keeping track of time
 
-      if(this.previousTime && ball.physics.speed < slowSpeedCutoff) {
+      if(this.previousTime && this.ball.physics.speed < slowSpeedCutoff) {
         this.elapsedTime = this.elapsedTime + delta;
       } else {
         this.elapsedTime = 0;
         // TODO - make this an event, or at least a method on the ball?
-        ball.element.classList.remove("overtime");
+        this.ball.element.classList.remove("overtime");
       }
 
       if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS && this.mode == "running") {
@@ -379,7 +382,7 @@ var game =  {
   // TODO - fix de-dupe
   cloneBall : function(options){
 
-    if(!ball) { return }
+    if(!this.ball) { return }
 
     if(!options){
       options = {};
@@ -397,8 +400,8 @@ var game =  {
 
     newBall.element.classList.add('clone-ball');
 
-    var x = ball.physics.position.x;
-    var y = ball.physics.position.y;
+    var x = this.ball.physics.position.x;
+    var y = this.ball.physics.position.y;
 
 
     Matter.Body.set(newBall.physics, {
@@ -406,11 +409,11 @@ var game =  {
     });
 
     Matter.Body.setVelocity(newBall.physics, {
-      x : ball.physics.velocity.x,
-      y : ball.physics.velocity.y
+      x : this.ball.physics.velocity.x,
+      y : this.ball.physics.velocity.y
     });
 
-    popBall(ball.physics);
+    popBall(this.ball.physics);
   },
 
 
@@ -419,16 +422,16 @@ var game =  {
       options = {};
     }
 
-    ball = createBall(options);
+    this.ball = createBall(options);
 
     // TODO - Move a lot of this stuff to the ball object?
-    ball.element.classList.add('show');
+    this.ball.element.classList.add('show');
 
     var y = this.boardHeight / 2 - 15;
     var x = this.boardWidth * this.terrainLinePercent / 100;
 
 
-    Matter.Body.set(ball.physics, {
+    Matter.Body.set(this.ball.physics, {
       position: { x : x, y : y }
     });
 
@@ -436,9 +439,9 @@ var game =  {
     var launchForce = .02 * this.physicsSamplingRatio;
 
     if(chance === 0) {
-      ball.launch(0, -launchForce);
+      this.ball.launch(0, -launchForce);
     } else {
-      ball.launch(0, launchForce);
+      this.ball.launch(0, launchForce);
     }
   },
 
@@ -512,8 +515,8 @@ var game =  {
     this.bodyEl.classList.remove("winner-two");
     this.bodyEl.classList.remove("winner-one");
 
-    for(var i = 0; i < paddles.length; i++){
-      var p = paddles[i];
+    for(var i = 0; i < this.paddles.length; i++){
+      var p = this.paddles[i];
       p.reset();
     }
 
@@ -539,9 +542,9 @@ var game =  {
   // Updates the terrain widths and paddle movement restrictions
   updateBounds : function(mode){
 
-    for(var i = 0; i < paddles.length; i++) {
+    for(var i = 0; i < this.paddles.length; i++) {
 
-      var p = paddles[i];
+      var p = this.paddles[i];
 
         if(this.mode == "running") {
           if(p.player == 0) {
@@ -590,7 +593,7 @@ var game =  {
 
     var that = this;
 
-    if(this.score.winner == paddles[0]) {
+    if(this.score.winner == this.paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
       this.bodyEl.classList.add("winner-one");
     } else {
@@ -601,17 +604,17 @@ var game =  {
     this.score.player1 = 0;
     this.score.player2 = 0;
 
-    setTimeout(function(){
+    setTimeout(() => {
 
       var minY = that.score.loser.physics.bounds.min.y;
       var maxY = that.score.loser.physics.bounds.max.y;
       var deltaY = minY - maxY;
-      var paddleY = maxY + deltaY/2 - ball.width/2;
+      var paddleY = maxY + deltaY/2 - this.ball.width/2;
       that.score.loser.element.classList.add("shaking");
 
       // Create the ball
       // TODO make this relative to the paddle X value?
-      if(that.score.winner == paddles[0]) {
+      if(that.score.winner == this.paddles[0]) {
         var ballX = 600;
       } else {
         var ballX = 200;
@@ -619,12 +622,12 @@ var game =  {
 
       that.showMessage("FINISH IT!!!");
 
-      ball = createBall({
+      this.ball = createBall({
         x: ballX,
         y: paddleY
       });
 
-      ball.element.classList.add('show');
+      this.ball.element.classList.add('show');
 
     }, 2000);
 
@@ -634,14 +637,14 @@ var game =  {
   // When the round is over, but a player hasn't wong the game yet
   roundOver: function() {
 
-    paddles[0].maxX = false;
-    paddles[1].minX = false;
+    this.paddles[0].maxX = false;
+    this.paddles[1].minX = false;
 
-    if(ball.physics.speed > ball.wordSpeed) {
-      addFakeBall(ball.physics);
+    if(this.ball.physics.speed > this.ball.wordSpeed) {
+      addFakeBall(this.ball.physics);
     }
 
-    removalList.push(ball);
+    removalList.push(this.ball);
 
     this.mode = "roundover";
 
@@ -651,18 +654,18 @@ var game =  {
 
     // TODO - change to Team 1 & Team 2
     if(this.terrainLinePercent == 100) {
-      winner = paddles[0];
-      loser = paddles[1];
+      winner = this.paddles[0];
+      loser = this.paddles[1];
       this.score["player1"] = this.score["player1"] + 1;
     } else {
-      winner = paddles[1];
-      loser = paddles[0];
+      winner = this.paddles[1];
+      loser = this.paddles[0];
       this.score["player2"] = this.score["player2"] + 1;
     }
 
     this.updateScoreDisplay();
 
-    if(winner == paddles[0]) {
+    if(winner == this.paddles[0]) {
       this.bodyEl.classList.add("winner-one");
     } else {
       this.bodyEl.classList.add("winner-two");
@@ -705,7 +708,7 @@ var game =  {
 
     var goalAllowed = true;
 
-    if(ball.lastTouchedPaddle == scoredOnPlayerNum) {
+    if(this.ball.lastTouchedPaddle == scoredOnPlayerNum) {
       if(this.ownGoalCooldownTimerMS != 0) {
         goalAllowed = false;
       }

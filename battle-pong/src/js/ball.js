@@ -192,8 +192,8 @@ function createBall(options){
 
       var controlPaddle = false;
 
-      for(var i = 0; i < paddles.length; i++) {
-        var p = paddles[i];
+      for(var i = 0; i < game.paddles.length; i++) {
+        var p = game.paddles[i];
         if(p.hasSpinPowerup == true) {
           this.canSpin = true;
           controlPaddle = p;

@@ -248,9 +248,9 @@
 
             if(this.type == "clone" || this.type == "grow" || this.type == "spin") {
               for(var i = 0; i < 2; i++){
-                var paddle = paddles[i];
+                var paddle = game.paddles[i];
                 if(paddle.player == playerAffected) {
-                  paddles[i].powerup(this.type);
+                  game.paddles[i].powerup(this.type);
                 }
               }
             }

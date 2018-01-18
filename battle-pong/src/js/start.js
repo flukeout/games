@@ -1,13 +1,7 @@
-// Game components
-
-var ball = false;
-var paddles = [];
-var numPaddles = 2;
-var paddleDetails;
-
 document.addEventListener('DOMContentLoaded', function () {
+  const numPaddles = 2;
 
-  paddleDetails = [
+  let paddleDetails = [
     {
       player : 0,
       x: 80,
@@ -34,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initParticleEngine();
 
   for(var i = 0; i < numPaddles; i++) {
-    paddles[i] = createPaddle({
+    game.paddles[i] = createPaddle({
       player: paddleDetails[i].player,
       x : paddleDetails[i].x,
       y : paddleDetails[i].y,
@@ -43,11 +37,11 @@ document.addEventListener('DOMContentLoaded', function () {
       classNames : ["paddle", "paddle-" + i]
     });
 
-    paddles[i].init();
+    game.paddles[i].init();
   }
 
   var inputManager = new InputManager((paddle) => {
-    var playerNumber = paddles.indexOf(paddle);
+    var playerNumber = game.paddles.indexOf(paddle);
     var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
     var helpElement = inputDisplayElement.querySelector('.help');
     inputDisplayElement.setAttribute('data-type', paddle.inputComponent.type);
@@ -72,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   for (var i = 0; i < numPaddles; ++i) {
-    inputManager.setupInputForObject(paddles[i]);
+    inputManager.setupInputForObject(game.paddles[i]);
   }
 
   if (Settings.showFrameRate) {

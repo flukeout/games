@@ -22,6 +22,22 @@ function createObject(options){
 
     actions: [],
 
+    setPhysicsProperties: function (physicsProperties) {
+      Matter.Body.setAngularVelocity(this.physics, physicsProperties.angularVelocity);
+      Matter.Body.setAngle(this.physics, physicsProperties.angle);
+      Matter.Body.setPosition(this.physics, physicsProperties.position);
+      Matter.Body.setVelocity(this.physics, physicsProperties.velocity);
+    },
+
+    getPhysicsProperties: function () {
+      return {
+        position: this.physics.position,
+        angle: this.physics.angle,
+        velocity: this.physics.velocity,
+        angularVelocity: this.physics.angularVelocity
+      }
+    },
+
     setInputComponent: function(inputComponent) {
       if (this.inputComponent) {
         this.inputComponent.remove();
