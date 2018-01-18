@@ -13,10 +13,6 @@ var game =  {
   terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
   minTerrainChange : 5,
 
-  powerupFrequency: window.Settings.powerupFrequency || 300, // A powerup appears once in every X frames
-  activePowerupCount : 0,
-  maxPowerupCount: window.Settings.maxPowerupCount || 2,
-
   freezeFrames : 0,
 
   ownGoalCooldownMS: 1000,    // How much to wait before allowign consecutive own goal
@@ -45,7 +41,10 @@ var game =  {
 
   timeBetweenRoundsMS: 2000, // Time between rounds of the game
 
+  powerupManager: null,
+
   init: function(){
+    this.powerupManager = new PowerupManager(this);
     this.worldEl = document.querySelector(".world");
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
@@ -157,22 +156,7 @@ var game =  {
     this.timeSinceEndzoneHitMS = this.timeSinceEndzoneHitMS + delta;
 
     if(game.mode == "running") {
-      var chance = getRandom(0, this.powerupFrequency);
-      if(chance < 1 && this.activePowerupCount < this.maxPowerupCount) {
-
-        var x = game.boardWidth * game.terrainLinePercent/100;
-
-        if(x < 50) {
-          x = 50;
-        } else if ( x > game.boardWidth - 50) {
-          x = game.boardWidth - 50;
-        }
-
-        var y = getRandom(50, game.boardHeight - 50);
-
-        addPowerup(x, y);
-        this.activePowerupCount++;
-      }
+      this.powerupManager.update();
     }
 
     // TODO - increase physics sampling rate
@@ -819,6 +803,9 @@ var game =  {
       playSound("win-round");
       this.showMessage("NICE", 1500);
     }
+  },
+  removeObject: (object) => {
+    removalList.push(object);
   }
 }
 
