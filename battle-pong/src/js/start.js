@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   ];
 
-  initParticleEngine();
+  initParticleEngine(".world");
 
   for(var i = 0; i < numPaddles; i++) {
     game.paddles[i] = createPaddle({

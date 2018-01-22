@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+<html>
+  <head>
+    <title></title>
+    <base href="src/">
+    <link rel="stylesheet" href="style.css"/>
+    <script src="js/particles.js"></script>    <!-- particle engine -->
+    <script src="js/settings.js"></script>
+    <script src="js/splash.js"></script>      <!-- effects like the explosions -->
+    <!-- insert minified source here -->
+  </head>
+
+  <body class="splash">
+
+    <div class="scene">
+      <div class="stars"></div>
+      <div class="sky"></div>
+      <div class="large-moon"></div>
+      <div class="surface">
+        <!-- <div class="overlay"></div> -->
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="game-title">
+        SPAAAACE PONG
+      </div>
+
+      <div class="game-settings">
+        
+        <div class="option best-of" data-bestof>
+          <span class="label">Best of</span>
+          <span class="value selected option-enabled">3</span>
+          <span class="value">5</span>
+          <span class="value">7</span>
+        </div>
+
+        <div class="powerups">
+          <span class="label">POWERUPS</span>
+          <div class="powerup option option-enabled" data-powerup-star></div>
+          <div class="powerup option option-enabled" data-powerup-spin></div>
+          <div class="powerup option option-enabled" data-powerup-mines></div>
+          <div class="powerup option option-enabled" data-powerup-bones></div>
+        </div>
+
+        <div class="option" data-sounds>Sounds <span class="value">ON</span></div>
+        <div class="option" data-music>Music <span class="value">ON</span></div>
+      </div>
+
+      <div class="start-game">START!</div>
+
+    </div>
+
+      <div class="credits">
+        A game by <a href="#">@flukeout</a> &amp; 
+        <a href="#">@secretrobotron</a> &amp; 
+        with sounds by <a href="#">@devon</a>
+      </div>
+
+
+  </body>
+</html>

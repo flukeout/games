@@ -1,21 +1,23 @@
 var particles = [];         // Holds all particle objects
 var blankParticles = [];    // Holdes reference to pre-appended particle elements
-var maxParticleCount = 100; // Number of pre-appended particle divs
 
-function initParticleEngine() {
+
+function initParticleEngine(selector, maxParticlecount) {
+  
+  var maxParticleCount = maxParticleCount || 100; 
+
   for(var i = 0; i < maxParticleCount; i++){
 
     var blankParticle = document.createElement("div");
     blankParticle.classList.add("blank-particle");
 
-    document.querySelector(".world").appendChild(blankParticle);
+    document.querySelector(selector).appendChild(blankParticle);
 
     blankParticles.push({
       active: false,
       el: blankParticle
     });
   }
-
 }
 
 
