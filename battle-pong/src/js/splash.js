@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   initParticleEngine(".stars", 200);
   starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
-  // loop(); // Start the particle loop
+  loop(); // Start the particle loop
   prepTitle();
 
   loadSettings();
