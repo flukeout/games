@@ -325,6 +325,11 @@ let sounds = {
     url : "sounds/Win_Cheer.mp3",
     volume : 1
   },
+
+  "Ball_Spawn" : {
+    url : "sounds/Ball_Spawn.mp3",
+    volume : 1
+  },
 };
 
 var soundBanks = {

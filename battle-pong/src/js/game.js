@@ -423,6 +423,7 @@ var game =  {
     }
 
     this.ball = createBall(options);
+    playSound('Ball_Spawn');
 
     // TODO - Move a lot of this stuff to the ball object?
     this.ball.element.classList.add('show');
@@ -628,6 +629,8 @@ var game =  {
       });
 
       this.ball.element.classList.add('show');
+
+      playSound('Ball_Spawn');
 
     }, 2000);
 
