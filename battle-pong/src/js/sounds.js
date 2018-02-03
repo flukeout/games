@@ -443,7 +443,15 @@ window.SoundManager = {
   loadSettingsFromLocalStorage: function () {
     let storedSettings = localStorage.getItem('sounds');
     if (storedSettings) {
-      sounds = JSON.parse(storedSettings);
+      let parsedSettings = JSON.parse(storedSettings);
+
+      for (let s in sounds) {
+        for (let k in sounds[s]) {
+          if (parsedSettings[s] && parsedSettings[s][k]) {
+            sounds[s][k] = parsedSettings[s][k];
+          }
+        }
+      }
     }
   },
   saveSettingsToLocalStorage: function () {
