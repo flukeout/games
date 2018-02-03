@@ -27,7 +27,7 @@
     }
   };
 
-  const duckingProfiles = {
+  let duckingProfiles = {
     test: {
       gain: 0.2,
       attack: 1,
@@ -36,6 +36,8 @@
     }
   };
 
+  const defaultGlobalGainValue = 1;
+
   window.Music = function () {
     let activeLayers = {};
 
@@ -43,6 +45,8 @@
     let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
     
+    globalGainNode.gain.value = defaultGlobalGainValue;
+
     duckingNode.connect(globalGainNode);
     globalGainNode.connect(audioContext.destination);
 
@@ -191,6 +195,25 @@
         activeLayers[layer].source.start(0);
       }
     };
+
+    this.loadSettingsFromLocalStorage = function () {
+      let storedSettings = localStorage.getItem('music');
+      
+      if (storedSettings) {
+        let parsedSettings = JSON.parse(storedSettings);
+        duckingProfiles = parsedSettings.duckingProfiles;
+        globalGainNode.gain.value = parsedSettings.globalGainValue;
+      }
+    };
+
+    this.saveSettingsToLocalStorage = function () {
+      let output = {
+        duckingProfiles: duckingProfiles,
+        globalGainValue: globalGainNode.gain.value
+      };
+
+      localStorage.setItem('music', JSON.stringify(output));
+    }
   };
 
 })();

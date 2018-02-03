@@ -8,14 +8,35 @@
       document.addEventListener('DOMContentLoaded', function () {
         let musicManager = new Music();
 
+        SoundManager.loadSettingsFromLocalStorage();
+        musicManager.loadSettingsFromLocalStorage();
+
+        // Just to set some defaults for vue.js :/
+        let keyList = ['Q','W','E','R','A','S','D','F','Z','X','C','V'];
+        for (let s in SoundManager.sounds) {
+          let key = keyList.shift();
+          SoundManager.sounds[s].key = key || '?';
+        }
+
         function startSoundEngineMonitor() {
+          document.addEventListener('keydown', (e) => {
+            let keyCode = String.fromCharCode(e.keyCode);
+            for (let s in SoundManager.sounds) {
+              if (SoundManager.sounds[s].key === keyCode) {
+                SoundManager.playSound(s);
+              }
+            }
+          });
+
+
           let vue = new Vue({
             el: "#sound-engine",
             data: {
               sounds: SoundManager.sounds,
               banks: SoundManager.banks,
               limitedSoundsPlaying: [],
-              limitedSoundTimeout: SoundManager.limitedSoundSettings.timeoutMS
+              limitedSoundTimeout: SoundManager.limitedSoundSettings.timeoutMS,
+              soundStored: !!localStorage.getItem('sounds'),
             },
             methods: {
               playSound: (e) => {
@@ -32,6 +53,26 @@
               },
               limitedSoundTimeoutChanged: () => {
                 SoundManager.limitedSoundSettings.timeoutMS = vue.limitedSoundTimeout;
+                SoundManager.saveSettingsToLocalStorage();
+                vue.soundStored = true;
+              },
+              bindKeyToSound: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+
+                function onKeyDown (keyboardEvent) {
+                  document.removeEventListener('keydown', onKeyDown);
+                  vue.sounds[name].key = String.fromCharCode(keyboardEvent.keyCode);
+                }
+
+                document.addEventListener('keydown', onKeyDown);
+              },
+              clearStorage: () => {
+                localStorage.removeItem('sounds');
+                vue.soundStored = false;
+              },
+              volumeChanged: (e) => {
+                SoundManager.saveSettingsToLocalStorage();
+                vue.soundStored = true;
               }
             }
           });
@@ -57,7 +98,8 @@
               moodActive: false,
               duckingProfiles: musicManager.getDuckingProfiles(),
               ducking: 0,
-              globalGain: musicManager.getGlobalGain()
+              globalGain: musicManager.getGlobalGain(),
+              musicStored: !!localStorage.getItem('music'),
             },
             methods: {
               start: () => {
@@ -73,6 +115,12 @@
               },
               globalGainChanged: (e) => {
                 musicManager.setGlobalGain(vue.globalGain);
+                musicManager.saveSettingsToLocalStorage();
+                vue.musicStored = true;
+              },
+              clearStorage: () => {
+                localStorage.removeItem('music');
+                vue.soundStored = false;
               }
             }
           });
@@ -168,8 +216,9 @@
     <div id="sound-engine" class="container">
       <div class="sticky">
         <h2>Sound Engine</h2>
-        <div class="limited-sounds-timeout">Limited Sound Timeout (ms): <input type="number" class="value" v-model="limitedSoundTimeout" @change="limitedSoundTimeoutChanged"></div>
-        <div class="limited-sounds">Limited Sounds Playing: <span class="list">{{limitedSoundsPlaying}}</span></div>
+        <div>Storage: <span>{{soundStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button></div>
+        <div>Limited Sound Timeout (ms): <input type="number" class="value" v-model="limitedSoundTimeout" @change="limitedSoundTimeoutChanged"></div>
+        <div>Limited Sounds Playing: <span class="list">{{limitedSoundsPlaying}}</span></div>
       </div>
       <div class="scrollable">
         <section>
@@ -185,9 +234,9 @@
         <section>
           <h2>Sounds</h2>
           <table>
-            <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limited</th></tr>
+            <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limited</th><th>Key</th></tr>
             <tr v-for="(profile, name) in sounds">
-              <td>{{name}}</td><td>{{profile.volume}}</td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td>
+              <td>{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{sounds[name].key}}</button></td>
             </tr>
           </table>
         </section>
@@ -197,6 +246,7 @@
       <div class="sticky">
         <h2>Music Engine</h2>
         <div class="status">Status: {{status}}</div>
+        <div>Storage: <span>{{musicStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button></div>
         <div>Play: <button class="start" v-on:click="start" :disabled="startButtonDisabled">Start</button></div>
         <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model="globalGain" @change="globalGainChanged"></div>
         <div>

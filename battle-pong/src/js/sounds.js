@@ -426,8 +426,12 @@ window.temporaryLowPass = temporaryLowPass;
 window.findSounds = findSounds;
 
 window.SoundManager = {
-  sounds: sounds,
-  banks: soundBanks,
+  get sounds () {
+    return sounds;
+  },
+  get banks () {
+    return soundBanks;
+  },
   playSound: playSound,
   playLimitedSound: playLimitedSound,
   playRandomSoundFromBank: playRandomSoundFromBank,
@@ -435,7 +439,23 @@ window.SoundManager = {
   temporaryLowPass: temporaryLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
-  limitedSoundSettings: limitedSoundSettings
+  limitedSoundSettings: limitedSoundSettings,
+  loadSettingsFromLocalStorage: function () {
+    let storedSettings = localStorage.getItem('sounds');
+    if (storedSettings) {
+      sounds = JSON.parse(storedSettings);
+    }
+  },
+  saveSettingsToLocalStorage: function () {
+    
+    let output = JSON.parse(JSON.stringify(sounds));
+    for (let s in output) {
+      delete output[s].buffer;
+      delete output[s].key;
+    }
+
+    localStorage.setItem('sounds', JSON.stringify(output));
+  }
 };
 
 })();
