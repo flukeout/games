@@ -6,20 +6,26 @@
     <title></title>
     <base href="src/">
     <link rel="stylesheet" href="style.css"/>
-    <script src="js/particles.js"></script>    <!-- particle engine -->
+    <script src="js/particles.js"></script><!-- particle engine -->
     <script src="js/settings.js"></script>
-    <script src="js/splash.js"></script>      <!-- effects like the explosions -->
+    <script src="js/splash.js"></script>
     <!-- insert minified source here -->
   </head>
 
   <body class="splash">
+
+    <div class="paddle-guy">
+      <div class="jet jet-left"></div>
+      <div class="jet jet-right"></div>
+      <div class="guy"></div>
+    </div>      
 
     <div class="scene">
       <div class="stars"></div>
       <div class="sky"></div>
       <div class="large-moon"></div>
       <div class="surface">
-        <!-- <div class="overlay"></div> -->
+        <div class="overlay"></div>
       </div>
     </div>
 
@@ -50,16 +56,13 @@
         <div class="option option-toggle" data-type="music">Music <span class="value"></span></div>
       </div>
 
-      <a href="index.html" class="start-game">START!</a>
+      <a href="../index.html" class="start-game">START!</a>
 
     </div>
-
       <div class="credits">
         A game by <a href="#">@flukeout</a> &amp; 
         <a href="#">@secretrobotron</a> &amp; 
         with sounds by <a href="#">@devon</a>
       </div>
-
-
   </body>
 </html>

@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
       x : game.boardWidth - 60,
       y : 200
     }
-
   ];
 
   initParticleEngine(".world");

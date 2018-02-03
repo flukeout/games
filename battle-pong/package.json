@@ -29,7 +29,8 @@
     "package": "cd build && npm install && electron-forge package",
     "make": "cd build && npm install && electron-forge make",
     "publish": "cd build && npm install && electron-forge publish",
-    "lint": "eslint src --color"
+    "lint": "eslint src --color",
+    "server": "python -m SimpleHTTPServer 8008"
   },
   "keywords": [],
   "author": "",

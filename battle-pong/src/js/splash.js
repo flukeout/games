@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function(){
   initParticleEngine(".stars", 200);
   starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
   loop(); // Start the particle loop
+  
   prepTitle();
 
   loadSettings();
@@ -16,19 +17,56 @@ document.addEventListener('DOMContentLoaded', function(){
   toggleEls = document.querySelectorAll(".option-toggle");
   setupToggles(toggleEls);
 
+  setupStartButton();
+
 });
 
-var bestOfEls, 
+let bestOfEls, 
     powerupEls,
     toggleEls;
 
+let timeoutAccumulator = 0;
+function timeoutClass(selector, className, timeout){
+  timeoutAccumulator = timeoutAccumulator + timeout || 0;
+  setTimeout(function(){
+    document.querySelector(selector).classList.add(className);
+  },timeoutAccumulator)
+}
 
+function setupStartButton(){
+  var button = document.querySelector(".start-game");
+  button.addEventListener("click", function(e){
+    
+    // Apply transitions one at a time, the number is a delay from the last time it was called
+    // so it's cumulative...
+    timeoutClass(".content", "transition-out")
+    timeoutClass(".paddle-guy", "transition-out", 250);
+    timeoutClass(".surface", "transition-out", 200);
+    timeoutClass(".overlay", "transition-out");
+    timeoutClass(".credits", "transition-out");
+    timeoutClass(".large-moon", "transition-out", 200);
+
+    e.preventDefault();
+    setTimeout(function(){
+      window.location.href = "../index.html";
+    },3200);
+  })
+
+
+
+
+}
+
+
+// Sets up the music & sound toggle click handlers
 function setupToggles(els){
   els.forEach(function(el){
-    el.addEventListener("click",function(el){
-      var toggleType = this.getAttribute("data-type");
+    el.querySelector(".value").addEventListener("click",function(el){
+      console.log(this);
+      var toggle = this.parentNode;
+      var toggleType = toggle.getAttribute("data-type");
       var settingEnabled = window.Settings[toggleType];
-      addTemporaryClassName(this.querySelector(".value"), "pop", 500);
+      addTemporaryClassName(this, "pop", 500);
       if(settingEnabled) {
         saveSetting(toggleType, false);
       } else {
@@ -40,7 +78,7 @@ function setupToggles(els){
   updateToggles(els);
 }
 
-
+// Updates state of the music & sound toggles
 function updateToggles(els){
   els.forEach(function(el){
     var toggleType = el.getAttribute("data-type");
@@ -90,7 +128,6 @@ function powerupToggle(type, action) {
 // Update display of powerup items
 function updatePowerups(els){
   var enabledPowerups = window.Settings.powerUpTypes;
-  console.log(enabledPowerups);
   els.forEach(function(el){
     var powerupType = el.getAttribute("data-powerup");
     if(enabledPowerups.indexOf(powerupType) > -1){
@@ -107,12 +144,17 @@ function updatePowerups(els){
 // defaults in settings.js
 function loadSettings(){
 
-  var savedSettings = JSON.parse(window.localStorage.getItem("settings"));
+  let savedSettings = JSON.parse(window.localStorage.getItem("settings"));
+  console.log(savedSettings);
   
   if(!savedSettings) {
     window.localStorage.setItem("settings", JSON.stringify(window.Settings));
   } else {
-    window.Settings = savedSettings;  
+    
+    //Populate the settings object with only the keys from localStorage
+    for(var key in savedSettings){
+      window.Settings[key] = savedSettings[key];
+    }
   }
 }
 
@@ -125,7 +167,6 @@ function saveSetting(setting, value){
 
 
 // Best Of Options
-var bestOfEls;
 function setupBestOf(){
   bestOfEls.forEach(function(option){
     option.addEventListener("click",function(){
@@ -247,17 +288,12 @@ function makePaddle(){
   makeParticle(options);
 }
 
-// This shouldn't be in here, we should just import it
-// from effects.js
+// This shouldn't be in here, we should just import it from effects.js
 function addTemporaryClassName(element, className, durationMS){
-
   element.classList.remove(className);
   element.style.width = element.clientWidth;
   element.classList.add(className);
-
   setTimeout(function(){
     element.classList.remove(className);
   }, durationMS || 1000);
 }
-
-

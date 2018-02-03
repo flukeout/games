@@ -1,9 +1,149 @@
-
 .splash {
-
   position: absolute;
   width: 100vw;
   height: 100vh;
+    
+  .paddle-guy.transition-out {
+    animation: guyFly 1s ease-in;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-out;
+    transform-origin: bottom;
+  }
+
+  @keyframes guyFly {
+    20% {
+      transform: translateY(0px) scaleY(.8);
+    }
+    25% {
+      transform: translateY(0px) scaleY(1);
+    }
+    100% {
+      transform: translateY(-800px) scaleY(1.2) scaleX(.9);
+    }
+  }  
+
+  .paddle-guy {
+    position: absolute;
+    bottom: 150px;
+    width: 270px;
+    height: 370px;
+    left: 40px;
+    z-index: 2000;
+    transition: transform 2s ease-out;
+    animation: guyFloat 2s linear infinite;
+
+    .guy {
+      background: url(assets/images/paddle-guy.svg) top no-repeat;
+      background-size: contain;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .jet {
+      background: url(assets/images/paddle-guy-jet.svg) top no-repeat;
+      position: absolute;
+      background-size: contain;
+      animation: jetPulse .07s linear infinite, jetStretch .2s linear infinite;
+      transform-origin: top;
+    }
+
+    @keyframes jetStretch {
+      50% {
+        transform: scaleY(1.15);
+      }
+    }
+
+    @keyframes jetPulse {
+      0% {
+        opacity: .5;
+      }
+      49% {
+        opacity: .5;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .jet-left {
+      left: 80px;
+      top: 270px;
+      width: 50px;
+      height: 100px;
+    }
+
+    .jet-right {
+      left: 205px;
+      top: 215px;
+      width: 50px;
+      height: 90px;
+    }
+
+     @keyframes guyFloat {
+      0% {
+        transform: translateY(0px);
+        animation-timing-function: ease-out;
+      }
+      25% {
+        transform: translateY(-6px);
+        animation-timing-function: ease-in;
+      }
+      50% {
+        transform: translateY(0px);
+        animation-timing-function: ease-out;
+      }
+      75% {
+        transform: translateY(6px);
+        animation-timing-function: ease-in;
+      }
+    }
+  }
+
+  .game-title {
+    font-size: 80px;
+    color: white;
+    margin: 35px 0;
+    text-align: center;
+    transform: rotateX(15deg);
+    transition: all .2s ease-out;
+
+    .letter {
+      animation: letterFloat 2s infinite;
+        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
+      display: inline-block;
+
+      &:empty() {
+        width: 200px;
+      }
+    }
+
+    @keyframes letterFloat {
+      0% {
+        transform: translateY(0px);
+        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
+        animation-timing-function: ease-out;
+      }
+      25% {
+        transform: translateY(-6px);
+        text-shadow: 0px 6px 0px #ac4d9d, 0px 9px 0px #3faa7f;
+        animation-timing-function: ease-in;
+      }
+      50% {
+        transform: translateY(0px);
+        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
+        animation-timing-function: ease-out;
+      }
+      75% {
+        transform: translateY(6px);
+        text-shadow: 0px 0px 0px #ac4d9d, 0px 0px 0px #3faa7f;
+        animation-timing-function: ease-in;
+      }
+    }
+  }
 
   .pop {
     animation: optionPop .5s ease-out;
@@ -23,7 +163,6 @@
         transform: scale(1);
       }
     }
-
   }
 
   .credits {
@@ -36,6 +175,12 @@
     background: rgba(0,0,0,.6);
     text-align: center;
     font-weight: 300;
+    transition: all 1s ease-in;
+
+    &.transition-out {
+      transform: translateY(120px);
+      opacity: 0;
+    }
 
     a {
       color: rgba(255,255,255,.5);
@@ -43,10 +188,17 @@
     }
   }
 
+
   .content {
     position: relative;
     z-index: 2;
     perspective: 1200px;
+    transition: all .5s ease-out;
+
+    &.transition-out {
+      opacity: 0;
+      transform: scale(.95);
+    }
   }
 
   .scene {
@@ -73,16 +225,31 @@
 
     .surface {
       top: 80vh;
+
+      &.transition-out {
+        transition: top 3s ease-in-out;
+        top: 30vh;
+      }
     }
 
     .large-moon {
-      bottom: -100px;
-      top: auto;
+      top: 350px;
       z-index: 2;
+
+      &.transition-out {
+        transition: top 3s ease-in-out;
+        top: 45px;
+      }
+
     }
 
     .overlay {
       opacity: 0;
+
+      &.transition-out {
+        transition: opacity 3s ease-in-out;
+        opacity: .5;
+      }
     }
 
     .stars {
@@ -101,43 +268,7 @@
     }
   }
 
-  .game-title {
-    font-size: 80px;
-    color: white;
-    margin: 35px 0;
-    text-align: center;
-    transform: rotateX(15deg);
   
-
-    .letter {
-      animation: letterFloat 2s infinite;
-      display: inline-block;
-
-      &:empty() {
-        width: 200px;
-      }
-    }
-
-    @keyframes letterFloat {
-      0% {
-        transform: translateY(0px);
-        animation-timing-function: ease-out;
-      }
-      25% {
-        transform: translateY(-5px);
-        animation-timing-function: ease-in;
-      }
-      50% {
-        transform: translateY(0px);
-        animation-timing-function: ease-out;
-      }
-      75% {
-        transform: translateY(5px);
-        animation-timing-function: ease-in;
-      }
-    }
-
-  }
 
   .game-settings {
     width: 80vw;
@@ -287,6 +418,4 @@
       transform: scale(1.05);
     }
   }
-
-
 }
