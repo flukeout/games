@@ -40,8 +40,11 @@
     let activeLayers = {};
 
     let audioContext = new AudioContext();
+    let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
-    duckingNode.connect(audioContext.destination);
+    
+    duckingNode.connect(globalGainNode);
+    globalGainNode.connect(audioContext.destination);
 
     this.temporaryMoodDurations = temporaryMoodDurations;
     this.currentDuckingProfile = null;
@@ -67,6 +70,12 @@
 
       return allMoods;
     };
+
+    this.setGlobalGain = function (value) {
+      globalGainNode.gain.value = value;
+    };
+
+    this.getGlobalGain = () => { return globalGainNode.gain.value; };
 
     this.duck = function (profileName) {
       let profile = duckingProfiles[profileName];

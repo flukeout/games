@@ -56,7 +56,8 @@
               currentMood: 'default',
               moodActive: false,
               duckingProfiles: musicManager.getDuckingProfiles(),
-              ducking: 0
+              ducking: 0,
+              globalGain: musicManager.getGlobalGain()
             },
             methods: {
               start: () => {
@@ -69,6 +70,9 @@
               },
               duck: (e) => {
                 musicManager.duck(e.srcElement.getAttribute('data-name'));
+              },
+              globalGainChanged: (e) => {
+                musicManager.setGlobalGain(vue.globalGain);
               }
             }
           });
@@ -103,43 +107,6 @@
       body {
         font-family: 'Open Sans';
         font-size: 8pt;
-      }
-
-      #sound-table,
-      #bank-table {
-        width: 100%;
-        padding-bottom: 2em;
-      }
-
-      .header.row {
-        font-weight: bold;
-      }
-
-      .row {
-        display: flex;
-        flex-direction: row;
-      }
-
-      .row .name {
-        width: 20em;
-      }
-
-      .row .volume {
-        width: 8em;
-      }
-
-      .row .volume input {
-        width: 5em;
-      }
-
-      .row .play,
-      .row .play-limited {
-        width: 5em;
-      }
-
-      .row div {
-        width: 200px;
-        text-align: left;
       }
 
       #sound-engine {
@@ -231,6 +198,7 @@
         <h2>Music Engine</h2>
         <div class="status">Status: {{status}}</div>
         <div>Play: <button class="start" v-on:click="start" :disabled="startButtonDisabled">Start</button></div>
+        <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model="globalGain" @change="globalGainChanged"></div>
         <div>
           Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span>
         </div>
