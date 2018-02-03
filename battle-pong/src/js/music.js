@@ -2,16 +2,16 @@
 
   const temporaryLevelDelayRecoveryTimeInSeconds = 1.5;
   
-  let temporaryMoodDurations = {
+  const temporaryMoodDurations = {
     intense: 3500
   };
 
-  let files = [
+  const files = [
     'music/Contagion_Loop_BaseLayer.mp3',
     'music/Contagion_Loop_TopLayer.mp3'
   ];
 
-  let layerDefinitions = {
+  const layerDefinitions = {
     top: {
       file: 'music/Contagion_Loop_TopLayer.mp3',
       moods: {
@@ -27,10 +27,45 @@
     }
   };
 
-  let activeLayers = {};
+  const duckingProfiles = {
+    test: {
+      attack: 1,
+      sustain: 1,
+      release: 1
+    }
+  };
 
   window.Music = function () {
+    let activeLayers = {};
+
     let audioContext = new AudioContext();
+    let duckingNode = audioContext.createGain();
+
+    duckingNode.connect(audioContext.destination);
+
+    this.temporaryMoodDurations = temporaryMoodDurations;
+
+    this.getDuckingProfiles = function () {
+      return duckingProfiles;
+    };
+
+    this.getMoods = function () {
+      let allMoods = [];
+      
+      for (let layer in layerDefinitions) {
+        if (layerDefinitions[layer].moods) {
+          for (let mood in layerDefinitions[layer].moods) {
+            if (allMoods.indexOf(mood) === -1) allMoods.push(mood);
+          }
+        }
+      }
+
+      return allMoods;
+    };
+
+    this.duck = function (profile) {
+
+    };
 
     this.load = function () {
       return new Promise(async (resolve, reject) => {
@@ -63,7 +98,7 @@
           gainNode.gain.value = gainValue;
 
           source.connect(gainNode);
-          gainNode.connect(audioContext.destination);
+          gainNode.connect(duckingNode);
 
           source.loop = true;
 
@@ -80,7 +115,7 @@
 
     this.setMoodTemporarily = function (mood) {
       for (let layerName in activeLayers) {
-        this.setLayerMoodTemporarily(layerName, mood, temporaryMoodDurations[mood])
+        this.setLayerMoodTemporarily(layerName, mood, temporaryMoodDurations[mood]);
       }
     };
 
@@ -108,7 +143,10 @@
         let defaultGainValue = layerDefinitions[layerName].moods.default;
         layer.gain.gain.linearRampToValueAtTime(defaultGainValue, audioContext.currentTime + temporaryLevelDelayRecoveryTimeInSeconds);
         layer.temporaryLevelDelay = null;
-      }, time)
+        document.dispatchEvent(new CustomEvent('musicmoodstop', {detail: mood}));
+      }, time);
+
+      document.dispatchEvent(new CustomEvent('musicmoodstart', {detail: mood}));
     };
 
     this.setLevels = function (levels) {
@@ -122,7 +160,6 @@
         activeLayers[layer].source.start(0);
       }
     };
-
   };
 
 })();

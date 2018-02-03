@@ -1,0 +1,247 @@
+<html>
+  <head>
+    <base href="src/">
+    <script src="js/music.js"></script>
+    <script src="js/sounds.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        let musicManager = new Music();
+
+        function startSoundEngineMonitor() {
+          let vue = new Vue({
+            el: "#sound-engine",
+            data: {
+              sounds: SoundManager.sounds,
+              banks: SoundManager.banks,
+              limitedSoundsPlaying: [],
+              limitedSoundTimeout: SoundManager.limitedSoundSettings.timeoutMS
+            },
+            methods: {
+              playSound: (e) => {
+                SoundManager.playSound(e.srcElement.getAttribute('data-name'));
+              },
+              playLimitedSound: (e) => {
+                SoundManager.playLimitedSound(e.srcElement.getAttribute('data-name'));
+              },
+              playBank: (e) => {
+                SoundManager.playRandomSoundFromBank(e.srcElement.getAttribute('data-name'));
+              },
+              playLimitedBank: (e) => {
+                SoundManager.playLimitedRandomSoundFromBank(e.srcElement.getAttribute('data-name'));
+              },
+              limitedSoundTimeoutChanged: () => {
+                SoundManager.limitedSoundSettings.timeoutMS = vue.limitedSoundTimeout;
+              }
+            }
+          });
+          
+          function updateLimitedSounds() {
+            vue.limitedSoundsPlaying = Object.keys(SoundManager.limitedSoundTimeouts).filter((key) => {
+              return SoundManager.limitedSoundTimeouts[key]});
+          }
+
+          document.addEventListener('limitedsoundstarted', updateLimitedSounds);
+          document.addEventListener('limitedsoundfinished', updateLimitedSounds);
+        }
+
+        function startMusicEngineMonitor() {
+          let vue = new Vue({
+            el: '#music-engine',
+            data: {
+              status: 'Loading',
+              startButtonDisabled: true,
+              moods: musicManager.getMoods(),
+              moodToSet: 'default',
+              currentMood: 'default',
+              moodActive: false,
+              duckingProfiles: musicManager.getDuckingProfiles()
+            },
+            methods: {
+              start: () => {
+                musicManager.start();
+                vue.status = 'Playing';
+                vue.startButtonDisabled = true;
+              },
+              changeMood: (e) => {
+                musicManager.setMoodTemporarily(e.srcElement.value);
+              }
+            }
+          });
+
+          vue.status = 'Loading';
+          vue.startButtonDisabled = true;
+          musicManager.load().then(() => {
+            vue.status = 'Ready';
+            vue.startButtonDisabled = false;
+          });
+
+          document.addEventListener('musicmoodstart', (e) => {
+            vue.currentMood = e.detail;
+            vue.moodActive = true;
+          });
+
+          document.addEventListener('musicmoodstop', () => {
+            vue.currentMood = 'default';
+            vue.moodActive = false;
+          });
+        }
+
+        startSoundEngineMonitor();
+        startMusicEngineMonitor();
+      });
+    </script>
+    <style>
+      body {
+        font-family: 'Open Sans';
+        font-size: 8pt;
+      }
+
+      #sound-table,
+      #bank-table {
+        width: 100%;
+        padding-bottom: 2em;
+      }
+
+      .header.row {
+        font-weight: bold;
+      }
+
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .row .name {
+        width: 20em;
+      }
+
+      .row .volume {
+        width: 8em;
+      }
+
+      .row .volume input {
+        width: 5em;
+      }
+
+      .row .play,
+      .row .play-limited {
+        width: 5em;
+      }
+
+      .row div {
+        width: 200px;
+        text-align: left;
+      }
+
+      #sound-engine {
+        position: fixed;
+        top: .25em;
+        left: .5%;
+        background: white;
+        width: 49%;
+        padding: .5em;
+        border: 5px dashed black;
+        box-sizing: border-box;
+        height: 100%;
+      }
+      
+      #music-engine {
+        position: fixed;
+        top: .25em;
+        left: 50.5%;
+        background: white;
+        width: 49%;
+        padding: .5em;
+        border: 5px dashed black;
+        box-sizing: border-box;
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: .5em;
+      }
+
+      .sticky {
+        margin-bottom: 1em;
+      }
+
+      .scrollable {
+        overflow-y: scroll;
+        flex: 1;
+      }
+
+      .container {
+        display: flex;
+        flex-flow: column;
+      }
+
+      span[data-mood-active=true] {
+        background: lightgreen;
+      }
+
+      table {
+        font-size: inherit;
+      }
+
+      section {
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sound-engine" class="container">
+      <div class="sticky">
+        <h2>Sound Engine</h2>
+        <div class="limited-sounds-timeout">Limited Sound Timeout (ms): <input type="number" class="value" v-model="limitedSoundTimeout" @change="limitedSoundTimeoutChanged"></div>
+        <div class="limited-sounds">Limited Sounds Playing: <span class="list">{{limitedSoundsPlaying}}</span></div>
+      </div>
+      <div class="scrollable">
+        <section>
+          <h2>Banks</h2>
+          <table>
+            <tr><th>Name</th><th>Play</th><th>Limited</th></tr>
+            <tr v-for="(profile, name) in banks">
+              <td>{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td>
+            </tr>
+          </table>
+        </section>
+
+        <section>
+          <h2>Sounds</h2>
+          <table>
+            <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limited</th></tr>
+            <tr v-for="(profile, name) in sounds">
+              <td>{{name}}</td><td>{{profile.volume}}</td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td>
+            </tr>
+          </table>
+        </section>
+      </div>
+    </div>
+    <div id="music-engine" class="container">
+      <div class="sticky">
+        <h2>Music Engine</h2>
+        <div class="status">Status: {{status}}</div>
+        <div>Play: <button class="start" v-on:click="start" :disabled="startButtonDisabled">Start</button></div>
+        <div>
+          Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span>
+        </div>
+      </div>
+      <div class="scrollable">
+        <section>
+          <h2>Moods</h2>
+          <button v-for="mood in moods" :value="mood" v-on:click="changeMood">{{mood}}</button>
+        </section>
+        <section>
+          <h2>Ducking</h2>
+          <table>
+            <tr><th>Name</th><th>Attack</th><th>Sustain</th><th>Release</th></tr>
+            <tr v-for="(profile, name) in duckingProfiles">
+              <td>{{name}}</td><td>{{profile.attack}}</td><td>{{profile.sustain}}</td><td>{{profile.release}}</td>
+            </tr>
+          </table>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

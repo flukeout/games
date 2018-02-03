@@ -14,12 +14,15 @@ const temporaryLowPassSettings = {
   Q: 10
 };
 
-const limitedSoundTimeoutMS = 100;
+const limitedSoundSettings = {
+  timeoutMS: 100
+};
+
 let limitedSoundTimeouts = {};
 let temporaryLowpassTimeout = null;
 let temporaryLowpassComebackTimeout = null;
 
-var sounds = {
+let sounds = {
   "round-start" : {
     url : "sounds/round-start.mp3",
     volume : .25
@@ -299,7 +302,9 @@ function playLimitedSound(sound, category, options) {
     playSound(sound, options);
     limitedSoundTimeouts[category] = setTimeout(() => {
       limitedSoundTimeouts[category] = false;
-    }, limitedSoundTimeoutMS);
+      document.dispatchEvent(new CustomEvent('limitedsoundfinished', {detail: category}));
+    }, limitedSoundSettings.timeoutMS);
+    document.dispatchEvent(new CustomEvent('limitedsoundstarted', {detail: category}));
   }
 }
 
@@ -419,5 +424,18 @@ window.playRandomSoundFromBank = playRandomSoundFromBank;
 window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
 window.temporaryLowPass = temporaryLowPass;
 window.findSounds = findSounds;
+
+window.SoundManager = {
+  sounds: sounds,
+  banks: soundBanks,
+  playSound: playSound,
+  playLimitedSound: playLimitedSound,
+  playRandomSoundFromBank: playRandomSoundFromBank,
+  playLimitedRandomSoundFromBank: playLimitedRandomSoundFromBank,
+  temporaryLowPass: temporaryLowPass,
+  findSounds: findSounds,
+  limitedSoundTimeouts: limitedSoundTimeouts,
+  limitedSoundSettings: limitedSoundSettings
+};
 
 })();
