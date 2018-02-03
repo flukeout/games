@@ -181,6 +181,8 @@
         return;
       }
 
+      if (!activeLayers[layerName].gain) return
+
       layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
       layer.gain.gain.value = moodValue;
 
@@ -219,6 +221,7 @@
 
     this.setLevels = function (levels) {
       for (let layer in levels) {
+        if (!activeLayers[layer].gain) return;
         activeLayers[layer].gain.gain.value = levels[layer];
       }
     };
