@@ -14,12 +14,17 @@ const temporaryLowPassSettings = {
   Q: 10
 };
 
-const limitedSoundTimeoutMS = 100;
+const limitedSoundSettings = {
+  timeoutMS: 100
+};
+
+let connectedMusicEngine = null;
+
 let limitedSoundTimeouts = {};
 let temporaryLowpassTimeout = null;
 let temporaryLowpassComebackTimeout = null;
 
-var sounds = {
+let sounds = {
   "round-start" : {
     url : "sounds/round-start.mp3",
     volume : .25
@@ -32,20 +37,9 @@ var sounds = {
     url : "sounds/beep.mp3",
     volume : .15
   },
-  "win-round" : {
-    url : "sounds/crowd.wav",
-    volume : .15
-  },
-  "star-hit" : {
-    url : "sounds/star-hit.wav",
-    volume : .15
-  },
   "woosh" : {
     url : "sounds/woosh.wav",
     volume : .35
-  },
-  "swish" : {
-    url : "sounds/swish.wav",
   },
   "bonus" : {
     url : "sounds/bonus.wav",
@@ -57,10 +51,6 @@ var sounds = {
   "boom" : {
     url : "sounds/boom.wav",
     volume : .3
-  },
-  "score" : {
-    url : "sounds/score.mp3",
-    volume:  .1
   },
 
   "Power_Shot_V1" : {
@@ -96,7 +86,6 @@ var sounds = {
     url : "sounds/Ball_Score_V4.mp3",
     volume : 1
   },
-
 
   "Bomb_Impact_Low_V1" : {
     url : "sounds/Bomb_Impact_Low_V1.mp3",
@@ -206,7 +195,20 @@ var sounds = {
     url : "sounds/Powerup_Enhance_Score.mp3",
     volume : 1
   },
-
+  "Powerup_Spin_Score" : {
+    url : "sounds/Powerup_Spin_Score.mp3",
+    volume : 1
+  },
+  
+  "Powerup_Enhance_WareOff" : {
+    url : "sounds/Powerup_Enhance_WareOff.mp3",
+    volume : 1
+  },
+  "Powerup_Spin_WareOff" : {
+    url : "sounds/Powerup_Spin_WareOff.mp3",
+    volume : 1
+  },
+  
   "Bomb_Explosion_V1" : {
     url : "sounds/Bomb_Explosion_V1.mp3",
     volume : 1
@@ -216,9 +218,139 @@ var sounds = {
     volume : 1
   },
 
+  "Paddle_Spin_V1" : {
+    url : "sounds/Paddle_Spin_V1.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V2" : {
+    url : "sounds/Paddle_Spin_V2.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V3" : {
+    url : "sounds/Paddle_Spin_V3.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V4" : {
+    url : "sounds/Paddle_Spin_V4.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V5" : {
+    url : "sounds/Paddle_Spin_V5.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V6" : {
+    url : "sounds/Paddle_Spin_V6.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V7" : {
+    url : "sounds/Paddle_Spin_V7.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V8" : {
+    url : "sounds/Paddle_Spin_V8.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V9" : {
+    url : "sounds/Paddle_Spin_V9.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V10" : {
+    url : "sounds/Paddle_Spin_V10.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V11" : {
+    url : "sounds/Paddle_Spin_V11.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V12" : {
+    url : "sounds/Paddle_Spin_V12.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V13" : {
+    url : "sounds/Paddle_Spin_V13.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V14" : {
+    url : "sounds/Paddle_Spin_V14.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V15" : {
+    url : "sounds/Paddle_Spin_V15.mp3",
+    volume : 1
+  },
+  
+  "Paddle_Dash_V1" : {
+    url : "sounds/Paddle_Dash_V1.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V2" : {
+    url : "sounds/Paddle_Dash_V2.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V3" : {
+    url : "sounds/Paddle_Dash_V3.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V4" : {
+    url : "sounds/Paddle_Dash_V4.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V5" : {
+    url : "sounds/Paddle_Dash_V5.mp3",
+    volume : 1
+  },
+
+  "Powerup_Spawn" : {
+    url : "sounds/Powerup_Spawn.mp3",
+    volume : 1
+  },
+  "Bomb_Spawn" : {
+    url : "sounds/Bomb_Spawn.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bounce_Paddle" : {
+    url : "sounds/Powerup_Bounce_Paddle.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bounce_Wall" : {
+    url : "sounds/Powerup_Bounce_Wall.mp3",
+    volume : 1
+  },
+
+  "Win_Cheer" : {
+    url : "sounds/Win_Cheer.mp3",
+    volume : 1
+  },
+
+  "Ball_Spawn" : {
+    url : "sounds/Ball_Spawn.mp3",
+    volume : 1
+  },
+
+  "Finish_It_Heartbeat_Loop" : {
+    url : "sounds/Finish_It_Heartbeat_Loop.mp3",
+    volume : 1
+  },
+  "Finish_It_Hit" : {
+    url : "sounds/Finish_It_Hit.mp3",
+    volume : 1
+  },
+  "Finish_It_Miss" : {
+    url : "sounds/Finish_It_Miss.mp3",
+    volume : 1
+  },
 };
 
-var soundBanks = {
+let soundBanks = {
+  "dash": [
+    "Paddle_Dash_V1",
+    "Paddle_Dash_V2",
+    "Paddle_Dash_V3",
+    "Paddle_Dash_V4",
+    "Paddle_Dash_V5"
+  ],
   "score": [
     "Ball_Score_V1",
     "Ball_Score_V2",
@@ -230,6 +362,23 @@ var soundBanks = {
     "Power_Shot_V2",
     "Power_Shot_V3",
     "Power_Shot_V4"
+  ],
+  "swish": [
+    "Paddle_Spin_V1",
+    "Paddle_Spin_V2",
+    "Paddle_Spin_V3",
+    "Paddle_Spin_V4",
+    "Paddle_Spin_V5",
+    "Paddle_Spin_V6",
+    "Paddle_Spin_V7",
+    "Paddle_Spin_V8",
+    "Paddle_Spin_V9",
+    "Paddle_Spin_V10",
+    "Paddle_Spin_V11",
+    "Paddle_Spin_V12",
+    "Paddle_Spin_V13",
+    "Paddle_Spin_V14",
+    "Paddle_Spin_V15"
   ],
   "mine-collision": [
     "Bomb_Impact_Low_V1",
@@ -255,6 +404,29 @@ var soundBanks = {
     "Powerup_Bones_Collision_Low_V12",
     "Powerup_Bones_Collision_Low_V13"
   ]
+};
+
+let loops = {
+  'Finish_It_Heartbeat': {
+    sound: 'Finish_It_Heartbeat_Loop'
+  }
+};
+
+let soundEvents = {
+  'Finish_It_Heartbeat_Start': () => {
+    SoundManager.startLoop('Finish_It_Heartbeat');
+    connectedMusicEngine.setMood('quiet');
+  },
+  'Finish_It_Heartbeat_Stop_Hit': () => {
+    SoundManager.stopLoop('Finish_It_Heartbeat');
+    SoundManager.playSound('Finish_It_Hit');
+    connectedMusicEngine.setMood('default');
+  },
+  'Finish_It_Heartbeat_Stop_Miss': () => {
+    SoundManager.stopLoop('Finish_It_Heartbeat');
+    SoundManager.playSound('Finish_It_Miss');
+    connectedMusicEngine.setMood('default');
+  }
 };
 
 var soundContext = new AudioContext();
@@ -299,7 +471,9 @@ function playLimitedSound(sound, category, options) {
     playSound(sound, options);
     limitedSoundTimeouts[category] = setTimeout(() => {
       limitedSoundTimeouts[category] = false;
-    }, limitedSoundTimeoutMS);
+      document.dispatchEvent(new CustomEvent('limitedsoundfinished', {detail: category}));
+    }, limitedSoundSettings.timeoutMS);
+    document.dispatchEvent(new CustomEvent('limitedsoundstarted', {detail: category}));
   }
 }
 
@@ -315,7 +489,6 @@ function playLimitedRandomSoundFromBank(soundBankName, options) {
 }
 
 function temporaryLowPass() {
-
   // If this effect is already happening, reset it (which effectively extends it)
   if (temporaryLowpassTimeout) {
     clearTimeout(temporaryLowpassTimeout);
@@ -352,11 +525,9 @@ globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
 globalBiquadFilter.connect(soundContext.destination);
 
 function playSound(name, options){
-
   if(!window.Settings.sounds) {
     return;
   }
-
   var sound = sounds[name];
 
   if (!sound) {
@@ -405,6 +576,45 @@ function playSound(name, options){
   source.start(0);
 
   /* ʕ •ᴥ•ʔゝ☆ */
+  return source;
+}
+
+for (let l in loops) {
+  loops[l].active = false;
+}
+
+function startLoop(name, options) {
+  let loop = loops[name];
+  
+  if (!loop) {
+    console.warn('No loop named', name);
+    return;
+  }
+
+  let source = playSound(loop.sound, options);
+  source.loop = true;
+
+  // :)
+  loop.source = source;
+  loop.active = true;
+
+  document.dispatchEvent(new CustomEvent('loopstarted', {detail: name}));
+}
+
+function stopLoop(name, options) {
+  let loop = loops[name];
+  
+  if (!loop) {
+    console.warn('No loop named', name);
+    return;
+  }
+
+  if (loop.active) {
+    loop.source.stop();
+    loop.source = null;
+    loop.active = false;
+    document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));
+  }
 }
 
 function findSounds(name) {
@@ -423,5 +633,69 @@ window.playRandomSoundFromBank = playRandomSoundFromBank;
 window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
 window.temporaryLowPass = temporaryLowPass;
 window.findSounds = findSounds;
+
+window.SoundManager = {
+  get sounds () {
+    return sounds;
+  },
+  get banks () {
+    return soundBanks;
+  },
+  get events () {
+    return soundEvents;
+  },
+  get loops () {
+    return loops;
+  },
+  playSound: playSound,
+  playLimitedSound: playLimitedSound,
+  playRandomSoundFromBank: playRandomSoundFromBank,
+  playLimitedRandomSoundFromBank: playLimitedRandomSoundFromBank,
+  startLoop: startLoop,
+  stopLoop: stopLoop,
+  temporaryLowPass: temporaryLowPass,
+  findSounds: findSounds,
+  limitedSoundTimeouts: limitedSoundTimeouts,
+  limitedSoundSettings: limitedSoundSettings,
+  get globalLowPassFilterFrequency () {
+    return globalBiquadFilter.frequency.value;
+  },
+  getSettingsForOutput: function () {
+    let output = JSON.parse(JSON.stringify(sounds));
+    for (let s in output) {
+      delete output[s].buffer;
+      delete output[s].key;
+    }
+    return output;
+  },
+  loadSettingsFromLocalStorage: function () {
+    let storedSettings = localStorage.getItem('sounds');
+    if (storedSettings) {
+      let parsedSettings = JSON.parse(storedSettings);
+
+      for (let s in sounds) {
+        for (let k in sounds[s]) {
+          if (parsedSettings[s] && parsedSettings[s][k]) {
+            sounds[s][k] = parsedSettings[s][k];
+          }
+        }
+      }
+    }
+  },
+  saveSettingsToLocalStorage: function () {
+    localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
+  },
+  fireEvent: function (name, options) {
+    if (soundEvents[name]) {
+      soundEvents[name](options);
+    }
+    else {
+      console.warn('No sound event named ', name);
+    }
+  },
+  connectMusicEngine: function (musicEngine) {
+    connectedMusicEngine = musicEngine;
+  }
+};
 
 })();

@@ -423,6 +423,7 @@ var game =  {
     }
 
     this.ball = createBall(options);
+    playSound('Ball_Spawn');
 
     // TODO - Move a lot of this stuff to the ball object?
     this.ball.element.classList.add('show');
@@ -582,16 +583,13 @@ var game =  {
   gameOver : function(){
 
     var that = this;
-    setTimeout(function(){
-      that.mode = "finish";
-    }, 50);
+    
+    setTimeout(() => { this.mode = "finish"; }, 50);
 
     this.bodyEl.classList.add("winner-screen");
 
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");
-
-    var that = this;
 
     if(this.score.winner == this.paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
@@ -605,7 +603,6 @@ var game =  {
     this.score.player2 = 0;
 
     setTimeout(() => {
-
       var minY = that.score.loser.physics.bounds.min.y;
       var maxY = that.score.loser.physics.bounds.max.y;
       var deltaY = minY - maxY;
@@ -628,6 +625,8 @@ var game =  {
       });
 
       this.ball.element.classList.add('show');
+
+      playSound('Ball_Spawn');
 
     }, 2000);
 
@@ -803,7 +802,7 @@ var game =  {
 
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver();
-      playSound("win-round");
+      playSound("Win_Cheer");
       this.showMessage("NICE", 1500);
     }
   },
