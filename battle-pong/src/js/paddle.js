@@ -164,7 +164,7 @@ const updateFunctions = {
 
       if(xDelta != 0 || yDelta != 0) {
 
-        playSound("dash");
+        playRandomSoundFromBank('dash');
 
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
@@ -433,7 +433,7 @@ function createPaddle(options) {
       Matter.Body.setAngularVelocity(this.physics, v);
 
       if(!this.swishTimeout && this.type == "player") {
-        playSound("swish");
+        playRandomSoundFromBank("swish");
         this.swishTimeout = setTimeout(() => {
           this.swishTimeout = false;
         }, this.swishTimeoutMS);

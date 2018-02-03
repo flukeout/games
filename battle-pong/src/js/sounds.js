@@ -39,16 +39,9 @@ let sounds = {
     url : "sounds/crowd.wav",
     volume : .15
   },
-  "star-hit" : {
-    url : "sounds/star-hit.wav",
-    volume : .15
-  },
   "woosh" : {
     url : "sounds/woosh.wav",
     volume : .35
-  },
-  "swish" : {
-    url : "sounds/swish.wav",
   },
   "bonus" : {
     url : "sounds/bonus.wav",
@@ -99,7 +92,6 @@ let sounds = {
     url : "sounds/Ball_Score_V4.mp3",
     volume : 1
   },
-
 
   "Bomb_Impact_Low_V1" : {
     url : "sounds/Bomb_Impact_Low_V1.mp3",
@@ -219,9 +211,114 @@ let sounds = {
     volume : 1
   },
 
+  "Paddle_Spin_V1" : {
+    url : "sounds/Paddle_Spin_V1.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V2" : {
+    url : "sounds/Paddle_Spin_V2.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V3" : {
+    url : "sounds/Paddle_Spin_V3.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V4" : {
+    url : "sounds/Paddle_Spin_V4.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V5" : {
+    url : "sounds/Paddle_Spin_V5.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V6" : {
+    url : "sounds/Paddle_Spin_V6.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V7" : {
+    url : "sounds/Paddle_Spin_V7.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V8" : {
+    url : "sounds/Paddle_Spin_V8.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V9" : {
+    url : "sounds/Paddle_Spin_V9.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V10" : {
+    url : "sounds/Paddle_Spin_V10.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V11" : {
+    url : "sounds/Paddle_Spin_V11.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V12" : {
+    url : "sounds/Paddle_Spin_V12.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V13" : {
+    url : "sounds/Paddle_Spin_V13.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V14" : {
+    url : "sounds/Paddle_Spin_V14.mp3",
+    volume : 1
+  },
+  "Paddle_Spin_V15" : {
+    url : "sounds/Paddle_Spin_V15.mp3",
+    volume : 1
+  },
+  
+  "Paddle_Dash_V1" : {
+    url : "sounds/Paddle_Dash_V1.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V2" : {
+    url : "sounds/Paddle_Dash_V2.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V3" : {
+    url : "sounds/Paddle_Dash_V3.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V4" : {
+    url : "sounds/Paddle_Dash_V4.mp3",
+    volume : 1
+  },
+  "Paddle_Dash_V5" : {
+    url : "sounds/Paddle_Dash_V5.mp3",
+    volume : 1
+  },
+
+  "Powerup_Spawn" : {
+    url : "sounds/Powerup_Spawn.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bounce_Paddle" : {
+    url : "sounds/Powerup_Bounce_Paddle.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bounce_Wall" : {
+    url : "sounds/Powerup_Bounce_Wall.mp3",
+    volume : 1
+  }
+
+
 };
 
 var soundBanks = {
+  "dash": [
+    "Paddle_Dash_V1",
+    "Paddle_Dash_V2",
+    "Paddle_Dash_V3",
+    "Paddle_Dash_V4",
+    "Paddle_Dash_V5"
+  ],
   "score": [
     "Ball_Score_V1",
     "Ball_Score_V2",
@@ -233,6 +330,23 @@ var soundBanks = {
     "Power_Shot_V2",
     "Power_Shot_V3",
     "Power_Shot_V4"
+  ],
+  "swish": [
+    "Paddle_Spin_V1",
+    "Paddle_Spin_V2",
+    "Paddle_Spin_V3",
+    "Paddle_Spin_V4",
+    "Paddle_Spin_V5",
+    "Paddle_Spin_V6",
+    "Paddle_Spin_V7",
+    "Paddle_Spin_V8",
+    "Paddle_Spin_V9",
+    "Paddle_Spin_V10",
+    "Paddle_Spin_V11",
+    "Paddle_Spin_V12",
+    "Paddle_Spin_V13",
+    "Paddle_Spin_V14",
+    "Paddle_Spin_V15"
   ],
   "mine-collision": [
     "Bomb_Impact_Low_V1",
@@ -357,7 +471,6 @@ globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
 globalBiquadFilter.connect(soundContext.destination);
 
 function playSound(name, options){
-
   var sound = sounds[name];
 
   if (!sound) {
