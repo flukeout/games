@@ -1,0 +1,374 @@
+<html>
+  <head>
+    <base href="src/">
+    <script src="js/music.js"></script>
+    <script src="js/sounds.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        let musicManager = new Music();
+
+        SoundManager.loadSettingsFromLocalStorage();
+        musicManager.loadSettingsFromLocalStorage();
+
+        SoundManager.connectMusicEngine(musicManager);
+
+        function startSoundEngineMonitor() {
+          document.addEventListener('keydown', (e) => {
+            let keyCode = String.fromCharCode(e.keyCode);
+            for (let s in SoundManager.sounds) {
+              if (vue.soundKeys[s] === keyCode) {
+                SoundManager.playSound(s);
+              }
+            }
+            for (let b in vue.bankKeys) {
+              if (vue.bankKeys[b] === keyCode) {
+                SoundManager.playRandomSoundFromBank(b);
+              }
+            }
+          });
+
+          let vue = new Vue({
+            el: "#sound-engine",
+            data: {
+              sounds: SoundManager.sounds,
+              banks: SoundManager.banks,
+              events: SoundManager.events,
+              loops: SoundManager.loops,
+              soundKeys: {},
+              bankKeys: {},
+              limitedSoundsPlaying: [],
+              limitedSoundTimeout: SoundManager.limitedSoundSettings.timeoutMS,
+              soundStored: !!localStorage.getItem('sounds'),
+              lowPassFilterFrequency: 0
+            },
+            methods: {
+              playSound: (e) => {
+                SoundManager.playSound(e.srcElement.getAttribute('data-name'));
+              },
+              playLimitedSound: (e) => {
+                SoundManager.playLimitedSound(e.srcElement.getAttribute('data-name'));
+              },
+              playBank: (e) => {
+                SoundManager.playRandomSoundFromBank(e.srcElement.getAttribute('data-name'));
+              },
+              playLimitedBank: (e) => {
+                SoundManager.playLimitedRandomSoundFromBank(e.srcElement.getAttribute('data-name'));
+              },
+              limitedSoundTimeoutChanged: () => {
+                SoundManager.limitedSoundSettings.timeoutMS = vue.limitedSoundTimeout;
+                SoundManager.saveSettingsToLocalStorage();
+                vue.soundStored = true;
+              },
+              bindKeyToSound: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+
+                function onKeyDown (keyboardEvent) {
+                  document.removeEventListener('keydown', onKeyDown);
+                  if (keyboardEvent.code === 'Escape') {
+                    vue.soundKeys[name] = '?';
+                    return;
+                  }
+                  vue.soundKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
+
+                  // Annoying, because vue is supposed to do this for us, but doesn't.
+                  clickEvent.srcElement.textContent = vue.soundKeys[name];
+                }
+
+                document.addEventListener('keydown', onKeyDown);
+              },
+              bindKeyToBank: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+
+                function onKeyDown (keyboardEvent) {
+                  document.removeEventListener('keydown', onKeyDown);
+                  if (keyboardEvent.code === 'Escape') {
+                    vue.bankKeys[name] = '?';
+                    return;
+                  }
+                  vue.bankKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
+
+                  // Annoying, because vue is supposed to do this for us, but doesn't.
+                  clickEvent.srcElement.textContent = vue.bankKeys[name];
+                }
+
+                document.addEventListener('keydown', onKeyDown);
+              },
+              clearStorage: () => {
+                localStorage.removeItem('sounds');
+                vue.soundStored = false;
+              },
+              volumeChanged: (e) => {
+                SoundManager.saveSettingsToLocalStorage();
+                vue.soundStored = true;
+              },
+              spitItOut: () => {
+                console.log(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
+              },
+              lowPassFilter: () => {
+                SoundManager.temporaryLowPass();
+              },
+              fireEvent: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+                SoundManager.fireEvent(name);
+              },
+              startLoop: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+                SoundManager.startLoop(name);
+              },
+              stopLoop: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+                SoundManager.stopLoop(name);
+              },
+            }
+          });
+
+          // Just to set some defaults for vue.js :/
+          let soundKeyList = ['Q','W','E','R','A','S','D','F','Z','X','C','V'];
+          for (let s in SoundManager.sounds) {
+            let key = soundKeyList.shift();
+            vue.soundKeys[s] = key || '?';
+          }
+
+          // Just to set some defaults for vue.js :/
+          let bankKeyList = ['P','O','I','L','K','J','M','N','B'];
+          for (let s in SoundManager.banks) {
+            let key = bankKeyList.shift();
+            vue.bankKeys[s] = key || '?';
+          }
+
+          setInterval(() => {
+            vue.lowPassFilterFrequency = SoundManager.globalLowPassFilterFrequency;
+          }, 25);
+
+          function updateLimitedSounds() {
+            vue.limitedSoundsPlaying = Object.keys(SoundManager.limitedSoundTimeouts).filter((key) => {
+              return SoundManager.limitedSoundTimeouts[key]});
+          }
+
+          document.addEventListener('limitedsoundstarted', updateLimitedSounds);
+          document.addEventListener('limitedsoundfinished', updateLimitedSounds);
+        }
+
+        function startMusicEngineMonitor() {
+          let vue = new Vue({
+            el: '#music-engine',
+            data: {
+              status: 'Loading',
+              moods: musicManager.getMoods(),
+              moodToSet: 'default',
+              currentMood: 'default',
+              moodActive: false,
+              duckingProfiles: musicManager.getDuckingProfiles(),
+              ducking: 0,
+              globalGain: musicManager.getGlobalGain(),
+              musicStored: !!localStorage.getItem('music'),
+            },
+            methods: {
+              start: () => {
+                musicManager.start();
+                vue.status = 'Playing';
+              },
+              stop: () => {
+                musicManager.stop();
+                vue.status = 'Ready';
+              },
+              setMood: (e) => {
+                musicManager.setMood(e.srcElement.value);
+              },
+              setMoodTemporarily: (e) => {
+                musicManager.setMoodTemporarily(e.srcElement.value);
+              },
+              duck: (e) => {
+                musicManager.duck(e.srcElement.getAttribute('data-name'));
+              },
+              globalGainChanged: (e) => {
+                musicManager.setGlobalGain(vue.globalGain);
+                musicManager.saveSettingsToLocalStorage();
+                vue.musicStored = true;
+              },
+              clearStorage: () => {
+                localStorage.removeItem('music');
+                vue.soundStored = false;
+              },
+              spitItOut: () => {
+                console.log(JSON.stringify(musicManager.getSettingsForOutput(), true, 2));
+              }
+            }
+          });
+
+          vue.status = 'Loading';
+          musicManager.load().then(() => {
+            vue.status = 'Ready';
+          });
+
+          document.addEventListener('musicmoodstart', (e) => {
+            vue.currentMood = e.detail;
+            vue.moodActive = true;
+          });
+
+          document.addEventListener('musicmoodstop', () => {
+            vue.currentMood = 'default';
+            vue.moodActive = false;
+          });
+
+          setInterval(() => {
+            vue.ducking = musicManager.duckingNode.gain.value;
+          }, 25);
+        }
+
+        startSoundEngineMonitor();
+        startMusicEngineMonitor();
+      });
+    </script>
+    <style>
+      body {
+        font-family: 'Open Sans';
+        font-size: 8pt;
+      }
+
+      #sound-engine {
+        position: fixed;
+        top: .25em;
+        left: .5%;
+        background: white;
+        width: 49%;
+        padding: .5em;
+        border: 5px dashed black;
+        box-sizing: border-box;
+        height: 100%;
+      }
+      
+      #music-engine {
+        position: fixed;
+        top: .25em;
+        left: 50.5%;
+        background: white;
+        width: 49%;
+        padding: .5em;
+        border: 5px dashed black;
+        box-sizing: border-box;
+      }
+
+      h2 {
+        margin-top: 0;
+        margin-bottom: .5em;
+      }
+
+      .sticky {
+        margin-bottom: 1em;
+      }
+
+      .scrollable {
+        overflow-y: scroll;
+        flex: 1;
+      }
+
+      .container {
+        display: flex;
+        flex-flow: column;
+      }
+
+      span[data-mood-active=true] {
+        background: lightgreen;
+      }
+
+      table {
+        font-size: inherit;
+      }
+
+      section {
+        margin-bottom: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sound-engine" class="container">
+      <div class="sticky">
+        <h2>Sound Engine</h2>
+        <div>Storage: <span>{{soundStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button><button v-on:click="spitItOut">Spit it out</button></div>
+        <div>Limited Sound Timeout (ms): <input type="number" class="value" v-model="limitedSoundTimeout" @change="limitedSoundTimeoutChanged"></div>
+        <div>Limited Sounds Playing: <span class="list">{{limitedSoundsPlaying}}</span></div>
+        <div>
+          Low Pass Filter: <span>{{lowPassFilterFrequency}}</span> <button v-on:click="temporaryLowPass">Temporary Low Pass</button>
+        </div>
+      </div>
+      <div class="scrollable">
+        <section>
+          <h2>Events</h2>
+          <table>
+            <tr><th>Name</th><th>Fire</th></tr>
+            <tr v-for="(profile, name) in events">
+              <td>{{name}}</td><td><button :data-name="name" v-on:click="fireEvent">Fire</button></td>
+            </tr>
+          </table>
+        </section>
+
+        <section>
+          <h2>Loops</h2>
+          <table>
+            <tr><th>Name</th><th>Status</th><th>Start</th><th>Stop</th></tr>
+            <tr v-for="(profile, name) in loops" class="loop-row">
+              <td>{{name}}</td>
+              <td data-loop="{{name}}">{{loops[name].active}}</td>
+              <td><button :data-name="name" v-on:click="startLoop">Start</button></td>
+              <td><button :data-name="name" v-on:click="stopLoop">Stop</button></td>
+            </tr>
+          </table>
+        </section>
+
+        <section>
+          <h2>Banks</h2>
+          <table>
+            <tr><th>Name</th><th>Play</th><th>Limited</th><th>Key</th></tr>
+            <tr v-for="(profile, name) in banks">
+              <td>{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
+            </tr>
+          </table>
+        </section>
+
+        <section>
+          <h2>Sounds</h2>
+          <table>
+            <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limited</th><th>Key</th></tr>
+            <tr v-for="(profile, name) in sounds">
+              <td>{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
+            </tr>
+          </table>
+        </section>
+      </div>
+    </div>
+    <div id="music-engine" class="container">
+      <div class="sticky">
+        <h2>Music Engine</h2>
+        <div class="status">Status: {{status}}</div>
+        <div>Storage: <span>{{musicStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button><button v-on:click="spitItOut">Spit it out</button></div>
+        <div>Play: <button class="start" v-on:click="start" :disabled="status != 'Ready'">Start</button><button class="start" v-on:click="stop" :disabled="status != 'Playing'">Stop</button></div>
+        <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model="globalGain" @change="globalGainChanged"></div>
+        <div>
+          Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span>
+        </div>
+        <div>
+          Ducking Gain: <span>{{ducking}}</span>
+        </div>
+      </div>
+      <div class="scrollable">
+        <section>
+          <h2>Moods</h2>
+          <div v-for="mood in moods">
+            {{mood}} <button :value="mood" v-on:click="setMood">Set</button><button :value="mood" v-on:click="setMoodTemporarily">Temporary</button>
+          </div>
+        </section>
+        <section>
+          <h2>Ducking</h2>
+          <table>
+            <tr><th>Name</th><th>Attack</th><th>Sustain</th><th>Release</th></tr>
+            <tr v-for="(profile, name) in duckingProfiles">
+              <td>{{name}}</td><td>{{profile.attack}}</td><td>{{profile.sustain}}</td><td>{{profile.release}}</td><td><button :data-name="name" v-on:click="duck">Duck</button></td>
+            </tr>
+          </table>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

@@ -164,7 +164,7 @@ const updateFunctions = {
 
       if(xDelta != 0 || yDelta != 0) {
 
-        playSound("dash");
+        playRandomSoundFromBank('dash');
 
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
@@ -328,11 +328,12 @@ const updateFunctions = {
       paddle.hasSpinPowerup = true;
     }
 
-    if(paddle.spinPowerupRemaining <= 0) {
+    if(paddle.hasSpinPowerup && paddle.spinPowerupRemaining <= 0) {
       paddle.spinPowerupRemaining = 0;
       paddle.hasSpinPowerup = false;
       paddle.spinPowerupCountdown = false;
       paddle.element.classList.remove("powerup-spin");
+      playSound('Powerup_Spin_WareOff');
     }
   },
   expandPowerup: function (paddle) {
@@ -343,6 +344,7 @@ const updateFunctions = {
       }
     } else if (paddle.height > paddle.targetHeight) {
       paddle.changeHeight("shrink");
+      playSound('Powerup_Enhance_WareOff');
       if(paddle.height < paddle.targetHeight) {
         paddle.targetHeight = paddle.height;
       }
@@ -433,7 +435,7 @@ function createPaddle(options) {
       Matter.Body.setAngularVelocity(this.physics, v);
 
       if(!this.swishTimeout && this.type == "player") {
-        playSound("swish");
+        playRandomSoundFromBank("swish");
         this.swishTimeout = setTimeout(() => {
           this.swishTimeout = false;
         }, this.swishTimeoutMS);
