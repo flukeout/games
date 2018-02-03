@@ -35,10 +35,6 @@ let sounds = {
     url : "sounds/beep.mp3",
     volume : .15
   },
-  "win-round" : {
-    url : "sounds/crowd.wav",
-    volume : .15
-  },
   "woosh" : {
     url : "sounds/woosh.wav",
     volume : .35
@@ -201,7 +197,20 @@ let sounds = {
     url : "sounds/Powerup_Enhance_Score.mp3",
     volume : 1
   },
-
+  "Powerup_Spin_Score" : {
+    url : "sounds/Powerup_Spin_Score.mp3",
+    volume : 1
+  },
+  
+  "Powerup_Enhance_WareOff" : {
+    url : "sounds/Powerup_Enhance_WareOff.mp3",
+    volume : 1
+  },
+  "Powerup_Spin_WareOff" : {
+    url : "sounds/Powerup_Spin_WareOff.mp3",
+    volume : 1
+  },
+  
   "Bomb_Explosion_V1" : {
     url : "sounds/Bomb_Explosion_V1.mp3",
     volume : 1
@@ -297,6 +306,10 @@ let sounds = {
     url : "sounds/Powerup_Spawn.mp3",
     volume : 1
   },
+  "Bomb_Spawn" : {
+    url : "sounds/Bomb_Spawn.mp3",
+    volume : 1
+  },
 
   "Powerup_Bounce_Paddle" : {
     url : "sounds/Powerup_Bounce_Paddle.mp3",
@@ -306,9 +319,12 @@ let sounds = {
   "Powerup_Bounce_Wall" : {
     url : "sounds/Powerup_Bounce_Wall.mp3",
     volume : 1
-  }
+  },
 
-
+  "Win_Cheer" : {
+    url : "sounds/Win_Cheer.mp3",
+    volume : 1
+  },
 };
 
 var soundBanks = {
@@ -472,7 +488,7 @@ globalBiquadFilter.connect(soundContext.destination);
 
 function playSound(name, options){
   var sound = sounds[name];
-
+// console.log(name);
   if (!sound) {
     console.warn('No sound with name ' + name);
     return;

@@ -328,11 +328,12 @@ const updateFunctions = {
       paddle.hasSpinPowerup = true;
     }
 
-    if(paddle.spinPowerupRemaining <= 0) {
+    if(paddle.hasSpinPowerup && paddle.spinPowerupRemaining <= 0) {
       paddle.spinPowerupRemaining = 0;
       paddle.hasSpinPowerup = false;
       paddle.spinPowerupCountdown = false;
       paddle.element.classList.remove("powerup-spin");
+      playSound('Powerup_Spin_WareOff');
     }
   },
   expandPowerup: function (paddle) {
@@ -343,6 +344,7 @@ const updateFunctions = {
       }
     } else if (paddle.height > paddle.targetHeight) {
       paddle.changeHeight("shrink");
+      playSound('Powerup_Enhance_WareOff');
       if(paddle.height < paddle.targetHeight) {
         paddle.targetHeight = paddle.height;
       }

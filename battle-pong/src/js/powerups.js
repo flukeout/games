@@ -1,9 +1,16 @@
 (function () {
   const powerUpTypes = Settings.powerUpTypes;
   const mineSpeedVolumeMultiplier = 0.5;
+  
   const powerUpScoreSoundNames = {
     clone: 'Powerup_Bones_Score',
-    grow: 'Powerup_Enhance_Score'
+    grow: 'Powerup_Enhance_Score',
+    spin: 'Powerup_Spin_Score'
+  };
+  
+  const powerupSpawnNames = {
+    default: 'Powerup_Spawn',
+    mine: 'Bomb_Spawn'
   };
 
   const powerupFrequency = Settings.powerupFrequency || 300; // A powerup appears once in every X frames
@@ -47,7 +54,7 @@
       powerUp.element.classList.add(type);
 
       // powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
-      playSound("Powerup_Spawn");
+      playSound(powerupSpawnNames[type] || powerupSpawnNames.default);
     };
 
     this.createPowerup = (x, y, type) => {

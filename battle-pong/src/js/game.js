@@ -803,7 +803,7 @@ var game =  {
 
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver();
-      playSound("win-round");
+      playSound("Win_Cheer");
       this.showMessage("NICE", 1500);
     }
   },
