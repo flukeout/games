@@ -50,10 +50,6 @@ let sounds = {
     url : "sounds/boom.wav",
     volume : .3
   },
-  "score" : {
-    url : "sounds/score.mp3",
-    volume:  .1
-  },
 
   "Power_Shot_V1" : {
     url : "sounds/Power_Shot_V1.mp3",
@@ -574,6 +570,9 @@ window.SoundManager = {
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
   limitedSoundSettings: limitedSoundSettings,
+  get globalLowPassFilterFrequency () {
+    return globalBiquadFilter.frequency.value;
+  },
   getSettingsForOutput: function () {
     let output = JSON.parse(JSON.stringify(sounds));
     for (let s in output) {

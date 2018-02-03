@@ -11,19 +11,17 @@
         SoundManager.loadSettingsFromLocalStorage();
         musicManager.loadSettingsFromLocalStorage();
 
-        // Just to set some defaults for vue.js :/
-        let keyList = ['Q','W','E','R','A','S','D','F','Z','X','C','V'];
-        for (let s in SoundManager.sounds) {
-          let key = keyList.shift();
-          SoundManager.sounds[s].key = key || '?';
-        }
-
         function startSoundEngineMonitor() {
           document.addEventListener('keydown', (e) => {
             let keyCode = String.fromCharCode(e.keyCode);
             for (let s in SoundManager.sounds) {
-              if (SoundManager.sounds[s].key === keyCode) {
+              if (vue.soundKeys[s] === keyCode) {
                 SoundManager.playSound(s);
+              }
+            }
+            for (let b in vue.bankKeys) {
+              if (vue.bankKeys[b] === keyCode) {
+                SoundManager.playRandomSoundFromBank(b);
               }
             }
           });
@@ -33,9 +31,12 @@
             data: {
               sounds: SoundManager.sounds,
               banks: SoundManager.banks,
+              soundKeys: {},
+              bankKeys: {},
               limitedSoundsPlaying: [],
               limitedSoundTimeout: SoundManager.limitedSoundSettings.timeoutMS,
               soundStored: !!localStorage.getItem('sounds'),
+              lowPassFilterFrequency: 0
             },
             methods: {
               playSound: (e) => {
@@ -60,7 +61,31 @@
 
                 function onKeyDown (keyboardEvent) {
                   document.removeEventListener('keydown', onKeyDown);
-                  vue.sounds[name].key = String.fromCharCode(keyboardEvent.keyCode);
+                  if (keyboardEvent.code === 'Escape') {
+                    vue.soundKeys[name] = '?';
+                    return;
+                  }
+                  vue.soundKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
+
+                  // Annoying, because vue is supposed to do this for us, but doesn't.
+                  clickEvent.srcElement.textContent = vue.soundKeys[name];
+                }
+
+                document.addEventListener('keydown', onKeyDown);
+              },
+              bindKeyToBank: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+
+                function onKeyDown (keyboardEvent) {
+                  document.removeEventListener('keydown', onKeyDown);
+                  if (keyboardEvent.code === 'Escape') {
+                    vue.bankKeys[name] = '?';
+                    return;
+                  }
+                  vue.bankKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
+
+                  // Annoying, because vue is supposed to do this for us, but doesn't.
+                  clickEvent.srcElement.textContent = vue.bankKeys[name];
                 }
 
                 document.addEventListener('keydown', onKeyDown);
@@ -75,10 +100,31 @@
               },
               spitItOut: () => {
                 console.log(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
+              },
+              lowPassFilter: () => {
+                SoundManager.temporaryLowPass();
               }
             }
           });
-          
+
+          // Just to set some defaults for vue.js :/
+          let soundKeyList = ['Q','W','E','R','A','S','D','F','Z','X','C','V'];
+          for (let s in SoundManager.sounds) {
+            let key = soundKeyList.shift();
+            vue.soundKeys[s] = key || '?';
+          }
+
+          // Just to set some defaults for vue.js :/
+          let bankKeyList = ['P','O','I','L','K','J','M','N','B'];
+          for (let s in SoundManager.banks) {
+            let key = bankKeyList.shift();
+            vue.bankKeys[s] = key || '?';
+          }
+
+          setInterval(() => {
+            vue.lowPassFilterFrequency = SoundManager.globalLowPassFilterFrequency;
+          }, 25);
+
           function updateLimitedSounds() {
             vue.limitedSoundsPlaying = Object.keys(SoundManager.limitedSoundTimeouts).filter((key) => {
               return SoundManager.limitedSoundTimeouts[key]});
@@ -224,14 +270,17 @@
         <div>Storage: <span>{{soundStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button><button v-on:click="spitItOut">Spit it out</button></div>
         <div>Limited Sound Timeout (ms): <input type="number" class="value" v-model="limitedSoundTimeout" @change="limitedSoundTimeoutChanged"></div>
         <div>Limited Sounds Playing: <span class="list">{{limitedSoundsPlaying}}</span></div>
+        <div>
+          Low Pass Filter: <span>{{lowPassFilterFrequency}}</span> <button v-on:click="temporaryLowPass">Temporary Low Pass</button>
+        </div>
       </div>
       <div class="scrollable">
         <section>
           <h2>Banks</h2>
           <table>
-            <tr><th>Name</th><th>Play</th><th>Limited</th></tr>
+            <tr><th>Name</th><th>Play</th><th>Limited</th><th>Key</th></tr>
             <tr v-for="(profile, name) in banks">
-              <td>{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td>
+              <td>{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
@@ -241,7 +290,7 @@
           <table>
             <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limited</th><th>Key</th></tr>
             <tr v-for="(profile, name) in sounds">
-              <td>{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{sounds[name].key}}</button></td>
+              <td>{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
