@@ -326,9 +326,22 @@ let sounds = {
     url : "sounds/Ball_Spawn.mp3",
     volume : 1
   },
+
+  "Finish_It_Heartbeat_Loop" : {
+    url : "sounds/Finish_It_Heartbeat_Loop.mp3",
+    volume : 1
+  },
+  "Finish_It_Hit" : {
+    url : "sounds/Finish_It_Hit.mp3",
+    volume : 1
+  },
+  "Finish_It_Miss" : {
+    url : "sounds/Finish_It_Miss.mp3",
+    volume : 1
+  },
 };
 
-var soundBanks = {
+let soundBanks = {
   "dash": [
     "Paddle_Dash_V1",
     "Paddle_Dash_V2",
@@ -391,6 +404,26 @@ var soundBanks = {
   ]
 };
 
+let loops = {
+  'Finish_It_Heartbeat': {
+    sound: 'Finish_It_Heartbeat_Loop'
+  }
+};
+
+let soundEvents = {
+  'Finish_It_Heartbeat_Start': () => {
+    SoundManager.startLoop('Finish_It_Heartbeat');
+  },
+  'Finish_It_Heartbeat_Stop_Hit': () => {
+    SoundManager.stopLoop('Finish_It_Heartbeat');
+    SoundManager.playSound('Finish_It_Hit');
+  },
+  'Finish_It_Heartbeat_Stop_Miss': () => {
+    SoundManager.stopLoop('Finish_It_Heartbeat');
+    SoundManager.playSound('Finish_It_Miss');
+  }
+};
+
 var soundContext = new AudioContext();
 
 for(var key in sounds) {
@@ -451,7 +484,6 @@ function playLimitedRandomSoundFromBank(soundBankName, options) {
 }
 
 function temporaryLowPass() {
-
   // If this effect is already happening, reset it (which effectively extends it)
   if (temporaryLowpassTimeout) {
     clearTimeout(temporaryLowpassTimeout);
@@ -489,7 +521,7 @@ globalBiquadFilter.connect(soundContext.destination);
 
 function playSound(name, options){
   var sound = sounds[name];
-// console.log(name);
+
   if (!sound) {
     console.warn('No sound with name ' + name);
     return;
@@ -536,6 +568,45 @@ function playSound(name, options){
   source.start(0);
 
   /* ʕ •ᴥ•ʔゝ☆ */
+  return source;
+}
+
+for (let l in loops) {
+  loops[l].active = false;
+}
+
+function startLoop(name, options) {
+  let loop = loops[name];
+  
+  if (!loop) {
+    console.warn('No loop named', name);
+    return;
+  }
+
+  let source = playSound(loop.sound, options);
+  source.loop = true;
+
+  // :)
+  loop.source = source;
+  loop.active = true;
+
+  document.dispatchEvent(new CustomEvent('loopstarted', {detail: name}));
+}
+
+function stopLoop(name, options) {
+  let loop = loops[name];
+  
+  if (!loop) {
+    console.warn('No loop named', name);
+    return;
+  }
+
+  if (loop.active) {
+    loop.source.stop();
+    loop.source = null;
+    loop.active = false;
+    document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));
+  }
 }
 
 function findSounds(name) {
@@ -562,10 +633,18 @@ window.SoundManager = {
   get banks () {
     return soundBanks;
   },
+  get events () {
+    return soundEvents;
+  },
+  get loops () {
+    return loops;
+  },
   playSound: playSound,
   playLimitedSound: playLimitedSound,
   playRandomSoundFromBank: playRandomSoundFromBank,
   playLimitedRandomSoundFromBank: playLimitedRandomSoundFromBank,
+  startLoop: startLoop,
+  stopLoop: stopLoop,
   temporaryLowPass: temporaryLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
@@ -597,6 +676,14 @@ window.SoundManager = {
   },
   saveSettingsToLocalStorage: function () {
     localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
+  },
+  fireEvent: function (name, options) {
+    if (soundEvents[name]) {
+      soundEvents[name](options);
+    }
+    else {
+      console.warn('No sound event named ', name);
+    }
   }
 };
 

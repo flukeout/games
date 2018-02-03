@@ -31,6 +31,8 @@
             data: {
               sounds: SoundManager.sounds,
               banks: SoundManager.banks,
+              events: SoundManager.events,
+              loops: SoundManager.loops,
               soundKeys: {},
               bankKeys: {},
               limitedSoundsPlaying: [],
@@ -103,7 +105,19 @@
               },
               lowPassFilter: () => {
                 SoundManager.temporaryLowPass();
-              }
+              },
+              fireEvent: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+                SoundManager.fireEvent(name);
+              },
+              startLoop: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+                SoundManager.startLoop(name);
+              },
+              stopLoop: (clickEvent) => {
+                var name = clickEvent.srcElement.getAttribute('data-name');
+                SoundManager.stopLoop(name);
+              },
             }
           });
 
@@ -275,6 +289,29 @@
         </div>
       </div>
       <div class="scrollable">
+        <section>
+          <h2>Events</h2>
+          <table>
+            <tr><th>Name</th><th>Fire</th></tr>
+            <tr v-for="(profile, name) in events">
+              <td>{{name}}</td><td><button :data-name="name" v-on:click="fireEvent">Fire</button></td>
+            </tr>
+          </table>
+        </section>
+
+        <section>
+          <h2>Loops</h2>
+          <table>
+            <tr><th>Name</th><th>Status</th><th>Start</th><th>Stop</th></tr>
+            <tr v-for="(profile, name) in loops" class="loop-row">
+              <td>{{name}}</td>
+              <td data-loop="{{name}}">{{loops[name].active}}</td>
+              <td><button :data-name="name" v-on:click="startLoop">Start</button></td>
+              <td><button :data-name="name" v-on:click="stopLoop">Stop</button></td>
+            </tr>
+          </table>
+        </section>
+
         <section>
           <h2>Banks</h2>
           <table>

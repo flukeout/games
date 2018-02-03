@@ -583,16 +583,13 @@ var game =  {
   gameOver : function(){
 
     var that = this;
-    setTimeout(function(){
-      that.mode = "finish";
-    }, 50);
+    
+    setTimeout(() => { this.mode = "finish"; }, 50);
 
     this.bodyEl.classList.add("winner-screen");
 
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");
-
-    var that = this;
 
     if(this.score.winner == this.paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
@@ -606,7 +603,6 @@ var game =  {
     this.score.player2 = 0;
 
     setTimeout(() => {
-
       var minY = that.score.loser.physics.bounds.min.y;
       var maxY = that.score.loser.physics.bounds.max.y;
       var deltaY = minY - maxY;
