@@ -16,13 +16,15 @@
       file: 'music/Contagion_Loop_TopLayer.mp3',
       moods: {
         default: 0,
-        intense: 1
+        intense: 1,
+        quiet: 0.2
       }
     },
     base: {
       file: 'music/Contagion_Loop_BaseLayer.mp3',
       moods: {
-        default: 1
+        default: 1,
+        quiet: 0.2
       }
     }
   };
@@ -123,35 +125,66 @@
         }
 
         for (let layerName in layerDefinitions) {
-          let source = audioContext.createBufferSource();
-          source.buffer = buffers[layerDefinitions[layerName].file];
+          let layer = {
+            init: function () {
+              let source = audioContext.createBufferSource();
+              source.buffer = buffers[layerDefinitions[layerName].file];
 
-          let gainNode = audioContext.createGain();
+              let gainNode = audioContext.createGain();
 
-          let gainValue = layerDefinitions[layerName].moods.default;
-          gainValue = isNaN(Number(gainValue)) ? 0 : gainValue;
-          gainNode.gain.value = gainValue;
+              let gainValue = layerDefinitions[layerName].moods.default;
+              gainValue = isNaN(Number(gainValue)) ? 0 : gainValue;
+              gainNode.gain.value = gainValue;
 
-          source.connect(gainNode);
-          gainNode.connect(duckingNode);
+              source.connect(gainNode);
+              gainNode.connect(duckingNode);
 
-          source.loop = true;
+              source.loop = true;
 
-          activeLayers[layerName] = {
-            source: source,
-            gain: gainNode,
+              layer.source = source;
+              layer.gain = gainNode;
+            },
+            source: null,
+            gain: null,
             temporaryLevelDelay: null
           };
+
+          activeLayers[layerName] = layer;
         }
 
         resolve();
       });
     };
 
+    this.setMood = function (mood) {
+      for (let layerName in activeLayers) {
+        this.setLayerMood(layerName, mood, temporaryMoodDurations[mood]);
+      }      
+    }
+
     this.setMoodTemporarily = function (mood) {
       for (let layerName in activeLayers) {
         this.setLayerMoodTemporarily(layerName, mood, temporaryMoodDurations[mood]);
       }
+    };
+
+    this.setLayerMood = function (layerName, mood) {
+      let layer = activeLayers[layerName];
+      if (!layer) {
+        console.warn('No music layer named ', layerName);
+        return;
+      }
+
+      let moodValue = layerDefinitions[layerName].moods[mood];
+      // If this layer doesn't have a value set for this mood, assuming it's meant to keep playing the way it already is
+      if (isNaN(Number(moodValue))) {
+        return;
+      }
+
+      layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
+      layer.gain.gain.value = moodValue;
+
+      document.dispatchEvent(new CustomEvent('musicmoodstart', {detail: mood}));
     };
 
     this.setLayerMoodTemporarily = function (layerName, mood, time) {
@@ -192,7 +225,14 @@
 
     this.start = function (options) {
       for (let layer in activeLayers) {
+        activeLayers[layer].init();
         activeLayers[layer].source.start(0);
+      }
+    };
+
+    this.stop = function () {
+      for (let layer in activeLayers) {
+        activeLayers[layer].source.stop();
       }
     };
 

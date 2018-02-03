@@ -11,6 +11,8 @@
         SoundManager.loadSettingsFromLocalStorage();
         musicManager.loadSettingsFromLocalStorage();
 
+        SoundManager.connectMusicEngine(musicManager);
+
         function startSoundEngineMonitor() {
           document.addEventListener('keydown', (e) => {
             let keyCode = String.fromCharCode(e.keyCode);
@@ -153,7 +155,6 @@
             el: '#music-engine',
             data: {
               status: 'Loading',
-              startButtonDisabled: true,
               moods: musicManager.getMoods(),
               moodToSet: 'default',
               currentMood: 'default',
@@ -167,9 +168,15 @@
               start: () => {
                 musicManager.start();
                 vue.status = 'Playing';
-                vue.startButtonDisabled = true;
               },
-              changeMood: (e) => {
+              stop: () => {
+                musicManager.stop();
+                vue.status = 'Ready';
+              },
+              setMood: (e) => {
+                musicManager.setMood(e.srcElement.value);
+              },
+              setMoodTemporarily: (e) => {
                 musicManager.setMoodTemporarily(e.srcElement.value);
               },
               duck: (e) => {
@@ -191,10 +198,8 @@
           });
 
           vue.status = 'Loading';
-          vue.startButtonDisabled = true;
           musicManager.load().then(() => {
             vue.status = 'Ready';
-            vue.startButtonDisabled = false;
           });
 
           document.addEventListener('musicmoodstart', (e) => {
@@ -338,7 +343,7 @@
         <h2>Music Engine</h2>
         <div class="status">Status: {{status}}</div>
         <div>Storage: <span>{{musicStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button><button v-on:click="spitItOut">Spit it out</button></div>
-        <div>Play: <button class="start" v-on:click="start" :disabled="startButtonDisabled">Start</button></div>
+        <div>Play: <button class="start" v-on:click="start" :disabled="status != 'Ready'">Start</button><button class="start" v-on:click="stop" :disabled="status != 'Playing'">Stop</button></div>
         <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model="globalGain" @change="globalGainChanged"></div>
         <div>
           Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span>
@@ -350,7 +355,9 @@
       <div class="scrollable">
         <section>
           <h2>Moods</h2>
-          <button v-for="mood in moods" :value="mood" v-on:click="changeMood">{{mood}}</button>
+          <div v-for="mood in moods">
+            {{mood}} <button :value="mood" v-on:click="setMood">Set</button><button :value="mood" v-on:click="setMoodTemporarily">Temporary</button>
+          </div>
         </section>
         <section>
           <h2>Ducking</h2>

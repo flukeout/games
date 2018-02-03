@@ -18,6 +18,8 @@ const limitedSoundSettings = {
   timeoutMS: 100
 };
 
+let connectedMusicEngine = null;
+
 let limitedSoundTimeouts = {};
 let temporaryLowpassTimeout = null;
 let temporaryLowpassComebackTimeout = null;
@@ -413,14 +415,17 @@ let loops = {
 let soundEvents = {
   'Finish_It_Heartbeat_Start': () => {
     SoundManager.startLoop('Finish_It_Heartbeat');
+    connectedMusicEngine.setMood('quiet');
   },
   'Finish_It_Heartbeat_Stop_Hit': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Hit');
+    connectedMusicEngine.setMood('default');
   },
   'Finish_It_Heartbeat_Stop_Miss': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Miss');
+    connectedMusicEngine.setMood('default');
   }
 };
 
@@ -684,6 +689,9 @@ window.SoundManager = {
     else {
       console.warn('No sound event named ', name);
     }
+  },
+  connectMusicEngine: function (musicEngine) {
+    connectedMusicEngine = musicEngine;
   }
 };
 
