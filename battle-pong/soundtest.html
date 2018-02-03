@@ -28,7 +28,6 @@
             }
           });
 
-
           let vue = new Vue({
             el: "#sound-engine",
             data: {
@@ -73,6 +72,9 @@
               volumeChanged: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
                 vue.soundStored = true;
+              },
+              spitItOut: () => {
+                console.log(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
               }
             }
           });
@@ -121,6 +123,9 @@
               clearStorage: () => {
                 localStorage.removeItem('music');
                 vue.soundStored = false;
+              },
+              spitItOut: () => {
+                console.log(JSON.stringify(musicManager.getSettingsForOutput(), true, 2));
               }
             }
           });
@@ -216,7 +221,7 @@
     <div id="sound-engine" class="container">
       <div class="sticky">
         <h2>Sound Engine</h2>
-        <div>Storage: <span>{{soundStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button></div>
+        <div>Storage: <span>{{soundStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button><button v-on:click="spitItOut">Spit it out</button></div>
         <div>Limited Sound Timeout (ms): <input type="number" class="value" v-model="limitedSoundTimeout" @change="limitedSoundTimeoutChanged"></div>
         <div>Limited Sounds Playing: <span class="list">{{limitedSoundsPlaying}}</span></div>
       </div>
@@ -246,7 +251,7 @@
       <div class="sticky">
         <h2>Music Engine</h2>
         <div class="status">Status: {{status}}</div>
-        <div>Storage: <span>{{musicStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button></div>
+        <div>Storage: <span>{{musicStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button><button v-on:click="spitItOut">Spit it out</button></div>
         <div>Play: <button class="start" v-on:click="start" :disabled="startButtonDisabled">Start</button></div>
         <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model="globalGain" @change="globalGainChanged"></div>
         <div>

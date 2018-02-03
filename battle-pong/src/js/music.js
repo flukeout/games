@@ -196,6 +196,13 @@
       }
     };
 
+    this.getSettingsForOutput = function () {
+      return {
+        duckingProfiles: duckingProfiles,
+        globalGainValue: globalGainNode.gain.value
+      };
+    };
+
     this.loadSettingsFromLocalStorage = function () {
       let storedSettings = localStorage.getItem('music');
       
@@ -207,13 +214,8 @@
     };
 
     this.saveSettingsToLocalStorage = function () {
-      let output = {
-        duckingProfiles: duckingProfiles,
-        globalGainValue: globalGainNode.gain.value
-      };
-
-      localStorage.setItem('music', JSON.stringify(output));
-    }
+      localStorage.setItem('music', JSON.stringify(this.getSettingsForOutput()));
+    };
   };
 
 })();

@@ -440,6 +440,14 @@ window.SoundManager = {
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
   limitedSoundSettings: limitedSoundSettings,
+  getSettingsForOutput: function () {
+    let output = JSON.parse(JSON.stringify(sounds));
+    for (let s in output) {
+      delete output[s].buffer;
+      delete output[s].key;
+    }
+    return output;
+  },
   loadSettingsFromLocalStorage: function () {
     let storedSettings = localStorage.getItem('sounds');
     if (storedSettings) {
@@ -455,14 +463,7 @@ window.SoundManager = {
     }
   },
   saveSettingsToLocalStorage: function () {
-    
-    let output = JSON.parse(JSON.stringify(sounds));
-    for (let s in output) {
-      delete output[s].buffer;
-      delete output[s].key;
-    }
-
-    localStorage.setItem('sounds', JSON.stringify(output));
+    localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
   }
 };
 
