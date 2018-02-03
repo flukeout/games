@@ -55,7 +55,8 @@
               moodToSet: 'default',
               currentMood: 'default',
               moodActive: false,
-              duckingProfiles: musicManager.getDuckingProfiles()
+              duckingProfiles: musicManager.getDuckingProfiles(),
+              ducking: 0
             },
             methods: {
               start: () => {
@@ -65,6 +66,9 @@
               },
               changeMood: (e) => {
                 musicManager.setMoodTemporarily(e.srcElement.value);
+              },
+              duck: (e) => {
+                musicManager.duck(e.srcElement.getAttribute('data-name'));
               }
             }
           });
@@ -85,6 +89,10 @@
             vue.currentMood = 'default';
             vue.moodActive = false;
           });
+
+          setInterval(() => {
+            vue.ducking = musicManager.duckingNode.gain.value;
+          }, 25);
         }
 
         startSoundEngineMonitor();
@@ -226,6 +234,9 @@
         <div>
           Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span>
         </div>
+        <div>
+          Ducking Gain: <span>{{ducking}}</span>
+        </div>
       </div>
       <div class="scrollable">
         <section>
@@ -237,7 +248,7 @@
           <table>
             <tr><th>Name</th><th>Attack</th><th>Sustain</th><th>Release</th></tr>
             <tr v-for="(profile, name) in duckingProfiles">
-              <td>{{name}}</td><td>{{profile.attack}}</td><td>{{profile.sustain}}</td><td>{{profile.release}}</td>
+              <td>{{name}}</td><td>{{profile.attack}}</td><td>{{profile.sustain}}</td><td>{{profile.release}}</td><td><button :data-name="name" v-on:click="duck">Duck</button></td>
             </tr>
           </table>
         </section>

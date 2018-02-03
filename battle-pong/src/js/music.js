@@ -29,6 +29,7 @@
 
   const duckingProfiles = {
     test: {
+      gain: 0.2,
       attack: 1,
       sustain: 1,
       release: 1
@@ -40,10 +41,14 @@
 
     let audioContext = new AudioContext();
     let duckingNode = audioContext.createGain();
-
     duckingNode.connect(audioContext.destination);
 
     this.temporaryMoodDurations = temporaryMoodDurations;
+    this.currentDuckingProfile = null;
+
+    this.duckingNode = duckingNode;
+    
+    let duckingTimeout = -1;
 
     this.getDuckingProfiles = function () {
       return duckingProfiles;
@@ -63,8 +68,25 @@
       return allMoods;
     };
 
-    this.duck = function (profile) {
+    this.duck = function (profileName) {
+      let profile = duckingProfiles[profileName];
 
+      if (duckingTimeout > -1) {
+        clearTimeout(duckingTimeout);
+      }
+
+      document.dispatchEvent(new CustomEvent('duckingstart', {detail: profileName}));
+
+      duckingNode.gain.cancelScheduledValues(audioContext.currentTime);
+      duckingNode.gain.linearRampToValueAtTime(profile.gain, audioContext.currentTime + profile.attack);
+      duckingNode.gain.linearRampToValueAtTime(profile.gain, audioContext.currentTime + profile.attack + profile.sustain);
+      duckingNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + profile.attack + profile.sustain + profile.release);
+
+      this.currentDuckingProfile = profileName;
+
+      duckingTimeout = setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('duckingstop', {detail: profileName}));
+      }, (profile.attack + profile.sustain + profile.release) * 1000);
     };
 
     this.load = function () {
