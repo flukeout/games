@@ -31,26 +31,26 @@
 
       <div class="game-settings">
         
-        <div class="option best-of" data-bestof>
+        <div class="option-group best-of" data-bestof>
           <span class="label">Best of</span>
-          <span class="value selected option-enabled">3</span>
-          <span class="value">5</span>
-          <span class="value">7</span>
+          <span data-value="2" class="option value">3</span>
+          <span data-value="3" class="option value">5</span>
+          <span data-value="5" class="option value">7</span>
         </div>
 
         <div class="powerups">
           <span class="label">POWERUPS</span>
-          <div class="powerup option option-enabled" data-powerup-star></div>
-          <div class="powerup option option-enabled" data-powerup-spin></div>
-          <div class="powerup option option-enabled" data-powerup-mines></div>
-          <div class="powerup option option-enabled" data-powerup-bones></div>
+          <div class="powerup option" data-powerup="grow"></div>
+          <div class="powerup option" data-powerup="spin"></div>
+          <div class="powerup option" data-powerup="mine"></div>
+          <div class="powerup option" data-powerup="clone"></div>
         </div>
 
-        <div class="option" data-sounds>Sounds <span class="value">ON</span></div>
-        <div class="option" data-music>Music <span class="value">ON</span></div>
+        <div class="option option-toggle" data-type="sounds">Sounds <span class="value"></span></div>
+        <div class="option option-toggle" data-type="music">Music <span class="value"></span></div>
       </div>
 
-      <div class="start-game">START!</div>
+      <a href="index.html" class="start-game">START!</a>
 
     </div>
 

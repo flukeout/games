@@ -5,6 +5,27 @@
   width: 100vw;
   height: 100vh;
 
+  .pop {
+    animation: optionPop .5s ease-out;
+    @keyframes optionPop {
+      0% {
+        transform: scale(1);
+      }
+      10% {
+        transform: scale(.8);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+  }
+
   .credits {
     position: absolute;
     bottom: 0px;
@@ -131,6 +152,24 @@
   .option {
     display: inline-block;
   }
+  .option-toggle {
+    margin: 0 5px;
+    .value {
+      min-width: 60px;
+    }
+
+    .value:before {
+      content: "OFF";
+    }
+
+    &.enabled .value {
+      background: #ac4d9c;
+      &:before {
+        content: "ON";  
+      }
+    }
+  }
+
 
   .value {
     margin: 0 4px;
@@ -150,9 +189,14 @@
     }
   }
 
+  .enabled .value {
+    content: "on";
+  }
+
   .start-game {
     color: white;
     display: block;
+    text-decoration: none;
     margin: 60px auto 0 auto;
     width: 200px;
     transform: rotateX(10deg);
@@ -202,7 +246,7 @@
     margin-right: 10px;
     background-size: conain;
     background-repeat: no-repeat;
-    opacity: .4;
+    opacity: .3;
     background-position: center;
     position: relative;
     border-radius: 0;
@@ -210,30 +254,28 @@
     cursor: pointer;
   }
 
-  [data-powerup-star] {
+  [data-powerup=grow] {
     background-image: url(assets/images/star.svg);
   }
 
-  [data-powerup-spin] {
+  [data-powerup=spin] {
     background-image: url(assets/images/spinner.svg);
     background-size: 35px;
   }
 
-  [data-powerup-bones] {
+  [data-powerup=clone] {
     background-image: url(assets/images/bone.svg);
     background-color: #666;
     background-size: 12px;
     border-radius: 50%;
   }
   
-  [data-powerup-mines] {
+  [data-powerup=mine] {
     background-image: url(assets/images/mine.svg);
   }
 
-
-  .option-enabled {
+  .enabled {
     opacity: 1;
-    animation: pulse .5s ease-in-out infinite;
   }
 
   [data-sounds] {

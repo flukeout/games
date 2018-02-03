@@ -2,8 +2,8 @@ window.Settings = {
   clearSavedControlSettings : true,
   showIntro : false,
   debug : true,
-  // powerUpTypes : ["mine", "clone", "grow", "spin"],
-  powerUpTypes : ["mine"],
+  availablePowerUpTypes : ["mine", "clone", "grow", "spin"],
+  powerUpTypes : ["mine", "clone", "grow", "spin"],
   brakesModeEnabled : false,
   goalTimeoutMS : 250,
   powerupFrequency : 300,
@@ -12,7 +12,9 @@ window.Settings = {
   mineForceRadius: 175,
   mineForceMultiplier: 0.00075,
   showFrameRate: false,
-  showBackground: true
+  showBackground: true,
+  sounds: true,
+  music: false
 };
 
 var queryStringParts = window.location.search.substr(1).split('&');
