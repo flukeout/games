@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+<html>
+  <head>
+    <title></title>
+    <base href="src/">
+    <link rel="stylesheet" href="style.css"/>
+    <script src="js/particles.js"></script><!-- particle engine -->
+    <script src="js/settings.js"></script>
+    <script src="js/splash.js"></script>
+    <!-- insert minified source here -->
+  </head>
+
+  <body class="splash">
+
+    <div class="paddle-guy">
+      <div class="jet jet-left"></div>
+      <div class="jet jet-right"></div>
+      <div class="guy"></div>
+    </div>      
+
+    <div class="scene">
+      <div class="stars"></div>
+      <div class="sky"></div>
+      <div class="large-moon"></div>
+      <div class="surface">
+        <div class="overlay"></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="game-title">
+        SPAAAACE PONG
+      </div>
+
+      <div class="game-settings">
+        
+        <div class="option-group best-of" data-bestof>
+          <span class="label">Best of</span>
+          <span data-value="2" class="option value">3</span>
+          <span data-value="3" class="option value">5</span>
+          <span data-value="5" class="option value">7</span>
+        </div>
+
+        <div class="powerups">
+          <span class="label">POWERUPS</span>
+          <div class="powerup option" data-powerup="grow"></div>
+          <div class="powerup option" data-powerup="spin"></div>
+          <div class="powerup option" data-powerup="mine"></div>
+          <div class="powerup option" data-powerup="clone"></div>
+        </div>
+
+        <div class="option option-toggle" data-type="sounds">Sounds <span class="value"></span></div>
+        <div class="option option-toggle" data-type="music">Music <span class="value"></span></div>
+      </div>
+
+      <a href="../index.html" class="start-game">START!</a>
+
+    </div>
+      <div class="credits">
+        A game by <a href="#">@flukeout</a> &amp; 
+        <a href="#">@secretrobotron</a> &amp; 
+        with sounds by <a href="#">@devon</a>
+      </div>
+  </body>
+</html>

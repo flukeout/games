@@ -103,6 +103,19 @@
     background-size: 100%;
     background-position: bottom;
     transform: rotateX(20deg) rotateY(0deg);
+
+    animation: shadowAppear 1.2s ease-out;
+
+    @keyframes shadowAppear {
+      0% {
+        opacity: 0;
+        transform: rotateX(20deg) rotateY(0deg) translateY(-500px);
+      }
+      100% {
+        opacity: .2;
+        transform: rotateX(20deg) rotateY(0deg) translateY(0px);
+      }
+    }
 }
 
 
@@ -127,7 +140,17 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  animation: satelliteDrift 6.5s ease-out infinite;
+  animation: satelliteAppear 2s ease-out, satelliteDrift 6.5s ease-out infinite;
+  animation-delay: 0s, 2s;
+
+  @keyframes satelliteAppear {
+    0% {
+      transform: translateY(-250px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
 
   @keyframes satelliteDrift {
     50% {
@@ -255,6 +278,21 @@
   border: solid 20px #222;
   box-sizing: border-box;
   -moz-transform-style: preserve-3d;
+
+  animation: worldAppear 2s ease-out;
+
+    @keyframes worldAppear {
+      0% {
+        transform: translateY(-800px) scale(.8);
+      }
+      60% {
+        transform: translateY(20px);
+      }
+      100% {
+       transform: translateY(0);
+      }
+    }
+
 }
 
 .winner-screen.winner-one  {

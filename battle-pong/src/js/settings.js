@@ -2,8 +2,8 @@ window.Settings = {
   clearSavedControlSettings : true,
   showIntro : false,
   debug : true,
+  availablePowerUpTypes : ["mine", "clone", "grow", "spin"],
   powerUpTypes : ["mine", "clone", "grow", "spin"],
-  // powerUpTypes : ["mine"],
   brakesModeEnabled : false,
   goalTimeoutMS : 250,
   powerupFrequency : 300,
@@ -12,8 +12,31 @@ window.Settings = {
   mineForceRadius: 175,
   mineForceMultiplier: 0.00075,
   showFrameRate: false,
-  showBackground: true
+  showBackground: true,
+  sounds: true,
+  music: false
 };
+
+loadSettings();
+
+// Grab saved settings from localStorage
+// If there are none, then we overwrite them with the defaults above
+function loadSettings(){
+
+  let savedSettings = JSON.parse(window.localStorage.getItem("settings"));
+  
+  if(!savedSettings) {
+    window.localStorage.setItem("settings", JSON.stringify(window.Settings));
+  } else {
+    //Populate the settings object with only the keys from localStorage
+    for(var key in savedSettings){
+      window.Settings[key] = savedSettings[key];
+    }
+  }
+}
+
+console.log(window.Settings);
+
 
 var queryStringParts = window.location.search.substr(1).split('&');
 queryStringParts.forEach(function (pair) {

@@ -22,10 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
       x : game.boardWidth - 60,
       y : 200
     }
-
   ];
 
-  initParticleEngine();
+  initParticleEngine(".world");
 
   for(var i = 0; i < numPaddles; i++) {
     game.paddles[i] = createPaddle({

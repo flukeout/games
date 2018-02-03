@@ -96,7 +96,7 @@ gulp.task('build', ['css', 'html', 'js', 'assets', 'electron'], () => {
 });
 
 gulp.task('watch', [
-  'css', 
+  'css',
   'html',
   'js',
   'assets',
@@ -104,6 +104,7 @@ gulp.task('watch', [
   ], () => {
   gulp.watch('src/scss/**/*', ['css']);
   gulp.watch('index.html', ['html']);
+  gulp.watch('splash.html', ['html']);
   gulp.watch('src/js/**/*.js', ['js']);
   gulp.watch('electron/**/*', ['electron']);
   gulp.watch(['src/assets/**/*', 'src/fonts/**/', 'src/sounds/**/'], ['assets'])

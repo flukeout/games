@@ -525,6 +525,9 @@ globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
 globalBiquadFilter.connect(soundContext.destination);
 
 function playSound(name, options){
+  if(!window.Settings.sounds) {
+    return;
+  }
   var sound = sounds[name];
 
   if (!sound) {
