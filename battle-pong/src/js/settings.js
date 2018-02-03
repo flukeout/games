@@ -17,6 +17,27 @@ window.Settings = {
   music: false
 };
 
+loadSettings();
+
+// Grab saved settings from localStorage
+// If there are none, then we overwrite them with the defaults above
+function loadSettings(){
+
+  let savedSettings = JSON.parse(window.localStorage.getItem("settings"));
+  
+  if(!savedSettings) {
+    window.localStorage.setItem("settings", JSON.stringify(window.Settings));
+  } else {
+    //Populate the settings object with only the keys from localStorage
+    for(var key in savedSettings){
+      window.Settings[key] = savedSettings[key];
+    }
+  }
+}
+
+console.log(window.Settings);
+
+
 var queryStringParts = window.location.search.substr(1).split('&');
 queryStringParts.forEach(function (pair) {
   var pairParts = pair.split('=');

@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', function(){
   
   prepTitle();
 
-  loadSettings();
-
   bestOfEls = document.querySelectorAll(".best-of .option");
   setupBestOf();
 
@@ -18,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function(){
   setupToggles(toggleEls);
 
   setupStartButton();
-
 });
 
 let bestOfEls, 
@@ -51,10 +48,6 @@ function setupStartButton(){
       window.location.href = "../index.html";
     },3200);
   })
-
-
-
-
 }
 
 
@@ -136,26 +129,6 @@ function updatePowerups(els){
       el.classList.remove("enabled");
     }
   });
-}
-
-
-// Grab saved settings from localStorage
-// If there are none, then we overwrite them with the
-// defaults in settings.js
-function loadSettings(){
-
-  let savedSettings = JSON.parse(window.localStorage.getItem("settings"));
-  console.log(savedSettings);
-  
-  if(!savedSettings) {
-    window.localStorage.setItem("settings", JSON.stringify(window.Settings));
-  } else {
-    
-    //Populate the settings object with only the keys from localStorage
-    for(var key in savedSettings){
-      window.Settings[key] = savedSettings[key];
-    }
-  }
 }
 
 // Saves an individual setting

@@ -41,6 +41,9 @@
 
     // Adds a random powerup
     this.addPowerup = (x, y) => {
+      if(powerUpTypes.length === 0) {
+        return;
+      }
       let type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
 
       let powerUp = this.createPowerup(x, y, type);
