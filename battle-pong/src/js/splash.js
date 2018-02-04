@@ -47,7 +47,7 @@ function setupStartButton(){
     e.preventDefault();
     setTimeout(function(){
       window.location.href = "../index.html";
-    },3200);
+    }, 2200);
   })
 }
 
