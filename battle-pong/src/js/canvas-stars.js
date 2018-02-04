@@ -1,14 +1,15 @@
-document.addEventListener('DOMContentLoaded', function(){
-  canvas = document.querySelector(".canvas-stars canvas");
-  canvasHeight = canvas.height = window.innerHeight;
-  canvasWidth = canvas.width = window.innerWidth;
-  ctx = canvas.getContext("2d");
-  makeStars(50);
-  window.requestAnimationFrame(drawStars);
-});
-
 let canvas, ctx, canvasHeight, canvasWidth;
 let stars = [];
+
+function startStars(starCount, width, height){
+  canvas = document.querySelector(".canvas-stars canvas");
+  canvasWidth = canvas.width = width;
+  canvasHeight = canvas.height = height;
+  
+  ctx = canvas.getContext("2d");
+  makeStars(starCount);
+  window.requestAnimationFrame(drawStars);
+}
 
 function makeStars(starCount){
   for(var i = 0; i < starCount; i++) {
@@ -28,11 +29,11 @@ function drawStars() {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight); // clear canvas
 
   var driftFactor = .5;
+
   if(typeof game != "undefined") {
     let percent = game.terrainLinePercent || 50;
     driftFactor = (-50 + percent) / 50;
   }
-
 
   for(var i = 0; i < stars.length; i++) {
     let star = stars[i];

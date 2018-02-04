@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', function(){
   setupToggles(toggleEls);
 
   setupStartButton();
+
+  startStars(50, window.innerWidth, window.innerHeight);
 });
 
 let bestOfEls, 

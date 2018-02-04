@@ -1,3 +1,7 @@
+document.addEventListener('DOMContentLoaded', function(){
+  startStars(30, window.innerWidth, 400);
+});
+
 function mineExplosion(xposition, yposition, size){
 
   playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
