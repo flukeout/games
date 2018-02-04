@@ -225,17 +225,6 @@
   opacity: 0;
 }
 
-@keyframes boardIntro {
-  0%      { opacity: 0;    transform: translateY(0vh) translateZ(1000px) rotateZ(-20rad); }
-  64.5%   { opacity: 0.8;  transform: translateY(0vh) translateZ(1000px) rotateZ(0rad); }
-  99.9%   { opacity: 1; }
-  100%  { opacity: 0.8; }
-}
-
-.board-wrapper.intro {
-  animation: boardIntro 7.769636s 0s 1 forwards;
-}
-
 .shake-wrapper {
   transform-style: preserve-3d;
 }
