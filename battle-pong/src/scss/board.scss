@@ -179,6 +179,10 @@
 
     .player-1-score {
       color: #ca59b7;
+      color: white;
+      padding-right: 8px;
+      position: relative;
+      top: 1px;
     }
 
     .colon {
@@ -187,12 +191,10 @@
 
     .player-2-score {
       color: #3faa7f;
+      color: white;
+      padding-left: 10px;
     }
 
-    .colon {
-      transform: translateY(-4px);
-      display: inline-block;
-    }
 
     @keyframes screenFlicker {
       0% {
