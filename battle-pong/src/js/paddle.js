@@ -414,6 +414,7 @@ function createPaddle(options) {
     targetHeight : options.height,          // Powerups affect this, then the paddle grows / shrinks
     baseHeight : parseInt(options.height),  // Paddle resets to this after powerups
     baseMass : 2,                           // After resizing, we use this to keep the mass the same
+    baseInertia : 6933.333333333333,
 
     // Keeps track of movement bounds based on the terrain the paddle occupies.
     maxX: false,
@@ -485,8 +486,8 @@ function createPaddle(options) {
       this.element.style.height = this.height + "px";
 
       Matter.Body.setAngle(this.physics, angle);
-
       this.physics.mass = this.baseMass;
+      Matter.Body.setInertia(this.physics,this.baseInertia);
     },
 
     hasSpinPowerup : false,
