@@ -30,6 +30,7 @@
     <script src="js/menu.js"></script>
     <script src="js/framerate.js"></script>
     <script src="js/start.js"></script>        <!-- fires everything up -->
+    <script src="js/canvas-stars.js"></script>        <!-- fires everything up -->
   </head>
 
   <body>
@@ -37,8 +38,9 @@
 
     <div class="scene">
       <div class="sky"></div>
-      <div class="stars">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"></svg>
+      
+      <div class="canvas-stars">
+        <canvas />
       </div>
 
       <div class="large-moon"></div>
@@ -51,7 +53,6 @@
     <div class="score-satellite">
       <div class="score-screen">
         <span class="player-1-score">3</span>
-        <span class="colon">:</span>
         <span class="player-2-score">2</span>
       </div>
     </div>
@@ -99,15 +100,7 @@
       </div>
     </div>
 
-
-
     <div class="loading"></div>
-
-    <div class="intro-wrapper">
-      <div class="title">BATTLE<br/>PONG</div>
-      <div class="start">start</div>
-      <div class="skip-instruction">Press any key to skip</div>
-    </div>
 
     <div class="reaction-container one">
       <div class="emoji"></div>

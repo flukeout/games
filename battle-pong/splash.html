@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css"/>
     <script src="js/particles.js"></script><!-- particle engine -->
     <script src="js/settings.js"></script>
+    <script src="js/canvas-stars.js"></script>
     <script src="js/splash.js"></script>
     <!-- insert minified source here -->
   </head>
@@ -20,8 +21,11 @@
       <div class="guy"></div>
     </div>      
 
-    <div class="scene">
+    <div class="scene">  
       <div class="stars"></div>
+      <div class="canvas-stars">
+        <canvas />
+      </div>
       <div class="sky"></div>
       <div class="large-moon"></div>
       <div class="surface">
@@ -41,7 +45,7 @@
           <span class="label">Best of</span>
           <span data-value="2" class="option value">3</span>
           <span data-value="3" class="option value">5</span>
-          <span data-value="5" class="option value">7</span>
+          <span data-value="4" class="option value">7</span>
         </div>
 
         <div class="powerups">
@@ -54,15 +58,16 @@
 
         <div class="option option-toggle" data-type="sounds">Sounds <span class="value"></span></div>
         <div class="option option-toggle" data-type="music">Music <span class="value"></span></div>
+      
       </div>
 
       <a href="../index.html" class="start-game">START!</a>
 
     </div>
       <div class="credits">
-        A game by <a href="#">@flukeout</a> &amp; 
-        <a href="#">@secretrobotron</a> &amp; 
-        with sounds by <a href="#">@devon</a>
+        A game by <a target="_blank" href="https://twitter.com/flukeout">@flukeout</a> &amp; 
+        <a target="_blank" href="https://twitter.com/secretrobotron">@secretrobotron</a>
+        with audio by <a target="_blank" href="https://www.devonbirdaudio.com/">Devon Bird</a>
       </div>
   </body>
 </html>

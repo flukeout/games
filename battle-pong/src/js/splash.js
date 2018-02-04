@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function(){
 
-  initParticleEngine(".stars", 200);
+  initParticleEngine(".stars", 50);
   starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
+
   loop(); // Start the particle loop
   
   prepTitle();
@@ -16,6 +17,8 @@ document.addEventListener('DOMContentLoaded', function(){
   setupToggles(toggleEls);
 
   setupStartButton();
+
+  startStars(50, window.innerWidth, window.innerHeight);
 });
 
 let bestOfEls, 
@@ -46,7 +49,7 @@ function setupStartButton(){
     e.preventDefault();
     setTimeout(function(){
       window.location.href = "../index.html";
-    },3200);
+    }, 2200);
   })
 }
 
@@ -202,10 +205,6 @@ var addPaddle = false;
 function loop() {
 
   frameTicker++;
-
-  if(frameTicker % 2 == 0) {
-   makeStar();
-  }
   
   // Makes a paddle every once in a while
   var rando = getRandom(0, 75);
@@ -213,37 +212,14 @@ function loop() {
     makePaddle();
   }    
   
-
   drawParticles();
 
   requestAnimationFrame(loop);
-  
-
-  
-}
-
-
-// Add a star particle to the background
-function makeStar() {
-  var size = getRandom(3,5);
-
-  var options = {
-    x: -50,
-    y: getRandom(0, starsHeight),
-    xV: getRandom(4,10),
-    width: size,
-    height: size,
-    o: getRandom(.2,.5),
-    className : 'star',
-    lifespan: 200
-  }
-
-  makeParticle(options);
 }
 
 // Add a paddle particle to the background
 function makePaddle(){
-  var length = getRandom(30,60);
+  var length = getRandom(15,40);
   var width = length / 5;
 
   var options = {
