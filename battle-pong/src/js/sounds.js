@@ -14,10 +14,6 @@ const temporaryLowPassSettings = {
   Q: 10
 };
 
-const limitedSoundSettings = {
-  timeoutMS: 100
-};
-
 let connectedMusicEngine = null;
 
 let limitedSoundTimeouts = {};
@@ -98,11 +94,13 @@ let sounds = {
 
   "Ball_Bounce_Paddle" : {
     url : "sounds/Ball_Bounce_Paddle 1.2.mp3",
-    volume : 1
+    volume : 1,
+    limit: 100
   },
   "Ball_Bounce_Wall" : {
     url : "sounds/Ball_Bounce_Wall 1.2.mp3",
-    volume : 1
+    volume : 1,
+    limit: 100
   },
 
   "Powerup_Bones_Disapear_1" : {
@@ -307,12 +305,14 @@ let sounds = {
 
   "Powerup_Bounce_Paddle" : {
     url : "sounds/Powerup_Bounce_Paddle.mp3",
-    volume : 1
+    volume : 1,
+    limit: 100
   },
 
   "Powerup_Bounce_Wall" : {
     url : "sounds/Powerup_Bounce_Wall.mp3",
-    volume : 1
+    volume : 1,
+    limit: 100
   },
 
   "Win_Cheer" : {
@@ -340,66 +340,82 @@ let sounds = {
 };
 
 let soundBanks = {
-  "dash": [
-    "Paddle_Dash_V1",
-    "Paddle_Dash_V2",
-    "Paddle_Dash_V3",
-    "Paddle_Dash_V4",
-    "Paddle_Dash_V5"
-  ],
-  "score": [
-    "Ball_Score_V1",
-    "Ball_Score_V2",
-    "Ball_Score_V3",
-    "Ball_Score_V4"
-  ],
-  "super-hard-shot": [
-    "Power_Shot_V1",
-    "Power_Shot_V2",
-    "Power_Shot_V3",
-    "Power_Shot_V4"
-  ],
-  "swish": [
-    "Paddle_Spin_V1",
-    "Paddle_Spin_V2",
-    "Paddle_Spin_V3",
-    "Paddle_Spin_V4",
-    "Paddle_Spin_V5",
-    "Paddle_Spin_V6",
-    "Paddle_Spin_V7",
-    "Paddle_Spin_V8",
-    "Paddle_Spin_V9",
-    "Paddle_Spin_V10",
-    "Paddle_Spin_V11",
-    "Paddle_Spin_V12",
-    "Paddle_Spin_V13",
-    "Paddle_Spin_V14",
-    "Paddle_Spin_V15"
-  ],
-  "mine-collision": [
-    "Bomb_Impact_Low_V1",
-    "Bomb_Impact_Low_V2",
-    "Bomb_Impact_Low_V3"
-  ],
-  "mine-explosion": [
-    "Bomb_Explosion_V1",
-    "Bomb_Explosion_V2"
-  ],
-  "bones-collide": [
-    "Powerup_Bones_Collision_Low_V1",
-    "Powerup_Bones_Collision_Low_V2",
-    "Powerup_Bones_Collision_Low_V3",
-    "Powerup_Bones_Collision_Low_V4",
-    "Powerup_Bones_Collision_Low_V5",
-    "Powerup_Bones_Collision_Low_V6",
-    "Powerup_Bones_Collision_Low_V7",
-    "Powerup_Bones_Collision_Low_V8",
-    "Powerup_Bones_Collision_Low_V9",
-    "Powerup_Bones_Collision_Low_V10",
-    "Powerup_Bones_Collision_Low_V11",
-    "Powerup_Bones_Collision_Low_V12",
-    "Powerup_Bones_Collision_Low_V13"
-  ]
+  "dash": {
+    limit: 0,
+    sounds: [
+      "Paddle_Dash_V1",
+      "Paddle_Dash_V2",
+      "Paddle_Dash_V3",
+      "Paddle_Dash_V4",
+      "Paddle_Dash_V5"
+    ]
+  },
+  "score": {
+    sounds: [
+      "Ball_Score_V1",
+      "Ball_Score_V2",
+      "Ball_Score_V3",
+      "Ball_Score_V4"
+    ]
+  },
+  "super-hard-shot": {
+    sounds: [
+      "Power_Shot_V1",
+      "Power_Shot_V2",
+      "Power_Shot_V3",
+      "Power_Shot_V4"
+    ]
+  },
+  "swish": {
+    sounds: [
+      "Paddle_Spin_V1",
+      "Paddle_Spin_V2",
+      "Paddle_Spin_V3",
+      "Paddle_Spin_V4",
+      "Paddle_Spin_V5",
+      "Paddle_Spin_V6",
+      "Paddle_Spin_V7",
+      "Paddle_Spin_V8",
+      "Paddle_Spin_V9",
+      "Paddle_Spin_V10",
+      "Paddle_Spin_V11",
+      "Paddle_Spin_V12",
+      "Paddle_Spin_V13",
+      "Paddle_Spin_V14",
+      "Paddle_Spin_V15"
+    ]
+  },
+  "mine-collision": {
+    limit: 100,
+    sounds: [
+      "Bomb_Impact_Low_V1",
+      "Bomb_Impact_Low_V2",
+      "Bomb_Impact_Low_V3"
+    ]
+  },
+  "mine-explosion": {
+    sounds: [
+      "Bomb_Explosion_V1",
+      "Bomb_Explosion_V2"
+    ]
+  },
+  "bones-collide": {
+    sounds: [
+      "Powerup_Bones_Collision_Low_V1",
+      "Powerup_Bones_Collision_Low_V2",
+      "Powerup_Bones_Collision_Low_V3",
+      "Powerup_Bones_Collision_Low_V4",
+      "Powerup_Bones_Collision_Low_V5",
+      "Powerup_Bones_Collision_Low_V6",
+      "Powerup_Bones_Collision_Low_V7",
+      "Powerup_Bones_Collision_Low_V8",
+      "Powerup_Bones_Collision_Low_V9",
+      "Powerup_Bones_Collision_Low_V10",
+      "Powerup_Bones_Collision_Low_V11",
+      "Powerup_Bones_Collision_Low_V12",
+      "Powerup_Bones_Collision_Low_V13"
+    ]
+  }
 };
 
 let loops = {
@@ -424,6 +440,14 @@ let soundEvents = {
     connectedMusicEngine.setMood('default');
   }
 };
+
+for (let sound in sounds) {
+  sounds[sound].limit = sounds[sound].limit || 0;
+}
+
+for (let sound in soundBanks) {
+  soundBanks[sound].limit = soundBanks[sound].limit || 0;
+}
 
 var soundContext = new AudioContext();
 
@@ -452,33 +476,19 @@ function loadSound(name){
 function playRandomSoundFromBank(soundBankName, options) {
   let soundBank = soundBanks[soundBankName];
   if (soundBank) {
-    let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
+    if (soundBank.limit > 0) {
+      if(limitedSoundTimeouts['bank_' + soundBankName]) return;
+
+      limitedSoundTimeouts['bank_' + soundBankName] = setTimeout(() => {
+        delete limitedSoundTimeouts['bank_' + soundBankName];
+        document.dispatchEvent(new CustomEvent('limitedsoundbankfinished', {detail: soundBankName}));
+      }, soundBank.limit);
+
+      document.dispatchEvent(new CustomEvent('limitedsoundbankstarted', {detail: soundBankName}));
+    }
+
+    let sound = soundBank.sounds[Math.floor(Math.random() * soundBank.sounds.length)];
     playSound(sound, options);
-    document.dispatchEvent(new CustomEvent('soundbankplayed', {detail: soundBankName}));
-  }
-  else {
-    console.warn('No soundbank for soundbank name: ' + soundBankName);
-  }
-}
-
-function playLimitedSound(sound, category, options) {
-  category = category || sound;
-
-  if(!limitedSoundTimeouts[category]) {
-    playSound(sound, options);
-    limitedSoundTimeouts[category] = setTimeout(() => {
-      limitedSoundTimeouts[category] = false;
-      document.dispatchEvent(new CustomEvent('limitedsoundfinished', {detail: category}));
-    }, limitedSoundSettings.timeoutMS);
-    document.dispatchEvent(new CustomEvent('limitedsoundstarted', {detail: category}));
-  }
-}
-
-function playLimitedRandomSoundFromBank(soundBankName, options) {
-  let soundBank = soundBanks[soundBankName];
-  if (soundBank) {
-    let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
-    playLimitedSound(sound, soundBankName, options);
     document.dispatchEvent(new CustomEvent('soundbankplayed', {detail: soundBankName}));
   }
   else {
@@ -531,6 +541,17 @@ function playSound(name, options){
   if (!sound) {
     console.warn('No sound with name ' + name);
     return;
+  }
+
+  if (sound.limit > 0) {
+    if(limitedSoundTimeouts[name]) return;
+
+    limitedSoundTimeouts[name] = setTimeout(() => {
+      delete limitedSoundTimeouts[name];
+      document.dispatchEvent(new CustomEvent('limitedsoundfinished', {detail: name}));
+    }, sound.limit);
+
+    document.dispatchEvent(new CustomEvent('limitedsoundstarted', {detail: name}));
   }
 
   var buffer = sound.buffer;
@@ -636,13 +657,6 @@ function findSounds(name) {
   return foundSounds;
 }
 
-window.playSound = playSound;
-window.playLimitedSound = playLimitedSound;
-window.playRandomSoundFromBank = playRandomSoundFromBank;
-window.playLimitedRandomSoundFromBank = playLimitedRandomSoundFromBank;
-window.temporaryLowPass = temporaryLowPass;
-window.findSounds = findSounds;
-
 window.SoundManager = {
   get sounds () {
     return sounds;
@@ -657,35 +671,47 @@ window.SoundManager = {
     return loops;
   },
   playSound: playSound,
-  playLimitedSound: playLimitedSound,
   playRandomSoundFromBank: playRandomSoundFromBank,
-  playLimitedRandomSoundFromBank: playLimitedRandomSoundFromBank,
   startLoop: startLoop,
   stopLoop: stopLoop,
   temporaryLowPass: temporaryLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
-  limitedSoundSettings: limitedSoundSettings,
   get globalLowPassFilterFrequency () {
     return globalBiquadFilter.frequency.value;
   },
   getSettingsForOutput: function () {
-    let output = JSON.parse(JSON.stringify(sounds));
-    for (let s in output) {
-      delete output[s].buffer;
-      delete output[s].key;
+    let output = {
+      sounds: JSON.parse(JSON.stringify(sounds)),
+      banks: JSON.parse(JSON.stringify(soundBanks))
+    };
+    
+    // Clean up a little
+    for (let s in output.sounds) {
+      delete output.sounds[s].buffer;
     }
+
     return output;
   },
   loadSettingsFromLocalStorage: function () {
     let storedSettings = localStorage.getItem('sounds');
     if (storedSettings) {
       let parsedSettings = JSON.parse(storedSettings);
+      let parsedSounds = parsedSettings.sounds;
+      let parsedBanks = parsedSettings.banks;
 
       for (let s in sounds) {
         for (let k in sounds[s]) {
-          if (parsedSettings[s] && parsedSettings[s][k]) {
-            sounds[s][k] = parsedSettings[s][k];
+          if (parsedSounds[s] && parsedSounds[s][k]) {
+            sounds[s][k] = parsedSounds[s][k];
+          }
+        }
+      }
+
+      for (let s in soundBanks) {
+        for (let k in soundBanks[s]) {
+          if (parsedBanks[s] && parsedBanks[s][k]) {
+            soundBanks[s][k] = parsedBanks[s][k];
           }
         }
       }

@@ -250,7 +250,7 @@
           }
 
           else if(obj.label.indexOf('wall-') > -1) {
-            playLimitedSound('Powerup_Bounce_Wall');
+            SoundManager.playSound('Powerup_Bounce_Wall');
           }
 
           else if(obj.label.indexOf("paddle") > -1 || obj.label.indexOf("ball") > -1 ){
@@ -259,10 +259,10 @@
               let volume = Math.min(1, Math.log(1 + ds * mineSpeedVolumeMultiplier));
               
               // TODO: take angular velocity into account because paddles can hit with higher speed by spinning
-              playLimitedRandomSoundFromBank("mine-collision", {volume: volume});
+              SoundManager.playRandomSoundFromBank("mine-collision", {volume: volume});
             } else {
-              if      (obj.label.indexOf("paddle") > -1) playLimitedSound('Powerup_Bounce_Paddle');
-              else if (obj.label.indexOf("ball") > -1) playLimitedSound('Powerup_Bounce_Paddle');
+              if      (obj.label.indexOf("paddle") > -1) SoundManager.playSound('Powerup_Bounce_Paddle');
+              else if (obj.label.indexOf("ball") > -1) SoundManager.playSound('Powerup_Bounce_Paddle');
             }
           }
 
@@ -284,7 +284,7 @@
             game.removeObject(this);
             activePowerups.splice(activePowerups.indexOf(this), 1);
 
-            playSound(powerUpScoreSoundNames[this.type] || "coin");
+            SoundManager.playSound(powerUpScoreSoundNames[this.type] || "coin");
           }
         }
       });

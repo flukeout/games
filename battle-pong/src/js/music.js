@@ -33,7 +33,7 @@
     'test':                 {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    },
     'dash':                 {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
     'score':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
-    'super-hard-shot':      {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
+    'super-hard-shot':      {   gain: 0.7,    attack: 0.003,    sustain: 0.1,   release: 1.3    },
     'swish':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
     'mine-collision':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
     'mine-explosion':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
@@ -258,7 +258,7 @@
       
       if (storedSettings) {
         let parsedSettings = JSON.parse(storedSettings);
-        duckingProfiles = parsedSettings.duckingProfiles;
+        // duckingProfiles = parsedSettings.duckingProfiles;
         globalGainNode.gain.value = parsedSettings.globalGainValue;
       }
     };
