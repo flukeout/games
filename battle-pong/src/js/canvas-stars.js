@@ -27,6 +27,12 @@ function drawStars() {
   ctx.globalCompositeOperation = 'destination-over';
   ctx.clearRect(0, 0, canvasWidth, canvasHeight); // clear canvas
 
+  var drift = false;
+  if(typeof game != "undefined") {
+    let percent = game.terrainLinePercent || 50;
+    drift = (-50 + percent) / 50;
+  }
+
   for(var i = 0; i < stars.length; i++) {
     let star = stars[i];
     ctx.beginPath();
@@ -35,9 +41,21 @@ function drawStars() {
     ctx.fill();
 
     // Move the star, and reset if it goes too far
-    star.x = star.x + star.speed;
-    if(star.x > canvasWidth) {
+    star.x = star.x + drift * star.speed;
+    
+    if(drift == 0) {
+      star.y = star.y + star.speed / 40;  
+    }
+    
+
+    if(star.x > canvasWidth + 100) {
       star.x = 0;
+    } else if (star.x < -100) {
+      star.x = canvasWidth;
+    }
+    
+    if(star.y > canvasHeight) {
+      star.y = 0;
     }
   }
 

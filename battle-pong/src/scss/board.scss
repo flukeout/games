@@ -12,6 +12,13 @@
     top: 0;
   }
 
+  .canvas-stars {
+    canvas {
+      opacity: 1;
+      position: relative;
+    }
+  }
+
   .stars {
     width: 100vw;
     left: 0;

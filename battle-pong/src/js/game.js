@@ -861,7 +861,7 @@ function setupRenderer(worldSelector){
 
   Matter.Resolver._restingThresh = 0.1;
 
-  // Render.run(render); // TODO - since this is for debugging only, we should make it a flag
+  //Render.run(render); // TODO - since this is for gging only, we should make it a flag (DEBUG)
 }
 
 var Engine = Matter.Engine,
