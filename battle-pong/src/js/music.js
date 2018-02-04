@@ -30,12 +30,14 @@
   };
 
   let duckingProfiles = {
-    test: {
-      gain: 0.2,
-      attack: 1,
-      sustain: 1,
-      release: 1
-    }
+    'test':                 {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    },
+    'dash':                 {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
+    'score':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
+    'super-hard-shot':      {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
+    'swish':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
+    'mine-collision':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
+    'mine-explosion':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
+    'bones-collide':        {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    }
   };
 
   const defaultGlobalGainValue = 1;
@@ -86,11 +88,14 @@
     this.duck = function (profileName) {
       let profile = duckingProfiles[profileName];
 
+      if (!profile) return;
+
       if (duckingTimeout > -1) {
         clearTimeout(duckingTimeout);
+        document.dispatchEvent(new CustomEvent('duckinginterrupted', {detail: this.currentDuckingProfile + ''}));
       }
 
-      document.dispatchEvent(new CustomEvent('duckingstart', {detail: profileName}));
+      document.dispatchEvent(new CustomEvent('duckingstarted', {detail: profileName}));
 
       duckingNode.gain.cancelScheduledValues(audioContext.currentTime);
       duckingNode.gain.linearRampToValueAtTime(profile.gain, audioContext.currentTime + profile.attack);
@@ -100,7 +105,9 @@
       this.currentDuckingProfile = profileName;
 
       duckingTimeout = setTimeout(() => {
-        document.dispatchEvent(new CustomEvent('duckingstop', {detail: profileName}));
+        duckingTimeout = -1;
+        this.currentDuckingProfile = null;
+        document.dispatchEvent(new CustomEvent('duckingstopped', {detail: profileName}));
       }, (profile.attack + profile.sustain + profile.release) * 1000);
     };
 
@@ -175,7 +182,7 @@
         return;
       }
 
-      let moodValue = layerDefinitions[layerName].moods[mood];
+      let moodValue = layerDefinitions[layerName].moods[mood] || layerDefinitions[layerName].moods.default;
       // If this layer doesn't have a value set for this mood, assuming it's meant to keep playing the way it already is
       if (isNaN(Number(moodValue))) {
         return;
@@ -196,7 +203,7 @@
         return;
       }
 
-      let moodValue = layerDefinitions[layerName].moods[mood];
+      let moodValue = layerDefinitions[layerName].moods[mood] || layerDefinitions[layerName].moods.default;
       // If this layer doesn't have a value set for this mood, assuming it's meant to keep playing the way it already is
       if (isNaN(Number(moodValue))) {
         return;

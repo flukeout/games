@@ -449,11 +449,11 @@ function loadSound(name){
   request.send();
 }
 
-function playRandomSoundFromBank(soundBankName) {
+function playRandomSoundFromBank(soundBankName, options) {
   let soundBank = soundBanks[soundBankName];
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
-    playSound(sound);
+    playSound(sound, options);
     document.dispatchEvent(new CustomEvent('soundbankplayed', {detail: soundBankName}));
   }
   else {
@@ -571,6 +571,11 @@ function playSound(name, options){
 
   volume.connect(panNode);
   source.connect(volume);
+
+  if (connectedMusicEngine && options.musicDuckingProfile) {
+    connectedMusicEngine.duck(options.musicDuckingProfile);
+  }
+
   source.start(0);
 
   document.dispatchEvent(new CustomEvent('soundplayed', {detail: name}));

@@ -44,6 +44,10 @@
               lowPassFilterFrequency: 0
             },
             methods: {
+              playWithDucking: (e) => {
+                let name = e.srcElement.getAttribute('data-name');
+                SoundManager.playRandomSoundFromBank(name, {musicDuckingProfile: name});
+              },
               playSound: (e) => {
                 SoundManager.playSound(e.srcElement.getAttribute('data-name'));
               },
@@ -191,6 +195,7 @@
               ducking: 0,
               globalGain: musicManager.getGlobalGain(),
               musicStored: !!localStorage.getItem('music'),
+              musicManager: musicManager
             },
             methods: {
               start: () => {
@@ -238,6 +243,21 @@
           document.addEventListener('musicmoodstop', () => {
             vue.currentMood = 'default';
             vue.moodActive = false;
+          });
+
+          document.addEventListener('duckingstarted', (e) => {
+            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
+            item.classList.add('on');
+          });
+
+          document.addEventListener('duckinginterrupted', (e) => {
+            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
+            item.classList.remove('on');
+          });
+
+          document.addEventListener('duckingstopped', (e) => {
+            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
+            item.classList.remove('on');
           });
 
           setInterval(() => {
@@ -310,12 +330,14 @@
       }
 
       #sounds-table [data-sound],
+      #ducking-table [data-profile],
       #banks-table [data-bank] {
         background-color: rgba(25, 205, 25, 0);
         transition: background-color .25s;
       }
 
       #sounds-table [data-sound].on,
+      #ducking-table [data-profile].on,
       #banks-table [data-bank].on {
         background-color: rgba(25, 205, 25, 1);
         transition: none;
@@ -360,9 +382,9 @@
         <section>
           <h2>Banks</h2>
           <table id="banks-table">
-            <tr><th>Name</th><th>Play</th><th>Limited</th><th>Key</th></tr>
+            <tr><th>Name</th><th>Play</th><th>Limited</th><th>Duck Music</th><th>Key</th></tr>
             <tr v-for="(profile, name) in banks">
-              <td :data-bank="name">{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
+              <td :data-bank="name">{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td><td><button :data-name="name" v-on:click="playWithDucking">Duck</button></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
@@ -385,12 +407,9 @@
         <div>Storage: <span>{{musicStored ? 'Saved' : 'Empty'}}</span> <button v-on:click="clearStorage">Clear Storage</button><button v-on:click="spitItOut">Spit it out</button></div>
         <div>Play: <button class="start" v-on:click="start" :disabled="status != 'Ready'">Start</button><button class="start" v-on:click="stop" :disabled="status != 'Playing'">Stop</button></div>
         <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model="globalGain" @change="globalGainChanged"></div>
-        <div>
-          Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span>
-        </div>
-        <div>
-          Ducking Gain: <span>{{ducking}}</span>
-        </div>
+        <div>Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span></div>
+        <div>Ducking Profile: <span>{{musicManager.currentDuckingProfile}}</span></div>
+        <div>Ducking Gain: <span>{{ducking}}</span></div>
       </div>
       <div class="scrollable">
         <section>
@@ -401,10 +420,10 @@
         </section>
         <section>
           <h2>Ducking</h2>
-          <table>
+          <table id="ducking-table">
             <tr><th>Name</th><th>Attack</th><th>Sustain</th><th>Release</th></tr>
             <tr v-for="(profile, name) in duckingProfiles">
-              <td>{{name}}</td><td>{{profile.attack}}</td><td>{{profile.sustain}}</td><td>{{profile.release}}</td><td><button :data-name="name" v-on:click="duck">Duck</button></td>
+              <td :data-profile="name">{{name}}</td><td>{{profile.attack}}</td><td>{{profile.sustain}}</td><td>{{profile.release}}</td><td><button :data-name="name" v-on:click="duck">Duck</button></td>
             </tr>
           </table>
         </section>
