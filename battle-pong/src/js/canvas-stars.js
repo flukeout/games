@@ -1,16 +1,10 @@
 document.addEventListener('DOMContentLoaded', function(){
-
   canvas = document.querySelector(".canvas-stars canvas");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  
-  canvasHeight = window.innerHeight;
-  canvasWidth = window.innerWidth;
-
+  canvasHeight = canvas.height = window.innerHeight;
+  canvasWidth = canvas.width = window.innerWidth;
   ctx = canvas.getContext("2d");
   makeStars(50);
   window.requestAnimationFrame(drawStars);
-
 });
 
 let canvas, ctx, canvasHeight, canvasWidth;
@@ -29,22 +23,18 @@ function makeStars(starCount){
   }
 }
 
-function drawStars() {
-  
+function drawStars() { 
   ctx.globalCompositeOperation = 'destination-over';
   ctx.clearRect(0, 0, canvasWidth, canvasHeight); // clear canvas
 
   for(var i = 0; i < stars.length; i++) {
     let star = stars[i];
-  
     ctx.beginPath();
     ctx.fillStyle = "rgba(255, 255, 255, "+star.opacity+")";
-    
     ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI, false);
-    
     ctx.fill();
-    
 
+    // Move the star, and reset if it goes too far
     star.x = star.x + star.speed;
     if(star.x > canvasWidth) {
       star.x = 0;
