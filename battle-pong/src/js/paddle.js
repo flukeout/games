@@ -22,7 +22,7 @@ const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
 const maxSnapSpinSpeedBoost = 3;
 const snapSpinSpeedBoostReductionFactor = 0.25;
 
-const boneDissapearSounds = findSounds('Powerup_Bones_Disapear_');
+const boneDisappearSounds = SoundManager.findSounds('Powerup_Bones_Disapear_');
 
 const updateFunctions = {
   moveXY: function (paddle) {
@@ -164,7 +164,7 @@ const updateFunctions = {
 
       if(xDelta != 0 || yDelta != 0) {
 
-        playRandomSoundFromBank('dash');
+        SoundManager.playRandomSoundFromBank('dash');
 
         var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
         var yForce = Math.cos(angleRad) * maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
@@ -333,7 +333,7 @@ const updateFunctions = {
       paddle.hasSpinPowerup = false;
       paddle.spinPowerupCountdown = false;
       paddle.element.classList.remove("powerup-spin");
-      playSound('Powerup_Spin_WareOff');
+      SoundManager.playSound('Powerup_Spin_WareOff');
     }
   },
   expandPowerup: function (paddle) {
@@ -344,7 +344,7 @@ const updateFunctions = {
       }
     } else if (paddle.height > paddle.targetHeight) {
       paddle.changeHeight("shrink");
-      playSound('Powerup_Enhance_WareOff');
+      SoundManager.playSound('Powerup_Enhance_WareOff');
       if(paddle.height < paddle.targetHeight) {
         paddle.targetHeight = paddle.height;
       }
@@ -360,8 +360,8 @@ const updateFunctions = {
 
         // If lifeSpan is being used, we're assuming that it's a clone (a bone)
         if (paddle.cloneIndex !== undefined) {
-          let soundIndex = Math.min(boneDissapearSounds.length, paddle.cloneIndex + 1);
-          playSound('Powerup_Bones_Disapear_' + soundIndex);
+          let soundIndex = Math.min(boneDisappearSounds.length, paddle.cloneIndex + 1);
+          SoundManager.playSound('Powerup_Bones_Disapear_' + soundIndex);
         }
       }
     }
@@ -436,7 +436,7 @@ function createPaddle(options) {
       Matter.Body.setAngularVelocity(this.physics, v);
 
       if(!this.swishTimeout && this.type == "player") {
-        playRandomSoundFromBank("swish");
+        SoundManager.playRandomSoundFromBank("swish");
         this.swishTimeout = setTimeout(() => {
           this.swishTimeout = false;
         }, this.swishTimeoutMS);
@@ -452,7 +452,7 @@ function createPaddle(options) {
 
       // If this is a clone (bone)
       if (this.cloneIndex) {
-        playRandomSoundFromBank("bones-collide");
+        SoundManager.playRandomSoundFromBank("bones-collide");
       }
 
       if(this.mode == "ghost" && obj.label.indexOf("ball") > -1) {

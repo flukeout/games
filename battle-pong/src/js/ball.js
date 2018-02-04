@@ -242,7 +242,7 @@ function createBall(options){
         }
 
         if(this.wooshPlayed == false && Math.abs(this.rotationVelocity) == this.rotationVelocityMax){
-          playSound("woosh");
+          SoundManager.playSound("woosh");
           this.wooshPlayed = true;
         }
       }
@@ -398,10 +398,10 @@ function createBall(options){
       var pan = .8 * (-game.boardWidth/2 + this.physics.position.x) / game.boardWidth/2;
 
       if (obj.label.indexOf("wall") > -1) {
-        playLimitedSound("Ball_Bounce_Wall", null, { volume: percentage, pan : pan });
+        SoundManager.playSound("Ball_Bounce_Wall", null, { volume: percentage, pan : pan });
       }
       else {
-        playLimitedSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
+        SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
       }
     },
 

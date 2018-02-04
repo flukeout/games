@@ -423,7 +423,7 @@ var game =  {
     }
 
     this.ball = createBall(options);
-    playSound('Ball_Spawn');
+    SoundManager.playSound('Ball_Spawn');
 
     // TODO - Move a lot of this stuff to the ball object?
     this.ball.element.classList.add('show');
@@ -498,7 +498,7 @@ var game =  {
     console.log("restart");
 
     setTimeout(function(){
-      playSound("round-start");
+      SoundManager.playSound("round-start");
     }, 80)
 
     var that = this;
@@ -626,7 +626,7 @@ var game =  {
 
       this.ball.element.classList.add('show');
 
-      playSound('Ball_Spawn');
+      SoundManager.playSound('Ball_Spawn');
 
     }, 2000);
 
@@ -761,7 +761,7 @@ var game =  {
     this.moveTerrain(scoredByPlayerNum, terrainChange);
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
 
-    playRandomSoundFromBank('score');
+    SoundManager.playRandomSoundFromBank('score');
   },
 
   // Moves the terrain & Score based on a goal or mine...
@@ -802,7 +802,7 @@ var game =  {
 
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver();
-      playSound("Win_Cheer");
+      SoundManager.playSound("Win_Cheer");
       this.showMessage("NICE", 1500);
     }
   },

@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function mineExplosion(xposition, yposition, size){
 
-  playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
+  SoundManager.playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
   shakeScreen();
 
   // Adds the orange blast
@@ -42,7 +42,7 @@ function mineExplosion(xposition, yposition, size){
 
   document.querySelector(".world").appendChild(particle.el);
 
-  temporaryLowPass();
+  SoundManager.temporaryLowPass();
 }
 
 
@@ -301,7 +301,7 @@ function fireGun(x, y, angle, player){
   addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
   shakeScreen();
 
-  playRandomSoundFromBank("super-hard-shot");
+  SoundManager.playRandomSoundFromBank("super-hard-shot");
 
   music.setMoodTemporarily('intense');
 

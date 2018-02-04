@@ -57,7 +57,7 @@
       powerUp.element.classList.add(type);
 
       // powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
-      playSound(powerupSpawnNames[type] || powerupSpawnNames.default);
+      SoundManager.playSound(powerupSpawnNames[type] || powerupSpawnNames.default);
     };
 
     this.createPowerup = (x, y, type) => {
@@ -123,7 +123,7 @@
             if(this.lifeSpan < 125) {
 
               if(!this.beepTimeout) {
-                playSound("beep");
+                SoundManager.playSound("beep");
                 var that = this;
                 this.beepTimeout = setTimeout(function(){
                   that.beepTimeout = false;
