@@ -29,10 +29,6 @@ let sounds = {
     url : "sounds/round-start.mp3",
     volume : .25
   },
-  "dash" : {
-    url : "sounds/dash.wav",
-    volume : .15
-  },
   "beep" : {
     url : "sounds/beep.mp3",
     volume : .15
@@ -458,6 +454,7 @@ function playRandomSoundFromBank(soundBankName) {
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
     playSound(sound);
+    document.dispatchEvent(new CustomEvent('soundbankplayed', {detail: soundBankName}));
   }
   else {
     console.warn('No soundbank for soundbank name: ' + soundBankName);
@@ -482,6 +479,7 @@ function playLimitedRandomSoundFromBank(soundBankName, options) {
   if (soundBank) {
     let sound = soundBank[Math.floor(Math.random() * soundBank.length)];
     playLimitedSound(sound, soundBankName, options);
+    document.dispatchEvent(new CustomEvent('soundbankplayed', {detail: soundBankName}));
   }
   else {
     console.warn('No soundbank for soundbank name: ' + soundBankName);
@@ -574,6 +572,12 @@ function playSound(name, options){
   volume.connect(panNode);
   source.connect(volume);
   source.start(0);
+
+  document.dispatchEvent(new CustomEvent('soundplayed', {detail: name}));
+
+  source.onended = () => {
+    document.dispatchEvent(new CustomEvent('soundended', {detail: name}));
+  };
 
   /* ʕ •ᴥ•ʔゝ☆ */
   return source;

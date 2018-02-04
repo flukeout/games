@@ -149,6 +149,33 @@
 
           document.addEventListener('limitedsoundstarted', updateLimitedSounds);
           document.addEventListener('limitedsoundfinished', updateLimitedSounds);
+
+          let soundPlayedTimeouts = {};
+          let bankPlayedTimeouts = {};
+          document.addEventListener('soundplayed', (e) => {
+            let name = e.detail;
+            let item = document.querySelector('#sounds-table [data-sound="' + name + '"]');
+            item.classList.add('on');
+            if (name in soundPlayedTimeouts && soundPlayedTimeouts[name] > -1) {
+              clearTimeout(soundPlayedTimeouts[name]);
+              delete soundPlayedTimeouts[name];
+            }
+            soundPlayedTimeouts[name] = setTimeout(()=> {item.classList.remove('on');}, 150);
+          });
+          document.addEventListener('soundbankplayed', (e) => {
+            let name = e.detail;
+            let item = document.querySelector('#banks-table [data-bank="' + name + '"]');
+            item.classList.add('on');
+            if (name in bankPlayedTimeouts && bankPlayedTimeouts[name] > -1) {
+              clearTimeout(bankPlayedTimeouts[name]);
+              delete bankPlayedTimeouts[name];
+            }
+            bankPlayedTimeouts[name] = setTimeout(()=> {item.classList.remove('on');}, 150);
+          });
+
+          document.addEventListener('soundended', (e) => {
+            // console.log(e.detail);
+          });
         }
 
         function startMusicEngineMonitor() {
@@ -281,6 +308,18 @@
       section {
         margin-bottom: 1em;
       }
+
+      #sounds-table [data-sound],
+      #banks-table [data-bank] {
+        background-color: rgba(25, 205, 25, 0);
+        transition: background-color .25s;
+      }
+
+      #sounds-table [data-sound].on,
+      #banks-table [data-bank].on {
+        background-color: rgba(25, 205, 25, 1);
+        transition: none;
+      }
     </style>
   </head>
   <body>
@@ -320,20 +359,20 @@
 
         <section>
           <h2>Banks</h2>
-          <table>
+          <table id="banks-table">
             <tr><th>Name</th><th>Play</th><th>Limited</th><th>Key</th></tr>
             <tr v-for="(profile, name) in banks">
-              <td>{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
+              <td :data-bank="name">{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playLimitedBank">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
 
         <section>
           <h2>Sounds</h2>
-          <table>
+          <table id="sounds-table">
             <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limited</th><th>Key</th></tr>
             <tr v-for="(profile, name) in sounds">
-              <td>{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
+              <td :data-sound="name">{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><button :data-name="name" v-on:click="playLimitedSound">Limited</button></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
