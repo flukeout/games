@@ -188,7 +188,6 @@
     }
   }
 
-
   .content {
     position: relative;
     z-index: 2;
@@ -204,8 +203,17 @@
   .scene {
     z-index: 1;
 
+    .canvas-stars {
+      z-index: 1;
+      position: relative;
+    }
+    
     .stars {
       z-index: 1;
+    }
+
+    .canvas-stars canvas {
+      opacity: 1;
     }
 
     .sky {
@@ -263,7 +271,7 @@
     }
 
     .floating-paddle {
-      background: #666;
+      background: #876384;
       position: absolute;
     }
   }

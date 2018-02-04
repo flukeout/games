@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css"/>
     <script src="js/particles.js"></script><!-- particle engine -->
     <script src="js/settings.js"></script>
+    <script src="js/canvas-stars.js"></script>
     <script src="js/splash.js"></script>
     <!-- insert minified source here -->
   </head>
@@ -20,8 +21,11 @@
       <div class="guy"></div>
     </div>      
 
-    <div class="scene">
+    <div class="scene">  
       <div class="stars"></div>
+      <div class="canvas-stars">
+        <canvas />
+      </div>
       <div class="sky"></div>
       <div class="large-moon"></div>
       <div class="surface">
@@ -54,6 +58,7 @@
 
         <div class="option option-toggle" data-type="sounds">Sounds <span class="value"></span></div>
         <div class="option option-toggle" data-type="music">Music <span class="value"></span></div>
+      
       </div>
 
       <a href="../index.html" class="start-game">START!</a>
