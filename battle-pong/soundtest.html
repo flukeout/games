@@ -14,6 +14,16 @@
 
         SoundManager.connectMusicEngine(musicManager);
 
+        let outputModal = document.querySelector('#output-modal');
+        outputModal.querySelector('button').onclick = (e) => {
+          outputModal.classList.remove('show');
+        };
+
+        function showOutputModal(output) {
+          outputModal.querySelector('textarea').value = output;
+          outputModal.classList.add('show');
+        }
+
         function startSoundEngineMonitor() {
           document.addEventListener('keydown', (e) => {
             let keyCode = String.fromCharCode(e.keyCode);
@@ -100,7 +110,7 @@
                 vue.soundStored = true;
               },
               spitItOut: () => {
-                console.log(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
+                showOutputModal(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
               },
               lowPassFilter: () => {
                 SoundManager.temporaryLowPass();
@@ -244,7 +254,7 @@
                 vue.soundStored = false;
               },
               spitItOut: () => {
-                console.log(JSON.stringify(musicManager.getSettingsForOutput(), true, 2));
+                showOutputModal(JSON.stringify(musicManager.getSettingsForOutput(), true, 2));
               }
             }
           });
@@ -377,6 +387,34 @@
       input[type="number"] {
         width: 50px;
       }
+
+      #output-modal {
+        background: rgba(0, 0, 0, 0.4);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        display: none;
+      }
+
+      #output-modal.show {
+        display: flex;
+      }
+
+      #output-modal textarea {
+        width: 600px;
+        height: 500px;
+      }
+
+      #output-modal button {
+        width: 150px;
+        height: 50px;
+        margin-top: .5em;
+      }
     </style>
   </head>
   <body>
@@ -462,6 +500,10 @@
           </table>
         </section>
       </div>
+    </div>
+    <div id="output-modal">
+      <textarea></textarea>
+      <button>K...</button>
     </div>
   </body>
 </html>
