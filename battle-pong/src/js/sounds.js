@@ -14,11 +14,15 @@ const temporaryLowPassSettings = {
   Q: 10
 };
 
-let connectedMusicEngine = null;
+let musicEngine = null;
 
 let limitedSoundTimeouts = {};
 let temporaryLowpassTimeout = null;
 let temporaryLowpassComebackTimeout = null;
+
+let soundContext;
+let globalBiquadFilter;
+let musicEngine;
 
 let sounds = {
   "round-start" : {
@@ -427,17 +431,17 @@ let loops = {
 let soundEvents = {
   'Finish_It_Heartbeat_Start': () => {
     SoundManager.startLoop('Finish_It_Heartbeat');
-    connectedMusicEngine.setMood('quiet');
+    musicEngine.setMood('quiet');
   },
   'Finish_It_Heartbeat_Stop_Hit': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Hit');
-    connectedMusicEngine.setMood('default');
+    musicEngine.setMood('default');
   },
   'Finish_It_Heartbeat_Stop_Miss': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Miss');
-    connectedMusicEngine.setMood('default');
+    musicEngine.setMood('default');
   }
 };
 
@@ -447,12 +451,6 @@ for (let sound in sounds) {
 
 for (let sound in soundBanks) {
   soundBanks[sound].limit = soundBanks[sound].limit || 0;
-}
-
-var soundContext = new AudioContext();
-
-for(var key in sounds) {
-  loadSound(key);
 }
 
 function loadSound(name){
@@ -525,13 +523,6 @@ function temporaryLowPass() {
   }, temporaryLowPassSettings.recoveryDelay + temporaryLowPassSettings.recoveryDuration);
 }
 
-var globalBiquadFilter = soundContext.createBiquadFilter();
-globalBiquadFilter.type = 'allpass';
-globalBiquadFilter.Q.value = temporaryLowPassSettings.Q;
-globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
-
-globalBiquadFilter.connect(soundContext.destination);
-
 function playSound(name, options){
   if(!window.Settings.sounds) {
     return;
@@ -593,8 +584,8 @@ function playSound(name, options){
   volume.connect(panNode);
   source.connect(volume);
 
-  if (connectedMusicEngine && options.musicDuckingProfile) {
-    connectedMusicEngine.duck(options.musicDuckingProfile);
+  if (musicEngine && options.musicDuckingProfile) {
+    musicEngine.duck(options.musicDuckingProfile);
   }
 
   source.start(0);
@@ -670,6 +661,9 @@ window.SoundManager = {
   get loops () {
     return loops;
   },
+  get musicEngine () {
+    return musicEngine;
+  },
   playSound: playSound,
   playRandomSoundFromBank: playRandomSoundFromBank,
   startLoop: startLoop,
@@ -677,6 +671,25 @@ window.SoundManager = {
   temporaryLowPass: temporaryLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
+  init: function () {
+    return new Promise((resolve, reject) => {
+      musicEngine = new Music();
+      soundContext = new AudioContext();
+
+      globalBiquadFilter = soundContext.createBiquadFilter();
+      globalBiquadFilter.type = 'allpass';
+      globalBiquadFilter.Q.value = temporaryLowPassSettings.Q;
+      globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
+
+      globalBiquadFilter.connect(soundContext.destination);
+
+      for(var key in sounds) {
+        loadSound(key);
+      }
+
+      resolve();
+    });
+  },
   get globalLowPassFilterFrequency () {
     return globalBiquadFilter.frequency.value;
   },
@@ -716,6 +729,8 @@ window.SoundManager = {
         }
       }
     }
+
+    musicEngine.loadSettingsFromLocalStorage();    
   },
   saveSettingsToLocalStorage: function () {
     localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
@@ -727,9 +742,6 @@ window.SoundManager = {
     else {
       console.warn('No sound event named ', name);
     }
-  },
-  connectMusicEngine: function (musicEngine) {
-    connectedMusicEngine = musicEngine;
   }
 };
 
