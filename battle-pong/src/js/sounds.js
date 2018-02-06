@@ -713,6 +713,7 @@ window.SoundManager = {
     let storedSettings = localStorage.getItem('sounds');
 
     function useParsedSettings(realSettings, parsedSettings) {
+      // Using this to preserve object linking, because it makes things like vuejs more responsive!
       function doIt(src, dest) {
         for (let s in dest) {
           if (src[s]) {

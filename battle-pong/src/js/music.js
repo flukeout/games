@@ -63,7 +63,7 @@
     
     let duckingTimeout = -1;
 
-    this.getDuckingProfiles = function () {
+    this.getDuckingProfiles = () => {
       return duckingProfiles;
     };
 

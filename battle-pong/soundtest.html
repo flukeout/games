@@ -8,12 +8,14 @@
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         let soundManagerStatus = 'Loading';
+        let musicVue;
+        let soundVue;
 
         SoundManager.init().then(() => {
           soundManagerStatus = 'Ready';
         });
 
-        let musicManager = SoundManager.musicEngine;
+        let musicEngine = SoundManager.musicEngine;
 
         let outputModal = document.querySelector('#output-modal');
         outputModal.querySelector('button').onclick = (e) => {
@@ -29,18 +31,18 @@
           document.addEventListener('keydown', (e) => {
             let keyCode = String.fromCharCode(e.keyCode);
             for (let s in SoundManager.sounds) {
-              if (vue.soundKeys[s] === keyCode) {
+              if (soundVue.soundKeys[s] === keyCode) {
                 SoundManager.playSound(s);
               }
             }
-            for (let b in vue.bankKeys) {
-              if (vue.bankKeys[b] === keyCode) {
+            for (let b in soundVue.bankKeys) {
+              if (soundVue.bankKeys[b] === keyCode) {
                 SoundManager.playRandomSoundFromBank(b);
               }
             }
           });
 
-          let vue = new Vue({
+          soundVue = new Vue({
             el: "#sound-engine",
             data: {
               sounds: SoundManager.sounds,
@@ -73,13 +75,13 @@
                 function onKeyDown (keyboardEvent) {
                   document.removeEventListener('keydown', onKeyDown);
                   if (keyboardEvent.code === 'Escape') {
-                    vue.soundKeys[name] = '?';
+                    soundVue.soundKeys[name] = '?';
                     return;
                   }
-                  vue.soundKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
+                  soundVue.soundKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
 
                   // Annoying, because vue is supposed to do this for us, but doesn't.
-                  clickEvent.srcElement.textContent = vue.soundKeys[name];
+                  clickEvent.srcElement.textContent = soundVue.soundKeys[name];
                 }
 
                 document.addEventListener('keydown', onKeyDown);
@@ -90,13 +92,13 @@
                 function onKeyDown (keyboardEvent) {
                   document.removeEventListener('keydown', onKeyDown);
                   if (keyboardEvent.code === 'Escape') {
-                    vue.bankKeys[name] = '?';
+                    soundVue.bankKeys[name] = '?';
                     return;
                   }
-                  vue.bankKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
+                  soundVue.bankKeys[name] = String.fromCharCode(keyboardEvent.keyCode);
 
                   // Annoying, because vue is supposed to do this for us, but doesn't.
-                  clickEvent.srcElement.textContent = vue.bankKeys[name];
+                  clickEvent.srcElement.textContent = soundVue.bankKeys[name];
                 }
 
                 document.addEventListener('keydown', onKeyDown);
@@ -127,15 +129,16 @@
               },
               saveSettingsToLocalStorage: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
-                vue.$forceUpdate();
+                soundVue.$forceUpdate();
               },
               loadSettingsFromLocalStorage: (e) => {
                 SoundManager.loadSettingsFromLocalStorage();
-                vue.$forceUpdate();
+                soundVue.$forceUpdate();
+                musicVue.$forceUpdate();
               },
               clearSettingsFromLocalStorage: (e) => {
                 SoundManager.clearSettingsFromLocalStorage();
-                vue.$forceUpdate();
+                soundVue.$forceUpdate();
               }
             }
           });
@@ -144,28 +147,28 @@
           let soundKeyList = ['Q','W','E','R','A','S','D','F','Z','X','C','V'];
           for (let s in SoundManager.sounds) {
             let key = soundKeyList.shift();
-            vue.soundKeys[s] = key || '?';
+            soundVue.soundKeys[s] = key || '?';
           }
 
           // Just to set some defaults for vue.js :/
           let bankKeyList = ['P','O','I','L','K','J','M','N','B'];
           for (let s in SoundManager.banks) {
             let key = bankKeyList.shift();
-            vue.bankKeys[s] = key || '?';
+            soundVue.bankKeys[s] = key || '?';
           }
 
           setInterval(() => {
-            vue.lowPassFilterFrequency = SoundManager.globalLowPassFilterFrequency;
+            soundVue.lowPassFilterFrequency = SoundManager.globalLowPassFilterFrequency;
           }, 25);
 
           document.addEventListener('lowpassstarted', (e) => {
-            vue.lowPassStatus = 'on';
+            soundVue.lowPassStatus = 'on';
           });
           document.addEventListener('lowpassfinished', (e) => {
-            vue.lowPassStatus = 'off';
+            soundVue.lowPassStatus = 'off';
           });
           document.addEventListener('lowpassinterrupted', (e) => {
-            vue.lowPassStatus = 'off';
+            soundVue.lowPassStatus = 'off';
           });
 
           document.addEventListener('limitedsoundstarted', (e) => {
@@ -204,7 +207,6 @@
             // console.log(e.detail);
           });
 
-
           document.addEventListener('limitedsoundbankstarted', (e) => {
             let item = document.querySelector('#banks-table tr[data-name="' + e.detail + '"] .limit');
             item.classList.add('on');
@@ -217,43 +219,42 @@
         }
 
         function startMusicEngineMonitor() {
-          let vue = new Vue({
+          musicVue = new Vue({
             el: '#music-engine',
             data: {
               status: 'Loading',
-              moods: musicManager.getMoods(),
+              moods: musicEngine.getMoods(),
               moodToSet: 'default',
               currentMood: 'default',
               moodActive: false,
-              duckingProfiles: musicManager.getDuckingProfiles(),
               ducking: 0,
-              globalGain: musicManager.getGlobalGain(),
-              musicManager: musicManager
+              globalGain: musicEngine.getGlobalGain(),
+              musicEngine: musicEngine
             },
             methods: {
               start: () => {
-                musicManager.start();
-                vue.status = 'Playing';
+                musicEngine.start();
+                musicVue.status = 'Playing';
               },
               stop: () => {
-                musicManager.stop();
-                vue.status = 'Ready';
+                musicEngine.stop();
+                musicVue.status = 'Ready';
               },
               setMood: (e) => {
-                musicManager.setMood(e.srcElement.value);
+                musicEngine.setMood(e.srcElement.value);
               },
               setMoodTemporarily: (e) => {
-                musicManager.setMoodTemporarily(e.srcElement.value);
+                musicEngine.setMoodTemporarily(e.srcElement.value);
               },
               duck: (e) => {
-                musicManager.duck(e.srcElement.getAttribute('data-name'));
+                musicEngine.duck(e.srcElement.getAttribute('data-name'));
               },
               globalGainChanged: (e) => {
-                musicManager.setGlobalGain(vue.globalGain);
+                musicEngine.setGlobalGain(musicVue.globalGain);
                 SoundManager.saveSettingsToLocalStorage();
               },
               spitItOut: () => {
-                showOutputModal(JSON.stringify(musicManager.getSettingsForOutput(), true, 2));
+                showOutputModal(JSON.stringify(musicEngine.getSettingsForOutput(), true, 2));
               },
               duckingProfileChanged: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
@@ -261,16 +262,16 @@
             }
           });
 
-          vue.status = 'Ready';
+          musicVue.status = 'Ready';
 
           document.addEventListener('musicmoodstart', (e) => {
-            vue.currentMood = e.detail;
-            vue.moodActive = true;
+            musicVue.currentMood = e.detail;
+            musicVue.moodActive = true;
           });
 
           document.addEventListener('musicmoodstop', () => {
-            vue.currentMood = 'default';
-            vue.moodActive = false;
+            musicVue.currentMood = 'default';
+            musicVue.moodActive = false;
           });
 
           document.addEventListener('duckingstarted', (e) => {
@@ -289,7 +290,7 @@
           });
 
           setInterval(() => {
-            vue.ducking = musicManager.duckingNode.gain.value;
+            musicVue.ducking = musicEngine.duckingNode.gain.value;
           }, 25);
         }
 
@@ -518,11 +519,11 @@
         </section>
         <section>
           <h2>Ducking</h2>
-          <div>Current Ducking Profile: <span>{{musicManager.currentDuckingProfile}}</span></div>
+          <div>Current Ducking Profile: <span>{{musicEngine.currentDuckingProfile}}</span></div>
           <div>Ducking Gain: <span>{{ducking}}</span></div>
           <table id="ducking-table">
             <tr><th>Name</th><th>Attack</th><th>Sustain</th><th>Release</th></tr>
-            <tr v-for="(profile, name) in duckingProfiles">
+            <tr v-for="(profile, name) in SoundManager.musicEngine.getDuckingProfiles()">
               <td :data-profile="name">{{name}}</td>
               <td><input type="number" v-model.number="profile.attack" @change="duckingProfileChanged"></td>
               <td><input type="number" v-model.number="profile.sustain" @change="duckingProfileChanged"></td>
