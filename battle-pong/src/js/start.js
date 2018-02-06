@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.music = music;
 
+  SoundManager.init();
   SoundManager.loadSettingsFromLocalStorage();
-  music.loadSettingsFromLocalStorage();
-
+  
   game.init();
 
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly

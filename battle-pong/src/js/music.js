@@ -42,14 +42,15 @@
 
   const defaultGlobalGainValue = 1;
 
-  window.Music = function () {
+  window.Music = function (audioContext) {
     let activeLayers = {};
 
-    let audioContext = new AudioContext();
+    audioContext = audioContext || new AudioContext();
+    
     let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
     
-    globalGainNode.gain.value = defaultGlobalGainValue;
+    globalGainNode.gain.setTargetAtTime(defaultGlobalGainValue, audioContext.currentTime, 0);
 
     duckingNode.connect(globalGainNode);
     globalGainNode.connect(audioContext.destination);
@@ -58,6 +59,7 @@
     this.currentDuckingProfile = null;
 
     this.duckingNode = duckingNode;
+    this.globalGainNode = globalGainNode;
     
     let duckingTimeout = -1;
 
@@ -80,7 +82,7 @@
     };
 
     this.setGlobalGain = function (value) {
-      globalGainNode.gain.value = value;
+      globalGainNode.gain.setTargetAtTime(value, audioContext.currentTime, 0);
     };
 
     this.getGlobalGain = () => { return globalGainNode.gain.value; };
@@ -141,7 +143,7 @@
 
               let gainValue = layerDefinitions[layerName].moods.default;
               gainValue = isNaN(Number(gainValue)) ? 0 : gainValue;
-              gainNode.gain.value = gainValue;
+              gainNode.gain.setTargetAtTime(gainValue, audioContext.currentTime, 0);
 
               source.connect(gainNode);
               gainNode.connect(duckingNode);
@@ -191,7 +193,7 @@
       if (!activeLayers[layerName].gain) return
 
       layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
-      layer.gain.gain.value = moodValue;
+      layer.gain.gain.setTargetAtTime(moodValue, audioContext.currentTime, 0);
 
       document.dispatchEvent(new CustomEvent('musicmoodstart', {detail: mood}));
     };
@@ -258,13 +260,17 @@
       
       if (storedSettings) {
         let parsedSettings = JSON.parse(storedSettings);
-        // duckingProfiles = parsedSettings.duckingProfiles;
-        globalGainNode.gain.value = parsedSettings.globalGainValue;
+        duckingProfiles = parsedSettings.duckingProfiles;
+        globalGainNode.gain.setTargetAtTime(parsedSettings.globalGainValue, audioContext.currentTime, 0);
       }
     };
 
     this.saveSettingsToLocalStorage = function () {
       localStorage.setItem('music', JSON.stringify(this.getSettingsForOutput()));
+    };
+
+    this.clearSettingsFromLocalStorage = function () {
+      localStorage.removeItem('music');
     };
   };
 

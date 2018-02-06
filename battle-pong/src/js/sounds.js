@@ -7,22 +7,13 @@
 (function () {
 
 const temporaryLowPassSettings = {
-  recoveryDuration: 2333,
-  recoveryDelay: 1666,
   startFrequency: 500,
   endFrequency: 20000,
+  attack: 0,
+  sustain: 1.666,
+  release: 1.666,
   Q: 10
 };
-
-let musicEngine = null;
-
-let limitedSoundTimeouts = {};
-let temporaryLowpassTimeout = null;
-let temporaryLowpassComebackTimeout = null;
-
-let soundContext;
-let globalBiquadFilter;
-let musicEngine;
 
 let sounds = {
   "round-start" : {
@@ -453,6 +444,13 @@ for (let sound in soundBanks) {
   soundBanks[sound].limit = soundBanks[sound].limit || 0;
 }
 
+let limitedSoundTimeouts = {};
+let temporaryLowpassTimeout = null;
+
+let soundContext;
+let globalBiquadFilter;
+let musicEngine;
+
 function loadSound(name){
   var sound = sounds[name];
   var url = sound.url;
@@ -498,19 +496,16 @@ function temporaryLowPass() {
   // If this effect is already happening, reset it (which effectively extends it)
   if (temporaryLowpassTimeout) {
     clearTimeout(temporaryLowpassTimeout);
-    clearTimeout(temporaryLowpassComebackTimeout);
-    globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+    document.dispatchEvent(new CustomEvent('lowpassinterrupted', {detail: null}));
   }
 
     // Set up the initial effect
   globalBiquadFilter.type = 'lowpass';
-  globalBiquadFilter.frequency.value = temporaryLowPassSettings.startFrequency;
 
-  temporaryLowpassComebackTimeout = setTimeout(() => {
-    // Decrease the effect over time
-    globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency,
-      soundContext.currentTime + temporaryLowPassSettings.recoveryDuration / 1000);
-  }, temporaryLowPassSettings.recoveryDelay);
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.startFrequency, soundContext.currentTime + temporaryLowPassSettings.attack);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.startFrequency, soundContext.currentTime + temporaryLowPassSettings.attack + temporaryLowPassSettings.sustain);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency, soundContext.currentTime + temporaryLowPassSettings.attack + temporaryLowPassSettings.sustain + temporaryLowPassSettings.release);
 
   // When the timeout happens, reset the biquadFilter
   temporaryLowpassTimeout = setTimeout(() => {
@@ -519,8 +514,10 @@ function temporaryLowPass() {
 
     // Reset the filter
     globalBiquadFilter.type = 'allpass';
-    globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
-  }, temporaryLowPassSettings.recoveryDelay + temporaryLowPassSettings.recoveryDuration);
+    document.dispatchEvent(new CustomEvent('lowpassfinished', {detail: null}));
+  }, (temporaryLowPassSettings.attack + temporaryLowPassSettings.sustain + temporaryLowPassSettings.release) * 1000);
+
+  document.dispatchEvent(new CustomEvent('lowpassstarted', {detail: null}));
 }
 
 function playSound(name, options){
@@ -671,23 +668,28 @@ window.SoundManager = {
   temporaryLowPass: temporaryLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
+  temporaryLowPassSettings: temporaryLowPassSettings,
+  localStorageStatus: 'Empty',
   init: function () {
     return new Promise((resolve, reject) => {
-      musicEngine = new Music();
       soundContext = new AudioContext();
+      musicEngine = new Music(soundContext);
 
       globalBiquadFilter = soundContext.createBiquadFilter();
       globalBiquadFilter.type = 'allpass';
-      globalBiquadFilter.Q.value = temporaryLowPassSettings.Q;
-      globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
+      globalBiquadFilter.Q.setTargetAtTime(temporaryLowPassSettings.Q, soundContext.currentTime, 0);
+      globalBiquadFilter.frequency.setTargetAtTime(temporaryLowPassSettings.endFrequency, soundContext.currentTime, 0);
 
+      musicEngine.globalGainNode.connect(globalBiquadFilter);
       globalBiquadFilter.connect(soundContext.destination);
 
       for(var key in sounds) {
         loadSound(key);
       }
 
-      resolve();
+      musicEngine.load().then(() => {
+        resolve();
+      });
     });
   },
   get globalLowPassFilterFrequency () {
@@ -696,7 +698,8 @@ window.SoundManager = {
   getSettingsForOutput: function () {
     let output = {
       sounds: JSON.parse(JSON.stringify(sounds)),
-      banks: JSON.parse(JSON.stringify(soundBanks))
+      banks: JSON.parse(JSON.stringify(soundBanks)),
+      temporaryLowPass: JSON.parse(JSON.stringify(temporaryLowPassSettings))
     };
     
     // Clean up a little
@@ -708,32 +711,51 @@ window.SoundManager = {
   },
   loadSettingsFromLocalStorage: function () {
     let storedSettings = localStorage.getItem('sounds');
-    if (storedSettings) {
-      let parsedSettings = JSON.parse(storedSettings);
-      let parsedSounds = parsedSettings.sounds;
-      let parsedBanks = parsedSettings.banks;
 
-      for (let s in sounds) {
-        for (let k in sounds[s]) {
-          if (parsedSounds[s] && parsedSounds[s][k]) {
-            sounds[s][k] = parsedSounds[s][k];
+    function useParsedSettings(realSettings, parsedSettings) {
+      function doIt(src, dest) {
+        for (let s in dest) {
+          if (src[s]) {
+            if (typeof dest[s] === 'object') {
+              doIt(src[s], dest[s])
+            }
+            else {
+              dest[s] = src[s];
+            }
           }
         }
       }
 
-      for (let s in soundBanks) {
-        for (let k in soundBanks[s]) {
-          if (parsedBanks[s] && parsedBanks[s][k]) {
-            soundBanks[s][k] = parsedBanks[s][k];
-          }
-        }
-      }
+      doIt(parsedSettings, realSettings);
     }
 
-    musicEngine.loadSettingsFromLocalStorage();    
+    try {
+      if (storedSettings) {
+        let parsedSettings = JSON.parse(storedSettings);
+
+        useParsedSettings(sounds, parsedSettings.sounds);
+        useParsedSettings(soundBanks, parsedSettings.banks);
+        useParsedSettings(temporaryLowPassSettings, parsedSettings.temporaryLowPass);
+
+        musicEngine.loadSettingsFromLocalStorage();
+
+        SoundManager.localStorageStatus = 'Loaded';
+      }
+    }
+    catch (e) {
+      console.warn('Sound/music settings not loaded properly.');
+      console.error(e);
+    }
   },
   saveSettingsToLocalStorage: function () {
     localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
+    musicEngine.saveSettingsToLocalStorage();
+    SoundManager.localStorageStatus = 'Saved @ ' + (new Date()).toUTCString();
+  },
+  clearSettingsFromLocalStorage: function () {
+    localStorage.removeItem('sounds');
+    musicEngine.clearSettingsFromLocalStorage();
+    SoundManager.localStorageStatus = 'Empty';
   },
   fireEvent: function (name, options) {
     if (soundEvents[name]) {
