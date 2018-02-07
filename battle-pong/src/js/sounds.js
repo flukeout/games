@@ -593,11 +593,11 @@ function playSound(name, options){
   source.buffer = buffer;
 
   var panNode = soundContext.createStereoPanner();
-  panNode.pan.value = soundOptions.pan;
+  panNode.pan.setTargetAtTime(soundOptions.pan, soundContext.currentTime, 0);
 
   var volume = soundContext.createGain();
 
-  volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
+  volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0); // Should we make this a multiplier of the original?
 
   // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
   if (options.excludeFromLowPassFilter) {
