@@ -482,6 +482,8 @@ let soundContext;
 let globalBiquadFilter;
 let musicEngine;
 
+let soundBankMemory = {};
+
 function loadSound(name){
   var sound = sounds[name];
   var url = sound.url;
@@ -501,21 +503,57 @@ function loadSound(name){
 }
 
 function playRandomSoundFromBank(soundBankName, options) {
+  // Reference to the bank definition, containing references to sounds that can be played
   let soundBank = soundBanks[soundBankName];
-  if (soundBank) {
-    if (soundBank.limit > 0) {
-      if(limitedSoundTimeouts['bank_' + soundBankName]) return;
+  
+  // The name of the sound that will eventually be pasesd to playSound
+  let soundName;
 
+  // If this sound bank exists, forge on...
+  if (soundBank) {
+
+    // Here, we limit the number of times a soundbank can be used within a certain amount of time
+    if (soundBank.limit > 0) {
+
+      // If there is a timeout waiting for this soundbank already, return.
+      if(limitedSoundTimeouts['bank_' + soundBankName]) return;
+      
+      // Otherwise, remember a new timeout for this bank
       limitedSoundTimeouts['bank_' + soundBankName] = setTimeout(() => {
+
+        // Forget this timeout so that this soundbank can be played again
         delete limitedSoundTimeouts['bank_' + soundBankName];
+
+        // Let everyone know what happened :)
         document.dispatchEvent(new CustomEvent('limitedsoundbankfinished', {detail: soundBankName}));
       }, soundBank.limit);
 
+      // Let everyone know what happened :)
       document.dispatchEvent(new CustomEvent('limitedsoundbankstarted', {detail: soundBankName}));
     }
 
-    let sound = soundBank.sounds[Math.floor(Math.random() * soundBank.sounds.length)];
-    playSound(sound, options);
+    // Init the memory if it's not already there
+    soundBankMemory[soundBankName] = soundBankMemory[soundBankName] || [];
+
+    // Maintain a memory of half the length of the actual sound bank to avoid replaying the exact same sounds
+    if (soundBankMemory[soundBankName].length > soundBank.sounds.length / 2) {
+
+      // In FIFO fashion, push the beginning of the array off the cliff
+      soundBankMemory[soundBankName].shift();
+    }
+
+    // Spin here until soundName becomes something we haven't played recently
+    do {
+      soundName = soundBank.sounds[Math.floor(Math.random() * soundBank.sounds.length)];
+    } while(soundBankMemory[soundBankName].indexOf(soundName) > -1);
+
+    // Push this soundName onto the end of the memory array, (again, in FIFO fashion)
+    soundBankMemory[soundBankName].push(soundName);
+
+    // PLAY THE SOUND!!
+    playSound(soundName, options);
+
+    // Let everyone know what happened :)
     document.dispatchEvent(new CustomEvent('soundbankplayed', {detail: soundBankName}));
   }
   else {
