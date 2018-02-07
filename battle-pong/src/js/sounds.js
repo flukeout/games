@@ -7,18 +7,13 @@
 (function () {
 
 const temporaryLowPassSettings = {
-  recoveryDuration: 2333,
-  recoveryDelay: 1666,
   startFrequency: 500,
   endFrequency: 20000,
+  attack: 0,
+  sustain: 1.666,
+  release: 1.666,
   Q: 10
 };
-
-let connectedMusicEngine = null;
-
-let limitedSoundTimeouts = {};
-let temporaryLowpassTimeout = null;
-let temporaryLowpassComebackTimeout = null;
 
 let sounds = {
   "round-start" : {
@@ -337,6 +332,16 @@ let sounds = {
     url : "sounds/Finish_It_Miss.mp3",
     volume : 1
   },
+
+  "Powerup_Spin_Spin_Start" : {
+    url : "sounds/Powerup_Spin_Spin_Start.mp3",
+    volume : 1
+  },
+  "Powerup_Spin_Spin_Loop" : {
+    url : "sounds/Powerup_Spin_Spin_Loop.mp3",
+    volume : 1
+  },
+
 };
 
 let soundBanks = {
@@ -421,23 +426,44 @@ let soundBanks = {
 let loops = {
   'Finish_It_Heartbeat': {
     sound: 'Finish_It_Heartbeat_Loop'
+  },
+  'Powerup_Spin_Spin': {
+    sound: 'Powerup_Spin_Spin_Loop'
   }
 };
 
 let soundEvents = {
   'Finish_It_Heartbeat_Start': () => {
     SoundManager.startLoop('Finish_It_Heartbeat');
-    connectedMusicEngine.setMood('quiet');
+    musicEngine.setMood('quiet');
   },
   'Finish_It_Heartbeat_Stop_Hit': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Hit');
-    connectedMusicEngine.setMood('default');
+    musicEngine.setMood('default');
   },
   'Finish_It_Heartbeat_Stop_Miss': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Miss');
-    connectedMusicEngine.setMood('default');
+    musicEngine.setMood('default');
+  }
+};
+
+let sequenceManagers = {
+  Powerup_Spin: function () {
+    let spinStart = null;
+    let spinLoop = null;
+
+    this.start = function () {
+      spinStart = SoundManager.playSound('Powerup_Spin_Spin_Start');
+      spinLoop = SoundManager.startLoop('Powerup_Spin_Spin', {start: soundContext.currentTime + spinStart.source.buffer.duration - 0.1});
+    };
+
+    this.stop = function () {
+      spinStart.source.stop();
+      spinLoop.gain.gain.linearRampToValueAtTime(0, soundContext.currentTime + 0.20);
+      SoundManager.stopLoop('Powerup_Spin_Spin', {stop: soundContext.currentTime + 0.20});
+    };
   }
 };
 
@@ -449,11 +475,14 @@ for (let sound in soundBanks) {
   soundBanks[sound].limit = soundBanks[sound].limit || 0;
 }
 
-var soundContext = new AudioContext();
+let limitedSoundTimeouts = {};
+let temporaryLowpassTimeout = null;
 
-for(var key in sounds) {
-  loadSound(key);
-}
+let soundContext;
+let globalBiquadFilter;
+let musicEngine;
+
+let soundBankMemory = {};
 
 function loadSound(name){
   var sound = sounds[name];
@@ -474,21 +503,57 @@ function loadSound(name){
 }
 
 function playRandomSoundFromBank(soundBankName, options) {
+  // Reference to the bank definition, containing references to sounds that can be played
   let soundBank = soundBanks[soundBankName];
-  if (soundBank) {
-    if (soundBank.limit > 0) {
-      if(limitedSoundTimeouts['bank_' + soundBankName]) return;
+  
+  // The name of the sound that will eventually be pasesd to playSound
+  let soundName;
 
+  // If this sound bank exists, forge on...
+  if (soundBank) {
+
+    // Here, we limit the number of times a soundbank can be used within a certain amount of time
+    if (soundBank.limit > 0) {
+
+      // If there is a timeout waiting for this soundbank already, return.
+      if(limitedSoundTimeouts['bank_' + soundBankName]) return;
+      
+      // Otherwise, remember a new timeout for this bank
       limitedSoundTimeouts['bank_' + soundBankName] = setTimeout(() => {
+
+        // Forget this timeout so that this soundbank can be played again
         delete limitedSoundTimeouts['bank_' + soundBankName];
+
+        // Let everyone know what happened :)
         document.dispatchEvent(new CustomEvent('limitedsoundbankfinished', {detail: soundBankName}));
       }, soundBank.limit);
 
+      // Let everyone know what happened :)
       document.dispatchEvent(new CustomEvent('limitedsoundbankstarted', {detail: soundBankName}));
     }
 
-    let sound = soundBank.sounds[Math.floor(Math.random() * soundBank.sounds.length)];
-    playSound(sound, options);
+    // Init the memory if it's not already there
+    soundBankMemory[soundBankName] = soundBankMemory[soundBankName] || [];
+
+    // Maintain a memory of half the length of the actual sound bank to avoid replaying the exact same sounds
+    if (soundBankMemory[soundBankName].length > soundBank.sounds.length / 2) {
+
+      // In FIFO fashion, push the beginning of the array off the cliff
+      soundBankMemory[soundBankName].shift();
+    }
+
+    // Spin here until soundName becomes something we haven't played recently
+    do {
+      soundName = soundBank.sounds[Math.floor(Math.random() * soundBank.sounds.length)];
+    } while(soundBankMemory[soundBankName].indexOf(soundName) > -1);
+
+    // Push this soundName onto the end of the memory array, (again, in FIFO fashion)
+    soundBankMemory[soundBankName].push(soundName);
+
+    // PLAY THE SOUND!!
+    playSound(soundName, options);
+
+    // Let everyone know what happened :)
     document.dispatchEvent(new CustomEvent('soundbankplayed', {detail: soundBankName}));
   }
   else {
@@ -500,19 +565,16 @@ function temporaryLowPass() {
   // If this effect is already happening, reset it (which effectively extends it)
   if (temporaryLowpassTimeout) {
     clearTimeout(temporaryLowpassTimeout);
-    clearTimeout(temporaryLowpassComebackTimeout);
-    globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+    document.dispatchEvent(new CustomEvent('lowpassinterrupted', {detail: null}));
   }
 
     // Set up the initial effect
   globalBiquadFilter.type = 'lowpass';
-  globalBiquadFilter.frequency.value = temporaryLowPassSettings.startFrequency;
 
-  temporaryLowpassComebackTimeout = setTimeout(() => {
-    // Decrease the effect over time
-    globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency,
-      soundContext.currentTime + temporaryLowPassSettings.recoveryDuration / 1000);
-  }, temporaryLowPassSettings.recoveryDelay);
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.startFrequency, soundContext.currentTime + temporaryLowPassSettings.attack);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.startFrequency, soundContext.currentTime + temporaryLowPassSettings.attack + temporaryLowPassSettings.sustain);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency, soundContext.currentTime + temporaryLowPassSettings.attack + temporaryLowPassSettings.sustain + temporaryLowPassSettings.release);
 
   // When the timeout happens, reset the biquadFilter
   temporaryLowpassTimeout = setTimeout(() => {
@@ -521,16 +583,11 @@ function temporaryLowPass() {
 
     // Reset the filter
     globalBiquadFilter.type = 'allpass';
-    globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
-  }, temporaryLowPassSettings.recoveryDelay + temporaryLowPassSettings.recoveryDuration);
+    document.dispatchEvent(new CustomEvent('lowpassfinished', {detail: null}));
+  }, (temporaryLowPassSettings.attack + temporaryLowPassSettings.sustain + temporaryLowPassSettings.release) * 1000);
+
+  document.dispatchEvent(new CustomEvent('lowpassstarted', {detail: null}));
 }
-
-var globalBiquadFilter = soundContext.createBiquadFilter();
-globalBiquadFilter.type = 'allpass';
-globalBiquadFilter.Q.value = temporaryLowPassSettings.Q;
-globalBiquadFilter.frequency.value = temporaryLowPassSettings.endFrequency;
-
-globalBiquadFilter.connect(soundContext.destination);
 
 function playSound(name, options){
   if(!window.Settings.sounds) {
@@ -576,11 +633,11 @@ function playSound(name, options){
   source.buffer = buffer;
 
   var panNode = soundContext.createStereoPanner();
-  panNode.pan.value = soundOptions.pan;
+  panNode.pan.setTargetAtTime(soundOptions.pan, soundContext.currentTime, 0);
 
   var volume = soundContext.createGain();
 
-  volume.gain.value = soundOptions.volume; // Should we make this a multiplier of the original?
+  volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0); // Should we make this a multiplier of the original?
 
   // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
   if (options.excludeFromLowPassFilter) {
@@ -593,11 +650,11 @@ function playSound(name, options){
   volume.connect(panNode);
   source.connect(volume);
 
-  if (connectedMusicEngine && options.musicDuckingProfile) {
-    connectedMusicEngine.duck(options.musicDuckingProfile);
+  if (musicEngine && options.musicDuckingProfile) {
+    musicEngine.duck(options.musicDuckingProfile);
   }
 
-  source.start(0);
+  source.start(options.start || 0);
 
   document.dispatchEvent(new CustomEvent('soundplayed', {detail: name}));
 
@@ -606,7 +663,11 @@ function playSound(name, options){
   };
 
   /* ʕ •ᴥ•ʔゝ☆ */
-  return source;
+  return {
+    source: source,
+    pan: panNode,
+    gain: volume
+  };
 }
 
 for (let l in loops) {
@@ -616,31 +677,39 @@ for (let l in loops) {
 function startLoop(name, options) {
   let loop = loops[name];
   
+  options = options || {};
+
   if (!loop) {
     console.warn('No loop named', name);
     return;
   }
 
-  let source = playSound(loop.sound, options);
-  source.loop = true;
+  if (loop.active) return;
+
+  let sound = playSound(loop.sound, options);
+  sound.source.loop = true;
 
   // :)
-  loop.source = source;
+  loop.source = sound.source;
   loop.active = true;
 
   document.dispatchEvent(new CustomEvent('loopstarted', {detail: name}));
+
+  return sound;
 }
 
 function stopLoop(name, options) {
   let loop = loops[name];
   
+  options = options || {};
+
   if (!loop) {
     console.warn('No loop named', name);
     return;
   }
 
   if (loop.active) {
-    loop.source.stop();
+    loop.source.stop(options.stop || soundContext.currentTime);
     loop.source = null;
     loop.active = false;
     document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));
@@ -670,6 +739,9 @@ window.SoundManager = {
   get loops () {
     return loops;
   },
+  get musicEngine () {
+    return musicEngine;
+  },
   playSound: playSound,
   playRandomSoundFromBank: playRandomSoundFromBank,
   startLoop: startLoop,
@@ -677,13 +749,39 @@ window.SoundManager = {
   temporaryLowPass: temporaryLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
+  temporaryLowPassSettings: temporaryLowPassSettings,
+  localStorageStatus: 'Empty',
+  sequences: sequenceManagers,
+  init: function () {
+    return new Promise((resolve, reject) => {
+      soundContext = new AudioContext();
+      musicEngine = new Music(soundContext);
+
+      globalBiquadFilter = soundContext.createBiquadFilter();
+      globalBiquadFilter.type = 'allpass';
+      globalBiquadFilter.Q.setTargetAtTime(temporaryLowPassSettings.Q, soundContext.currentTime, 0);
+      globalBiquadFilter.frequency.setTargetAtTime(temporaryLowPassSettings.endFrequency, soundContext.currentTime, 0);
+
+      musicEngine.globalGainNode.connect(globalBiquadFilter);
+      globalBiquadFilter.connect(soundContext.destination);
+
+      for(var key in sounds) {
+        loadSound(key);
+      }
+
+      musicEngine.load().then(() => {
+        resolve();
+      });
+    });
+  },
   get globalLowPassFilterFrequency () {
     return globalBiquadFilter.frequency.value;
   },
   getSettingsForOutput: function () {
     let output = {
       sounds: JSON.parse(JSON.stringify(sounds)),
-      banks: JSON.parse(JSON.stringify(soundBanks))
+      banks: JSON.parse(JSON.stringify(soundBanks)),
+      temporaryLowPass: JSON.parse(JSON.stringify(temporaryLowPassSettings))
     };
     
     // Clean up a little
@@ -695,30 +793,52 @@ window.SoundManager = {
   },
   loadSettingsFromLocalStorage: function () {
     let storedSettings = localStorage.getItem('sounds');
-    if (storedSettings) {
-      let parsedSettings = JSON.parse(storedSettings);
-      let parsedSounds = parsedSettings.sounds;
-      let parsedBanks = parsedSettings.banks;
 
-      for (let s in sounds) {
-        for (let k in sounds[s]) {
-          if (parsedSounds[s] && parsedSounds[s][k]) {
-            sounds[s][k] = parsedSounds[s][k];
+    function useParsedSettings(realSettings, parsedSettings) {
+      // Using this to preserve object linking, because it makes things like vuejs more responsive!
+      function doIt(src, dest) {
+        for (let s in dest) {
+          if (src[s]) {
+            if (typeof dest[s] === 'object') {
+              doIt(src[s], dest[s])
+            }
+            else {
+              dest[s] = src[s];
+            }
           }
         }
       }
 
-      for (let s in soundBanks) {
-        for (let k in soundBanks[s]) {
-          if (parsedBanks[s] && parsedBanks[s][k]) {
-            soundBanks[s][k] = parsedBanks[s][k];
-          }
-        }
+      doIt(parsedSettings, realSettings);
+    }
+
+    try {
+      if (storedSettings) {
+        let parsedSettings = JSON.parse(storedSettings);
+
+        useParsedSettings(sounds, parsedSettings.sounds);
+        useParsedSettings(soundBanks, parsedSettings.banks);
+        useParsedSettings(temporaryLowPassSettings, parsedSettings.temporaryLowPass);
+
+        musicEngine.loadSettingsFromLocalStorage();
+
+        SoundManager.localStorageStatus = 'Loaded';
       }
+    }
+    catch (e) {
+      console.warn('Sound/music settings not loaded properly.');
+      console.error(e);
     }
   },
   saveSettingsToLocalStorage: function () {
     localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
+    musicEngine.saveSettingsToLocalStorage();
+    SoundManager.localStorageStatus = 'Saved @ ' + (new Date()).toUTCString();
+  },
+  clearSettingsFromLocalStorage: function () {
+    localStorage.removeItem('sounds');
+    musicEngine.clearSettingsFromLocalStorage();
+    SoundManager.localStorageStatus = 'Empty';
   },
   fireEvent: function (name, options) {
     if (soundEvents[name]) {
@@ -727,9 +847,6 @@ window.SoundManager = {
     else {
       console.warn('No sound event named ', name);
     }
-  },
-  connectMusicEngine: function (musicEngine) {
-    connectedMusicEngine = musicEngine;
   }
 };
 

@@ -71,7 +71,6 @@ function createBall(options){
     rotationVelocity: 0,
     rotationVelocityMax: 20,  // TODO - update
     rotationAccel: 2,         // TODO - update
-    canSpin: false,
 
     // This slows the ball down after it is going too fast for too long
     goingFast: false,
@@ -94,8 +93,13 @@ function createBall(options){
     lastTouchedPaddle: false,
 
     wooshPlayed: false,
+    wasRotating: false,
+
+    wasSpinning: false,
 
     frameTicks : 0,
+
+    spinSoundSequenceManager: new SoundManager.sequences.Powerup_Spin(),
 
     changeVelocityRatio: function(ratio) {
       Matter.Body.setVelocity(this.physics, {
@@ -143,13 +147,6 @@ function createBall(options){
         // TODO - this slows id down if you want it back
       }
 
-      // TODO - fix how this is added / removed, we don't want to do it every frame
-      if(this.canSpin){
-        this.element.classList.add("canSpin");
-      } else {
-        this.element.classList.remove("canSpin");
-      }
-
       // All this crap below just relates to curving the ball
       // and adding the spinning animation.
 
@@ -186,7 +183,7 @@ function createBall(options){
       var rotating = false;
       var direction;
 
-      this.canSpin = false;
+      let canSpin = false;
 
       // this.lastHitPaddle = 1;
 
@@ -195,12 +192,12 @@ function createBall(options){
       for(var i = 0; i < game.paddles.length; i++) {
         var p = game.paddles[i];
         if(p.hasSpinPowerup == true) {
-          this.canSpin = true;
+          canSpin = true;
           controlPaddle = p;
         }
       }
 
-      if(this.canSpin) {
+      if(canSpin) {
 
         if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio > .1) {
           var a = movementAngle + Math.PI / 2;
@@ -242,7 +239,7 @@ function createBall(options){
         }
 
         if(this.wooshPlayed == false && Math.abs(this.rotationVelocity) == this.rotationVelocityMax){
-          SoundManager.playSound("woosh");
+          this.spinSoundSequenceManager.start();
           this.wooshPlayed = true;
         }
       }
@@ -295,6 +292,13 @@ function createBall(options){
         });
       }
 
+      // TODO: fix this so it doesn't happen every frame
+      if(canSpin){
+        this.element.classList.add("canSpin");
+      } else {
+        this.element.classList.remove("canSpin");
+      }
+
       // --Spinning ball garbage ends here.
 
       // The paddle hit stuff needs a one frame delay before taking effect seemingly.
@@ -313,6 +317,11 @@ function createBall(options){
       }
 
       this.lastStepSpeed = JSON.parse(JSON.stringify(this.physics.speed));
+
+      if (this.wasRotating && !rotating) {
+        this.spinSoundSequenceManager.stop();
+      }
+      this.wasRotating = rotating;
     },
 
     startWord: function(){
