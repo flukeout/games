@@ -452,15 +452,17 @@ let soundEvents = {
 let sequenceManagers = {
   Powerup_Spin: function () {
     let spinStart = null;
+    let spinLoop = null;
 
     this.start = function () {
       spinStart = SoundManager.playSound('Powerup_Spin_Spin_Start');
-      SoundManager.startLoop('Powerup_Spin_Spin', {start: soundContext.currentTime + spinStart.buffer.duration - 0.1});
+      spinLoop = SoundManager.startLoop('Powerup_Spin_Spin', {start: soundContext.currentTime + spinStart.source.buffer.duration - 0.1});
     };
 
     this.stop = function () {
-      spinStart.stop();
-      SoundManager.stopLoop('Powerup_Spin_Spin');
+      spinStart.source.stop();
+      spinLoop.gain.gain.linearRampToValueAtTime(0, soundContext.currentTime + 0.20);
+      SoundManager.stopLoop('Powerup_Spin_Spin', {stop: soundContext.currentTime + 0.20});
     };
   }
 };
@@ -623,7 +625,11 @@ function playSound(name, options){
   };
 
   /* ʕ •ᴥ•ʔゝ☆ */
-  return source;
+  return {
+    source: source,
+    pan: panNode,
+    gain: volume
+  };
 }
 
 for (let l in loops) {
@@ -633,6 +639,8 @@ for (let l in loops) {
 function startLoop(name, options) {
   let loop = loops[name];
   
+  options = options || {};
+
   if (!loop) {
     console.warn('No loop named', name);
     return;
@@ -640,28 +648,30 @@ function startLoop(name, options) {
 
   if (loop.active) return;
 
-  let source = playSound(loop.sound, options);
-  source.loop = true;
+  let sound = playSound(loop.sound, options);
+  sound.source.loop = true;
 
   // :)
-  loop.source = source;
+  loop.source = sound.source;
   loop.active = true;
 
   document.dispatchEvent(new CustomEvent('loopstarted', {detail: name}));
 
-  return source;
+  return sound;
 }
 
 function stopLoop(name, options) {
   let loop = loops[name];
   
+  options = options || {};
+
   if (!loop) {
     console.warn('No loop named', name);
     return;
   }
 
   if (loop.active) {
-    loop.source.stop();
+    loop.source.stop(options.stop || soundContext.currentTime);
     loop.source = null;
     loop.active = false;
     document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));

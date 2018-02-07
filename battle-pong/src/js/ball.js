@@ -292,6 +292,7 @@ function createBall(options){
         });
       }
 
+      // TODO: fix this so it doesn't happen every frame
       if(canSpin){
         this.element.classList.add("canSpin");
       } else {
