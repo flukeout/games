@@ -7,12 +7,11 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        let soundManagerStatus = 'Loading';
         let musicVue;
         let soundVue;
 
         SoundManager.init().then(() => {
-          soundManagerStatus = 'Ready';
+          musicVue.status = 'Ready';
         });
 
         let musicEngine = SoundManager.musicEngine;
@@ -41,6 +40,8 @@
               }
             }
           });
+
+          let activeSequences = {};
 
           soundVue = new Vue({
             el: "#sound-engine",
@@ -139,6 +140,18 @@
               clearSettingsFromLocalStorage: (e) => {
                 SoundManager.clearSettingsFromLocalStorage();
                 soundVue.$forceUpdate();
+              },
+              startSequence: (e) => {
+                var name = e.srcElement.getAttribute('data-name');
+                activeSequences[name] = new SoundManager.sequences[name]();
+                activeSequences[name].start();
+              },
+              stopSequence: (e) => {
+                var name = e.srcElement.getAttribute('data-name');
+                if (activeSequences[name]) {
+                  activeSequences[name].stop();
+                  delete activeSequences[name];
+                }
               }
             }
           });
@@ -261,8 +274,6 @@
               }
             }
           });
-
-          musicVue.status = 'Ready';
 
           document.addEventListener('musicmoodstart', (e) => {
             musicVue.currentMood = e.detail;
@@ -449,6 +460,19 @@
           </table>
           <div>Make rocket go now: <button v-on:click="SoundManager.temporaryLowPass">Temporary Low Pass</button></div>
         </section>
+
+        <section>
+          <h2>Sequences</h2>
+          <table>
+            <tr><th>Name</th><th>Start</th><th>Stop</th></tr>
+            <tr v-for="(profile, name) in SoundManager.sequences">
+              <td>{{name}}</td>
+              <td><button :data-name="name" v-on:click="startSequence">Start</button></td>
+              <td><button :data-name="name" v-on:click="stopSequence">Stop</button></td>
+            </tr>
+          </table>
+        </section>
+
         <section>
           <h2>Events</h2>
           <table>

@@ -63,6 +63,43 @@
     
     let duckingTimeout = -1;
 
+    function createLayer(layerName, buffer) {
+      let gainNode = audioContext.createGain();
+
+      let layer = {
+        init: function () {
+          let sourceNode = audioContext.createBufferSource();
+          sourceNode.buffer = buffer;
+
+          let gainValue = layerDefinitions[layerName].moods.default;
+          gainValue = isNaN(Number(gainValue)) ? 0 : gainValue;
+          gainNode.gain.setTargetAtTime(gainValue, audioContext.currentTime, 0);
+
+          sourceNode.connect(gainNode);
+          gainNode.connect(duckingNode);
+
+          sourceNode.loop = true;
+
+          layer.source = sourceNode;
+        },
+        start: function () {
+          layer.init(0);
+          layer.source.start(0);
+        },
+        stop: function () {
+          if (layer.source) {
+            layer.source.stop();
+            layer.source.disconnect(gainNode);
+          }
+        },
+        source: null,
+        gain: gainNode,
+        temporaryLevelDelay: null
+      };
+
+      return layer;
+    }
+
     this.getDuckingProfiles = () => {
       return duckingProfiles;
     };
@@ -134,31 +171,7 @@
         }
 
         for (let layerName in layerDefinitions) {
-          let layer = {
-            init: function () {
-              let source = audioContext.createBufferSource();
-              source.buffer = buffers[layerDefinitions[layerName].file];
-
-              let gainNode = audioContext.createGain();
-
-              let gainValue = layerDefinitions[layerName].moods.default;
-              gainValue = isNaN(Number(gainValue)) ? 0 : gainValue;
-              gainNode.gain.setTargetAtTime(gainValue, audioContext.currentTime, 0);
-
-              source.connect(gainNode);
-              gainNode.connect(duckingNode);
-
-              source.loop = true;
-
-              layer.source = source;
-              layer.gain = gainNode;
-            },
-            source: null,
-            gain: null,
-            temporaryLevelDelay: null
-          };
-
-          activeLayers[layerName] = layer;
+          activeLayers[layerName] = createLayer(layerName, buffers[layerDefinitions[layerName].file]);
         }
 
         resolve();
@@ -216,7 +229,7 @@
         layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
       }
 
-      layer.gain.gain.value = moodValue;
+      layer.gain.gain.setTargetAtTime(moodValue, audioContext.currentTime, 0);
 
       layer.temporaryLevelDelay = setTimeout(() => {
         let defaultGainValue = layerDefinitions[layerName].moods.default;
@@ -231,20 +244,19 @@
     this.setLevels = function (levels) {
       for (let layer in levels) {
         if (!activeLayers[layer].gain) return;
-        activeLayers[layer].gain.gain.value = levels[layer];
+        activeLayers[layer].gain.gain.setTargetAtTime(levels[layer], audioContext.currentTime, 0);
       }
     };
 
     this.start = function (options) {
       for (let layer in activeLayers) {
-        activeLayers[layer].init();
-        activeLayers[layer].source.start(0);
+        activeLayers[layer].start();
       }
     };
 
     this.stop = function () {
       for (let layer in activeLayers) {
-        activeLayers[layer].source.stop();
+        activeLayers[layer].stop();
       }
     };
 

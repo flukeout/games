@@ -332,6 +332,16 @@ let sounds = {
     url : "sounds/Finish_It_Miss.mp3",
     volume : 1
   },
+
+  "Powerup_Spin_Spin_Start" : {
+    url : "sounds/Powerup_Spin_Spin_Start.mp3",
+    volume : 1
+  },
+  "Powerup_Spin_Spin_Loop" : {
+    url : "sounds/Powerup_Spin_Spin_Loop.mp3",
+    volume : 1
+  },
+
 };
 
 let soundBanks = {
@@ -416,6 +426,9 @@ let soundBanks = {
 let loops = {
   'Finish_It_Heartbeat': {
     sound: 'Finish_It_Heartbeat_Loop'
+  },
+  'Powerup_Spin_Spin': {
+    sound: 'Powerup_Spin_Spin_Loop'
   }
 };
 
@@ -433,6 +446,22 @@ let soundEvents = {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Miss');
     musicEngine.setMood('default');
+  }
+};
+
+let sequenceManagers = {
+  Powerup_Spin: function () {
+    let spinStart = null;
+
+    this.start = function () {
+      spinStart = SoundManager.playSound('Powerup_Spin_Spin_Start');
+      SoundManager.startLoop('Powerup_Spin_Spin', {start: soundContext.currentTime + spinStart.buffer.duration - 0.1});
+    };
+
+    this.stop = function () {
+      spinStart.stop();
+      SoundManager.stopLoop('Powerup_Spin_Spin');
+    };
   }
 };
 
@@ -585,7 +614,7 @@ function playSound(name, options){
     musicEngine.duck(options.musicDuckingProfile);
   }
 
-  source.start(0);
+  source.start(options.start || 0);
 
   document.dispatchEvent(new CustomEvent('soundplayed', {detail: name}));
 
@@ -609,6 +638,8 @@ function startLoop(name, options) {
     return;
   }
 
+  if (loop.active) return;
+
   let source = playSound(loop.sound, options);
   source.loop = true;
 
@@ -617,6 +648,8 @@ function startLoop(name, options) {
   loop.active = true;
 
   document.dispatchEvent(new CustomEvent('loopstarted', {detail: name}));
+
+  return source;
 }
 
 function stopLoop(name, options) {
@@ -670,6 +703,7 @@ window.SoundManager = {
   limitedSoundTimeouts: limitedSoundTimeouts,
   temporaryLowPassSettings: temporaryLowPassSettings,
   localStorageStatus: 'Empty',
+  sequences: sequenceManagers,
   init: function () {
     return new Promise((resolve, reject) => {
       soundContext = new AudioContext();

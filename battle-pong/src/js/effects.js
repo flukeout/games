@@ -303,7 +303,7 @@ function fireGun(x, y, angle, player){
 
   SoundManager.playRandomSoundFromBank("super-hard-shot");
 
-  music.setMoodTemporarily('intense');
+  SoundManager.musicEngine.setMoodTemporarily('intense');
 
   document.dispatchEvent(new CustomEvent("emotion", {detail: {
     player: player,

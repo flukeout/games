@@ -84,6 +84,8 @@ var game =  {
     setTimeout(() => {
       this.restart();
     }, 2500);
+
+    SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Miss');
   },
 
   loserDied: function(){
@@ -96,6 +98,8 @@ var game =  {
     setTimeout(() => {
       this.restart();
     }, 3000);
+
+    SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Hit');
   },
 
   // Keeps track of where the ball is and for how long so
@@ -627,6 +631,8 @@ var game =  {
       this.ball.element.classList.add('show');
 
       SoundManager.playSound('Ball_Spawn');
+
+      SoundManager.fireEvent('Finish_It_Heartbeat_Start');
 
     }, 2000);
 

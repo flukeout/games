@@ -73,9 +73,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   var music = new Music();
-  music.load().then(() => music.start());
-
-  window.music = music;
+  music.load().then(() => {
+    if (Settings.music) music.start();
+  });
 
   SoundManager.init();
   SoundManager.loadSettingsFromLocalStorage();
