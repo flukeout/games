@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
 
-  initParticleEngine(".stars", 50);
+  initParticleEngine("body", 50);
   starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
 
   loop(); // Start the particle loop
@@ -37,8 +37,33 @@ function setupStartButton(){
   var button = document.querySelector(".start-game");
   button.addEventListener("click", function(e){
     
+    console.log("what.....");
     // Apply transitions one at a time, the number is a delay from the last time it was called
     // so it's cumulative...
+    var button = e.target;
+    var buttonPosition = button.getBoundingClientRect();
+
+    var options = {
+      x : buttonPosition.x,
+      y : buttonPosition.y - 60,
+      zR : getRandom(-8,8),
+      xRv : getRandom(12,20),
+    
+      yV : 0,
+      yVa : .1,
+      zV : -40,
+      oV: -.02,
+      width : 210,
+      height: 50,
+      className : 'start-game-particle',
+      lifespan: 1000
+    }
+
+    makeParticle(options);
+
+    playSound("Power_Shot_V1");
+    button.style.display = "none";
+
     timeoutClass(".content", "transition-out")
     timeoutClass(".paddle-guy", "transition-out", 250);
     timeoutClass(".surface", "transition-out", 200);

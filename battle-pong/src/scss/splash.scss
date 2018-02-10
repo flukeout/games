@@ -2,6 +2,8 @@
   position: absolute;
   width: 100vw;
   height: 100vh;
+  transform-style: preserve-3d;
+  perspective: 1000px;
     
   .paddle-guy.transition-out {
     animation: guyFly 1s ease-in;
@@ -333,7 +335,7 @@
     content: "on";
   }
 
-  .start-game {
+  .start-game, .start-game-particle {
     color: white;
     display: block;
     text-decoration: none;
@@ -359,7 +361,16 @@
 
     &:hover {
       transform: scale(1.05);
-    };
+    }
+  }
+
+  .start-game-particle {
+    transition: none;
+    z-index: 999999;
+
+    &:before {
+      content: "START!";
+    }
   }
 
   .best-of {
