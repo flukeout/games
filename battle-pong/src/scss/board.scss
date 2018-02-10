@@ -36,22 +36,24 @@
     background-image: url(assets/images/surface-purple.svg);
     background-position: top;
     background-repeat: no-repeat;
-    background-size: 70%;
-    width: 230vw;
+    background-size: 2000px;
+    background-size: 200%;
+    width: 100vw;
     height: 150vh;
     position: absolute;
     top: 30vh;
-    left: -65vw;
     transform-origin: 50% 800%;
     animation: surfaceHover 10s ease-in-out;
+    /*display: none;*/
 
     .overlay {
+      display: none;
       width: 100%;
       height: 100%;
       background-image: url(assets/images/surface-green.svg);
       background-position: top;
       background-repeat: no-repeat;
-      background-size: 70%;
+      background-size: 2000px;
       top: 0;
       left: 0;
       position: absolute;
@@ -81,8 +83,12 @@
 
   .large-moon {
     position: absolute;
+    
     width: 500px;
-    height: 500px;
+    /*height: 500px;*/
+    width: 40%;
+    padding-top: 40%;
+    /*background-color: red;*/
     right: -50px;
     top: 45px;
     background-image: url(assets/images/green-moon.svg);
@@ -263,6 +269,7 @@
 }
 
 .tilt-wrapper {
+  /*opacity: 0;*/
   position: absolute;
   top: calc(50vh - 295px);
   left: calc(50vw - 445px);
