@@ -19,10 +19,12 @@
     return Math.abs(A*point.x + B*point.y+C) / Math.sqrt(A*A + B*B);
   }
 
-  window.AIManager = function (physicsEngine) {
+  window.AIManager = function (game, physicsEngine) {
     let ballBody = null;
 
     this.createPaddleAIInputComponent = function (paddle, playerSide) {
+      const debugOutput = document.querySelector('#aidebug');
+
       const directionMultiplier = (playerSide === 'left' ? 1 : -1);
       const idealDistanceFromBall = -10 * directionMultiplier;
       const attackDistance = 25;
@@ -32,7 +34,40 @@
       const upAttackAction = (playerSide === 'left' ? 'spinClockwise' : 'spinCounterClockwise');
       const downAttackAction = (playerSide === 'left' ? 'spinCounterClockwise' : 'spinClockwise');
 
+      const ySafeDistanceFromRest = 15;
+
+      const restingXPosition = (playerSide === 'left' ? game.boardWidth / 4 : game.boardWidth * 3 / 4);
+
+      const paddleBody = paddle.physics;
+
+      const restingGameModes = ['pregame', 'roundover'];
+
       const states = {
+        waitForGameToResume: actions => {
+          let xPosition = paddleBody.position.x;
+          let yPosition = paddleBody.position.y;
+          let fixedBodyAngle = Math.abs(paddle.targetAngle % Math.PI);
+
+          if (restingGameModes.indexOf(game.mode) > -1) {
+            if (yPosition < game.boardHeight / 2 - ySafeDistanceFromRest) actions.down = 1;
+            if (yPosition > game.boardHeight / 2 + ySafeDistanceFromRest) actions.up = 1;
+
+            if (playerSide === 'left' && xPosition > restingXPosition) {
+              actions.left = 1;
+            }
+            else if (playerSide === 'right' && xPosition < restingXPosition) {
+              actions.right = 1;
+            }
+
+            if (fixedBodyAngle === halfPI) {
+              if (actions.up) actions[upAttackAction] = 1;
+              if (actions.down) actions[downAttackAction] = 1;
+            }
+          }
+          else {
+            currentState = 'getBehindBall';
+          }
+        },
         getBehindBall: actions => {
           let idealPosition = {x: ballBody.position.x + idealDistanceFromBall, y: ballBody.position.y};
 
@@ -52,17 +87,13 @@
           if (paddleBody.position.y < ballBody.position.y) actions.down = 1;
           if (paddleBody.position.y > ballBody.position.y) actions.up = 1;
 
-          let xDistanceFromBall = paddleBody.position.x - ballBody.position.x;
-          let yDistanceFromBall = paddleBody.position.x - ballBody.position.x;
-          let distanceFromBall = Math.sqrt(xDistanceFromBall*xDistanceFromBall + yDistanceFromBall*yDistanceFromBall);
-
           let xSideOfBall = paddleBody.position.x < ballBody.position.x ? 1 : -1;
 
           let side1Distance = getDistanceFromPointToLine(ballBody.position, paddleBody.vertices[1], paddleBody.vertices[2]);
           let side2Distance = getDistanceFromPointToLine(ballBody.position, paddleBody.vertices[0], paddleBody.vertices[3]);
           let shortestDistanceToBall = Math.min(side1Distance, side2Distance);
 
-          let fixedBodyAngle = Math.abs(paddleBody.angle % Math.PI);
+          let fixedBodyAngle = Math.abs(paddle.targetAngle % Math.PI);
 
           if (shortestDistanceToBall < attackDistance) {
             if (actions.up) actions[upAttackAction] = 1;
@@ -84,8 +115,6 @@
         }
       };
 
-      const paddleBody = paddle.physics;
-
       let currentState = 'getBehindBall';
 
       return {
@@ -95,7 +124,13 @@
 
           if (!ballBody) return actions;
 
+          if (game.mode === 'roundover') {
+            currentState = 'waitForGameToResume';
+          }
+
           states[currentState](actions);
+
+          debugOutput.textContent = currentState;
 
           return actions;
         },

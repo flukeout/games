@@ -69,7 +69,7 @@ var game =  {
 
     this.powerupManager = new PowerupManager(this);
 
-    this.aiManager = new AIManager(engine);
+    this.aiManager = new AIManager(this, engine);
   },
 
   loserLived: function(){
