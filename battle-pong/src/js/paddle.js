@@ -63,6 +63,7 @@ const updateFunctions = {
       paddle.element.classList.add("dashing");
     }
 
+    // Dashing particles
     if(paddle.dashDelay > 350 && paddle.frameTicks % 2 == 0 && paddle.physics.speed > 1) {
 
       let movementAngle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
@@ -91,7 +92,7 @@ const updateFunctions = {
 
       makeParticle(options);
     }
-
+    // End of dashing paticles
   },
   dashStart: function (paddle) {
     if(paddle.actions.dash && paddle.type == "player") {
@@ -194,6 +195,12 @@ const updateFunctions = {
 
       // Set the angular velocity of the paddle
       let angularVelocity = spinDirection * spinVelocity;
+      
+      if(paddle.dashDelay > 0) {
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 650, .3, 1);  
+      }
+      
+
       paddle.spin(angularVelocity);
 
       if(angularVelocity >= 0) {
@@ -584,20 +591,11 @@ function createPaddle(options) {
     },
 
     init: function(){
-      // This ends the spin powerup when a ball hits the endzone
-      // var that = this;
-
-      // document.addEventListener("ballHitEndzone", function(e) {
-        // if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
-          // that.spinPowerupRemaining = 0;
-          // that.hasSpinPowerup = false;
-          // that.spinPowerupCountdown = false;
-        // }
-      // });
+      // TODO - remove this?
     },
 
+        // This gets called every frame of the game
     dashDelay : 0,
-    // This gets called every frame of the game
     frameTicks: 0,
     update(delta){
       // Save these on the object so that they're accessible to update functions
@@ -665,6 +663,7 @@ function createPaddle(options) {
       dashing: function (paddle) {
         updateFunctions.expandPowerup(paddle);
         updateFunctions.spinToTarget(paddle);
+        updateFunctions.stagedSpin(paddle);
         updateFunctions.limitXY(paddle);
         updateFunctions.spinPowerup(paddle);
         updateFunctions.dashing(paddle);
