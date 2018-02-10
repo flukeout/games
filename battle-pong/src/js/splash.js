@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
 
-  initParticleEngine(".stars", 50);
+  initParticleEngine("body", 50);
   starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
 
   loop(); // Start the particle loop
@@ -16,18 +16,69 @@ document.addEventListener('DOMContentLoaded', function(){
   toggleEls = document.querySelectorAll(".option-toggle");
   setupToggles(toggleEls);
 
+  playerOptionEls = document.querySelectorAll(".player-options .player-option");
+  setupPlayerOptionss(playerOptionEls);
+
   setupStartButton();
 
   startStars(50, window.innerWidth, window.innerHeight);
 });
 
+
 let bestOfEls, 
     powerupEls,
-    toggleEls;
+    toggleEls,
+    playerOptionEls;
 
 let timeoutAccumulator = 0;
+
+
+
+// Sets up the music & sound toggle click handlers
+function setupPlayerOptionss(els){
+  els.forEach(function(el){
+    el.addEventListener("click",function(el){
+      var playerNum = this.getAttribute("player");
+      addTemporaryClassName(this, "pop", 500); 
+      playSound("ui");
+      var key = "player" + playerNum + "Control";
+      var currentSetting = window.Settings[key];
+      if(currentSetting === "player") {
+        saveSetting(key, "AI");
+      } else {
+        saveSetting(key, "player");
+      }
+      updatePlayerOptions(els);
+    });
+  });
+  updatePlayerOptions(els);
+}
+// Updates state of the music & sound toggles
+function updatePlayerOptions(els){
+  els.forEach(function(el){
+    var playerNum = el.getAttribute("player");
+    var key = "player" + playerNum + "Control";
+    var setting =window.Settings[key];
+    if(setting === "AI") {
+      el.innerHTML = "CPU";
+    } else {
+      el.innerHTML = "P" + playerNum;
+    }
+  });
+}
+
+// Saves an individual setting
+// and pushes it to localStorage as well
+function saveSetting(setting, value){
+  window.Settings[setting] = value;
+  window.localStorage.setItem("settings", JSON.stringify(window.Settings));
+}
+
+
+
+
 function timeoutClass(selector, className, timeout){
-  timeoutAccumulator = timeoutAccumulator + timeout || 0;
+  timeoutAccumulator = timeoutAccumulator + (timeout || 0);
   setTimeout(function(){
     document.querySelector(selector).classList.add(className);
   },timeoutAccumulator)
@@ -39,7 +90,31 @@ function setupStartButton(){
     
     // Apply transitions one at a time, the number is a delay from the last time it was called
     // so it's cumulative...
-    timeoutClass(".content", "transition-out")
+    var button = e.target;
+    var buttonPosition = button.getBoundingClientRect();
+
+    var options = {
+      x : buttonPosition.x,
+      y : buttonPosition.y - 60,
+      zR : getRandom(-8,8),
+      xRv : getRandom(12,20),    
+      yV : 5,
+      yVa : .1,
+      zV : -40,
+      xV : getRandom(-5,5),
+      oV: -.02,
+      width : 210,
+      height: 50,
+      className : 'start-game-particle',
+      lifespan: 1000
+    }
+
+    makeParticle(options);
+
+    playSound("Power_Shot_V1");
+    button.style.display = "none";
+
+    timeoutClass(".content", "transition-out", 100)
     timeoutClass(".paddle-guy", "transition-out", 250);
     timeoutClass(".surface", "transition-out", 200);
     timeoutClass(".overlay", "transition-out");
@@ -49,7 +124,7 @@ function setupStartButton(){
     e.preventDefault();
     setTimeout(function(){
       window.location.href = "../index.html";
-    }, 2200);
+    }, 2500);
   })
 }
 
@@ -58,7 +133,6 @@ function setupStartButton(){
 function setupToggles(els){
   els.forEach(function(el){
     el.querySelector(".value").addEventListener("click",function(el){
-      console.log(this);
       var toggle = this.parentNode;
       var toggleType = toggle.getAttribute("data-type");
       var settingEnabled = window.Settings[toggleType];
@@ -69,6 +143,7 @@ function setupToggles(els){
         saveSetting(toggleType, true);
       }
       updateToggles(els);
+      playSound("ui");
     });
   });
   updateToggles(els);
@@ -100,6 +175,7 @@ function setupPowerups(els){
       }
       addTemporaryClassName(this, "pop", 500);
       updatePowerups(els);
+      playSound("ui");
     });
   });
   updatePowerups(els);
@@ -134,14 +210,6 @@ function updatePowerups(els){
   });
 }
 
-// Saves an individual setting
-// and pushes it to localStorage as well
-function saveSetting(setting, value){
-  window.Settings[setting] = value;
-  window.localStorage.setItem("settings", JSON.stringify(window.Settings));
-}
-
-
 // Best Of Options
 function setupBestOf(){
   bestOfEls.forEach(function(option){
@@ -150,6 +218,7 @@ function setupBestOf(){
       var value = parseInt(this.getAttribute("data-value"));
       saveSetting("playTo", value);
       updateBestOf();
+      playSound("ui");
     });
   });
   updateBestOf();
@@ -173,7 +242,8 @@ function updateBestOf(){
 // Separates the letters in the title into individual elements
 // to be animated.
 function prepTitle(){
-  var titleEl =document.querySelector(".game-title")
+  // return;
+  var titleEl =document.querySelector(".game-title .actual-title")
   var titleString = titleEl.innerText;
   titleEl.innerText = "";
   

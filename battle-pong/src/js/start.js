@@ -1,4 +1,9 @@
+window.addEventListener("resize", resizeBoard);
+
 document.addEventListener('DOMContentLoaded', function () {
+
+  resizeBoard();
+
   const numPaddles = 2;
 
   let paddleDetails = [
@@ -105,6 +110,22 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('.board-wrapper').classList.remove('hide');
     startGame();
   }
-
-
 });
+
+
+// Sizes the width of the board to fill up the available
+// space in the window.
+function resizeBoard(){
+  var windowWidth = window.innerWidth;
+  var boardWidth = 1150;
+  var ratio =  windowWidth / boardWidth;
+  document.querySelector(".board-wrapper").style.transform = "scale(" + ratio + ")";
+  document.querySelector(".board-shadow-wrapper").style.transform = "scale(" + ratio + ")";
+
+  var boardPosition = document.querySelector(".tilt-wrapper").getBoundingClientRect();
+  var boardTop = boardPosition.top;
+  var boardTopPercent =  (boardTop /  window.innerHeight) + .1;
+  
+  document.querySelector(".surface").style.top = parseFloat(boardTopPercent) * 100 + "vh";
+}
+

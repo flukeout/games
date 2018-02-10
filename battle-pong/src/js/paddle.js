@@ -42,6 +42,13 @@ const updateFunctions = {
     if(xDelta != 0 || yDelta != 0) {
       let xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
       let yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
+      
+      if(paddle.dashDelay > 0) {
+        yForce = yForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);  
+        xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);  
+      }
+
+
       paddle.force(xForce, yForce);
 
       //TODO: see if this is needed elsewhere
@@ -63,6 +70,7 @@ const updateFunctions = {
       paddle.element.classList.add("dashing");
     }
 
+    // Dashing particles
     if(paddle.dashDelay > 350 && paddle.frameTicks % 2 == 0 && paddle.physics.speed > 1) {
 
       let movementAngle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
@@ -91,7 +99,7 @@ const updateFunctions = {
 
       makeParticle(options);
     }
-
+    // End of dashing paticles
   },
   dashStart: function (paddle) {
     if(paddle.actions.dash && paddle.type == "player") {
@@ -149,7 +157,6 @@ const updateFunctions = {
 
       var horizontalMovementRatio = (90 - Math.abs(angle - 90)) / 90
 
-
       // Orientation
       var orientationAngle = Math.abs(paddle.physics.angle * 180 / Math.PI);
 
@@ -170,9 +177,9 @@ const updateFunctions = {
         var yForce = Math.cos(angleRad) * maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
 
         paddle.dashDelay = 650;
-
-        xForce = xForce * (10 + (20 * slidePowerPercent));
-        yForce = yForce * (10 + (20 * slidePowerPercent));
+        
+        xForce = xForce * (10 + (10 * slidePowerPercent));
+        yForce = yForce * (10 + (10 * slidePowerPercent));
 
         paddle.force(xForce, yForce);
 
@@ -194,6 +201,11 @@ const updateFunctions = {
 
       // Set the angular velocity of the paddle
       let angularVelocity = spinDirection * spinVelocity;
+      
+      if(paddle.dashDelay > 0) {
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
+      }
+
       paddle.spin(angularVelocity);
 
       if(angularVelocity >= 0) {
@@ -584,20 +596,11 @@ function createPaddle(options) {
     },
 
     init: function(){
-      // This ends the spin powerup when a ball hits the endzone
-      // var that = this;
-
-      // document.addEventListener("ballHitEndzone", function(e) {
-        // if(that.spinPowerupRemaining <= 0 && that.hasSpinPowerup) {
-          // that.spinPowerupRemaining = 0;
-          // that.hasSpinPowerup = false;
-          // that.spinPowerupCountdown = false;
-        // }
-      // });
+      // TODO - remove this?
     },
 
+        // This gets called every frame of the game
     dashDelay : 0,
-    // This gets called every frame of the game
     frameTicks: 0,
     update(delta){
       // Save these on the object so that they're accessible to update functions
@@ -665,6 +668,8 @@ function createPaddle(options) {
       dashing: function (paddle) {
         updateFunctions.expandPowerup(paddle);
         updateFunctions.spinToTarget(paddle);
+        updateFunctions.stagedSpin(paddle);
+        updateFunctions.moveXY(paddle);
         updateFunctions.limitXY(paddle);
         updateFunctions.spinPowerup(paddle);
         updateFunctions.dashing(paddle);

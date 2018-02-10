@@ -40,7 +40,7 @@
     'bones-collide':        {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    }
   };
 
-  const defaultGlobalGainValue = 1;
+  const defaultGlobalGainValue = window.Settings.music ? .3 : 0;
 
   window.Music = function (audioContext) {
     let activeLayers = {};

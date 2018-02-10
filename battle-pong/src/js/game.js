@@ -435,7 +435,6 @@ var game =  {
     var y = this.boardHeight / 2 - 15;
     var x = this.boardWidth * this.terrainLinePercent / 100;
 
-
     Matter.Body.set(this.ball.physics, {
       position: { x : x, y : y }
     });
@@ -449,6 +448,7 @@ var game =  {
       this.ball.launch(0, launchForce);
     }
   },
+
 
   showScore : function(){
     var that = this;
@@ -575,9 +575,15 @@ var game =  {
     this.terrainTwoEl.style.width = rightWidth + "px";
 
     var maxRotation = 2; // Max rotation of the angle when someone is winning
-    var overlayOpacity = this.terrainLinePercent / 100;
+    
+    // Constrain the overlay opacity
+    var min = 25;
+    var max = 75;
+    
+    // Map range of (25 to 75) => (0 to 1)
+    var overlayOpacity = mapScale(this.terrainLinePercent, min, max, 0 , 1);
 
-    // var planetRotation = -delta / 50 * maxRotation;
+
     document.querySelector(".surface .overlay").style.opacity = 1 - overlayOpacity;
   },
 

@@ -36,25 +36,24 @@
     background-image: url(assets/images/surface-purple.svg);
     background-position: top;
     background-repeat: no-repeat;
-    background-size: 70%;
-    width: 230vw;
+    background-size: 175%;
+    width: 100vw;
     height: 150vh;
     position: absolute;
     top: 30vh;
-    left: -65vw;
-    transform-origin: 50% 800%;
     animation: surfaceHover 10s ease-in-out;
-
+ 
     .overlay {
       width: 100%;
       height: 100%;
       background-image: url(assets/images/surface-green.svg);
       background-position: top;
       background-repeat: no-repeat;
-      background-size: 70%;
+      background-size: 175%;
       top: 0;
       left: 0;
       position: absolute;
+      opacity: .5;
       transition: opacity .2s ease-out;
     }
 
@@ -80,8 +79,12 @@
 
   .large-moon {
     position: absolute;
+    
     width: 500px;
-    height: 500px;
+    /*height: 500px;*/
+    width: 40%;
+    padding-top: 40%;
+    /*background-color: red;*/
     right: -50px;
     top: 45px;
     background-image: url(assets/images/green-moon.svg);
@@ -96,7 +99,15 @@
       }
     }
   }
+}
 
+.board-shadow-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  transform-style: preserve-3d;
 }
 
 .board-shadow {
@@ -110,13 +121,17 @@
     background-size: 100%;
     background-position: bottom;
     transform: rotateX(20deg) rotateY(0deg);
+    background-repeat: no-repeat;
 
     animation: shadowAppear 1.2s ease-out;
 
     @keyframes shadowAppear {
       0% {
         opacity: 0;
-        transform: rotateX(20deg) rotateY(0deg) translateY(-500px);
+        transform: rotateX(20deg) rotateY(0deg) translateY(-500px) scale(.8);
+      }
+      50% {
+        opacity: 0;
       }
       100% {
         opacity: .2;
@@ -262,6 +277,7 @@
 }
 
 .tilt-wrapper {
+  /*opacity: 0;*/
   position: absolute;
   top: calc(50vh - 295px);
   left: calc(50vw - 445px);

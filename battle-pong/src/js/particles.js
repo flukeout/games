@@ -217,3 +217,32 @@ function drawParticles(){
 function getRandom(min, max){
   return min + Math.random() * (max-min);
 }
+
+function constrain(value, min, max) {
+  if(value <= min) {
+    return min;
+  } else if (value >= max) {
+    return max;
+  } else {
+    return value;
+  }
+
+}
+
+function mapScale(value, min, max, newMin, newMax) {
+  
+  // Set to min or max if value is outside of bounds
+  if(value >= max) {
+    value = max;
+  } else if (value <= min) {
+    value = min;
+  }
+
+  var delta = value - min;
+  var percent = delta / (max - min);
+  
+  var newRangeDelta = newMax - newMin;
+  var newValue = newMin + (newRangeDelta * percent);
+  
+  return newValue;
+}
