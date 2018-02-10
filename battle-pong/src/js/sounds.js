@@ -25,6 +25,10 @@ let temporaryLowpassTimeout = null;
 let temporaryLowpassComebackTimeout = null;
 
 let sounds = {
+  "ui" : {
+    url : "sounds/ui.wav",
+    volume : .25
+  },
   "round-start" : {
     url : "sounds/round-start.mp3",
     volume : .25

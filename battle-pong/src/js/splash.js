@@ -39,12 +39,10 @@ function setupPlayerOptionss(els){
   els.forEach(function(el){
     el.addEventListener("click",function(el){
       var playerNum = this.getAttribute("player");
-  
       addTemporaryClassName(this, "pop", 500); 
+      playSound("ui");
       var key = "player" + playerNum + "Control";
       var currentSetting = window.Settings[key];
-
-      console.log("current", currentSetting);
       if(currentSetting === "player") {
         saveSetting(key, "AI");
       } else {
@@ -66,13 +64,6 @@ function updatePlayerOptions(els){
     } else {
       el.innerHTML = "P" + playerNum;
     }
-    // var toggleType = el.getAttribute("data-type");
-    // var settingEnabled = window.Settings[toggleType];
-    // if(settingEnabled) {
-      // el.classList.add("enabled");
-    // } else {
-      // el.classList.remove("enabled");
-    // }
   });
 }
 
@@ -97,7 +88,6 @@ function setupStartButton(){
   var button = document.querySelector(".start-game");
   button.addEventListener("click", function(e){
     
-    console.log("what.....");
     // Apply transitions one at a time, the number is a delay from the last time it was called
     // so it's cumulative...
     var button = e.target;
@@ -143,7 +133,6 @@ function setupStartButton(){
 function setupToggles(els){
   els.forEach(function(el){
     el.querySelector(".value").addEventListener("click",function(el){
-      console.log(this);
       var toggle = this.parentNode;
       var toggleType = toggle.getAttribute("data-type");
       var settingEnabled = window.Settings[toggleType];
@@ -154,6 +143,7 @@ function setupToggles(els){
         saveSetting(toggleType, true);
       }
       updateToggles(els);
+      playSound("ui");
     });
   });
   updateToggles(els);
@@ -185,6 +175,7 @@ function setupPowerups(els){
       }
       addTemporaryClassName(this, "pop", 500);
       updatePowerups(els);
+      playSound("ui");
     });
   });
   updatePowerups(els);
@@ -227,6 +218,7 @@ function setupBestOf(){
       var value = parseInt(this.getAttribute("data-value"));
       saveSetting("playTo", value);
       updateBestOf();
+      playSound("ui");
     });
   });
   updateBestOf();
