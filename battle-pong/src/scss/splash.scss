@@ -108,10 +108,15 @@
   .game-title {
     font-size: 80px;
     color: white;
-    margin: 35px 0;
+    margin: 35px 0 45px 0;
     text-align: center;
     transform: rotateX(15deg);
     transition: all .2s ease-out;
+
+    .sub-title {
+      font-size: 39px;
+      /*opacity: .7;*/
+    }
 
     .letter {
       animation: letterFloat 2s infinite;
@@ -279,6 +284,30 @@
   }
 
   
+  .player-options {
+    margin-top: 30px;
+    
+    .vs {
+      display: inline-block;
+      margin: 0 10px;
+    }
+
+    .player-option {
+      background: orange;
+      display: inline-block;
+      padding: 10px;
+      min-width: 80px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .player-one {
+      background: #ac4d9c;
+    }
+    .player-two {
+      background: #3faa7f;
+    }
+  }
 
   .game-settings {
     width: 80vw;
@@ -382,7 +411,7 @@
   }
 
   .powerups {
-    margin: 25px 0 35px 0;
+    margin: 20px 0 20px 0;
 
     .label {
       position: relative;
