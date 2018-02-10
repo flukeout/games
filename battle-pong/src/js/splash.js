@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', function(){
   setupStartButton();
 
   startStars(50, window.innerWidth, window.innerHeight);
+
+  SoundManager.init();
+  SoundManager.loadSettingsFromLocalStorage();
+
 });
 
 
@@ -40,7 +44,7 @@ function setupPlayerOptionss(els){
     el.addEventListener("click",function(el){
       var playerNum = this.getAttribute("player");
       addTemporaryClassName(this, "pop", 500); 
-      playSound("ui");
+      SoundManager.playSound("ui");
       var key = "player" + playerNum + "Control";
       var currentSetting = window.Settings[key];
       if(currentSetting === "player") {
@@ -111,7 +115,7 @@ function setupStartButton(){
 
     makeParticle(options);
 
-    playSound("Power_Shot_V1");
+    SoundManager.playSound("Power_Shot_V1");
     button.style.display = "none";
 
     timeoutClass(".content", "transition-out", 100)
@@ -143,7 +147,7 @@ function setupToggles(els){
         saveSetting(toggleType, true);
       }
       updateToggles(els);
-      playSound("ui");
+      SoundManager.playSound("ui");
     });
   });
   updateToggles(els);
@@ -175,7 +179,7 @@ function setupPowerups(els){
       }
       addTemporaryClassName(this, "pop", 500);
       updatePowerups(els);
-      playSound("ui");
+      SoundManager.playSound("ui");
     });
   });
   updatePowerups(els);
@@ -218,7 +222,7 @@ function setupBestOf(){
       var value = parseInt(this.getAttribute("data-value"));
       saveSetting("playTo", value);
       updateBestOf();
-      playSound("ui");
+      SoundManager.playSound("ui");
     });
   });
   updateBestOf();
