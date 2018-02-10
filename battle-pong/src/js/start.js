@@ -64,13 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
   });
 
-  // for (var i = 0; i < numPaddles; ++i) {
-  //   inputManager.setupInputForObject(game.paddles[i]);
-  // }
-
-  inputManager.setupInputForObject(paddles[1]);
-  game.aiPlayer = new AI(engine, paddles[0]);
-
   if (Settings.showFrameRate) {
     var frameRateMonitor  = new FrameRateMonitor();
   }
@@ -84,6 +77,23 @@ document.addEventListener('DOMContentLoaded', function () {
   SoundManager.loadSettingsFromLocalStorage();
   
   game.init();
+
+  let leftPaddle = game.paddles[0];
+  let rightPaddle = game.paddles[1];
+
+  if (Settings.aiPlayer1) {
+    leftPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(leftPaddle, 'left'));
+  }
+  else {
+    inputManager.setupInputForObject(leftPaddle);
+  }
+
+  if (Settings.aiPlayer2) {
+    rightPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(rightPaddle, 'right'));
+  }
+  else {
+    inputManager.setupInputForObject(rightPaddle);
+  }
 
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
   game.step();

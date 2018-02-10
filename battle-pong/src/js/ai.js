@@ -1,55 +1,84 @@
 (function () {
 
-  window.AI = function (physicsEngine, paddle) {
+  const halfPI = Math.PI / 2;
+
+  window.AIManager = function (physicsEngine) {
     let ballBody = null;
-    const paddleBody = paddle.physics;
 
-    const states = {
-      getBehindBall: actions => {
-        let idealPosition = {x: ballBody.position.x - 10, y: ballBody.position.y};
+    this.createPaddleAIInputComponent = function (paddle, playerSide) {
+      const directionMultiplier = (playerSide === 'left' ? 1 : -1);
+      const idealDistanceFromBall = -10 * directionMultiplier;
+      const attackDistance = -15 * directionMultiplier;
+      const fallbackDistance = 5 * directionMultiplier;
+      const otherPlayerSide = (playerSide === 'left' ? 'right' : 'left');
+      const safeDistanceFromBall = 30;
 
-        if (paddleBody.position.y > idealPosition.y) actions.down = 1;
-        if (paddleBody.position.y > idealPosition.y) actions.up = 1;
+      const states = {
+        getBehindBall: actions => {
+          let idealPosition = {x: ballBody.position.x + idealDistanceFromBall, y: ballBody.position.y};
 
-        if (paddleBody.position.x > idealPosition.x) {
-          actions.left = 1;
+          if (paddleBody.position.y > idealPosition.y) actions.down = 1;
+          if (paddleBody.position.y > idealPosition.y) actions.up = 1;
+
+          let xDistanceFromIdeal = (paddleBody.position.x - idealPosition.x) * directionMultiplier;
+
+          // document.querySelector('#aidebug [data-key="distance"]').textContent = xDistanceFromIdeal;
+
+          if (xDistanceFromIdeal > 0) {
+            actions[playerSide] = 1;
+          }
+          else {
+            currentState = 'attackBall';
+          }        
+        },
+        attackBall: actions => {
+          let yAttackPosition = ballBody.position.y;
+          let xAttackPosition = ballBody.position.x + attackDistance;
+          let xFallbackPosition = ballBody.position.x + fallbackDistance;
+
+          if (paddleBody.position.y < yAttackPosition) actions.down = 1;
+          if (paddleBody.position.y > yAttackPosition) actions.up = 1;
+
+          let xDistanceFromAttack = (xAttackPosition - paddleBody.position.x)  * directionMultiplier;
+          let xDistanceFromFallback = (paddleBody.position.x - xFallbackPosition) * directionMultiplier;
+
+          document.querySelector('#aidebug [data-key="distance"]').textContent = xDistanceFromAttack;
+
+          let fixedBodyAngle = Math.abs(paddleBody.angle % Math.PI);
+
+          if (xDistanceFromAttack > 0) {
+            actions[otherPlayerSide] = 1;
+
+            if (fixedBodyAngle === halfPI) {
+              if (actions.up) actions.spinClockwise = 1;
+              if (actions.down) actions.spinCounterClockwise = 1;
+            }
+          }
+          else if (xDistanceFromFallback > 0){
+            currentState = 'getBehindBall';
+          }
+          else {
+            console.log('attack!', actions.up, actions.down);
+            if (actions.up) actions.spinClockwise = 1;
+            if (actions.down) actions.spinCounterClockwise = 1;
+          }
         }
-        else {
-          currentState = states.attackBall;
-        }        
-      },
-      attackBall: actions => {
-        let attackPosition = {x: ballBody.position.x - 15, y: ballBody.position.y};
-        let fallbackPosition = {x: ballBody.position.x + 5, y: ballBody.position.y};
+      };
 
-        if (paddleBody.position.y < attackPosition.y) actions.down = 1;
-        if (paddleBody.position.y > attackPosition.y) actions.up = 1;
+      const paddleBody = paddle.physics;
 
-        if (paddleBody.position.x < attackPosition.x) {
-          actions.right = 1;
-        }
-        else if (paddleBody.position.x > fallbackPosition.x){
-          currentState = states.getBehindBall;
-        }
-        else {
-          console.log('attack!', actions.up, actions.down);
-          if (actions.up) actions.spinClockwise = 1;
-          if (actions.down) actions.spinCounterClockwise = 1;
-        }
-      }
-    };
+      let currentState = 'getBehindBall';
 
-    let currentState = states.attackBall;
-
-    function createAIInputComponent() {
-      var component = {
+      return {
         actions: {},
         update: function () {
           let actions = {};
 
           if (!ballBody) return actions;
 
-          currentState(actions);
+          document.querySelector('#aidebug [data-key="state"]').textContent = currentState;
+
+          states[currentState](actions);
 
           return actions;
         },
@@ -59,15 +88,12 @@
         remove: function () {
         }
       };
-
-      return component;
-    }
-
-    paddle.setInputComponent(createAIInputComponent());
+    };
 
     this.setBall = ball => {
       ballBody = ball.physics;
     };
+
   };
 
 })();

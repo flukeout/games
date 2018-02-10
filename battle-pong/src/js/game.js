@@ -46,6 +46,8 @@ var game =  {
   paddles: [],
   ball: null,
 
+  aiManager: null,
+
   init: function(){
     this.worldEl = document.querySelector(".world");
     this.boardWidth = this.worldEl.clientWidth;
@@ -66,6 +68,8 @@ var game =  {
     });
 
     this.powerupManager = new PowerupManager(this);
+
+    this.aiManager = new AIManager(engine);
   },
 
   loserLived: function(){
@@ -428,7 +432,7 @@ var game =  {
 
     this.ball = createBall(options);
     SoundManager.playSound('Ball_Spawn');
-    this.aiPlayer.setBall(this.ball);
+    this.aiManager.setBall(this.ball);
 
     // TODO - Move a lot of this stuff to the ball object?
     this.ball.element.classList.add('show');
@@ -634,7 +638,7 @@ var game =  {
       SoundManager.playSound('Ball_Spawn');
 
       SoundManager.fireEvent('Finish_It_Heartbeat_Start');
-      this.aiPlayer.setBall(this.ball);
+      this.aiManager.setBall(this.ball);
 
     }, 2000);
 

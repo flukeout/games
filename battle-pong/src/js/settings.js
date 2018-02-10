@@ -14,7 +14,9 @@ window.Settings = {
   showFrameRate: false,
   showBackground: true,
   sounds: true,
-  music: false
+  music: false,
+  aiPlayer1: false,
+  aiPlayer2: false 
 };
 
 loadSettings();
