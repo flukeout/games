@@ -44,8 +44,8 @@ const updateFunctions = {
       let yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
       
       if(paddle.dashDelay > 0) {
-        yForce = yForce * mapScale(paddle.dashDelay, 0, 650, .1, 1);  
-        xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, 1);  
+        yForce = yForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);  
+        xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);  
       }
 
 
@@ -157,7 +157,6 @@ const updateFunctions = {
 
       var horizontalMovementRatio = (90 - Math.abs(angle - 90)) / 90
 
-
       // Orientation
       var orientationAngle = Math.abs(paddle.physics.angle * 180 / Math.PI);
 
@@ -178,9 +177,9 @@ const updateFunctions = {
         var yForce = Math.cos(angleRad) * maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
 
         paddle.dashDelay = 650;
-
-        xForce = xForce * (10 + (20 * slidePowerPercent));
-        yForce = yForce * (10 + (20 * slidePowerPercent));
+        
+        xForce = xForce * (10 + (10 * slidePowerPercent));
+        yForce = yForce * (10 + (10 * slidePowerPercent));
 
         paddle.force(xForce, yForce);
 
