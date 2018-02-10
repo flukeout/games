@@ -15,8 +15,8 @@ window.Settings = {
   showBackground: true,
   sounds: true,
   music: false,
-  aiPlayer1: false,
-  aiPlayer2: false 
+  player1Control: 'player',
+  player2Control: 'player' 
 };
 
 loadSettings();

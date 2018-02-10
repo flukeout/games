@@ -81,14 +81,14 @@ document.addEventListener('DOMContentLoaded', function () {
   let leftPaddle = game.paddles[0];
   let rightPaddle = game.paddles[1];
 
-  if (Settings.aiPlayer1) {
+  if (Settings.player1Control === 'AI') {
     leftPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(leftPaddle, 'left'));
   }
   else {
     inputManager.setupInputForObject(leftPaddle);
   }
 
-  if (Settings.aiPlayer2) {
+  if (Settings.player2Control === 'AI') {
     rightPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(rightPaddle, 'right'));
   }
   else {
