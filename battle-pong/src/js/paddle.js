@@ -42,6 +42,13 @@ const updateFunctions = {
     if(xDelta != 0 || yDelta != 0) {
       let xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
       let yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
+      
+      if(paddle.dashDelay > 0) {
+        yForce = yForce * mapScale(paddle.dashDelay, 0, 650, .1, 1);  
+        xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, 1);  
+      }
+
+
       paddle.force(xForce, yForce);
 
       //TODO: see if this is needed elsewhere
@@ -197,9 +204,8 @@ const updateFunctions = {
       let angularVelocity = spinDirection * spinVelocity;
       
       if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 650, .3, 1);  
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
       }
-      
 
       paddle.spin(angularVelocity);
 
@@ -664,6 +670,7 @@ function createPaddle(options) {
         updateFunctions.expandPowerup(paddle);
         updateFunctions.spinToTarget(paddle);
         updateFunctions.stagedSpin(paddle);
+        updateFunctions.moveXY(paddle);
         updateFunctions.limitXY(paddle);
         updateFunctions.spinPowerup(paddle);
         updateFunctions.dashing(paddle);
