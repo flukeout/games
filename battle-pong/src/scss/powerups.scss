@@ -195,20 +195,6 @@
         }
       }
     }
-
-    .wick {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-      top: -10px;
-      right: -15px;
-      border-radius: 2px;
-      background-image: url(assets/images/wick.svg);
-      transform: rotate(-5deg);
-    }
   }
 
   &.spin {
@@ -248,8 +234,6 @@
   z-index: 2;
 }
 
-
-
 .mine-chunk-light {
   position: absolute;
   background: #e5310e;
@@ -257,68 +241,39 @@
   z-index: 999;
 }
 
+.powerup-scored {
+  position: absolute;
+  width: 400px;
+  height: 540px;
+  animation-fill-mode: forwards;
+  opacity: 0;
+  animation: flash .5s ease-out;    
 
+  &.clone {
+    background: linear-gradient(90deg, #AAA, rgba(170,170,170,0));
+  }
+  
+  &.spin {
+    background: linear-gradient(90deg, #39f6ff, rgba(57,246,255,0));
+  }
 
+  &.grow {
+    background: linear-gradient(90deg, #ffb806, rgba(255,184,6,0));
+  }
 
+  &.left {
+    top: -20px;
+    left: -20px; 
+  }
+  
+  &.right {
+    top: -20px;
+    right: -20px;
+    transform: scaleX(-1);
+  }
+}
 
-//&:before, &:after {
-//  position: absolute;
-//  background: white;
-//  top: 6px;
-//  left: 13px;
-//  width: 4px;
-//  height: 18px;
-//}
-//
-//&:before {
-//  animation: moveLeft 2s linear infinite;
-//};
-//
-//@keyframes moveLeft {
-//  0% {
-//    transform: none;
-//  }
-//  20% {
-//    transform: scaleY(.75);
-//    animation-timing-function: ease-in-out;
-//  }
-//  40% {
-//    transform: translateX(-4px) scaleY(1);
-//  }
-//  60% {
-//    transform: translateX(-4px);
-//  }
-//  80% {
-//    transform: none;
-//  }
-//  100% {
-//    transform: none;
-//  }
-//}
-//
-//&:after {
-//  animation: moveRight 2s linear infinite;
-//}
-//
-//@keyframes moveRight {
-//  0% {
-//    transform: none;
-//  }
-//  20% {
-//    transform: scaleY(.75);
-//    animation-timing-function: ease-in-out;
-//  }
-//  40% {
-//    transform: translateX(4px) scaleY(1);
-//  }
-//  60% {
-//    transform: translateX(4px);
-//  }
-//  80% {
-//    transform: none;
-//  }
-//  100% {
-//    transform: none;
-//  }
-//
-//}
+@keyframes flash {
+  0%   { opacity: .5 }
+  100% { opacity: 0 }
+}

@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // space in the window.
 function resizeBoard(){
   var windowWidth = window.innerWidth;
-  var boardWidth = 1150;
+  var boardWidth = 1200;
   var ratio =  windowWidth / boardWidth;
   document.querySelector(".board-wrapper").style.transform = "scale(" + ratio + ")";
   document.querySelector(".board-shadow-wrapper").style.transform = "scale(" + ratio + ")";
