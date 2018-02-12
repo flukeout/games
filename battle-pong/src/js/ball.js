@@ -438,6 +438,10 @@ function createBall(options){
         }
       }
     },
+
+    destroy: function () {
+      this.spinSoundSequenceManager.stop();
+    }
   });
 
 }
