@@ -237,7 +237,7 @@ const updateFunctions = {
     // and use the appropriate value.
     if (paddle.actions.windupCounterClockwise) windupAmount = -HALF_PI;
     else if (paddle.actions.windupClockwise) windupAmount = HALF_PI;
-    else paddle.actions.spinX * HALF_PI;
+    else windupAmount = paddle.actions.spinX * HALF_PI;
 
     // Set the target angle to 90° (half PI) forward or backward, waiting for the user to let go...
     paddle.targetAngle = paddle.spinLockAngle + windupAmount;
@@ -659,6 +659,7 @@ function createPaddle(options) {
 
         updateFunctions.moveXY(paddle);
         updateFunctions.moveAnalog(paddle);
+
         // Listen to gamepad for amount of winding up to do, and prepare to unleash fury!
         updateFunctions.snapBackSpin(paddle);
 
