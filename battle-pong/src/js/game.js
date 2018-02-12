@@ -93,6 +93,7 @@ var game =  {
   },
 
   loserDied: function(){
+    this.ball.destroy();
     removalList.push(this.ball);
 
     setTimeout(() => {
@@ -430,6 +431,7 @@ var game =  {
       options = {};
     }
 
+    this.ball && this.ball.destroy();
     this.ball = createBall(options);
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(this.ball);
@@ -633,6 +635,8 @@ var game =  {
       }
 
       that.showMessage("FINISH IT!!!");
+
+      this.ball && this.ball.destroy();
 
       this.ball = createBall({
         x: ballX,

@@ -15,11 +15,34 @@ document.addEventListener('DOMContentLoaded', e => {
       });
     },
     player1ScoreBig: function () {
-      Debug.playerScoreBig(0);
+      Debug.playerScoreBig(1);
     },
     player2ScoreBig: function () {
-      Debug.playerScoreBig(1);
+      Debug.playerScoreBig(0);
+    },
+    player1Powerup: function (type) {
+      game.paddles[0].powerup(type);
+    },
+    player2Powerup: function (type) {
+      game.paddles[1].powerup(type);
+    },
+    player1Win: function () {
+      game.score.player1 = game.score.max - 1;
+      Debug.player1ScoreBig();
+    },
+    player2Win: function () {
+      game.score.player2 = game.score.max - 1;
+      Debug.player2ScoreBig();
     }
   };
+
+  Settings.powerUpTypes.forEach(type => {
+    Debug['player1Powerup_' + type] = function () {
+      Debug.player1Powerup(type);
+    };
+    Debug['player2Powerup_' + type] = function () {
+      Debug.player2Powerup(type);
+    };
+  });
 
 });
