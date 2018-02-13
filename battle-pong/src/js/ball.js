@@ -123,15 +123,15 @@ function createBall(options){
         }
       }
 
-      console.log("run", this.applyBrakes);
-      
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
-        console.log("turned off brakes");
+        console.log("Turned off brakes");
         this.applyBrakes = false;
+        this.goalsWhileFast = 0;
       }
 
       if(this.applyBrakes && this.brakesModeEnabled) {
-          this.changeVelocityRatio(this.brakesModeRatio);
+        console.log("Applying brakes");
+        this.changeVelocityRatio(this.brakesModeRatio);
       }
 
       // Reduce ball rotation speed
@@ -371,7 +371,6 @@ function createBall(options){
         
         console.log("got hit at", this.physics.speed);
         if(this.physics.speed > this.goingFastSpeedThreshold) {
-          console.log("FAST GOAL");
           this.goalsWhileFast++;
         } else {
           this.goalsWhileFast = 0;
