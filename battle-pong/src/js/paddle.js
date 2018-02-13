@@ -10,12 +10,18 @@ const paddleGamepadActions = [
 
 const paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
 
-const maxForce = 0.004;
+// Tweak these three
+const frictionAir = .2;  // .01
+const maxForce = 0.01;   // .004
+const spinSpeed = .2; // .2
+const maxSpinVelocity = 2.7;
+
 const HALF_PI = Math.PI / 2;
 const QUARTER_PI = Math.PI / 4;
-const spinSpeed = .2;
 const spinVelocity = spinSpeed / game.physicsSamplingRatio;
-const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
+// const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
+
+
 const maxAngularVelocity = .0905;
 const angularSpeedThreshold = .02;
 const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
@@ -52,7 +58,7 @@ const updateFunctions = {
       paddle.force(xForce, yForce);
 
       //TODO: see if this is needed elsewhere
-      paddle.physics.frictionAir = 0.1 / game.physicsSamplingRatio;
+      paddle.physics.frictionAir = frictionAir / game.physicsSamplingRatio;
     }
   },
   dashing: function (paddle) {
@@ -102,6 +108,8 @@ const updateFunctions = {
     // End of dashing paticles
   },
   dashStart: function (paddle) {
+    return; // NO DASHING
+
     if(paddle.actions.dash && paddle.type == "player") {
 
       // We want to calculate a movement angle based on
@@ -200,12 +208,14 @@ const updateFunctions = {
     if (spinDirection !== 0) {
 
       // Set the angular velocity of the paddle
+  
       let angularVelocity = spinDirection * spinVelocity;
       
       if(paddle.dashDelay > 0) {
         angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
       }
 
+  
       paddle.spin(angularVelocity);
 
       if(angularVelocity >= 0) {
@@ -414,7 +424,7 @@ function createPaddle(options) {
 
     physicsOptions : {
       mass : 2,
-      frictionAir: 0.1 / game.physicsSamplingRatio,
+      frictionAir: frictionAir / game.physicsSamplingRatio,
       label: 'paddle-' + (['one', 'two'][options.player])
       // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3 (ha sic)
     },
@@ -606,6 +616,11 @@ function createPaddle(options) {
       // Save these on the object so that they're accessible to update functions
       this.dt = delta;
       this.frameTicks++;
+
+      // if(this.player == 0) {
+        // console.log(this.physics.speed); // 2.7 about
+        // console.log(this.physics.angularSpeed.toFixed(3)); // .097 max
+      // }
 
       // Ghosts are just there to be scared and die. They can't move.
       if(this.mode != "ghost") {

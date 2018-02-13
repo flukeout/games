@@ -33,8 +33,8 @@ function createBall(options){
     timeSinceHit : 0,
     gotPaddleHit : false,
 
-    maxSpeed: 16 / game.physicsSamplingRatio,
-    maxSpeedSlowdownRatio : .99,
+    maxSpeed: 16 / game.physicsSamplingRatio, // 16
+    maxSpeedSlowdownRatio : .99, // .99
 
     minSpeed: 4 / game.physicsSamplingRatio,
     minSpeedSlowdownRatio : .96,
@@ -63,8 +63,6 @@ function createBall(options){
     startedGoingFast : false,
     frameTick: 0,
 
-    goalsBeforeSlowdown: 1,
-    goalsWhileFast : 0,
 
     // TODO - what are these for?
     displayAngle: 0,
@@ -78,15 +76,17 @@ function createBall(options){
     timeAllowedGoingFastMS : 5000, // max time to have spinmode
 
     // For slowing things down
-    // TODO / remove
-    slowdownRatio: .985,
-    slowSpeedTarget: 7 / game.physicsSamplingRatio,
 
+    // brakesModeEnabled : window.Settings.brakesModeEnabled,
+    brakesModeEnabled : true,
+    slowSpeedTarget: 9 / game.physicsSamplingRatio,
     applyBrakes : false,
-    brakesModeEnabled : window.Settings.brakesModeEnabled,
+    brakesModeRatio: .985,
+    goalsWhileFastAllowed: 2,
+    goalsWhileFast : 0,
+    goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
 
     delayBeforeCanSpinMS : 100,
-    goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
     // lastTouchedBy : false,
@@ -123,12 +123,15 @@ function createBall(options){
         }
       }
 
+      console.log("run", this.applyBrakes);
+      
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
+        console.log("turned off brakes");
         this.applyBrakes = false;
       }
 
       if(this.applyBrakes && this.brakesModeEnabled) {
-        // who knows?
+          this.changeVelocityRatio(this.brakesModeRatio);
       }
 
       // Reduce ball rotation speed
@@ -365,12 +368,16 @@ function createBall(options){
     hit: function(obj){
 
       if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
+        
+        console.log("got hit at", this.physics.speed);
         if(this.physics.speed > this.goingFastSpeedThreshold) {
+          console.log("FAST GOAL");
           this.goalsWhileFast++;
         } else {
           this.goalsWhileFast = 0;
         }
-        if(this.goalsWhileFast > 0) {
+        if(this.goalsWhileFast >= this.goalsWhileFastAllowed) {
+          console.log("turned on brakes");          
           this.applyBrakes = true;
         }
       }
@@ -412,6 +419,8 @@ function createBall(options){
       else {
         SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
       }
+
+
     },
 
     // After a paddle hit, we want to check if the ball is going
