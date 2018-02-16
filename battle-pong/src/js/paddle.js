@@ -21,7 +21,6 @@ const QUARTER_PI = Math.PI / 4;
 const spinVelocity = spinSpeed / game.physicsSamplingRatio;
 // const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
 
-
 const maxAngularVelocity = .0905;
 const angularSpeedThreshold = .02;
 const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
@@ -516,9 +515,13 @@ function createPaddle(options) {
     spinPowerupRemaining : 0,
     spinPowerupCountdown: false,
     spinPowerupTime : 5500,
+    hasMagnetPowerup : false,
+    magnetTimeout: false,
 
     // When we get a powerup
     powerup(type){
+
+      console.log("got a powerup:", type);
 
       if(type == "grow") {
         this.targetHeight = this.height * 1.5;
@@ -533,6 +536,21 @@ function createPaddle(options) {
             that.targetHeight = that.baseHeight;
           }
         }, this.powerupDuration);
+      }
+
+      if(type == "magnet") {
+        console.log("applying magnet");
+        this.hasMagnetPowerup = true;
+        this.element.classList.add("powerup-magnet");
+        game.showMessage("STICKY!", 1500);
+        
+        clearTimeout(this.magnetTimeout);
+        
+        var that = this;
+        this.magnetTimeout = window.setTimeout(function(){
+          that.element.classList.remove("powerup-magnet");
+          that.hasMagnetPowerup = false;
+        }, this.powerupDuration);      
       }
 
       // For this powerup, we treat it as having a 'time remaining'
@@ -616,11 +634,6 @@ function createPaddle(options) {
       // Save these on the object so that they're accessible to update functions
       this.dt = delta;
       this.frameTicks++;
-
-      // if(this.player == 0) {
-        // console.log(this.physics.speed); // 2.7 about
-        // console.log(this.physics.angularSpeed.toFixed(3)); // .097 max
-      // }
 
       // Ghosts are just there to be scared and die. They can't move.
       if(this.mode != "ghost") {

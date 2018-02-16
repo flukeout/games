@@ -450,6 +450,14 @@
     border-radius: 50%;
   }
   
+  [data-powerup=magnet] {
+    background-image: url(assets/images/bone.svg);
+    background-color: red;
+    background-size: 12px;
+    border-radius: 50%;
+  }
+
+
   [data-powerup=mine] {
     background-image: url(assets/images/mine.svg);
   }

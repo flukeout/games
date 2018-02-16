@@ -222,6 +222,21 @@
       background-size: 90%;
     }
   }
+
+  &.magnet {
+    .shadow {
+      background-image: url(assets/images/round-shadow.svg);
+    }
+
+    .body {
+      background-color: #222;
+      background-size: 90%;
+      border-radius: 50%;
+    }
+  }
+
+
+
 }
 
 .star {

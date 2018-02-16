@@ -86,6 +86,9 @@ function createBall(options){
     goalsWhileFast : 0,
     goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
 
+    hasTargetSpeed : false,
+    targetSpeed : false,
+
     delayBeforeCanSpinMS : 100,
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
@@ -120,6 +123,17 @@ function createBall(options){
         if(this.lifeSpan < 0) {
           popBall(this.physics);
           removalList.push(this);
+        }
+      }
+      console.log(this.targetSpeed);
+      
+      if(this.hasTargetSpeed) {
+        if(this.physics.speed > this.targetSpeed) {
+          this.changeVelocityRatio(.9);
+          if(Math.abs(this.physics.speed - this.targetSpeed) < .1) {
+            console.log("reached target speed");
+            this.hasTargetSpeed = false;
+          }
         }
       }
 
@@ -304,6 +318,8 @@ function createBall(options){
 
       // --Spinning ball garbage ends here.
 
+
+
       // The paddle hit stuff needs a one frame delay before taking effect seemingly.
       // This is the way around that. Should be easier?
       if(this.gotPaddleHit) {
@@ -392,6 +408,14 @@ function createBall(options){
           this.lastTouchedPaddle = 2;
         }
 
+        if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
+          var p = game.paddles[this.lastTouchedPaddle - 1];
+          if(p.physics.angularSpeed < .02) {
+            this.hasTargetSpeed = true;
+            this.targetSpeed = 0;
+          }
+        }
+
         // this.gotPaddleHit = true;
         this.checkSpeed();
         this.applyBrakes = false;
@@ -418,8 +442,6 @@ function createBall(options){
       else {
         SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
       }
-
-
     },
 
     // After a paddle hit, we want to check if the ball is going
