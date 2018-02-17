@@ -203,27 +203,43 @@ const updateFunctions = {
     if (paddle.actions.spinClockwise)         spinDirection =  1;
     if (paddle.actions.spinCounterClockwise)  spinDirection = -1;
 
-    // If there was...
+    // If there was spinning input...
     if (spinDirection !== 0) {
 
       // Set the angular velocity of the paddle
-  
       let angularVelocity = spinDirection * spinVelocity;
       
       if(paddle.dashDelay > 0) {
         angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
       }
-
   
       paddle.spin(angularVelocity);
 
+      // Sets the destination angle for the paddle for when the player stops spinning
+      // - If it's a short spin duration (less than 100ms), snap to next 90 deg
+      // - If it's a long spin, snap to the next vertical orientation
+
       if(angularVelocity >= 0) {
-        // If there is enough velocity to jump to the next 90° (half PI)...
-        paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);
+        // Clockwise
+        if(paddle.timeSpinning < 100) {
+          paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);  
+        } else {
+          paddle.targetAngle = (Math.ceil(paddle.physics.angle / (HALF_PI * 2)) * HALF_PI * 2);  
+        }
       } else {
-        // And if not, settle back to the original state
-        paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
+        // Counter-clockwise
+        if(paddle.timeSpinning < 100) {
+          paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
+        } else {
+          paddle.targetAngle = (Math.floor(paddle.physics.angle / (HALF_PI * 2)) * HALF_PI * 2);  
+        }
+
       }
+      
+      paddle.isSpinning = true;
+      
+    } else {
+      paddle.isSpinning = false;
     }
   },
   snapBackSpinCheck: function (paddle) {
@@ -391,6 +407,8 @@ const updateFunctions = {
 
 function createPaddle(options) {
   var options = options || {};
+
+
 
   return createObject({
     selector: options.selector,
@@ -630,10 +648,21 @@ function createPaddle(options) {
         // This gets called every frame of the game
     dashDelay : 0,
     frameTicks: 0,
+    isSpinning : false,
+    timeSpinning : 0,
+    
     update(delta){
       // Save these on the object so that they're accessible to update functions
       this.dt = delta;
       this.frameTicks++;
+
+      if(this.player === 0) {
+        if(this.isSpinning) {
+          this.timeSpinning = this.timeSpinning + delta;
+        } else {
+          this.timeSpinning = 0;
+        }
+      }
 
       // Ghosts are just there to be scared and die. They can't move.
       if(this.mode != "ghost") {
