@@ -49,8 +49,8 @@ const updateFunctions = {
       let yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
       
       if(paddle.dashDelay > 0) {
-        yForce = yForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);  
-        xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);  
+        yForce = yForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);
+        xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);
       }
 
 
