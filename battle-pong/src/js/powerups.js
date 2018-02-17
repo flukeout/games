@@ -137,8 +137,6 @@
               this.explode();
             }
           }
-
-
         },
 
         // Explode this, if it is a mine!
@@ -277,13 +275,10 @@
               }
             }
 
-            if(this.type == "multiball") {
-              game.cloneBall();
-            }
+            powerupScored(this.physics.position.x, this.physics.position.y, this.type);
 
             game.removeObject(this);
             activePowerups.splice(activePowerups.indexOf(this), 1);
-
             SoundManager.playSound(powerUpScoreSoundNames[this.type] || "coin");
           }
         }

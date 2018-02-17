@@ -2,6 +2,29 @@ document.addEventListener('DOMContentLoaded', function(){
   startStars(30, window.innerWidth, 400);
 });
 
+// Flashes board border when a powerup scores
+function powerupScored(x, y, type){
+
+  var el = document.createElement("div");
+  el.classList.add("powerup-scored");
+
+  if(x < 445) {
+    el.classList.add("left");
+  } else {
+    el.classList.add("right");
+  }
+
+  el.classList.add(type || "grow");
+  
+  document.querySelector(".world").appendChild(el);
+
+  setTimeout(function(el) {
+    return function(){
+      el.remove();
+    };
+  }(el), 500);
+}
+
 function mineExplosion(xposition, yposition, size){
 
   SoundManager.playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
