@@ -245,7 +245,7 @@ var game =  {
         el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
       }
 
-      el.style.zIndex = parseInt(y);
+      el.style.zIndex = 100 + parseInt(y);
 
       if(obj.update){
         obj.update(delta);

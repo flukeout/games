@@ -472,6 +472,7 @@ function createPaddle(options) {
     },
 
     spin: function (v) {
+
       Matter.Body.setAngularVelocity(this.physics, v);
 
       if(!this.swishTimeout && this.type == "player") {
@@ -533,13 +534,13 @@ function createPaddle(options) {
     spinPowerupRemaining : 0,
     spinPowerupCountdown: false,
     spinPowerupTime : 5500,
+    
     hasMagnetPowerup : false,
     magnetTimeout: false,
+    magnetDuration : 7500,
 
     // When we get a powerup
     powerup(type){
-
-      console.log("got a powerup:", type);
 
       if(type == "grow") {
         this.targetHeight = this.height * 1.5;
@@ -568,7 +569,7 @@ function createPaddle(options) {
         this.magnetTimeout = window.setTimeout(function(){
           that.element.classList.remove("powerup-magnet");
           that.hasMagnetPowerup = false;
-        }, this.powerupDuration);      
+        }, this.magnetDuration);      
       }
 
       // For this powerup, we treat it as having a 'time remaining'

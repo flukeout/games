@@ -125,26 +125,22 @@ function createBall(options){
           removalList.push(this);
         }
       }
-      // console.log(this.targetSpeed);
       
       if(this.hasTargetSpeed) {
         if(this.physics.speed > this.targetSpeed) {
           this.changeVelocityRatio(.9);
           if(Math.abs(this.physics.speed - this.targetSpeed) < .1) {
-            console.log("reached target speed");
             this.hasTargetSpeed = false;
           }
         }
       }
 
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
-        console.log("Turned off brakes");
         this.applyBrakes = false;
         this.goalsWhileFast = 0;
       }
 
       if(this.applyBrakes && this.brakesModeEnabled) {
-        console.log("Applying brakes");
         this.changeVelocityRatio(this.brakesModeRatio);
       }
 
@@ -384,15 +380,12 @@ function createBall(options){
     hit: function(obj){
 
       if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
-        
-        console.log("got hit at", this.physics.speed);
         if(this.physics.speed > this.goingFastSpeedThreshold) {
           this.goalsWhileFast++;
         } else {
           this.goalsWhileFast = 0;
         }
         if(this.goalsWhileFast >= this.goalsWhileFastAllowed) {
-          console.log("turned on brakes");          
           this.applyBrakes = true;
         }
       }
@@ -410,13 +403,14 @@ function createBall(options){
 
         if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
           var p = game.paddles[this.lastTouchedPaddle - 1];
-          if(p.physics.angularSpeed < .02) {
+          if(p.physics.angularSpeed < .04) {
             this.hasTargetSpeed = true;
             this.targetSpeed = 0;
+          } else {
+            this.hasTargetSpeed = false;
           }
         }
 
-        // this.gotPaddleHit = true;
         this.checkSpeed();
         this.applyBrakes = false;
       }
