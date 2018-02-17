@@ -22,7 +22,7 @@
   }
 }
 
-@keyframes spinZ {
+@keyframes bobUpDown {
   50% {
     transform: translateZ(30px);
   }
@@ -48,9 +48,8 @@
     position: absolute;
     top: 0px;
     left: 0px;
-
     transform: translateZ(20px);
-    animation: appear .5s ease-out, spinZ .5s linear infinite;
+    animation: appear .5s ease-out, bobUpDown .5s linear infinite;
     animation-delay: 0s, .5s;
   }
 
@@ -229,12 +228,17 @@
     }
 
     .body {
-      background-color: #222;
-      background-size: 90%;
-      border-radius: 50%;
+      background-image: url(assets/images/tar.svg);
+      animation: tarBob .5s linear infinite;
     }
   }
 
+  @keyframes tarBob {
+    50% {
+      transform: translateZ(30px) scaleX(.9) scaleY(1.1);
+    }
+    
+  }
 
 
 }

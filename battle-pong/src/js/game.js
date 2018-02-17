@@ -226,18 +226,7 @@ var game =  {
         if(obj.gotHit) {
           obj.resolveHit();
         }
-
-        // Matter.Body.applyForce(obj.physics, obj.physics.position, {
-        //   x : 0,
-        //   y : 0.001
-        // });
       }
-
-      // Matter.Body.setVelocity(obj.physics,{
-      //   x: obj.physics.velocity.x,
-      //   y: obj.physics.velocity.y - wind
-      // })
-
 
       // TODO - pick a name for this function and standardize
       // "step" might be better than run or update actually, since we use that for the game
@@ -256,6 +245,8 @@ var game =  {
         el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
       }
 
+      el.style.zIndex = parseInt(y);
+
       if(obj.update){
         obj.update(delta);
       }
@@ -263,7 +254,6 @@ var game =  {
       if(obj.run) {
         obj.run(delta);
       }
-
     });
 
     for(var i = 0; i < this.physicsSamplingRatio; i++){

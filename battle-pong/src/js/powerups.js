@@ -96,6 +96,10 @@
         </div>`;
       }
 
+      if(type == "magnet") {
+        properties.ignoreRotation = true;
+      }
+
       return createObject({
         className : "powerup",
         innerHTML : properties.innerHTML || "<div class='shadow'></div><div class='body'></div>",

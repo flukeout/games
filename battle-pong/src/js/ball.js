@@ -125,7 +125,7 @@ function createBall(options){
           removalList.push(this);
         }
       }
-      console.log(this.targetSpeed);
+      // console.log(this.targetSpeed);
       
       if(this.hasTargetSpeed) {
         if(this.physics.speed > this.targetSpeed) {
@@ -455,8 +455,18 @@ function createBall(options){
       }
 
       if(this.lastPaddleHitHard){
-        if(this.physics.speed > this.wordSpeed && !this.wordInProgress) {
-          this.startWord();
+        if(this.physics.speed > this.wordSpeed) {
+
+          // We want to make sure that the paddle is rotating before
+          // we allow firing the gun.
+          var hitPaddleObj = game.paddles[this.lastTouchedPaddle - 1];
+          if(hitPaddleObj.physics.angularSpeed < .04) {
+            return;
+          }
+
+          if(!this.wordInProgress) {
+            this.startWord();  
+          }
 
           var xDelta = this.physics.velocity.x;
           var yDelta = this.physics.velocity.y;
