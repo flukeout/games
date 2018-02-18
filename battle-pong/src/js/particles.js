@@ -4,7 +4,7 @@ var blankParticles = [];    // Holdes reference to pre-appended particle element
 
 function initParticleEngine(selector, maxParticlecount) {
   
-  var maxParticleCount = maxParticleCount || 100; 
+  var maxParticleCount = maxParticleCount || 50; 
 
   for(var i = 0; i < maxParticleCount; i++){
 
@@ -69,6 +69,7 @@ function makeParticle(options){
 
     gravity : options.gravity || 0,
     className : options.className || false,
+    classList : options.classList || [],
 
     lifespan : options.lifespan || 200,
     delay : options.delay || 0,
@@ -103,6 +104,11 @@ function makeParticle(options){
   particle.el.style.height = particle.height + "px";
   particle.el.style.width = particle.width + "px";
   particle.el.classList.add(particle.className);
+  
+  for(var i = 0; i < particle.classList.length; i++) {
+    particle.el.classList.add(particle.classList[i]);
+  }
+
   particle.el.style.background = particle.color;
 
   if(particle.text) {
@@ -123,7 +129,8 @@ function makeParticle(options){
     if(p.lifespan < 0 || p.o < 0) {
       p.referenceParticle.active = false;
       p.el.removeAttribute("style");
-      p.el.classList.remove(p.className);
+      p.el.removeAttribute("class");
+      p.el.classList.add("blank-particle");
       p.el.style.display = "none";
       p.el.innerText = "";
 

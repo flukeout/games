@@ -13,10 +13,9 @@
     mine: 'Bomb_Spawn'
   };
 
-  // const powerupFrequency = Settings.powerupFrequency || 30; // A powerup appears once in every X frames
-  const powerupFrequency = 10;
-  // const maxPowerupCount = Settings.maxPowerupCount || 2;
-  const maxPowerupCount = 1;
+  // A powerup appears once in every X frames
+  const powerupFrequency = Settings.powerupFrequency || 30; 
+  const maxPowerupCount = Settings.maxPowerupCount || 2;
 
   function PowerupManager(game) {
     let activePowerups = [];

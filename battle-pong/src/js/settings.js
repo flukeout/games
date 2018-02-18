@@ -7,7 +7,7 @@ window.Settings = {
   brakesModeEnabled : true,
   dashingEnabled : false,
   goalTimeoutMS : 250,
-  powerupFrequency : 30,
+  powerupFrequency : 300,
   maxPowerupCount : 2,
   playTo : 2,
   mineForceRadius: 175,

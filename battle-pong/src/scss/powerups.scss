@@ -10,17 +10,6 @@
   }
 }
 
-@keyframes appear {
-  0% {
-    transform: translateZ(10px) scale(0);
-  }
-  60% {
-    transform: translateZ(25px) scale(1);
-  }
-  100% {
-    transform: translateZ(20px) scale(1);
-  }
-}
 
 @keyframes bobUpDown {
   50% {
@@ -34,7 +23,6 @@
   left: 0;
   transform-style: preserve-3d;
   z-index: 1000;
-  border-radius: 50%;
 
   .body {
     color: rgba(255,255,255,.4);
@@ -52,6 +40,19 @@
     animation: appear .5s ease-out, bobUpDown .5s linear infinite;
     animation-delay: 0s, .5s;
   }
+
+  @keyframes appear {
+    0% {
+      transform: translateZ(10px) scale(0);
+    }
+    60% {
+      transform: translateZ(25px) scale(1);
+    }
+    100% {
+      transform: translateZ(20px) scale(1);
+    }
+  }
+
 
   .shadow {
     background-position: center;
@@ -215,18 +216,17 @@
 
     .body {
       background-image: url(assets/images/tar.svg);
-      animation: tarBob .5s linear infinite;
+      animation: appear .5s ease-out, tarBob .5s linear infinite;
+      animation-delay: 0s, .5s;
+      transform: translateZ(20px);
     }
   }
 
   @keyframes tarBob {
     50% {
       transform: translateZ(30px) scaleX(.9) scaleY(1.1);
-    }
-    
+    }  
   }
-
-
 }
 
 .star {
@@ -300,4 +300,19 @@
 @keyframes flash {
   0%   { opacity: .5 }
   100% { opacity: 0 }
+}
+
+
+.powerup-scored-particle {
+  z-index: 5;
+
+  &.magnet {
+    background-image: url(assets/images/tar.svg);
+    background-size: 100%;    
+  }
+  
+  &.grow {
+    background-image: url(assets/images/star.svg);
+    background-size: 100%;    
+  }
 }
