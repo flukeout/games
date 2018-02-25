@@ -17,7 +17,7 @@ window.Settings = {
   sounds: true,
   music: false, 
   player1Control : "player", // or "AI"
-  player2Control : "player"  // or "AI"
+  player2Control : "player" // or "AI"
 };
 
 loadSettings();
@@ -37,9 +37,6 @@ function loadSettings(){
     }
   }
 }
-
-console.log(window.Settings);
-
 
 var queryStringParts = window.location.search.substr(1).split('&');
 queryStringParts.forEach(function (pair) {

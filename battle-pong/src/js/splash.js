@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function(){
   toggleEls = document.querySelectorAll(".option-toggle");
   setupToggles(toggleEls);
 
+  multiSelectEls = document.querySelectorAll(".option-multi");
+  setupMultiSelects(multiSelectEls);
+
   playerOptionEls = document.querySelectorAll(".player-options .player-option");
   setupPlayerOptionss(playerOptionEls);
 
@@ -32,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function(){
 let bestOfEls, 
     powerupEls,
     toggleEls,
+    multiSelectEls,
     playerOptionEls;
 
 let timeoutAccumulator = 0;
@@ -132,6 +136,28 @@ function setupStartButton(){
   })
 }
 
+// Sets up the music & sound toggle click handlers
+function setupMultiSelects(els){
+  els.forEach(function(el){
+    el.querySelector(".value").addEventListener("click",function(el){
+      var toggle = this.parentNode;
+      var toggleType = toggle.getAttribute("data-type");
+      var toggleOptions = toggle.getAttribute("data-options").split(',') || [true, false];
+
+      addTemporaryClassName(this, "pop", 500);
+
+      var currentSetting = window.Settings[toggleType];
+      var nextSetting = toggleOptions[(toggleOptions.indexOf(currentSetting) + 1) % toggleOptions.length];
+
+      saveSetting(toggleType, nextSetting);
+
+      updateMultiSelects(els);
+      SoundManager.playSound("ui");
+    });
+  });
+  updateMultiSelects(els);
+}
+
 
 // Sets up the music & sound toggle click handlers
 function setupToggles(els){
@@ -163,6 +189,15 @@ function updateToggles(els){
     } else {
       el.classList.remove("enabled");
     }
+  });
+}
+
+
+function updateMultiSelects(els){
+  els.forEach(function(el){
+    var toggleType = el.getAttribute("data-type");
+    var setting = window.Settings[toggleType];
+    el.querySelector('.value').textContent = setting;
   });
 }
 

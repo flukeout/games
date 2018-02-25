@@ -1,11 +1,14 @@
 const paddleKeyboardActions = [
   // Discrete on/off buttons
-  'up','left','down','right','spinClockwise','spinCounterClockwise', 'dash', 'windupClockwise', 'windupCounterClockwise'
+  'up','left','down','right',
+  'spinClockwise','spinCounterClockwise',
+  'dash',
+  'nudgeClockwise', 'nudgeCounterClockwise'
 ];
 
 const paddleGamepadActions = [
   // Fluid options that can use floats instead of booleans (e.g. joysticks)
-  'moveX', 'moveY', 'spinX', 'spinY', 'dash'
+  'moveX', 'moveY', 'spinX', 'spinY'
 ];
 
 const paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
@@ -16,16 +19,18 @@ const maxForce = 0.01;   // .004
 const spinSpeed = .2; // .2
 const maxSpinVelocity = 2.7;
 
+const DOUBLE_PI = Math.PI * 2;
 const HALF_PI = Math.PI / 2;
 const QUARTER_PI = Math.PI / 4;
+const EIGHTH_PI = Math.PI / 8;
 const spinVelocity = spinSpeed / game.physicsSamplingRatio;
 // const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
 
 const maxAngularVelocity = .0905;
 const angularSpeedThreshold = .02;
 const spinDeltaThreshold = 0.03490658503988659; // From 2 / 180 * Math.PI
-const maxSnapSpinSpeedBoost = 3;
-const snapSpinSpeedBoostReductionFactor = 0.25;
+
+const slowerSpinDampeningFactor = 0.5;
 
 const boneDisappearSounds = SoundManager.findSounds('Powerup_Bones_Disapear_');
 
@@ -53,8 +58,8 @@ const updateFunctions = {
         xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);
       }
 
-
       paddle.force(xForce, yForce);
+
 
       //TODO: see if this is needed elsewhere
       paddle.physics.frictionAir = frictionAir / game.physicsSamplingRatio;
@@ -194,9 +199,27 @@ const updateFunctions = {
       }
     }
   },
-  stagedSpin: function (paddle) {
-    if (paddle.spinLockAngle !== false) return;
+  nudgedSpin: function (paddle) {
+    let spinDirection = paddle.actions.nudgeClockwise - paddle.actions.nudgeCounterClockwise;
 
+    if (Math.abs(spinDirection) > 0.2) {
+
+      let angularVelocity = spinDirection * spinVelocity * slowerSpinDampeningFactor;
+      
+      if(paddle.dashDelay > 0) {
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
+      }
+  
+      paddle.spin(angularVelocity);
+
+      if(angularVelocity >= 0) {
+        paddle.targetAngle = (Math.ceil(paddle.physics.angle / EIGHTH_PI) * EIGHTH_PI);
+      } else {
+        paddle.targetAngle = (Math.floor(paddle.physics.angle / EIGHTH_PI) * EIGHTH_PI);
+      }
+    }
+  },
+  stagedSpin: function (paddle) {
     let spinDirection = 0;
 
     // See if there was any actionable input
@@ -242,44 +265,41 @@ const updateFunctions = {
       paddle.isSpinning = false;
     }
   },
-  snapBackSpinCheck: function (paddle) {
+  analogSpin: function (paddle) {
     // Only activate this if there's a real desire to do so :)
-    if (Math.abs(paddle.actions.spinX) > 0.2 || paddle.actions.windupClockwise || paddle.actions.windupCounterClockwise) {
-      paddle.updateRoute = 'snapBack';
+    if (Math.abs(paddle.actions.spinX) > 0.2) {
+      let angularVelocity = spinVelocity * paddle.actions.spinX;
+      
+      if(paddle.dashDelay > 0) {
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
+      }
+  
+      paddle.spin(angularVelocity);
+
+      if(angularVelocity >= 0) {
+        // If there is enough velocity to jump to the next 90° (half PI)...
+        paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);
+      } else {
+        // And if not, settle back to the original state
+        paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
+      }
     }
-  },
-  snapBackSpin: function (paddle) {
-    // If this feature isn't already happening, start it by remembering the last known angle
-    if (paddle.spinLockAngle === false) {
+    else if (Math.abs(paddle.actions.spinY) > 0.2) {
+      let angularVelocity = spinVelocity * -paddle.actions.spinY;
+      
+      if(paddle.dashDelay > 0) {
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
+      }
+  
+      paddle.spin(angularVelocity);
 
-      // Save the angle the paddle should snap back to
-      paddle.spinLockAngle = paddle.targetAngle;
-    }
-
-    let windupAmount;
-
-    // The user can either be pushing a button or using an analog stick, so figure out which one
-    // and use the appropriate value.
-    if (paddle.actions.windupCounterClockwise) windupAmount = -HALF_PI;
-    else if (paddle.actions.windupClockwise) windupAmount = HALF_PI;
-    else windupAmount = paddle.actions.spinX * HALF_PI;
-
-    // Set the target angle to 90° (half PI) forward or backward, waiting for the user to let go...
-    paddle.targetAngle = paddle.spinLockAngle + windupAmount;
-
-    // If the user has let go...
-    if (Math.abs(paddle.actions.spinX) < 0.2 && !(paddle.actions.windupClockwise || paddle.actions.windupCounterClockwise)) {
-      // Roll back to the original angle
-      paddle.targetAngle = paddle.spinLockAngle;
-
-      // Telle everything else that we're not in this state anymore
-      paddle.spinLockAngle = false;
-
-      // Boost the angular speed temporarily
-      paddle.snapSpinSpeedBoost = maxSnapSpinSpeedBoost;
-
-      // Avoid calling this function by switching back to original input driver stream
-      paddle.updateRoute = 'default';
+      if(angularVelocity >= 0) {
+        // If there is enough velocity to jump to the next 90° (half PI)...
+        paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);
+      } else {
+        // And if not, settle back to the original state
+        paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
+      }
     }
   },
   moveAnalog : function(paddle) {
@@ -327,10 +347,7 @@ const updateFunctions = {
     let delta = (currentAngle - paddle.targetAngle);
     let torque = -maxSpinVelocity * delta;
 
-    torque = Math.min(torque, maxSpinVelocity) * paddle.snapSpinSpeedBoost;
-
-    if (paddle.spinLockAngle === false)
-      paddle.snapSpinSpeedBoost -= (paddle.snapSpinSpeedBoost - 1) * snapSpinSpeedBoostReductionFactor;
+    torque = Math.min(torque, maxSpinVelocity);
 
     if(paddle.type == "player") {
       if(delta !== 0) {
@@ -338,6 +355,7 @@ const updateFunctions = {
 
         if(delta > -spinDeltaThreshold && delta < spinDeltaThreshold) {
           if(paddle.physics.angularSpeed < angularSpeedThreshold) {
+
             Matter.Body.setAngle(paddle.physics, paddle.targetAngle);
             Matter.Body.setAngularVelocity(paddle.physics, 0);
           }
@@ -462,10 +480,6 @@ function createPaddle(options) {
     setTimeout: false,  // Keeps track of the swish soudn timeout
     swishTimeoutMS : 260, // Delay between playing the swish sound
     actions: paddleActions.concat(paddleGamepadActions),
-
-    // Regulates whether or not we should try to spin back to targetAngle
-    spinLockAngle: false,
-    snapSpinSpeedBoost: 1,
 
     force: function (x, y) {
       Matter.Body.applyForce(this.physics, this.physics.position, { x: x * this.movementRatio, y: y * this.movementRatio});
@@ -676,63 +690,59 @@ function createPaddle(options) {
       }
 
       // Run whichever driver route is currently assigned
-      this.updateRoutes[this.updateRoute](this);
+      this.updateRoutes[this.updateRoute].forEach(fn => fn(this));
     },
+
+    // TODO: this would be better as a series of "channels" so that you can flip them on & off
+    // depending on the overall feature. e.g. during a dash, you could just prevent more dashing by
+    // switching off the "dash" channel. Then, updateFunctions registered under "dash" wouldn't run.
+    // During a route-switch (i.e. updateRoute = XXXX), compile a new routing function to avoid lots of
+    // if statements! 
 
     // These routes let you programmatically insert or omit stages that govern the movement
     // of the paddle. By switching between them, you can cleanly decide which features
     // are available for paddle movement at any one time.
     updateRoutes: {
-      default: function(paddle) {
+      default: [
         // Maintenance for powerups
-        updateFunctions.expandPowerup(paddle);
-        updateFunctions.spinPowerup(paddle);
-        updateFunctions.moveXY(paddle);
-        updateFunctions.moveAnalog(paddle);
+        updateFunctions.expandPowerup,
+        updateFunctions.spinPowerup,
+        updateFunctions.moveXY,
+        updateFunctions.moveAnalog,
 
         // See if we're about to start a dash
-        updateFunctions.dashStart(paddle);
+        updateFunctions.dashStart,
 
-        // See if we're going to be snapping *next* frame
-        updateFunctions.snapBackSpinCheck(paddle);
+        updateFunctions.analogSpin,
 
         // Spin the paddle 90 degrees
-        updateFunctions.stagedSpin(paddle);
+        updateFunctions.stagedSpin,
+
+        updateFunctions.nudgedSpin,
 
         // Make sure the paddle stays in bounds
-        updateFunctions.limitXY(paddle);
+        updateFunctions.limitXY,
 
         // Resolve the paddle's rotation to the specified targetAngle
-        updateFunctions.spinToTarget(paddle);
+        updateFunctions.spinToTarget,
 
         // Make sure the paddle's spin speed isn't insane
-        updateFunctions.capAngularVelocity(paddle);
+        updateFunctions.capAngularVelocity,
 
         // Check if this is a clone and remove it if necessary
-        updateFunctions.cloneCleanup(paddle);
-      },
-      snapBack: function (paddle) {
-        updateFunctions.expandPowerup(paddle);
-        updateFunctions.spinPowerup(paddle);
-
-        updateFunctions.moveXY(paddle);
-        updateFunctions.moveAnalog(paddle);
-
-        // Listen to gamepad for amount of winding up to do, and prepare to unleash fury!
-        updateFunctions.snapBackSpin(paddle);
-
-        updateFunctions.limitXY(paddle);
-        updateFunctions.spinToTarget(paddle);
-      },
-      dashing: function (paddle) {
-        updateFunctions.expandPowerup(paddle);
-        updateFunctions.spinToTarget(paddle);
-        updateFunctions.stagedSpin(paddle);
-        updateFunctions.moveXY(paddle);
-        updateFunctions.limitXY(paddle);
-        updateFunctions.spinPowerup(paddle);
-        updateFunctions.dashing(paddle);
-      }
+        updateFunctions.cloneCleanup,
+      ],
+      dashing: [
+        updateFunctions.expandPowerup,
+        updateFunctions.spinToTarget,
+        updateFunctions.stagedSpin,
+        updateFunctions.nudgedSpin,
+        updateFunctions.analogSpin,
+        updateFunctions.moveXY,
+        updateFunctions.limitXY,
+        updateFunctions.spinPowerup,
+        updateFunctions.dashing
+      ]
     },
     updateRoute: 'default'
   });
