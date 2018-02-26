@@ -63,7 +63,6 @@ function createBall(options){
     startedGoingFast : false,
     frameTick: 0,
 
-
     // TODO - what are these for?
     displayAngle: 0,
     rotationVelocity: 0,
@@ -140,6 +139,12 @@ function createBall(options){
         this.goalsWhileFast = 0;
       }
 
+      if(this.hasTargetSpeed){
+        this.element.classList.add("sticky");
+      } else {
+        this.element.classList.remove("sticky");
+      }
+
       if(this.applyBrakes && this.brakesModeEnabled) {
         this.changeVelocityRatio(this.brakesModeRatio);
       }
@@ -197,8 +202,6 @@ function createBall(options){
       var direction;
 
       let canSpin = false;
-
-      // this.lastHitPaddle = 1;
 
       var controlPaddle = false;
 
@@ -313,8 +316,6 @@ function createBall(options){
       }
 
       // --Spinning ball garbage ends here.
-
-
 
       // The paddle hit stuff needs a one frame delay before taking effect seemingly.
       // This is the way around that. Should be easier?

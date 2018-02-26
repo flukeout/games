@@ -180,33 +180,11 @@ var game =  {
     var deltaX = 0;
     var deltaY = 0;
 
-    var wind = -.1;
-
     if(this.ball) {
       if(this.ball.deleted != true) {
         deltaX = this.boardWidth / 2 - this.ball.physics.position.x;
         deltaY = this.boardHeight / 2 - this.ball.physics.position.y;
       }
-    }
-    this.ticks++;
-    if(wind < 0 && this.ticks > 20) {
-
-      this.ticks = 0;
-        var options = {
-          x : getRandom(-40, this.boardWidth + 40),
-          y : -200,
-          z: getRandom(-100,100),
-          zR : getRandom(-20,20),
-          angle: 180,
-          height: 30,
-          width: 30,
-          o: .8,
-          speed : 20,
-          lifespan: 1500,
-          className : "paddleChunk"
-        }
-
-        options.z = 0;
     }
 
     var maxRotation = 20;

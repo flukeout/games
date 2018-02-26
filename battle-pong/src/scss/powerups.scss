@@ -266,7 +266,7 @@
   height: 540px;
   animation-fill-mode: forwards;
   opacity: 0;
-  animation: flash .5s ease-out;    
+  animation: flash .5s ease-out;
 
 
   &.magnet {
@@ -308,11 +308,11 @@
 
   &.magnet {
     background-image: url(assets/images/tar.svg);
-    background-size: 100%;    
+    background-size: 100%;
   }
   
   &.grow {
     background-image: url(assets/images/star.svg);
-    background-size: 100%;    
+    background-size: 100%;
   }
 }

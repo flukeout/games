@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
   startStars(30, window.innerWidth, 400);
+  // startWind(30, 100, 100);
 });
 
 // Flashes board border when a powerup scores
