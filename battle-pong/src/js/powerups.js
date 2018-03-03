@@ -13,7 +13,8 @@
     mine: 'Bomb_Spawn'
   };
 
-  const powerupFrequency = Settings.powerupFrequency || 300; // A powerup appears once in every X frames
+  // A powerup appears once in every X frames
+  const powerupFrequency = Settings.powerupFrequency || 30; 
   const maxPowerupCount = Settings.maxPowerupCount || 2;
 
   function PowerupManager(game) {
@@ -92,6 +93,10 @@
         <div class='body'>
           <div class='light'></div>
         </div>`;
+      }
+
+      if(type == "magnet") {
+        properties.ignoreRotation = true;
       }
 
       return createObject({
@@ -266,7 +271,7 @@
 
           if(playerHit && this.type != "mine"){
 
-            if(this.type == "clone" || this.type == "grow" || this.type == "spin") {
+            if(this.type == "magnet" || this.type == "clone" || this.type == "grow" || this.type == "spin") {
               for(var i = 0; i < 2; i++){
                 var paddle = game.paddles[i];
                 if(paddle.player == playerAffected) {

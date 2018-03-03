@@ -23,6 +23,17 @@ html, body {
   z-index: 99999999;
 }
 
+.world .board-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 1;
+  width: 850px;
+  height: 500px;
+}
+
+
+
 [data-physics] {
   will-change: transform;
 }

@@ -63,7 +63,6 @@ function createBall(options){
     startedGoingFast : false,
     frameTick: 0,
 
-
     // TODO - what are these for?
     displayAngle: 0,
     rotationVelocity: 0,
@@ -85,6 +84,9 @@ function createBall(options){
     goalsWhileFastAllowed: 2,
     goalsWhileFast : 0,
     goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
+
+    hasTargetSpeed : false,
+    targetSpeed : false,
 
     delayBeforeCanSpinMS : 100,
 
@@ -122,15 +124,28 @@ function createBall(options){
           removalList.push(this);
         }
       }
+      
+      if(this.hasTargetSpeed) {
+        if(this.physics.speed > this.targetSpeed) {
+          this.changeVelocityRatio(.9);
+          if(Math.abs(this.physics.speed - this.targetSpeed) < .1) {
+            this.hasTargetSpeed = false;
+          }
+        }
+      }
 
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
-        console.log("Turned off brakes");
         this.applyBrakes = false;
         this.goalsWhileFast = 0;
       }
 
+      if(this.hasTargetSpeed){
+        this.element.classList.add("sticky");
+      } else {
+        this.element.classList.remove("sticky");
+      }
+
       if(this.applyBrakes && this.brakesModeEnabled) {
-        console.log("Applying brakes");
         this.changeVelocityRatio(this.brakesModeRatio);
       }
 
@@ -187,8 +202,6 @@ function createBall(options){
       var direction;
 
       let canSpin = false;
-
-      // this.lastHitPaddle = 1;
 
       var controlPaddle = false;
 
@@ -368,15 +381,12 @@ function createBall(options){
     hit: function(obj){
 
       if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
-        
-        console.log("got hit at", this.physics.speed);
         if(this.physics.speed > this.goingFastSpeedThreshold) {
           this.goalsWhileFast++;
         } else {
           this.goalsWhileFast = 0;
         }
         if(this.goalsWhileFast >= this.goalsWhileFastAllowed) {
-          console.log("turned on brakes");          
           this.applyBrakes = true;
         }
       }
@@ -392,7 +402,16 @@ function createBall(options){
           this.lastTouchedPaddle = 2;
         }
 
-        // this.gotPaddleHit = true;
+        if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
+          var p = game.paddles[this.lastTouchedPaddle - 1];
+          if(p.physics.angularSpeed < .04) {
+            this.hasTargetSpeed = true;
+            this.targetSpeed = 0;
+          } else {
+            this.hasTargetSpeed = false;
+          }
+        }
+
         this.checkSpeed();
         this.applyBrakes = false;
       }
@@ -418,8 +437,6 @@ function createBall(options){
       else {
         SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
       }
-
-
     },
 
     // After a paddle hit, we want to check if the ball is going
@@ -433,8 +450,18 @@ function createBall(options){
       }
 
       if(this.lastPaddleHitHard){
-        if(this.physics.speed > this.wordSpeed && !this.wordInProgress) {
-          this.startWord();
+        if(this.physics.speed > this.wordSpeed) {
+
+          // We want to make sure that the paddle is rotating before
+          // we allow firing the gun.
+          var hitPaddleObj = game.paddles[this.lastTouchedPaddle - 1];
+          if(hitPaddleObj.physics.angularSpeed < .04) {
+            return;
+          }
+
+          if(!this.wordInProgress) {
+            this.startWord();  
+          }
 
           var xDelta = this.physics.velocity.x;
           var yDelta = this.physics.velocity.y;

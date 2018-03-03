@@ -1,9 +1,36 @@
 document.addEventListener('DOMContentLoaded', function(){
   startStars(30, window.innerWidth, 400);
+  // startWind(30, 100, 100);
 });
 
 // Flashes board border when a powerup scores
+// and adds some little particles
 function powerupScored(x, y, type){
+
+  for(var i = 0; i < 4; i++) {
+    var options = {
+      x : x,
+      y : y - 15,
+      width : 20,
+      height: 20,
+      speed: getRandom(3,5),
+      speedA: -.075,
+      scaleV: -.02,
+      classList : ['powerup-scored-particle', type],
+      lifespan: 125
+    }
+
+    if(x > 450) {
+      options.angle = getRandom(20,160)
+      options.x = options.x + 10;
+    } else {
+      options.angle = getRandom(200,340);
+      options.x = options.x - 20;
+    }
+    makeParticle(options);
+
+  }
+
 
   var el = document.createElement("div");
   el.classList.add("powerup-scored");
