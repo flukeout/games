@@ -342,18 +342,6 @@
     }
   }
 
-  .option-multi {
-    margin: 0 5px;
-  
-    .value {
-      min-width: 60px;
-    }
-
-    &.enabled .value {
-      background: #ac4d9c;
-    }
-  }
-
   .value {
     margin: 0 4px;
     background: #444;
@@ -470,10 +458,6 @@
 
   [data-powerup=mine] {
     background-image: url(assets/images/mine.svg);
-  }
-
-  .controls {
-    margin: 20px 0 20px 0;
   }
 
   .enabled {

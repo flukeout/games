@@ -19,9 +19,7 @@ const maxForce = 0.01;   // .004
 const spinSpeed = .2; // .2
 const maxSpinVelocity = 2.7;
 
-const DOUBLE_PI = Math.PI * 2;
 const HALF_PI = Math.PI / 2;
-const QUARTER_PI = Math.PI / 4;
 const EIGHTH_PI = Math.PI / 8;
 const spinVelocity = spinSpeed / game.physicsSamplingRatio;
 // const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
