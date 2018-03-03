@@ -9,7 +9,7 @@ window.Settings = {
   goalTimeoutMS : 250,
   powerupFrequency : 300,
   maxPowerupCount : 2,
-  playTo : 2,
+  playTo : 1,
   mineForceRadius: 175,
   mineForceMultiplier: 0.00075,
   showFrameRate: false,
