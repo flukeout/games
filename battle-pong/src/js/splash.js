@@ -132,7 +132,6 @@ function setupStartButton(){
   })
 }
 
-
 // Sets up the music & sound toggle click handlers
 function setupToggles(els){
   els.forEach(function(el){

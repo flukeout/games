@@ -64,8 +64,8 @@ var keyboardInputLabelToActionMappings = [
     "KeyC":       "spinCounterClockwise",
     "KeyV":       "spinClockwise",
     "KeyB":       "dash",
-    "KeyF":       "windupCounterClockwise",
-    "KeyG":       "windupClockwise"
+    "KeyF":       "nudgeCounterClockwise",
+    "KeyG":       "nudgeClockwise"
   },
   {
     "ArrowUp":    "up",
@@ -75,8 +75,8 @@ var keyboardInputLabelToActionMappings = [
     "Comma":      "spinCounterClockwise",
     "Period":     "spinClockwise",
     "KeyM":       "dash",
-    "KeyJ":       "windupCounterClockwise",
-    "KeyK":       "windupClockwise"
+    "KeyJ":       "nudgeCounterClockwise",
+    "KeyK":       "nudgeClockwise"
   }
 ];
 
@@ -87,6 +87,8 @@ var gamepadInputLabelToActionMapping = {
   "dPadRight": "right",
   "bumperLeft": "spinCounterClockwise",
   "bumperRight": "spinClockwise",
+  "triggerLeft": "nudgeCounterClockwise",
+  "triggerRight": "nudgeClockwise",
   "analogLeftX": "moveX",
   "analogLeftY": "moveY",
   "analogRightX": "spinX",
