@@ -7,14 +7,14 @@ window.Settings = {
   brakesModeEnabled : true,
   dashingEnabled : false,
   goalTimeoutMS : 250,
-  powerupFrequency : 300,
-  maxPowerupCount : 2,
+  powerupFrequency : 50, //300
+  maxPowerupCount : 1, //2
   playTo : 2,
   mineForceRadius: 175,
   mineForceMultiplier: 0.00075,
   showFrameRate: false,
   showBackground: true,
-  sounds: true,
+  sounds: false, //true
   music: false, 
   player1Control : "player", // or "AI"
   player2Control : "player" // or "AI"
