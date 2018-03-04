@@ -2,11 +2,11 @@
   0% {
     transform: scale(0);
   }
-  50% {
-    transform: scale(1.1);
+  60% {
+    transform: scale(1.15);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1.1);
   }
 }
 
@@ -46,7 +46,7 @@
       transform: translateZ(10px) scale(0);
     }
     60% {
-      transform: translateZ(25px) scale(1);
+      transform: translateZ(30px) scale(1.1);
     }
     100% {
       transform: translateZ(20px) scale(1);
@@ -66,7 +66,7 @@
     top: 0%;
     left: 0%;
     transform: scale(1.1);
-    animation: powerupAppear .2s ease-out;
+    animation: powerupAppear .5s ease-out;
   }
 
   &.grow {
