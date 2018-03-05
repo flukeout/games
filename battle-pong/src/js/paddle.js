@@ -359,6 +359,12 @@ const updateFunctions = {
         }
       }
     }
+
+    paddle.angularVelocityHistory.push(paddle.physics.angularVelocity);
+    if (paddle.angularVelocityHistory.length > 10) {
+      paddle.angularVelocityHistory.shift();
+    }
+    paddle.averageAngularVelocity = paddle.angularVelocityHistory.reduce((acc, curr) => acc + curr)/paddle.angularVelocityHistory.length;
   },
   capAngularVelocity: function (paddle) {
     if(paddle.physics.angularVelocity > maxAngularVelocity) {
@@ -665,6 +671,8 @@ function createPaddle(options) {
     timeSpinning : 0,
 
     analogSpinDirection: 1,
+    averageAngularVelocity: 0,
+    angularVelocityHistory: [],
     
     update(delta){
       // Save these on the object so that they're accessible to update functions
