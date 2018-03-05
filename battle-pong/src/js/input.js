@@ -21,7 +21,13 @@ window.InputManager = function (onInputChanged) {
     onInputChanged(object);
   };
 
-  this.getComponentForNextAvailableInput = function(playerNumber) {
+  this.createInputComponentFromConfigIndex = function (type, index) {
+    let manager = (type === 'gamepad' ? GamepadManager : KeyboardManager);
+    let createFunction = (type === 'gamepad' ? createGamepadInputComponent : createKeyboardInputComponent);
+    return createFunction(manager.getConfigByIndex(index));
+  };
+
+  this.getComponentForNextAvailableInput = function() {
     var unusedGamepad = GamepadManager.getUnusedGamepad();
     if (unusedGamepad) {
       return createGamepadInputComponent(unusedGamepad);
@@ -100,6 +106,12 @@ window.KeyboardManager = (function() {
   }
 
   return {
+    getAllConfigs: function () {
+      return configs;
+    },
+    getConfigByIndex: function (configIndex) {
+      return new Config(configIndex);
+    },
     getUnusedConfig: function () {
       for (var i = 0; i < configs.length; ++i) {
         if (!isConfigInUse(i)) {
@@ -200,6 +212,9 @@ window.GamepadManager = (function () {
   return {
     refreshGamepads: refreshGamepads,
     getGamepads: getGamepads,
+    getConfigByIndex: function (gamepadIndex) {
+      return new Config(gamepads[gamepadIndex]);
+    },
     getUnusedGamepad: function () {
       refreshGamepads();
       for (var i = 0; i < gamepads.length; ++i) {

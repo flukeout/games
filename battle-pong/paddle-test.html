@@ -108,7 +108,7 @@
     <script src="js/powerups.js"></script>     <!-- fires everything up -->
 
     <script>
-      let numPaddles = 1;
+      let numPaddles = 2;
       let lastTime = false;
 
       var engine = Engine.create();
@@ -197,8 +197,7 @@
               displayElement.querySelector('.value').textContent = value;              
             }
 
-
-            if (value !== 0) {
+            if (value) {
               displayElement.classList.add('on');
             }
             else {
@@ -206,7 +205,7 @@
             }
           });
 
-          Array.prototype.forEach.call(physicsContainer.querySelectorAll('[data-key]'), (displayElement) => {
+          Array.prototype.forEach.call(physicsContainer.querySelectorAll('[data-key][data-player="0"]'), (displayElement) => {
             let key = displayElement.getAttribute('data-key');
             let keyParts = key.split('.');
             let obj = game.paddles[0];
@@ -232,21 +231,24 @@
         }
       }
 
-      let paddleDetails = [
-        {
-          player : 0,
-          x: 80,
-          y: 200
-        },
-        {
-          player: 1,
-          x : game.boardWidth - 100,
-          y : 200
-        }
-      ];
-
       document.addEventListener('DOMContentLoaded', function () {
         let worldEl = document.querySelector(".world");
+        
+        game.boardWidth = worldEl.clientWidth;
+        game.boardHeight = worldEl.clientHeight;
+
+        let paddleDetails = [
+          {
+            player : 0,
+            x: 80,
+            y: 200
+          },
+          {
+            player: 1,
+            x : game.boardWidth - 100,
+            y : 200
+          }
+        ];
 
         for(var i = 0; i < numPaddles; i++) {
           game.paddles[i] = createPaddle({
@@ -278,7 +280,47 @@
         
         game.init();
 
-        inputManager.setupInputForObject(game.paddles[0]);
+        let controlSelectors = Array.prototype.slice.call(document.querySelectorAll('.section.controls select'));
+
+        KeyboardManager.getAllConfigs().forEach((keyboardConfig, index) => {
+          controlSelectors.forEach(controlSelector => {
+            let option = document.createElement('option');
+            option.setAttribute('data-type', 'keyboard');
+            option.setAttribute('data-index', index);
+            option.value = 'keyboard' + index;
+            option.textContent = 'Keyboard ' + index;
+            controlSelector.appendChild(option);
+          });
+        });
+
+        GamepadManager.getGamepads().forEach((gamepadConfig, index) => {
+          controlSelectors.forEach(controlSelector => {
+            let option = document.createElement('option');
+            option.setAttribute('data-type', 'gamepad');
+            option.setAttribute('data-index', index);
+            option.value = 'gamepad' + gamepadConfig.id + '' + index;
+            option.textContent = 'Gamepad ' + gamepadConfig.id;
+            controlSelector.appendChild(option);
+          });
+        });
+
+        controlSelectors.forEach(controlSelector => {
+          controlSelector.onchange = e => {
+            let paddleIndex = controlSelector.getAttribute('data-player');
+            let option = controlSelector.options[controlSelector.selectedIndex];
+            let paddle = game.paddles[paddleIndex];
+            let type = option.getAttribute('data-type');
+            let index = option.getAttribute('data-index');
+
+            paddle.setInputComponent(inputManager.createInputComponentFromConfigIndex(type, index));
+          };
+        });
+
+        for (let i = 0; i < numPaddles; ++i) {
+          let inputComponent = inputManager.getComponentForNextAvailableInput();
+          game.paddles[i].setInputComponent(inputComponent);
+          controlSelectors[i].value = inputComponent.type + inputComponent.config.id;
+        }
 
         let statusContainer = document.querySelector('.status');
         let inputContainer = statusContainer.querySelector('.input');
@@ -308,8 +350,8 @@
 
       .section .item {
         display: inline-block;
-        width: 100px;
-        font-size: 8pt;
+        width: 80px;
+        font-size: 6pt;
         font-family: monospace;
         border: 1px solid white;
         padding: 0.25em;
@@ -331,8 +373,22 @@
         background-color: darkgreen;
       }
 
-      h5 {
+      h5, h4 {
         margin: .5em 0;
+      }
+
+      .p1 {
+        width: 50%;
+        float: left;
+      }
+
+      .p2 {
+        width: 50%;
+        float: right;
+      }
+
+      select {
+        max-width: 90%;
       }
     </style>
   </head>
@@ -340,16 +396,41 @@
   <body>
     <div class="world"></div>
     <div class="status">
-      <h5>Input</h5>
-      <div class="input section">
-        <div class="template action item" data-key=""><div class="key"></div><div class="value"></div></div>
+      <div class="p1">
+        <h4>P1</h4>
+        <h5>Input</h5>
+        <div class="input section">
+          <div class="template action item" data-key=""><div class="key"></div><div class="value"></div></div>
+        </div>
+        <h5>Physics</h5>
+        <div class="physics section">
+          <div class="item" data-player="0" data-key="physics.angle"><div class="key">Angle</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="targetAngle"><div class="key">Target Angle</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="physics.position.x"><div class="key">X</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="physics.position.y"><div class="key">Y</div><div class="value"></div></div>
+        </div>
+        <h5>Controls</h5>
+        <div class="controls section">
+          <select class="control-selection" data-player="0"></select><br/>
+        </div>
       </div>
-      <h5>Physics</h5>
-      <div class="physics section">
-        <div class="item" data-key="physics.angle"><div class="key">Angle</div><div class="value"></div></div>
-        <div class="item" data-key="targetAngle"><div class="key">Target Angle</div><div class="value"></div></div>
-        <div class="item" data-key="physics.position.x"><div class="key">X</div><div class="value"></div></div>
-        <div class="item" data-key="physics.position.y"><div class="key">Y</div><div class="value"></div></div>
+      <div class="p2">
+        <h4>P2</h4>
+        <h5>Input</h5>
+        <div class="input section">
+          <div class="template action item" data-key=""><div class="key"></div><div class="value"></div></div>
+        </div>
+        <h5>Physics</h5>
+        <div class="physics section">
+          <div class="item" data-player="0" data-key="physics.angle"><div class="key">Angle</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="targetAngle"><div class="key">Target Angle</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="physics.position.x"><div class="key">X</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="physics.position.y"><div class="key">Y</div><div class="value"></div></div>
+        </div>
+        <h5>Controls</h5>
+        <div class="controls section">
+          <select class="control-selection" data-player="1"></select>
+        </div>
       </div>
     </div>
   </body>

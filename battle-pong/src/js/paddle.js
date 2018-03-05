@@ -18,11 +18,11 @@ const frictionAir = .2;  // .01
 const maxForce = 0.01;   // .004
 const spinSpeed = .2; // .2
 const maxSpinVelocity = 2.7;
+const dashVelocityMaximum = 450;
 
 const HALF_PI = Math.PI / 2;
 const EIGHTH_PI = Math.PI / 8;
 const spinVelocity = spinSpeed / game.physicsSamplingRatio;
-// const maxSpinVelocity = 0.05235987755982988 / 0.7853981633974483 * 25; // From (3 / 180 * Math.PI) * (Math.PI / 4 * 25) <--- Not sacred. Go ahead and change.
 
 const maxAngularVelocity = .0905;
 const angularSpeedThreshold = .02;
@@ -57,7 +57,6 @@ const updateFunctions = {
       }
 
       paddle.force(xForce, yForce);
-
 
       //TODO: see if this is needed elsewhere
       paddle.physics.frictionAir = frictionAir / game.physicsSamplingRatio;
@@ -269,7 +268,7 @@ const updateFunctions = {
       let angularVelocity = spinVelocity * paddle.actions.spinX;
       
       if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, dashVelocityMaximum, .5, 1);  
       }
   
       paddle.spin(angularVelocity);
@@ -283,10 +282,10 @@ const updateFunctions = {
       }
     }
     else if (Math.abs(paddle.actions.spinY) > 0.2) {
-      let angularVelocity = spinVelocity * -paddle.actions.spinY;
+      let angularVelocity = spinVelocity * -paddle.actions.spinY * paddle.analogSpinDirection;
       
       if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, dashVelocityMaximum, .5, 1);  
       }
   
       paddle.spin(angularVelocity);
@@ -655,7 +654,8 @@ function createPaddle(options) {
     },
 
     init: function(){
-      // TODO - remove this?
+      // Reverse the calculations for analog spinning if player is on the right side.
+      this.analogSpinDirection = this.player === 0 ? 1 : -1;
     },
 
         // This gets called every frame of the game
@@ -663,6 +663,8 @@ function createPaddle(options) {
     frameTicks: 0,
     isSpinning : false,
     timeSpinning : 0,
+
+    analogSpinDirection: 1,
     
     update(delta){
       // Save these on the object so that they're accessible to update functions
