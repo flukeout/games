@@ -45,6 +45,7 @@ var game =  {
 
   paddles: [],
   ball: null,
+  balls: [],
 
   aiManager: null,
 
@@ -399,18 +400,29 @@ var game =  {
       options = {};
     }
 
-    this.ball && this.ball.destroy();
-    this.ball = createBall(options);
+    
+    // for(var ball in this.balls){
+    //   this.
+
+    // }
+    
+    // this.ball && this.ball.destroy(); // Destroy all balls...
+
+    let ball = createBall(options);
+    this.balls.push(ball);
+    
+    // this.ball = createBall(options);
+    
     SoundManager.playSound('Ball_Spawn');
-    this.aiManager.setBall(this.ball);
+    this.aiManager.setBall(ball);
 
     // TODO - Move a lot of this stuff to the ball object?
-    this.ball.element.classList.add('show');
+    ball.element.classList.add('show');
 
     var y = this.boardHeight / 2 - 15;
     var x = this.boardWidth * this.terrainLinePercent / 100;
 
-    Matter.Body.set(this.ball.physics, {
+    Matter.Body.set(ball.physics, {
       position: { x : x, y : y }
     });
 
@@ -418,9 +430,9 @@ var game =  {
     var launchForce = .02 * this.physicsSamplingRatio;
 
     if(chance === 0) {
-      this.ball.launch(0, -launchForce);
+      ball.launch(0, -launchForce);
     } else {
-      this.ball.launch(0, launchForce);
+      ball.launch(0, launchForce);
     }
   },
 
@@ -474,7 +486,6 @@ var game =  {
 
   // Restarts a round
   restart : function(){
-    console.log("restart");
 
     setTimeout(function(){
       SoundManager.playSound("round-start");
@@ -485,10 +496,23 @@ var game =  {
 
     this.showScore();
 
+    var finalRound = false;
+    let gamesPlayed = that.score.player1 + that.score.player2;
+    if(gamesPlayed === (that.score.max - 1) * 2) {
+      finalRound = true;
+    }
+
     setTimeout(function(){
       that.mode = "running";
       that.updateBounds();
       that.launchBall();
+
+      if(finalRound){
+        setTimeout(function(){
+          that.launchBall();
+        },200);
+      }
+
     }, 1500);
 
     this.bodyEl.classList.remove("winner-screen");
@@ -509,7 +533,8 @@ var game =  {
 
     var that = this;
     setTimeout(function(){
-      that.showMessage("GAME ON!", 1500);
+      var message = finalRound ? "FINAL ROUND!!" : "GAME ON!";
+      that.showMessage(message, 1500);
     }, 1400)
   },
 
@@ -624,16 +649,19 @@ var game =  {
 
 
   // When the round is over, but a player hasn't wong the game yet
-  roundOver: function() {
+  roundOver: function(ball) {
+
+    console.log("roundOver, ball? ", ball);
 
     this.paddles[0].maxX = false;
     this.paddles[1].minX = false;
 
-    if(this.ball.physics.speed > this.ball.wordSpeed) {
-      addFakeBall(this.ball.physics);
+    if(ball) {
+      if(ball.physics.speed > ball.wordSpeed) {
+        addFakeBall(ball.physics);
+      }
+      removalList.push(ball);
     }
-
-    removalList.push(this.ball);
 
     this.mode = "roundover";
 
@@ -678,6 +706,14 @@ var game =  {
 
   playerScored : function(player, ballPhysics){
 
+    var scoringBall;
+
+    for(ball of this.balls){
+      if(ball.id = ballPhysics.id){
+        scoringBall = ball;
+      }
+    }
+
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;
     }
@@ -697,7 +733,7 @@ var game =  {
 
     var goalAllowed = true;
 
-    if(this.ball.lastTouchedPaddle == scoredOnPlayerNum) {
+    if(scoringBall.lastTouchedPaddle == scoredOnPlayerNum) {
       if(this.ownGoalCooldownTimerMS != 0) {
         goalAllowed = false;
       }
@@ -730,6 +766,7 @@ var game =  {
     var terrainChange = this.minTerrainChange + (xForceRatio * 15);
     // this.terrainChange = 50;
     // Add a message near the impact that indicates
+
     // the force of the hit (in percentage points)
 
     // TODO - make the 10 a variable up top somehwere
@@ -748,7 +785,7 @@ var game =  {
       }}));
     }
 
-    this.moveTerrain(scoredByPlayerNum, terrainChange);
+    this.moveTerrain(scoredByPlayerNum, terrainChange, scoringBall);
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
 
     SoundManager.playRandomSoundFromBank('score');
@@ -756,7 +793,7 @@ var game =  {
 
   // Moves the terrain & Score based on a goal or mine...
   // Rlayer ris 1 or 2
-  moveTerrain(player, change) {
+  moveTerrain(player, change, scoringBall) {
 
     if(this.mode != "running") {
       return;
@@ -791,7 +828,7 @@ var game =  {
     this.updateBounds();
 
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
-      this.roundOver();
+      this.roundOver(scoringBall);
       SoundManager.playSound("Win_Cheer");
       this.showMessage("NICE", 1500);
     }
