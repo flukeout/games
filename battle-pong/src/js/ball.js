@@ -16,7 +16,6 @@ function createBall(options){
       classNames : options.classNames || []
     },
 
-    lifeSpan : options.lifeSpan || "infinite",
     lastStepSpeed : 0,
     bodyEL : false,
 
@@ -111,19 +110,6 @@ function createBall(options){
     },
 
     run : function(delta) {
-
-      if(this.lifeSpan != "infinite") {
-        this.lifeSpan--;
-
-        if(this.lifeSpan < 75) {
-          this.element.classList.add("blinkBall");
-        }
-
-        if(this.lifeSpan < 0) {
-          popBall(this.physics);
-          removalList.push(this);
-        }
-      }
       
       if(this.hasTargetSpeed) {
         if(this.physics.speed > this.targetSpeed) {

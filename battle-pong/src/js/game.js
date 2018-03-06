@@ -73,6 +73,14 @@ var game =  {
     this.aiManager = new AIManager(this, engine);
   },
 
+  removeBalls: function(){
+    var that = this;
+    this.balls = this.balls.filter(ball => {
+      ball.destroy();
+      removalList.push(ball);
+    });
+  },
+
   loserLived: function(){
     this.mode = "off";
     this.showMessage("HA! MISSED!", 1500);
@@ -82,8 +90,10 @@ var game =  {
     this.score.loser.element.classList.remove("loser");
     this.score.loser.element.classList.remove("shaking");
 
+    var that = this;
+
     setTimeout(() => {
-      removalList.push(this.ball);
+      that.removeBalls();
     }, 1500);
 
     setTimeout(() => {
@@ -93,19 +103,19 @@ var game =  {
     SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Miss');
   },
 
+  // When the losing paddle gets hit during the
+  // Finish It phase
   loserDied: function(){
-    this.ball.destroy();
-    removalList.push(this.ball);
-
-    setTimeout(() => {
+    this.removeBalls();
+    SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Hit');
+    
+    setTimeout(() => {      
       this.showMessage("YOU MONSTER", 1750);
     }, 1000);
 
     setTimeout(() => {
       this.restart();
     }, 3000);
-
-    SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Hit');
   },
 
   // Keeps track of where the ball is and for how long so
@@ -172,8 +182,6 @@ var game =  {
       this.powerupManager.update();
     }
 
-    // TODO - increase physics sampling rate
-
     this.physicsSamplingRatio = 2; // Twice as fast
     this.physicsStepMS = 1000 / 60 / this.physicsSamplingRatio;
 
@@ -181,13 +189,26 @@ var game =  {
     var deltaX = 0;
     var deltaY = 0;
 
-    if(this.ball) {
-      if(this.ball.deleted != true) {
-        deltaX = this.boardWidth / 2 - this.ball.physics.position.x;
-        deltaY = this.boardHeight / 2 - this.ball.physics.position.y;
+    var ballXs = 0;
+    var ballYs = 0;
+
+    // Gets average position of all balls to calculate the tilt
+    // of teh board.
+    if(this.balls.length > 0) {
+
+      for(var ball of this.balls) {
+        ballXs = ballXs + ball.physics.position.x;
+        ballYs =  ballYs + ball.physics.position.y;
       }
+
+      var avgX = ballXs / this.balls.length;
+      var avgY = ballYs / this.balls.length;
+    
+      deltaX = this.boardWidth / 2 - avgX;
+      deltaY = this.boardHeight / 2 - avgY;
     }
 
+    
     var maxRotation = 20;
     var rotateXDeg =  maxRotation * deltaY / this.boardHeight / 2 + 20;
     var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
@@ -244,58 +265,6 @@ var game =  {
     // Some vars for easy tweaking
     // TODO - move these to the top of the game object
 
-    var delayTimeoutMS = 5000;   // How long we let a slow ball stay on one side before penalizing
-    var penaltyTimeoutMS = 500;  // How often we penalize once things are too slow
-    var percentPenalty = 2;      // How many percent of the field we penalize
-    var slowSpeedCutoff = 2.5;
-
-    var terrainCenterX = this.boardWidth * this.terrainLinePercent/100;
-
-    if (this.ball) {
-
-      // Figure out what player zone we are in
-      if(this.ball.physics.position.x < terrainCenterX) {
-        this.ballZone = 1;
-      } else {
-        this.ballZone = 2;
-      }
-
-      if(this.ballZone != this.lastBallZone) {
-        this.elapsedTime = 0;
-        this.ballState = "neutral";
-        this.ball.element.classList.remove("overtime");
-      }
-
-      this.lastBallZone = this.ballZone;
-
-      // If the ball is going slower than 2.5
-      // We start keeping track of time
-
-      if(this.previousTime && this.ball.physics.speed < slowSpeedCutoff) {
-        this.elapsedTime = this.elapsedTime + delta;
-      } else {
-        this.elapsedTime = 0;
-        // TODO - make this an event, or at least a method on the ball?
-        this.ball.element.classList.remove("overtime");
-      }
-
-      if(this.ballState == "neutral" && this.elapsedTime > delayTimeoutMS && this.mode == "running") {
-        this.ballState = "overtime";
-        this.elapsedTime = 0;
-      }
-
-      if(this.ballState == "overtime") {
-        if(this.elapsedTime > penaltyTimeoutMS) {
-          // ball.element.classList.add("overtime");
-          // this.playerDelay(this.ballZone, percentPenalty);
-          // playSound("beep");
-          // this.elapsedTime = 0;
-        }
-      }
-
-      this.previousTime = currentTime;
-    }
-
     // Remove things we don't need
     if (removalList.length > 0) {
       removalList.forEach(function (obj) {
@@ -308,27 +277,6 @@ var game =  {
       removalList = [];
     }
 
-  },
-
-  playerDelay : function(player, penalty){
-    // Move the terrain line accordingly
-    if(player === 1) {
-      this.terrainLinePercent = this.terrainLinePercent - penalty;
-    } else {
-      this.terrainLinePercent = this.terrainLinePercent + penalty;
-    }
-
-    if(this.terrainLinePercent > 100) {
-      this.terrainLinePercent = 100;
-    } else if(this.terrainLinePercent < 0) {
-      this.terrainLinePercent = 0;
-    }
-
-    this.updateBounds();
-
-    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
-      this.roundOver();
-    }
   },
 
   // Shows a message above the game board
@@ -356,63 +304,16 @@ var game =  {
     }
   },
 
-
-  // TODO - fix de-dupe
-  cloneBall : function(options){
-
-    if(!this.ball) { return }
-
-    if(!options){
-      options = {};
-    }
-
-    options.lifeSpan = 250;
-
-    this.showMessage("MULTIBALL", 1500);
-
-    var newBall = createBall(options);
-
-    setTimeout(function(){
-      newBall.element.classList.add('show');
-    },0)
-
-    newBall.element.classList.add('clone-ball');
-
-    var x = this.ball.physics.position.x;
-    var y = this.ball.physics.position.y;
-
-
-    Matter.Body.set(newBall.physics, {
-      position: { x : x, y : y }
-    });
-
-    Matter.Body.setVelocity(newBall.physics, {
-      x : this.ball.physics.velocity.x,
-      y : this.ball.physics.velocity.y
-    });
-
-    popBall(this.ball.physics);
-  },
-
-
+  // Create a new ball and launch it
   launchBall : function(options){
+
     if(!options){
       options = {};
     }
-
-    
-    // for(var ball in this.balls){
-    //   this.
-
-    // }
-    
-    // this.ball && this.ball.destroy(); // Destroy all balls...
 
     let ball = createBall(options);
     this.balls.push(ball);
-    
-    // this.ball = createBall(options);
-    
+
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(ball);
 
@@ -509,8 +410,9 @@ var game =  {
 
       if(finalRound){
         setTimeout(function(){
+          that.showMessage("CHAOS MODE", 1500);
           that.launchBall();
-        },200);
+        }, 1500);
       }
 
     }, 1500);
@@ -532,6 +434,7 @@ var game =  {
     this.updateScoreDisplay();
 
     var that = this;
+    
     setTimeout(function(){
       var message = finalRound ? "FINAL ROUND!!" : "GAME ON!";
       that.showMessage(message, 1500);
@@ -616,11 +519,9 @@ var game =  {
       var minY = that.score.loser.physics.bounds.min.y;
       var maxY = that.score.loser.physics.bounds.max.y;
       var deltaY = minY - maxY;
-      var paddleY = maxY + deltaY/2 - this.ball.width/2;
+      var paddleY = maxY + deltaY/2;
       that.score.loser.element.classList.add("shaking");
 
-      // Create the ball
-      // TODO make this relative to the paddle X value?
       if(that.score.winner == this.paddles[0]) {
         var ballX = 600;
       } else {
@@ -629,19 +530,18 @@ var game =  {
 
       that.showMessage("FINISH IT!!!");
 
-      this.ball && this.ball.destroy();
-
-      this.ball = createBall({
+      let ball = createBall({
         x: ballX,
-        y: paddleY
+        y: paddleY - 15
       });
 
-      this.ball.element.classList.add('show');
+      ball.element.classList.add('show');
+      this.balls.push(ball);
 
       SoundManager.playSound('Ball_Spawn');
-
       SoundManager.fireEvent('Finish_It_Heartbeat_Start');
-      this.aiManager.setBall(this.ball);
+      
+      this.aiManager.setBall(ball);
 
     }, 2000);
 
@@ -651,8 +551,6 @@ var game =  {
   // When the round is over, but a player hasn't wong the game yet
   roundOver: function(ball) {
 
-    console.log("roundOver, ball? ", ball);
-
     this.paddles[0].maxX = false;
     this.paddles[1].minX = false;
 
@@ -660,7 +558,7 @@ var game =  {
       if(ball.physics.speed > ball.wordSpeed) {
         addFakeBall(ball.physics);
       }
-      removalList.push(ball);
+      this.removeBalls();
     }
 
     this.mode = "roundover";
@@ -764,7 +662,7 @@ var game =  {
     var xForceRatio = xForce / 15;
 
     var terrainChange = this.minTerrainChange + (xForceRatio * 15);
-    // this.terrainChange = 50;
+    terrainChange = 50;
     // Add a message near the impact that indicates
 
     // the force of the hit (in percentage points)

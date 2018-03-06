@@ -432,7 +432,7 @@ function addFakeBall(ballPhysics) {
   var baseX = game.boardWidth;
   var patchColor = "pink";
 
-  if(game.ball.physics.position.x < game.boardWidth / 2) {
+  if(ballPhysics.position.x < game.boardWidth / 2) {
     direction = "left";
     baseX = -20;
     patchColor = "green";
