@@ -239,27 +239,14 @@ const updateFunctions = {
       // - If it's a short spin duration (less than 100ms), snap to next 90 deg
       // - If it's a long spin, snap to the next vertical orientation
 
-      if(angularVelocity >= 0) {
+      if(angularVelocity > 0) {
         // Clockwise
-        if(paddle.timeSpinning < 100) {
-          paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);  
-        } else {
-          paddle.targetAngle = (Math.ceil(paddle.physics.angle / (HALF_PI * 2)) * HALF_PI * 2);  
-        }
-      } else {
-        // Counter-clockwise
-        if(paddle.timeSpinning < 100) {
-          paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
-        } else {
-          paddle.targetAngle = (Math.floor(paddle.physics.angle / (HALF_PI * 2)) * HALF_PI * 2);  
-        }
-
+        paddle.targetAngle = (Math.ceil(paddle.physics.angle / HALF_PI) * HALF_PI);
       }
-      
-      paddle.isSpinning = true;
-      
-    } else {
-      paddle.isSpinning = false;
+      else if (angularVelocity < 0) {
+        // Counter-clockwise
+        paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
+      }
     }
   },
   analogSpin: function (paddle) {
@@ -361,7 +348,7 @@ const updateFunctions = {
     }
 
     paddle.angularVelocityHistory.push(paddle.physics.angularVelocity);
-    if (paddle.angularVelocityHistory.length > 10) {
+    if (paddle.angularVelocityHistory.length > 50) {
       paddle.angularVelocityHistory.shift();
     }
     paddle.averageAngularVelocity = paddle.angularVelocityHistory.reduce((acc, curr) => acc + curr)/paddle.angularVelocityHistory.length;
@@ -667,8 +654,6 @@ function createPaddle(options) {
         // This gets called every frame of the game
     dashDelay : 0,
     frameTicks: 0,
-    isSpinning : false,
-    timeSpinning : 0,
 
     analogSpinDirection: 1,
     averageAngularVelocity: 0,
@@ -678,14 +663,6 @@ function createPaddle(options) {
       // Save these on the object so that they're accessible to update functions
       this.dt = delta;
       this.frameTicks++;
-
-      if(this.player === 0) {
-        if(this.isSpinning) {
-          this.timeSpinning = this.timeSpinning + delta;
-        } else {
-          this.timeSpinning = 0;
-        }
-      }
 
       // Ghosts are just there to be scared and die. They can't move.
       if(this.mode != "ghost") {
