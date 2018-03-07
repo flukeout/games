@@ -44,7 +44,6 @@ var game =  {
   powerupManager: null,
 
   paddles: [],
-  ball: null,
   balls: [],
 
   aiManager: null,
@@ -118,20 +117,9 @@ var game =  {
     }, 3000);
   },
 
-  // Keeps track of where the ball is and for how long so
-  // we can apply penalties if someone is hogging it.
-
-  previousTime: false,
-
-  // TODO - change this to elapsedTimeInZone, it only keeps track of when a slow-moving
-  // ball hangs out in one terrain too long
-  elapsedTime : 0,
-
-  // TODO - rename to reference 'terrain' maybe for consistency
-  ballZone : false,
-  lastBallZone : false,
-
-  ballState : "neutral",
+  pause: function () {
+    this.mode = "paused";
+  },
 
   run: function () {
     var g = this;
@@ -151,12 +139,6 @@ var game =  {
       requestAnimationFrame(loop);
     })();
   },
-
-  pause: function () {
-    this.mode = "paused";
-  },
-
-  ticks : 0,
 
   step : function(){
     var currentTime = Date.now();
