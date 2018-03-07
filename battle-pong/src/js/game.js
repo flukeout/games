@@ -126,7 +126,7 @@ var game =  {
     g.mode = 'startup';
     (function loop() {
 
-      if(g.freezeFrames == 0) {
+      if(g.freezeFrames === 0) {
         g.step();
       } else {
         g.freezeFrames--;
@@ -177,7 +177,6 @@ var game =  {
     // Gets average position of all balls to calculate the tilt
     // of teh board.
     if(this.balls.length > 0) {
-
       for(var ball of this.balls) {
         ballXs = ballXs + ball.physics.position.x;
         ballYs =  ballYs + ball.physics.position.y;
@@ -201,14 +200,6 @@ var game =  {
 
     // Iterate over all of the objects are are updating on screen
     objectsToRender.forEach((obj) => {
-
-      // TODO - remove this because the ball has a function that runs every frame anyway now
-      // so we can add that logic internally in the ball.
-      if(obj == this.ball) {
-        if(obj.gotHit) {
-          obj.resolveHit();
-        }
-      }
 
       // TODO - pick a name for this function and standardize
       // "step" might be better than run or update actually, since we use that for the game
@@ -258,7 +249,7 @@ var game =  {
       });
       removalList = [];
     }
-
+    
   },
 
   // Shows a message above the game board
