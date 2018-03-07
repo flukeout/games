@@ -662,7 +662,7 @@ var game =  {
     var xForceRatio = xForce / 15;
 
     var terrainChange = this.minTerrainChange + (xForceRatio * 15);
-    terrainChange = 50;
+    // terrainChange = 50;
     // Add a message near the impact that indicates
 
     // the force of the hit (in percentage points)
