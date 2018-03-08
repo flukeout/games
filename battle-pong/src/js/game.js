@@ -566,13 +566,7 @@ var game =  {
 
   playerScored : function(player, ballPhysics){
 
-    var scoringBall;
-
-    for(ball of this.balls){
-      if(ball.id = ballPhysics.id){
-        scoringBall = ball;
-      }
-    }
+    var scoringBall = this.balls.find(ball => ball.id === ballPhysics.id);
 
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;
