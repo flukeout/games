@@ -36,7 +36,6 @@ var game =  {
 
   terrainOneEl : "",
   terrainTwoEl : "",
-  worldE : "",
   bodyEl : "",
 
   timeBetweenRoundsMS: 2000, // Time between rounds of the game
@@ -52,6 +51,8 @@ var game =  {
     this.worldEl = document.querySelector(".world");
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
+
+    this.tiltEl = document.querySelector(".tilt-wrapper");
 
     this.bodyEl = document.querySelector("body");
 
@@ -247,7 +248,7 @@ var game =  {
     var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
 
     if(game.mode != "off") {
-      tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
+      this.tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
     }
   },
 
@@ -679,6 +680,9 @@ var game =  {
     // Changes the bounds of the paddles based on the terrain line...
     this.updateBounds();
 
+
+    // TODO - move this into playerscore or something
+    // this whole function should just be cosmetic.
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver(scoringBall);
       SoundManager.playSound("Win_Cheer");
@@ -698,8 +702,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // Build a renderer based on an element
   setupRenderer(".world");
 
-  worldEl = document.querySelector(".world");
-  tiltEl = document.querySelector(".tilt-wrapper");
+  
+  
 
 });
 
@@ -807,12 +811,8 @@ function addWalls(options){
 
 // The main game engine, moves things around
 
-var letterIndex = 0;
 
-var currentTime;
 var lastTime = false;
 var delta;
 var worldEl;
-var tiltEl;
-
 var reactionMachine;
