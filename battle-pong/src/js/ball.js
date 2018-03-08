@@ -26,6 +26,7 @@ function createBall(options){
     },
 
     launch : function(x,y){
+      this.element.classList.add('show');
       Matter.Body.applyForce(this.physics, this.physics.position, {x : x, y : y});
     },
 

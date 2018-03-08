@@ -167,36 +167,7 @@ var game =  {
     this.physicsSamplingRatio = 2; // Twice as fast
     this.physicsStepMS = 1000 / 60 / this.physicsSamplingRatio;
 
-    // Tilts the board depending on where the ball is
-    var deltaX = 0;
-    var deltaY = 0;
-
-    var ballXs = 0;
-    var ballYs = 0;
-
-    // Gets average position of all balls to calculate the tilt
-    // of teh board.
-    if(this.balls.length > 0) {
-      for(var ball of this.balls) {
-        ballXs = ballXs + ball.physics.position.x;
-        ballYs =  ballYs + ball.physics.position.y;
-      }
-
-      var avgX = ballXs / this.balls.length;
-      var avgY = ballYs / this.balls.length;
-    
-      deltaX = this.boardWidth / 2 - avgX;
-      deltaY = this.boardHeight / 2 - avgY;
-    }
-
-    
-    var maxRotation = 20;
-    var rotateXDeg =  maxRotation * deltaY / this.boardHeight / 2 + 20;
-    var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
-
-    if(game.mode != "off") {
-      tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
-    }
+    this.tiltBoard()
 
     // Iterate over all of the objects are are updating on screen
     objectsToRender.forEach((obj) => {
@@ -249,11 +220,40 @@ var game =  {
       });
       removalList = [];
     }
-    
+
   },
 
+  // Tils the board based on where the balls are
+  tiltBoard: function(){
+    
+    var deltaX = deltaY = ballXs = ballYs = avgX = avgY = 0;
+    
+    // Gets average x,y position of all balls to calculate board tilt
+    if(this.balls.length > 0) {
+      for(var ball of this.balls) {
+        ballXs = ballXs + ball.physics.position.x;
+        ballYs =  ballYs + ball.physics.position.y;
+      }
+
+      var avgX = ballXs / this.balls.length;
+      var avgY = ballYs / this.balls.length;
+
+      deltaX = this.boardWidth / 2 - avgX;
+      deltaY = this.boardHeight / 2 - avgY;
+    }
+
+    var maxRotation = 20;
+    var rotateXDeg =  maxRotation * deltaY / this.boardHeight / 2 + 20;
+    var rotateYDeg = -maxRotation * deltaX / this.boardWidth  / 2;
+
+    if(game.mode != "off") {
+      tiltEl.style.transform = "rotateX(" + rotateXDeg + "deg) rotateY(" + rotateYDeg + "deg)";
+    }
+  },
+
+
   // Shows a message above the game board
-  showMessage : function(text, timeoutMS){
+  showMessage : function(text, duration){
 
     var scoreEl = document.querySelector(".score-display");
 
@@ -264,53 +264,41 @@ var game =  {
       scoreEl.classList.remove("show-message");
     }, 250);
 
-    if(timeoutMS) {
+    if(duration) {
       setTimeout(function(){
         scoreEl.classList.add("remove-message");
-      }, timeoutMS - 250);
+      }, duration - 250);
 
       setTimeout(function(){
         scoreEl.innerHTML = "";
         scoreEl.classList.remove("remove-message");
-      }, timeoutMS);
-
+      }, duration);
     }
   },
 
   // Create a new ball and launch it
-  launchBall : function(options){
+  launchBall : function(){
 
-    if(!options){
-      options = {};
-    }
-
-    let ball = createBall(options);
+    let ball = createBall();
     this.balls.push(ball);
+
+    Matter.Body.set(ball.physics, {
+      position: { 
+        x : this.boardWidth / 2, 
+        y : this.boardHeight / 2 - 15
+      }
+    });
+ 
+    var chance = Math.floor(getRandom(0,2));
+    var launchForce = (chance === 0 ? -1 : 1) * .02 * this.physicsSamplingRatio;
+    ball.launch(0, launchForce);
 
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(ball);
-
-    // TODO - Move a lot of this stuff to the ball object?
-    ball.element.classList.add('show');
-
-    var y = this.boardHeight / 2 - 15;
-    var x = this.boardWidth * this.terrainLinePercent / 100;
-
-    Matter.Body.set(ball.physics, {
-      position: { x : x, y : y }
-    });
-
-    var chance = Math.floor(getRandom(0,1));
-    var launchForce = .02 * this.physicsSamplingRatio;
-
-    if(chance === 0) {
-      ball.launch(0, -launchForce);
-    } else {
-      ball.launch(0, launchForce);
-    }
   },
 
 
+  // Animates the large score numbers on the board
   showScore : function(){
     var that = this;
     var delay = 500;
@@ -370,6 +358,7 @@ var game =  {
 
     this.showScore();
 
+    // Check if this is the final round
     var finalRound = false;
     let gamesPlayed = that.score.player1 + that.score.player2;
     if(gamesPlayed === (that.score.max - 1) * 2) {
@@ -390,13 +379,13 @@ var game =  {
 
     }, 1500);
 
-    this.bodyEl.classList.remove("winner-screen");
-    this.bodyEl.classList.remove("winner-two");
-    this.bodyEl.classList.remove("winner-one");
+    
+    ["winner-screen", "winner-two", "winner-one"].forEach(function(className){
+      that.bodyEl.classList.remove(className);
+    });
 
-    for(var i = 0; i < this.paddles.length; i++){
-      var p = this.paddles[i];
-      p.reset();
+    for(let paddle of this.paddles){
+      paddle.reset();
     }
 
     this.mode = "pregame";
@@ -414,10 +403,10 @@ var game =  {
     }, 1400)
   },
 
-  // Updates the score display in the corners of the game
-  updateScoreDisplay: function(){
-    document.querySelector(".player-1-score").innerText =this.score["player1"];
-    document.querySelector(".player-2-score").innerText =this.score["player2"];
+  // Updates the score satellite
+  updateScoreDisplay: function(){    
+    document.querySelector(".player-1-score").innerText = this.score["player1"];
+    document.querySelector(".player-2-score").innerText = this.score["player2"];
   },
 
   // Updates the terrain widths and paddle movement restrictions
@@ -636,11 +625,9 @@ var game =  {
 
     var terrainChange = this.minTerrainChange + (xForceRatio * 15);
     // terrainChange = 50;
+
     // Add a message near the impact that indicates
-
     // the force of the hit (in percentage points)
-
-    // TODO - make the 10 a variable up top somehwere
     if(terrainChange >= 10) {
       showMessage({
         text: "-" + Math.round(terrainChange) + "%",
