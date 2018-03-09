@@ -49,41 +49,32 @@ var game =  {
 
   init: function(){
     this.worldEl = document.querySelector(".world");
-    this.boardWidth = this.worldEl.clientWidth;
-    this.boardHeight = this.worldEl.clientHeight;
-
     this.tiltEl = document.querySelector(".tilt-wrapper");
-
     this.bodyEl = document.querySelector("body");
+    this.surfaceOverlayEl = document.querySelector(".surface .overlay");
 
     this.terrainOneEl = document.querySelector(".terrain.one");
     this.terrainTwoEl = document.querySelector(".terrain.two");
 
+    this.boardWidth = this.worldEl.clientWidth;
+    this.boardHeight = this.worldEl.clientHeight;
+
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", e => {
-      var scoringPlayer = 1;
-      if(e.detail.side == "left") {
-        scoringPlayer = 2;
-      }
+      var scoringPlayer = e.detail.side == "left" ? 2 : 1;
       this.playerScored(scoringPlayer, e.detail.ball);
     });
 
     this.powerupManager = new PowerupManager(this);
-
     this.aiManager = new AIManager(this, engine);
   },
 
-  removeBalls: function(){
-    var that = this;
-    this.balls = this.balls.filter(ball => {
-      ball.destroy();
-      removalList.push(ball);
-    });
-  },
 
+  // When the loser survives the FINISH IT phase
   loserLived: function(){
     this.mode = "off";
     this.showMessage("HA! MISSED!", 1500);
+    SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Miss');
 
     // TODO - move this stuff to the paddle, add a setType function?
     this.score.loser.mode = "normal";
@@ -91,7 +82,6 @@ var game =  {
     this.score.loser.element.classList.remove("shaking");
 
     var that = this;
-
     setTimeout(() => {
       that.removeBalls();
     }, 1500);
@@ -99,12 +89,9 @@ var game =  {
     setTimeout(() => {
       this.restart();
     }, 2500);
-
-    SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Miss');
   },
 
-  // When the losing paddle gets hit during the
-  // Finish It phase
+  // When the loser dies during the FINISH IT phase
   loserDied: function(){
     this.removeBalls();
     SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Hit');
@@ -277,6 +264,7 @@ var game =  {
     }
   },
 
+
   // Create a new ball and launch it
   launchBall : function(){
 
@@ -296,6 +284,16 @@ var game =  {
 
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(ball);
+  },
+
+
+  // Removes all balls from the game
+  removeBalls: function(){
+    var that = this;
+    this.balls = this.balls.filter(ball => {
+      ball.destroy();
+      removalList.push(ball);
+    });
   },
 
 
@@ -337,6 +335,7 @@ var game =  {
     }, delay);
 
     delay = delay + 500;
+
     setTimeout(function(){
       scoreOneEl.style.display = "none";
       scoreTwoEl.style.display = "none";
@@ -395,8 +394,6 @@ var game =  {
     this.updateBounds();
 
     this.updateScoreDisplay();
-
-    var that = this;
     
     setTimeout(function(){
       var message = finalRound ? "FINAL ROUND!!" : "GAME ON!";
@@ -404,11 +401,13 @@ var game =  {
     }, 1400)
   },
 
+
   // Updates the score satellite
   updateScoreDisplay: function(){    
     document.querySelector(".player-1-score").innerText = this.score["player1"];
     document.querySelector(".player-2-score").innerText = this.score["player2"];
   },
+
 
   // Updates the terrain widths and paddle movement restrictions
   updateBounds : function(mode){
@@ -442,15 +441,9 @@ var game =  {
 
     var maxRotation = 2; // Max rotation of the angle when someone is winning
     
-    // Constrain the overlay opacity
-    var min = 25;
-    var max = 75;
-    
-    // Map range of (25 to 75) => (0 to 1)
-    var overlayOpacity = mapScale(this.terrainLinePercent, min, max, 0 , 1);
-
-
-    document.querySelector(".surface .overlay").style.opacity = 1 - overlayOpacity;
+    // Changes the color of the planet by modifying opacity of the overlay
+    var overlayOpacity = mapScale(this.terrainLinePercent, 25, 75, 0 , 1);
+    this.surfaceOverlayEl.style.opacity = 1 - overlayOpacity;
   },
 
 
@@ -645,7 +638,6 @@ var game =  {
   },
 
   // Moves the terrain & Score based on a goal or mine...
-  // Rlayer ris 1 or 2
   moveTerrain(player, change, scoringBall) {
 
     if(this.mode != "running") {
@@ -689,6 +681,7 @@ var game =  {
       this.showMessage("NICE", 1500);
     }
   },
+
   removeObject: (object) => {
     removalList.push(object);
   }
@@ -698,19 +691,13 @@ var game =  {
 // Sets up the world
 document.addEventListener('DOMContentLoaded', function () {
   reactionMachine = new ReactionMachine();
-
-  // Build a renderer based on an element
   setupRenderer(".world");
-
-  
-  
-
 });
 
 
-function setupRenderer(worldSelector){
+function setupRenderer(selector){
 
-  var sBox = document.querySelector(worldSelector);
+  var sBox = document.querySelector(selector);
 
   game.boardWidth = sBox.clientWidth;
 
@@ -721,30 +708,33 @@ function setupRenderer(worldSelector){
     sides : ["top","right","bottom","left"]
   });
 
-  // Create a renderer
-  var render = Render.create({
-    element: document.querySelector(worldSelector),
-    engine: engine,
-    options: {
-      width: sBox.clientWidth,
-      height: sBox.clientHeight,
-      showVelocity: true,
-      showAngleIndicator: true
-    }
-  });
 
   world.bounds.min.x = 0;
   world.bounds.max.x = sBox.clientWidth;
   world.bounds.min.y = 0;
   world.bounds.max.y = sBox.clientHeight;
 
-  // TODO - mess with world gravity?
   world.gravity.y = 0;
   world.gravity.x = 0;
 
   Matter.Resolver._restingThresh = 0.1;
 
-  //Render.run(render); // TODO - since this is for gging only, we should make it a flag (DEBUG)
+  let makeRenderer = false; // make this true if you want to overlay what the physics engine is doing
+
+  if(makeRenderer) {
+    var render = Render.create({
+      element: document.querySelector(selector),
+      engine: engine,
+      options: {
+        width: sBox.clientWidth,
+        height: sBox.clientHeight,
+        showVelocity: true,
+        showAngleIndicator: true
+      }
+    });
+    Render.run(render);
+  }
+  
 }
 
 var Engine = Matter.Engine,
@@ -808,11 +798,5 @@ function addWalls(options){
   }
 }
 
-
-// The main game engine, moves things around
-
-
 var lastTime = false;
-var delta;
-var worldEl;
 var reactionMachine;

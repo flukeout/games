@@ -300,27 +300,24 @@ function addBallTrail(x,y){
 // When you blast a ball really hard
 function fireGun(x, y, angle, player){
 
-  for(var i = 0; i < 8; i++){
-
-    var options = {
-      x : x - 3,
-      y : y - 3,
-      angle: angle + 180,
-      zRv : getRandom(-5,5),
-      speedA: -.06,
-      oV : -.04,
-      o: 3,
-      width : 6,
-      height: 6,
-      className : 'puff'
-    }
-
-    var angleMod = getRandom(-20,20);
-    options.angle = options.angle + angleMod;
-    options.speed = 6 - 2 * (Math.abs(angleMod) / 20);
-
-    makeParticle(options);
-  }
+  // for(var i = 0; i < 8; i++){
+  //   var options = {
+  //     x : x - 3,
+  //     y : y - 3,
+  //     angle: angle + 180,
+  //     zRv : getRandom(-5,5),
+  //     speedA: -.06,
+  //     oV : -.04,
+  //     o: 3,
+  //     width : 6,
+  //     height: 6,
+  //     className : 'puff'
+  //   }
+  //   var angleMod = getRandom(-20,20);
+  //   options.angle = options.angle + angleMod;
+  //   options.speed = 6 - 2 * (Math.abs(angleMod) / 20);
+  //   makeParticle(options);
+  // }
 
   // This is the front blast!
   var options = {
@@ -332,7 +329,6 @@ function fireGun(x, y, angle, player){
     oV: -.05,
     className : 'fire'
   }
-
   makeParticle(options);
 
   // This is the back blast!
@@ -349,6 +345,7 @@ function fireGun(x, y, angle, player){
   makeParticle(options);
 
   addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
+  
   shakeScreen();
 
   SoundManager.playRandomSoundFromBank("super-hard-shot");

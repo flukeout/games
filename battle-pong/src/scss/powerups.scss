@@ -23,6 +23,8 @@
   left: 0;
   transform-style: preserve-3d;
   z-index: 1000;
+  border-radius: 50%;
+  overflow: visible;
 
   .body {
     color: rgba(255,255,255,.4);
