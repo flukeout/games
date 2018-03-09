@@ -17,6 +17,16 @@
   }
 }
 
+.mine-line {
+  position: absolute;
+  top: 0;
+  border: dashed 2px rgba(0,0,0,.2);
+  content: "";
+  height: 100%;
+  z-index: 4;
+}
+
+
 .powerup {
   position: absolute;
   top: 0;
@@ -107,6 +117,7 @@
       background: black;
       border-radius: 50%;
     }
+
 
     .body {
       background-image: url(assets/images/mine.svg);

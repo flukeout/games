@@ -147,17 +147,46 @@
 
           var boardMiddle = game.boardWidth * game.terrainLinePercent / 100;
           var thisX = this.physics.position.x;
+          
+          var boardMiddlePercent = game.terrainLinePercent / 100;
+          var mineXPercentage = this.physics.position.x / game.boardWidth;
+
+          var mineDelta = boardMiddlePercent - mineXPercentage;
+          
+          console.log(mineDelta);
+
           var scoringPlayer;
 
-          if(thisX > boardMiddle) {
+          if(mineDelta < 0) {
             scoringPlayer = 1;
-          } else if(thisX < boardMiddle) {
-            scoringPlayer = 2;
           } else {
-            scoringPlayer = Math.round(Math.random()) + 1;
+            scoringPlayer = 2;
           }
 
-          game.moveTerrain(scoringPlayer, 20);
+          // if(thisX > boardMiddle) {
+          //   scoringPlayer = 1;
+          // } else if(thisX < boardMiddle) {
+          //   scoringPlayer = 2;
+          // } else {
+          //   scoringPlayer = Math.round(Math.random()) + 1;
+          // }
+
+          var line = document.createElement("div");
+          line.classList.add("mine-line");
+          document.querySelector(".blast-zone").append(line);
+          line.style.left = thisX + "px";
+
+          console.log(game.boardWidth * mineXPercentage);
+
+          setTimeout(function(){
+            game.moveTerrain(scoringPlayer, Math.abs(mineDelta * 100));  
+          }, 400);
+
+          setTimeout(function(){
+            line.remove();
+          }, 450);
+
+          
 
           objectsToRender.forEach((obj) => {
             if (obj === this) return;
