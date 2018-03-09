@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+<html>
+  <head>
+    <title></title>
+    <!-- <link href="https://fonts.googleapis.com/css?family=Teko" rel="stylesheet"> -->
+    <base href="src/">
+    <link rel="stylesheet" href="style.css"/>
+    <!-- insert minified source here -->
+    <script src="js/matter.min.js"></script>   <!-- physics engine -->
+    <script>
+      let Engine = Matter.Engine,
+          World = Matter.World,
+          Bodies = Matter.Bodies,
+          Render = Matter.Render,
+          Runner = Matter.Runner,
+          Events = Matter.Events,
+          Constraint = Matter.Constraint;
+
+      function getRandom(min, max){
+        return min + Math.random() * (max-min);
+      }
+
+      function constrain(value, min, max) {
+        if(value <= min) {
+          return min;
+        } else if (value >= max) {
+          return max;
+        } else {
+          return value;
+        }
+
+      }
+
+      function mapScale(value, min, max, newMin, newMax) {
+        
+        // Set to min or max if value is outside of bounds
+        if(value >= max) {
+          value = max;
+        } else if (value <= min) {
+          value = min;
+        }
+
+        var delta = value - min;
+        var percent = delta / (max - min);
+        
+        var newRangeDelta = newMax - newMin;
+        var newValue = newMin + (newRangeDelta * percent);
+        
+        return newValue;
+      }
+
+      function addWalls(options){
+        var width = options.width;
+        var height = options.height;
+        var world = options.world;
+        var sides = options.sides;
+
+        var thickness = 100;
+
+        for(var i = 0; i < sides.length; i++) {
+          var side = sides[i];
+          var x, y, wallWidth, wallHeight;
+
+          if(side == "top") {
+            x = width / 2;
+            y = -thickness/2;
+            wallWidth = width;
+            wallHeight = thickness;
+          } else if (side == "left") {
+            x = -thickness/2;
+            y = height/2;
+            wallWidth = thickness;
+            wallHeight = height;
+          } else if (side == "right") {
+            x = width + thickness/2;
+            y = height/2;
+            wallWidth = thickness;
+            wallHeight = height;
+          } else if (side == "bottom") {
+            x = width / 2;
+            y = height + thickness / 2;
+            wallWidth = width;
+            wallHeight = thickness;
+          }
+
+          var wall = Bodies.rectangle(x, y, wallWidth, wallHeight, {
+            isStatic: true,
+            label: "wall-"  + side
+          });
+          wall.friction = options.friction || 0;
+          world.add(engine.world, wall);
+        }
+      }
+
+    </script>
+    <script src="js/settings.js"></script>
+    <script src="js/convert.js"></script>      <!-- Get DOM elements properties for the engine -->
+
+    <script src="js/input-mappings.js"></script>
+    <script src="js/input.js"></script>        <!-- keyboard and joystick controls -->
+
+    <script src="js/components.js"></script>   <!-- animates browser tab -->
+
+    <script src="js/music.js"></script>       <!-- handles loading & playing sounds -->
+    <script src="js/sounds.js"></script>       <!-- handles loading & playing sounds -->
+    <script src="js/powerups.js"></script>     <!-- fires everything up -->
+
+    <script>
+      let numPaddles = 1;
+      let lastTime = false;
+
+      var engine = Engine.create();
+
+      var objectsToRender = [];
+
+      let game = {
+        boardWidth : 0,
+        boardHeight: 0,
+        worldE : "",
+        paddles: [],
+        physicsSamplingRatio: 2,
+        physicsStepMS: 1000 / 60 / this.physicsSamplingRatio,
+
+        init: function(){
+          let worldEl = document.querySelector(".world");
+          let world = engine.world;
+
+          game.boardWidth = worldEl.clientWidth;
+          game.boardHeight = worldEl.clientHeight;
+
+          world.bounds.min.x = 0;
+          world.bounds.max.x = worldEl.clientWidth;
+          world.bounds.min.y = 0;
+          world.bounds.max.y = worldEl.clientHeight;
+
+          world.gravity.y = 0;
+          world.gravity.x = 0;
+
+          Matter.Resolver._restingThresh = 0.1;
+        },
+
+        run: function () {
+          (function loop() {
+            game.step();
+            requestAnimationFrame(loop);
+          })();
+        },
+
+        ticks : 0,
+
+        step : function(){
+          var currentTime = Date.now();
+          var delta = 16;
+
+          if(lastTime) {
+            delta = currentTime - lastTime;
+          }
+
+          lastTime = currentTime;
+
+          objectsToRender.forEach((obj) => {
+            var el = obj.element;
+            var physics = obj.physics;
+            var x = physics.position.x - obj.width / 2;
+            var y = physics.position.y - obj.height / 2;
+            var angle = physics.angle;
+
+            el.style.transform = 'translateX('+ x + 'px) translateY(' + y + 'px) rotate(' + angle + 'rad)';
+
+            if(obj.update){
+              obj.update(delta);
+            }
+
+            if(obj.run) {
+              obj.run(delta);
+            }
+          });
+
+          for(var i = 0; i < this.physicsSamplingRatio; i++){
+            Engine.update(engine, this.physicsStepMS);
+          }
+
+          let statusContainer = document.querySelector('.status');
+          let inputContainer = statusContainer.querySelector('.input');
+          let physicsContainer = statusContainer.querySelector('.physics');
+
+          paddleActions.forEach(a => {
+            let displayElement = inputContainer.querySelector('[data-key="' + a + '"]');
+            let value = game.paddles[0].actions[a];
+
+            if (typeof value === 'number') {
+              displayElement.querySelector('.value').textContent = Math.round(value * 1000) / 1000;
+            }
+            else {
+              displayElement.querySelector('.value').textContent = value;              
+            }
+
+
+            if (value !== 0) {
+              displayElement.classList.add('on');
+            }
+            else {
+              displayElement.classList.remove('on');
+            }
+          });
+
+          Array.prototype.forEach.call(physicsContainer.querySelectorAll('[data-key]'), (displayElement) => {
+            let key = displayElement.getAttribute('data-key');
+            let keyParts = key.split('.');
+            let obj = game.paddles[0];
+
+            for (let i in keyParts) {
+              obj = obj[keyParts[i]];
+            }
+
+            if (typeof obj === 'number') {
+              displayElement.querySelector('.value').textContent = Math.round(obj * 1000) / 1000;
+            }
+            else {
+              displayElement.querySelector('.value').textContent = obj;              
+            }
+          });
+        },
+
+        restart : function(){
+          for(var i = 0; i < this.paddles.length; i++){
+            var p = this.paddles[i];
+            p.reset();
+          }
+        }
+      }
+
+      let paddleDetails = [
+        {
+          player : 0,
+          x: 80,
+          y: 200
+        },
+        {
+          player: 1,
+          x : game.boardWidth - 100,
+          y : 200
+        }
+      ];
+
+      document.addEventListener('DOMContentLoaded', function () {
+        let worldEl = document.querySelector(".world");
+
+        for(var i = 0; i < numPaddles; i++) {
+          game.paddles[i] = createPaddle({
+            player: paddleDetails[i].player,
+            x : paddleDetails[i].x,
+            y : paddleDetails[i].y,
+            height : paddleDetails[i].height || 100,
+            width: 20,
+            classNames : ["paddle", "paddle-" + i]
+          });
+
+          game.paddles[i].init();
+        }
+
+        addWalls({
+          world: World,
+          width: worldEl.clientWidth,
+          height: worldEl.clientHeight,
+          sides : ["top","right","bottom","left"]
+        });
+
+        var inputManager = new InputManager((paddle) => {
+          var playerNumber = game.paddles.indexOf(paddle);
+          console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
+        });
+
+        SoundManager.init();
+        SoundManager.loadSettingsFromLocalStorage();
+        
+        game.init();
+
+        inputManager.setupInputForObject(game.paddles[0]);
+
+        let statusContainer = document.querySelector('.status');
+        let inputContainer = statusContainer.querySelector('.input');
+
+        let inputTemplate = inputContainer.querySelector('.template');
+        inputContainer.removeChild(inputTemplate);
+        inputTemplate.classList.remove('template');
+
+        paddleActions.forEach(a => {
+          let inputElement = inputTemplate.cloneNode(true);
+          inputElement.setAttribute('data-key', a);
+          inputElement.querySelector('.key').textContent = a;
+          inputContainer.appendChild(inputElement);
+        });
+
+        game.restart();
+        game.run();
+
+      });
+    </script>
+    <script src="js/paddle.js"></script>       <!-- the paddles -->
+    <script src="js/collisions.js"></script>   <!-- handles collisions -->
+    <style>
+      .status {
+        color: white;
+      }
+
+      .section .item {
+        display: inline-block;
+        width: 100px;
+        font-size: 8pt;
+        font-family: monospace;
+        border: 1px solid white;
+        padding: 0.25em;
+        box-sizing: content-box;
+        overflow: hidden;
+      }
+
+      .section .item .key {
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .section .item .value {
+        width: 100%;
+      }
+
+      .status .input .action.on {
+        background-color: darkgreen;
+      }
+
+      h5 {
+        margin: .5em 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="world"></div>
+    <div class="status">
+      <h5>Input</h5>
+      <div class="input section">
+        <div class="template action item" data-key=""><div class="key"></div><div class="value"></div></div>
+      </div>
+      <h5>Physics</h5>
+      <div class="physics section">
+        <div class="item" data-key="physics.angle"><div class="key">Angle</div><div class="value"></div></div>
+        <div class="item" data-key="targetAngle"><div class="key">Target Angle</div><div class="value"></div></div>
+        <div class="item" data-key="physics.position.x"><div class="key">X</div><div class="value"></div></div>
+        <div class="item" data-key="physics.position.y"><div class="key">Y</div><div class="value"></div></div>
+      </div>
+    </div>
+  </body>
+</html>
