@@ -108,20 +108,19 @@
     <script src="js/powerups.js"></script>     <!-- fires everything up -->
 
     <script>
-      let numPaddles = 1;
+      let numPaddles = 2;
+      let physicsSamplingRatio = 2;
       let lastTime = false;
-
-      var engine = Engine.create();
-
-      var objectsToRender = [];
+      let engine = Engine.create();
+      let objectsToRender = [];
 
       let game = {
         boardWidth : 0,
         boardHeight: 0,
         worldE : "",
         paddles: [],
-        physicsSamplingRatio: 2,
-        physicsStepMS: 1000 / 60 / this.physicsSamplingRatio,
+        physicsSamplingRatio: physicsSamplingRatio,
+        physicsStepMS: 1000 / 60 / physicsSamplingRatio,
 
         init: function(){
           let worldEl = document.querySelector(".world");
@@ -182,45 +181,47 @@
             Engine.update(engine, this.physicsStepMS);
           }
 
-          let statusContainer = document.querySelector('.status');
-          let inputContainer = statusContainer.querySelector('.input');
-          let physicsContainer = statusContainer.querySelector('.physics');
+          [0, 1].forEach(playerIndex => {
 
-          paddleActions.forEach(a => {
-            let displayElement = inputContainer.querySelector('[data-key="' + a + '"]');
-            let value = game.paddles[0].actions[a];
+            let statusContainer = document.querySelector('.status');
+            let inputContainer = statusContainer.querySelector('.input[data-player="' + playerIndex + '"]');
+            let physicsContainer = statusContainer.querySelector('.physics[data-player="' + playerIndex + '"]');
 
-            if (typeof value === 'number') {
-              displayElement.querySelector('.value').textContent = Math.round(value * 1000) / 1000;
-            }
-            else {
-              displayElement.querySelector('.value').textContent = value;              
-            }
+            paddleActions.forEach(a => {
+              let displayElement = inputContainer.querySelector('[data-key="' + a + '"]');
+              let value = game.paddles[playerIndex].actions[a];
 
+              if (typeof value === 'number') {
+                displayElement.querySelector('.value').textContent = Math.round(value * 10000) / 10000;
+              }
+              else {
+                displayElement.querySelector('.value').textContent = value;              
+              }
 
-            if (value !== 0) {
-              displayElement.classList.add('on');
-            }
-            else {
-              displayElement.classList.remove('on');
-            }
-          });
+              if (value) {
+                displayElement.classList.add('on');
+              }
+              else {
+                displayElement.classList.remove('on');
+              }
+            });
 
-          Array.prototype.forEach.call(physicsContainer.querySelectorAll('[data-key]'), (displayElement) => {
-            let key = displayElement.getAttribute('data-key');
-            let keyParts = key.split('.');
-            let obj = game.paddles[0];
+            Array.prototype.forEach.call(physicsContainer.querySelectorAll('[data-key]'), (displayElement) => {
+              let key = displayElement.getAttribute('data-key');
+              let keyParts = key.split('.');
+              let obj = game.paddles[playerIndex];
 
-            for (let i in keyParts) {
-              obj = obj[keyParts[i]];
-            }
+              for (let i in keyParts) {
+                obj = obj[keyParts[i]];
+              }
 
-            if (typeof obj === 'number') {
-              displayElement.querySelector('.value').textContent = Math.round(obj * 1000) / 1000;
-            }
-            else {
-              displayElement.querySelector('.value').textContent = obj;              
-            }
+              if (typeof obj === 'number') {
+                displayElement.querySelector('.value').textContent = Math.round(obj * 10000) / 10000;
+              }
+              else {
+                displayElement.querySelector('.value').textContent = obj;              
+              }
+            });
           });
         },
 
@@ -232,21 +233,24 @@
         }
       }
 
-      let paddleDetails = [
-        {
-          player : 0,
-          x: 80,
-          y: 200
-        },
-        {
-          player: 1,
-          x : game.boardWidth - 100,
-          y : 200
-        }
-      ];
-
       document.addEventListener('DOMContentLoaded', function () {
         let worldEl = document.querySelector(".world");
+        
+        game.boardWidth = worldEl.clientWidth;
+        game.boardHeight = worldEl.clientHeight;
+
+        let paddleDetails = [
+          {
+            player : 0,
+            x: 80,
+            y: 200
+          },
+          {
+            player: 1,
+            x : game.boardWidth - 100,
+            y : 200
+          }
+        ];
 
         for(var i = 0; i < numPaddles; i++) {
           game.paddles[i] = createPaddle({
@@ -278,24 +282,71 @@
         
         game.init();
 
-        inputManager.setupInputForObject(game.paddles[0]);
+        let controlSelectors = Array.prototype.slice.call(document.querySelectorAll('.section.controls select'));
 
-        let statusContainer = document.querySelector('.status');
-        let inputContainer = statusContainer.querySelector('.input');
+        KeyboardManager.getAllConfigs().forEach((keyboardConfig, index) => {
+          controlSelectors.forEach(controlSelector => {
+            let option = document.createElement('option');
+            option.setAttribute('data-type', 'keyboard');
+            option.setAttribute('data-index', index);
+            option.value = 'keyboard' + index;
+            option.textContent = 'Keyboard ' + index;
+            controlSelector.appendChild(option);
+          });
+        });
 
-        let inputTemplate = inputContainer.querySelector('.template');
-        inputContainer.removeChild(inputTemplate);
-        inputTemplate.classList.remove('template');
+        GamepadManager.getGamepads().forEach((gamepadConfig, index) => {
+          controlSelectors.forEach(controlSelector => {
+            let option = document.createElement('option');
+            option.setAttribute('data-type', 'gamepad');
+            option.setAttribute('data-index', index);
+            option.value = 'gamepad' + gamepadConfig.id + '' + index;
+            option.textContent = 'Gamepad ' + gamepadConfig.id;
+            controlSelector.appendChild(option);
+          });
+        });
 
-        paddleActions.forEach(a => {
-          let inputElement = inputTemplate.cloneNode(true);
-          inputElement.setAttribute('data-key', a);
-          inputElement.querySelector('.key').textContent = a;
-          inputContainer.appendChild(inputElement);
+        controlSelectors.forEach(controlSelector => {
+          controlSelector.onchange = e => {
+            let paddleIndex = controlSelector.getAttribute('data-player');
+            let option = controlSelector.options[controlSelector.selectedIndex];
+            let paddle = game.paddles[paddleIndex];
+            let type = option.getAttribute('data-type');
+            let index = option.getAttribute('data-index');
+
+            paddle.setInputComponent(inputManager.createInputComponentFromConfigIndex(type, index));
+          };
+        });
+
+        for (let i = 0; i < numPaddles; ++i) {
+          let inputComponent = inputManager.getComponentForNextAvailableInput();
+          game.paddles[i].setInputComponent(inputComponent);
+          controlSelectors[i].value = inputComponent.type + inputComponent.config.id;
+        }
+
+        [0, 1].forEach(playerIndex => {
+          let statusContainer = document.querySelector('.status');
+          let inputContainer = statusContainer.querySelector('.input[data-player="' + playerIndex + '"]');
+
+          let inputTemplate = inputContainer.querySelector('.template');
+          inputContainer.removeChild(inputTemplate);
+          inputTemplate.classList.remove('template');
+
+          paddleActions.forEach(a => {
+            let inputElement = inputTemplate.cloneNode(true);
+            inputElement.setAttribute('data-key', a);
+            inputElement.querySelector('.key').textContent = a;
+            inputContainer.appendChild(inputElement);
+          });
         });
 
         game.restart();
         game.run();
+
+        document.querySelector('#game-speed').value = game.physicsStepMS;
+        document.querySelector('#game-speed').onchange = e => {
+          game.physicsStepMS = document.querySelector('#game-speed').value;
+        };
 
       });
     </script>
@@ -308,8 +359,8 @@
 
       .section .item {
         display: inline-block;
-        width: 100px;
-        font-size: 8pt;
+        width: 80px;
+        font-size: 6pt;
         font-family: monospace;
         border: 1px solid white;
         padding: 0.25em;
@@ -331,8 +382,28 @@
         background-color: darkgreen;
       }
 
-      h5 {
+      h5, h4 {
         margin: .5em 0;
+        font-size: .5em;
+      }
+
+      .p1 {
+        width: 50%;
+        float: left;
+      }
+
+      .p2 {
+        width: 50%;
+        float: right;
+      }
+
+      select {
+        max-width: 90%;
+      }
+
+      .world {
+        width: 700px;
+        height: 450px;
       }
     </style>
   </head>
@@ -340,16 +411,49 @@
   <body>
     <div class="world"></div>
     <div class="status">
-      <h5>Input</h5>
-      <div class="input section">
-        <div class="template action item" data-key=""><div class="key"></div><div class="value"></div></div>
+      Game speed: <input id="game-speed" type="range" max="30" min="0.000001" step="0.001">
+      <br />
+      <div class="p1">
+        <h4>P1</h4>
+        <h5>Input</h5>
+        <div class="input section" data-player="0">
+          <div class="template action item" data-key=""><div class="key"></div><div class="value"></div></div>
+        </div>
+        <h5>Physics</h5>
+        <div class="physics section" data-player="0">
+          <div class="item" data-player="0" data-key="physics.angle"><div class="key">Angle</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="targetAngle"><div class="key">Target Angle</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="physics.position.x"><div class="key">X</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="physics.position.y"><div class="key">Y</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="frameTicks"><div class="key">Updates</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="physics.angularVelocity"><div class="key">Angular Velocity</div><div class="value"></div></div>
+          <div class="item" data-player="0" data-key="averageAngularVelocity"><div class="key">Avg Ang Vel</div><div class="value"></div></div>
+        </div>
+        <h5>Controls</h5>
+        <div class="controls section">
+          <select class="control-selection" data-player="0"></select><br/>
+        </div>
       </div>
-      <h5>Physics</h5>
-      <div class="physics section">
-        <div class="item" data-key="physics.angle"><div class="key">Angle</div><div class="value"></div></div>
-        <div class="item" data-key="targetAngle"><div class="key">Target Angle</div><div class="value"></div></div>
-        <div class="item" data-key="physics.position.x"><div class="key">X</div><div class="value"></div></div>
-        <div class="item" data-key="physics.position.y"><div class="key">Y</div><div class="value"></div></div>
+      <div class="p2">
+        <h4>P2</h4>
+        <h5>Input</h5>
+        <div class="input section" data-player="1">
+          <div class="template action item" data-key=""><div class="key"></div><div class="value"></div></div>
+        </div>
+        <h5>Physics</h5>
+        <div class="physics section" data-player="1">
+          <div class="item" data-player="1" data-key="physics.angle"><div class="key">Angle</div><div class="value"></div></div>
+          <div class="item" data-player="1" data-key="targetAngle"><div class="key">Target Angle</div><div class="value"></div></div>
+          <div class="item" data-player="1" data-key="physics.position.x"><div class="key">X</div><div class="value"></div></div>
+          <div class="item" data-player="1" data-key="physics.position.y"><div class="key">Y</div><div class="value"></div></div>
+          <div class="item" data-player="1" data-key="frameTicks"><div class="key">Updates</div><div class="value"></div></div>
+          <div class="item" data-player="1" data-key="physics.angularVelocity"><div class="key">Angular Velocity</div><div class="value"></div></div>
+          <div class="item" data-player="1" data-key="averageAngularVelocity"><div class="key">Avg Ang Vel</div><div class="value"></div></div>
+        </div>
+        <h5>Controls</h5>
+        <div class="controls section">
+          <select class="control-selection" data-player="1"></select>
+        </div>
       </div>
     </div>
   </body>

@@ -43,8 +43,11 @@ function createObject(options){
         this.inputComponent.remove();
       }
 
-      this.inputComponent = inputComponent;
-      inputComponent.register(this.actions);
+      // So that you can remove an input component by passing in `null`
+      if (inputComponent) {
+        this.inputComponent = inputComponent;
+        inputComponent.register(this.actions);
+      }
 
       document.dispatchEvent(new CustomEvent('inputcomponentchanged', {detail: {object: this, inputComponent: inputComponent}}));
     },
