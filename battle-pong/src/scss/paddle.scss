@@ -1,17 +1,3 @@
-@keyframes scaredPaddle {
-  0% {
-    transform: translateX(2px) translateY(0px);
-  }
-  25% {
-    transform: translateX(0px) translateY(-2px) rotate(1deg);
-  }
-  50% {
-    transform: translateX(-2px) translateY(0px);
-  }
-  75% {
-    transform: translateX(0px) translateY(2px) rotate(-1deg);
-  }
-}
 
 @keyframes powerupHit {
   0% {
@@ -23,6 +9,7 @@
   position: absolute;
   width: 20px;
   height: 100px;
+  transform-style: preserve-3d;
 
   .body {
     position: absolute;
@@ -32,6 +19,24 @@
     background-color: white;
     width: 100%;
     height: 100%;
+  }
+  
+  &:after {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: calc(50% - 25px);
+    top: calc(50% - 25px);
+    // content: "";
+    background-image: url(assets/images/crosshair.svg);
+    background-size: contain;
+    animation: crosshair .5s ease-in-out infinite;
+  }
+  
+  @keyframes crosshair {
+    50% {
+      transform: scale(1.05);
+    }
   }
 
   &.skeleton .body {
@@ -72,9 +77,16 @@
   }
 
   &.shaking .body {
-    animation: scaredPaddle .1s linear infinite;
+    animation: scaredPaddle .5s ease-in-out infinite;
     background: rgba(255,255,255,.2);
   }
+
+  @keyframes scaredPaddle {
+    50% {
+      transform: scaleX(1.2) scaleY(.85);
+    }
+  }
+
 
   &.powerup-hit .body {
     animation: powerupHit .5s ease-out;
