@@ -62,8 +62,6 @@
     };
 
     this.createPowerup = (x, y, type) => {
-      // var x = getRandom(50, game.boardWidth - 50);
-      // var y = getRandom(0, game.boardHeight);
 
       var properties = {
         width : 30,
