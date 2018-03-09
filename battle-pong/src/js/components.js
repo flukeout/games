@@ -118,6 +118,9 @@ function createObject(options){
       // Create the physics simulation
       this.physics = createPhysicsForElement(this.element, this.physicsOptions);
 
+      // console.log(this.physics.id);
+      this.id = this.physics.id;
+
 
       var actions = this.actions;
       this.actions = {};
