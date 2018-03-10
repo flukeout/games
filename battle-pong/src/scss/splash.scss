@@ -411,7 +411,7 @@
   }
 
   .powerups {
-    margin: 20px 0 20px 0;
+    margin: 30px 0;
 
     .label {
       position: relative;
@@ -421,47 +421,61 @@
   }
 
   .powerup {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-    background-size: conain;
-    background-repeat: no-repeat;
-    opacity: .3;
-    background-position: center;
+    display: inline-block;    
     position: relative;
-    border-radius: 0;
-    display: inline-block;
-    cursor: pointer;
+    margin: 0 12px;
+    
+    .name {
+      font-size: 20px;
+      opacity: .4;
+    }
+
+    .icon {
+      width: 40px;
+      display: block;
+      margin: 0 auto;
+      height: 40px;
+      background-size: conain;
+      background-repeat: no-repeat;
+      opacity: .4;
+      background-position: center;
+      position: relative;
+      border-radius: 0;
+      cursor: pointer;
+    }
   }
 
-  [data-powerup=grow] {
+  [data-powerup=grow] .icon {
     background-image: url(assets/images/star.svg);
   }
 
-  [data-powerup=spin] {
+  [data-powerup=spin] .icon {
     background-image: url(assets/images/spinner.svg);
     background-size: 35px;
   }
 
-  [data-powerup=clone] {
+  [data-powerup=clone] .icon {
     background-image: url(assets/images/bone.svg);
     background-color: #666;
     background-size: 12px;
     border-radius: 50%;
   }
   
-  [data-powerup=magnet] {
+  [data-powerup=magnet] .icon {
     background-image: url(assets/images/tar.svg);
-    background-size: 35px;
-    border-radius: 50%;
   }
 
-  [data-powerup=mine] {
+  [data-powerup=mine] .icon {
     background-image: url(assets/images/mine.svg);
   }
 
   .enabled {
-    opacity: 1;
+    .icon, .name {
+      opacity: 1;
+    }
+    .name {
+      transform: scale(1.2);
+    }
   }
 
   [data-sounds] {

@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
 
-  initParticleEngine("body", 50);
-  starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
-
-  loop(); // Start the particle loop
   
   prepTitle();
 
@@ -21,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   setupStartButton();
 
+  starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
 
   SoundManager.init();
@@ -35,8 +32,6 @@ let bestOfEls,
     playerOptionEls;
 
 let timeoutAccumulator = 0;
-
-
 
 // Sets up the music & sound toggle click handlers
 function setupPlayerOptionss(els){
@@ -271,44 +266,6 @@ function prepTitle(){
 
 // Variables for the particle loop
 var starsHeight;
-var frameTicker = 0;
-var addPaddle = false;
-
-// Runs the animation loop for the particle starfield
-function loop() {
-
-  frameTicker++;
-  
-  // Makes a paddle every once in a while
-  var rando = getRandom(0, 75);
-  if(Math.round(rando) ==  75) {
-    makePaddle();
-  }    
-  
-  drawParticles();
-
-  requestAnimationFrame(loop);
-}
-
-// Add a paddle particle to the background
-function makePaddle(){
-  var length = getRandom(15,40);
-  var width = length / 5;
-
-  var options = {
-    x : -50,
-    y : getRandom(0, starsHeight),
-    xV : getRandom(2,3),
-    yV : getRandom(-.5,.5),
-    zRv : getRandom(-2,2),
-    width : width,
-    height: length,
-    className : 'floating-paddle',
-    lifespan: 1000
-  }
-
-  makeParticle(options);
-}
 
 // This shouldn't be in here, we should just import it from effects.js
 function addTemporaryClassName(element, className, durationMS){

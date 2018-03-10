@@ -84,9 +84,11 @@
 
         properties.x = x - properties.width/2;
 
-        physicsOptions.frictionAir = 0.035 / game.physicsSamplingRatio;
+        physicsOptions.frictionAir = 0.05 / game.physicsSamplingRatio;
+        physicsOptions.mass = 1.5;
 
         properties.innerHTML = `
+        <div class='mine-line'></div>
         <div class='shadow'></div>
         <div class='body'>
           <div class='light'></div>
@@ -118,13 +120,21 @@
         },
 
         // Runs every frame
-        // angle : 0,
         run : function(){
           if(this.lifeSpan != "infinite") {
             this.lifeSpan--;
 
-            if(this.lifeSpan < 125) {
 
+
+            if(this.type === "mine" && !this.lineEl) {
+              this.lineEl = this.element.querySelector(".mine-line");
+            }
+            let yPos = this.physics.position.y - this.height/2;
+            this.lineEl.style.transform = "translateY(-"+ yPos + "px)";
+
+
+            if(this.lifeSpan < 125) {
+              this.element.classList.add("lineBlink")
               if(!this.beepTimeout) {
                 SoundManager.playSound("beep");
                 var that = this;
@@ -152,8 +162,6 @@
           var mineXPercentage = this.physics.position.x / game.boardWidth;
 
           var mineDelta = boardMiddlePercent - mineXPercentage;
-          
-          console.log(mineDelta);
 
           var scoringPlayer;
 
@@ -176,7 +184,6 @@
           document.querySelector(".blast-zone").append(line);
           line.style.left = thisX + "px";
 
-          console.log(game.boardWidth * mineXPercentage);
 
           setTimeout(function(){
             game.moveTerrain(scoringPlayer, Math.abs(mineDelta * 100));  
