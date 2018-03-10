@@ -67,7 +67,6 @@
     }
   }
 
-
   .shadow {
     background-position: center;
     background-size: contain;
@@ -89,6 +88,18 @@
     }
     .body {
       background-image: url(assets/images/star.svg);
+    }
+  }
+
+  &.noclip {
+    .body {
+      background: transparent;
+      border: solid 3px white;
+      box-sizing: border-box;
+      background: rgba(255,255,255,.2);
+    }
+    .shadow {
+      background: black;
     }
   }
 

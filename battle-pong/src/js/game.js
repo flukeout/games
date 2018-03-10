@@ -417,33 +417,28 @@ var game =  {
 
       var p = this.paddles[i];
 
-        if(this.mode == "running") {
-          if(p.player == 0) {
-            p.maxX = this.boardWidth * (this.terrainLinePercent/100);
-          } else if (p.player == 1) {
-            p.minX = this.boardWidth * (this.terrainLinePercent/100);
-          }
+      if(this.mode == "running") {
+        if(p.player == 0) {
+          p.maxX = this.boardWidth * (this.terrainLinePercent/100);
+        } else if (p.player == 1) {
+          p.minX = this.boardWidth * (this.terrainLinePercent/100);
         }
+      }
 
-        if(this.mode == "pregame") {
-          if(p.player == 0) {
-            p.maxX = this.boardWidth * .25;
-          } else if (p.player == 1) {
-            p.minX = this.boardWidth - (this.boardWidth * .25);
-          }
+      if(this.mode == "pregame") {
+        if(p.player == 0) {
+          p.maxX = this.boardWidth * .25;
+        } else if (p.player == 1) {
+          p.minX = this.boardWidth - (this.boardWidth * .25);
         }
+      }
     }
 
     var leftWidth = Math.floor(this.boardWidth * this.terrainLinePercent/100);
     var rightWidth = this.boardWidth - leftWidth;
 
-    // this.terrainOneEl.style.width = leftWidth + "px";  //
-    // this.terrainTwoEl.style.width = rightWidth + "px"; // 
-
     let terrainOneScale = this.terrainLinePercent/100;
     let terrainTwoScale = 1 - this.terrainLinePercent/100;
-
-    console.log(terrainOneScale, terrainTwoScale);
 
     this.terrainOneEl.style.transform = "scaleX(" + terrainOneScale + ")";
     this.terrainTwoEl.style.transform = "scaleX(" + terrainTwoScale + ")";
