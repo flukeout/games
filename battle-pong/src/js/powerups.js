@@ -76,6 +76,7 @@
         label: "powerup-" + type
       }
 
+
       if(type == "mine") {
         properties.width = 56;
         properties.height = 56;
@@ -124,11 +125,10 @@
           if(this.lifeSpan != "infinite") {
             this.lifeSpan--;
 
-
-
             if(this.type === "mine" && !this.lineEl) {
               this.lineEl = this.element.querySelector(".mine-line");
             }
+
             let yPos = this.physics.position.y - this.height/2;
             this.lineEl.style.transform = "translateY(-"+ yPos + "px)";
 
@@ -170,14 +170,6 @@
           } else {
             scoringPlayer = 2;
           }
-
-          // if(thisX > boardMiddle) {
-          //   scoringPlayer = 1;
-          // } else if(thisX < boardMiddle) {
-          //   scoringPlayer = 2;
-          // } else {
-          //   scoringPlayer = Math.round(Math.random()) + 1;
-          // }
 
           var line = document.createElement("div");
           line.classList.add("mine-line");
@@ -256,7 +248,6 @@
             height: 16,
             zV : 5,
             gravity : .2,
-            // yRv : getRandom(-4,4),
             yV : -3,
             xV : getRandom(-2,2),
             xRv : getRandom(10,14),
@@ -305,7 +296,7 @@
 
           if(playerHit && this.type != "mine"){
 
-            if(this.type == "magnet" || this.type == "clone" || this.type == "grow" || this.type == "spin") {
+            if(this.type == "magnet" || this.type == "clone" || this.type == "grow" || this.type == "spin" || this.type == "noclip") {
               for(var i = 0; i < 2; i++){
                 var paddle = game.paddles[i];
                 if(paddle.player == playerAffected) {

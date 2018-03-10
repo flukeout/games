@@ -315,6 +315,10 @@ const updateFunctions = {
   },
   limitXY: function (paddle) {
 
+    if(paddle.hasNoclipPowerup) {
+      return;
+    }
+
     // Movement bounds - keep the paddle in its zone
     var forceModifier = 1.25 * game.physicsSamplingRatio;
 
@@ -545,6 +549,7 @@ function createPaddle(options) {
     hasMagnetPowerup : false,
     magnetTimeout: false,
     magnetDuration : 7500,
+    noclipDuration : 5000,
 
     // When we get a powerup
     powerup(type){
@@ -565,7 +570,6 @@ function createPaddle(options) {
       }
 
       if(type == "magnet") {
-        console.log("applying magnet");
         this.hasMagnetPowerup = true;
         this.element.classList.add("powerup-magnet");
         game.showMessage("STICKY!", 1500);
@@ -576,7 +580,21 @@ function createPaddle(options) {
         this.magnetTimeout = window.setTimeout(function(){
           that.element.classList.remove("powerup-magnet");
           that.hasMagnetPowerup = false;
-        }, this.magnetDuration);      
+        }, this.magnetDuration); 
+      }
+
+      if(type == "noclip") {
+        this.hasNoclipPowerup = true;
+        this.element.classList.add("powerup-noclip");
+        game.showMessage("NOCLIP!", 1500);
+        
+        clearTimeout(this.noclipPowerup);
+        
+        var that = this;
+        this.magnetTimeout = window.setTimeout(function(){
+          that.element.classList.remove("powerup-noclip");
+          that.hasNoclipPowerup = false;
+        }, this.noclipDuration); 
       }
 
       // For this powerup, we treat it as having a 'time remaining'

@@ -442,12 +442,35 @@
       position: relative;
       border-radius: 0;
       cursor: pointer;
+      animation: iconWobble 2s ease-in-out alternate infinite;
+      
+    }
+    
+    @keyframes iconWobble {
+      0% {
+        transform: rotate(-5deg);
+      }
+      100% {
+        transform: rotate(5deg);
+      }
     }
   }
+  
+
 
   [data-powerup=grow] .icon {
     background-image: url(assets/images/star.svg);
   }
+
+  [data-powerup=noclip] .icon {
+    background-image: none;
+    background: transparent;
+    border: solid 4px white;
+    height: 26px;
+    width: 26px;
+    background: rgba(255,255,255,.2);
+  }
+
 
   [data-powerup=spin] .icon {
     background-image: url(assets/images/spinner.svg);
