@@ -40,9 +40,6 @@ function createBall(options){
     maxSpeed: 16 / game.physicsSamplingRatio, // 16
     maxSpeedSlowdownRatio : .99, // .99
 
-    minSpeed: 4 / game.physicsSamplingRatio,
-    minSpeedSlowdownRatio : .96,
-
     hardHitVelocityIncreaseRatio: 1.25,
 
     wordSpeed : 13 / game.physicsSamplingRatio,    // TODO - update // used to be 14
@@ -80,11 +77,13 @@ function createBall(options){
 
     // For slowing things down
 
-    // brakesModeEnabled : window.Settings.brakesModeEnabled,
-    brakesModeEnabled : true,
+    brakesModeEnabled : window.Settings.brakesModeEnabled,
+    // brakesModeEnabled : true,
     slowSpeedTarget: 9 / game.physicsSamplingRatio,
+
     applyBrakes : false,
     brakesModeRatio: .985,
+
     goalsWhileFastAllowed: 2,
     goalsWhileFast : 0,
     goingFastSpeedThreshold: 11 / game.physicsSamplingRatio,
@@ -114,13 +113,25 @@ function createBall(options){
       });
     },
 
+    setTargetSpeed: function(speed){
+        this.targetSpeed = speed || 0;
+        this.element.classList.add("sticky");
+        this.hasTargetSpeed = true;
+    },
+
+    removeTargetSpeed: function(){
+        this.element.classList.remove("sticky");
+        this.hasTargetSpeed = false;
+    },
+
+
     run : function(delta) {
       
       if(this.hasTargetSpeed) {
         if(this.physics.speed > this.targetSpeed) {
           this.changeVelocityRatio(.9);
           if(Math.abs(this.physics.speed - this.targetSpeed) < .1) {
-            this.hasTargetSpeed = false;
+            this.removeTargetSpeed();
           }
         }
       }
@@ -128,12 +139,6 @@ function createBall(options){
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
         this.applyBrakes = false;
         this.goalsWhileFast = 0;
-      }
-
-      if(this.hasTargetSpeed){
-        this.element.classList.add("sticky");
-      } else {
-        this.element.classList.remove("sticky");
       }
 
       if(this.applyBrakes && this.brakesModeEnabled) {
@@ -150,11 +155,6 @@ function createBall(options){
         this.changeVelocityRatio(this.maxSpeedSlowdownRatio);
       }
 
-      // If it's going too slow, slow it down
-      if(this.physics.speed < this.minSpeed) {
-        // this.changeVelocityRatio(this.minSpeedSlowdownRatio);
-        // TODO - this slows id down if you want it back
-      }
 
       // All this crap below just relates to curving the ball
       // and adding the spinning animation.
@@ -164,9 +164,9 @@ function createBall(options){
 
       var movementAngle = Math.atan2(xV, yV);
 
-      // TODO - do these better
       var stretchScale = 1;
       var maxStretch = 1.5;
+
       var squashScale = 1;
       var minSquash = .75;
 
@@ -174,6 +174,7 @@ function createBall(options){
 
       var exceededBy = this.physics.speed - minStretchSpeed;
       var exceedRatio = 0;
+
       if(exceededBy > 0) {
         exceedRatio = exceededBy / 5;
         stretchScale = 1 + exceedRatio * .5;
@@ -183,11 +184,12 @@ function createBall(options){
       if(stretchScale > maxStretch) {
         stretchScale = maxStretch
       }
+
       if(squashScale < minSquash) {
         squashScale = minSquash
       }
 
-      this.element.querySelector(".body").style.transform = "rotate("+ movementAngle +"rad) scaleX(" + squashScale + ") scaleY("+stretchScale+")";
+      this.element.querySelector(".body").style.transform = "rotate("+ movementAngle +"rad) scaleX(" + squashScale + ") scaleY(" + stretchScale + ")";
 
       var rotating = false;
       var direction;
@@ -382,7 +384,6 @@ function createBall(options){
         }
       }
 
-
       // TODO - WTF
       if(obj.label.indexOf("paddle") > -1) {
         if(obj.label.indexOf("one") > -1) {
@@ -396,15 +397,15 @@ function createBall(options){
         if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
           var p = game.paddles[this.lastTouchedPaddle - 1];
           if(p.physics.angularSpeed < .04) {
-            this.hasTargetSpeed = true;
-            this.targetSpeed = 0;
+            this.setTargetSpeed(0);
           } else {
-            this.hasTargetSpeed = false;
+            this.removeTargetSpeed();
           }
         }
 
         this.checkSpeed();
         this.applyBrakes = false;
+        this.goalsWhileFast = 0;
       }
 
       if(game.mode == "finish" && obj.label.indexOf("wall") > -1) {
