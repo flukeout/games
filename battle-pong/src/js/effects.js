@@ -98,10 +98,12 @@ function mineExplosion(xposition, yposition, size){
 
 function makeCracks(x, y){
   var cracks = document.createElement("div");
+  var size = getRandom(200,300);
+
   cracks.classList.add("cracks");
-  cracks.style.width = "300px";
-  cracks.style.height = "300px";
-  cracks.style.transform = "translate3d(" + (x - 150) + "px, " + (y - 150) + "px , 0) rotate("+getRandom(0,360)+"deg)";
+  cracks.style.width = size + "px";
+  cracks.style.height = size + "px";
+  cracks.style.transform = "translate3d(" + (x - size/2) + "px, " + (y - size/2) + "px , 0) rotate("+getRandom(0,360)+"deg)";
 
   document.querySelector(".blast-zone").appendChild(cracks);
 
@@ -127,7 +129,6 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
   shakeScreen();
 
   // Adds the orange blast
-
   var blastOffset = size / 2;
   var x = xposition - blastOffset;
   var y = yposition - blastOffset;
@@ -136,20 +137,7 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
 
   particle.el = document.createElement("div");
   particle.el.classList.add("boom");
-
-  if(type == "round") {
-    particle.el.classList.add("round");
-  }
-
-
-  var shock = document.createElement("div");
-  shock.classList.add("shock");
-
-  var body = document.createElement("div");
-  body.classList.add("body");
-
-  particle.el.appendChild(shock);
-  particle.el.appendChild(body);
+  particle.el.innerHTML = `<div class="shock"></div><div class="body"></div>`
 
   particle.el.style.height = size + "px";
   particle.el.style.width = size + "px";
@@ -162,46 +150,13 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
   }(particle.el),500);
 
   document.querySelector(".world").appendChild(particle.el);
-
-
-
-
-  // Blast lines that eminate from the center of the bomb
-  for(var i = 0; i < getRandom(8,12); i++){
-    var options = {
-      x : xposition,
-      y : yposition,
-      zR : getRandom(0,360),
-      width: 4,
-      height: getRandom(60,120),
-      className : 'blast-line',
-      lifespan: 200,
-      o: .4,
-      oV: -.01
-    }
-
-    if(blastDirection == "left") {
-      options.zR = getRandom(30, 150);
-      options.x = options.x + 10;
-    }
-
-    if(blastDirection == "right") {
-      options.zR = getRandom(210, 330);
-      options.x = options.x - 10;
-    }
-
-    var percentage = 5; // Percent along blast line where the white should start.
-    options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
-    // makeParticle(options); TODO - temporarily removing blast lines from scoring
-  }
 }
 
 
 // This is such garbage....
 // TODO - make more of this dynamically generated
 // * Loop over the percentages and generate the values?
-// * Then we can add more steps?
-
+// * Then we can add more steps
 function shakeScreen(){
 
   var styleTag = document.createElement("style");
