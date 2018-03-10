@@ -263,7 +263,6 @@ function prepTitle(){
 }
 
 
-
 // Variables for the particle loop
 var starsHeight;
 

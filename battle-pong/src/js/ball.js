@@ -22,7 +22,11 @@ function createBall(options){
     physicsOptions : {
       frictionAir: 0.00001 / game.physicsSamplingRatio,
       restitution: 1,
-      label: "ball"
+      label: "ball",
+      collisionFilter : {
+        category : 0x0001,
+        mask : 0x0001
+      }
     },
 
     launch : function(x,y){

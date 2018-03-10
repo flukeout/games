@@ -35,7 +35,7 @@
     <script src="js/rules.js"></script>        <!-- fires everything up -->
   </head>
 
-  <body>
+  <body class="no-anims">
     <div id="aidebug"></div>
 
     <div class="scene">
@@ -79,21 +79,27 @@
         <div class="tilt-wrapper">
           <div class="world">
 
-            <div class="terrain one">
+            <div class="terrain one"></div>
+            <div class="terrain two"></div>
+
+            <div class="bigscore-wrapper one">
               <div class="bigscore">
                 <div class="score-number"></div>
               </div>
-              <div class="bestof">BEST</div>
+              <div class="bestof">BEST OF</div>
             </div>
 
-            <div class="terrain two">
+            <div class="bigscore-wrapper two">
               <div class="bigscore">
                 <div class="score-number"></div>
               </div>
-              <div class="bestof"><!-- 'best of' number gets inserted here --></div>
+              <div class="bestof"></div>
             </div>
+
 
             <div class="blast-zone"></div>
+
+
 
             <div class="endzone one"></div>
             <div class="endzone two"></div>

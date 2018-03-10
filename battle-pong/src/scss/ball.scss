@@ -35,6 +35,21 @@
 
   &.clone-ball .body {
      opacity: .5;
+     
+  }
+  
+  &.ghost {
+    .body {
+        background: rgba(255,255,255,.2);
+        //  animation: strobeBall .15s ease-in-out infinite;
+        // @keyframes strobeBall {
+        //   50% {
+        //     background: rgba(255,255,255,.2);
+        //   }
+        // }
+
+
+    }
   }
 
   &.blinkBall .body {
@@ -77,9 +92,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    animation: ballAppear .25s ease-out 1;
+    // animation: ballAppear .25s ease-out 1;
     transition: background .15s ease-out;
-    box-sizing: border-box;
   }
 
   &.overtime:before {

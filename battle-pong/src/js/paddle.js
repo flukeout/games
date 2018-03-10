@@ -450,7 +450,10 @@ function createPaddle(options) {
     physicsOptions : {
       mass : 2,
       frictionAir: frictionAir / game.physicsSamplingRatio,
-      label: 'paddle-' + (['one', 'two'][options.player])
+      label: 'paddle-' + (['one', 'two'][options.player]),
+      collisionFilter : {
+        category : 0x0001
+      }
       // hahaha i didn't know you could do this inline array creation + lookup in javascript syntax <3 (ha sic)
     },
 

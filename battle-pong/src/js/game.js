@@ -301,11 +301,12 @@ var game =  {
   showScore : function(){
     var that = this;
     var delay = 500;
-    var scoreOneEl = document.querySelector(".terrain.one .bigscore");
-    var scoreTwoEl = document.querySelector(".terrain.two .bigscore");
+    var scoreOneEl = document.querySelector(".bigscore-wrapper.one .bigscore");
+    console.log(scoreOneEl);
+    var scoreTwoEl = document.querySelector(".bigscore-wrapper.two .bigscore");
 
-    var bestOfOne = document.querySelector(".terrain.one .bestof");
-    var bestOfTwo = document.querySelector(".terrain.two .bestof");
+    var bestOfOne = document.querySelector(".bigscore-wrapper.one .bestof");
+    var bestOfTwo = document.querySelector(".bigscore-wrapper.two .bestof");
 
     bestOfTwo.innerHTML = "OF " + ((this.score.max * 2) - 1);
 
@@ -436,10 +437,16 @@ var game =  {
     var leftWidth = Math.floor(this.boardWidth * this.terrainLinePercent/100);
     var rightWidth = this.boardWidth - leftWidth;
 
-    this.terrainOneEl.style.width = leftWidth + "px";
-    this.terrainTwoEl.style.width = rightWidth + "px";
+    // this.terrainOneEl.style.width = leftWidth + "px";  //
+    // this.terrainTwoEl.style.width = rightWidth + "px"; // 
 
-    var maxRotation = 2; // Max rotation of the angle when someone is winning
+    let terrainOneScale = this.terrainLinePercent/100;
+    let terrainTwoScale = 1 - this.terrainLinePercent/100;
+
+    console.log(terrainOneScale, terrainTwoScale);
+
+    this.terrainOneEl.style.transform = "scaleX(" + terrainOneScale + ")";
+    this.terrainTwoEl.style.transform = "scaleX(" + terrainTwoScale + ")";
     
     // Changes the color of the planet by modifying opacity of the overlay
     var overlayOpacity = mapScale(this.terrainLinePercent, 25, 75, 0 , 1);
@@ -558,9 +565,34 @@ var game =  {
 
   flashTimeout : false, // Tracks if a flashing background animation is happening
 
+
+  unghostBall(){
+      for(let ball of game.balls){
+        ball.element.classList.remove("ghost");
+      }
+      for(let paddle of game.paddles){
+        paddle.physics.collisionFilter.category = 0x0001;
+      }
+
+  },
+
   playerScored : function(player, ballPhysics){
 
     var scoringBall = this.balls.find(ball => ball.id === ballPhysics.id);
+
+    var that = this;
+  
+    if(ballPhysics){
+      for(let ball of game.balls){
+        ball.element.classList.add("ghost");
+      }
+      for(let paddle of game.paddles){
+        paddle.physics.collisionFilter.category = 0x0002;
+      }
+      setTimeout(function(){
+        that.unghostBall();
+      }, 300);
+    }
 
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;

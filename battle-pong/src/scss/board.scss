@@ -79,12 +79,9 @@
 
   .large-moon {
     position: absolute;
-    
     width: 500px;
-    /*height: 500px;*/
     width: 40%;
     padding-top: 40%;
-    /*background-color: red;*/
     right: -50px;
     top: 45px;
     background-image: url(assets/images/green-moon.svg);
@@ -333,45 +330,47 @@
 }
 
 
+
+.one .bigscore {
+  color: #3faa7f;
+}
+
+.two .bigscore {
+  color: #ac4d9d;
+}
+
 .terrain {
   position: absolute;
   height: 100%;
   top: 0;
-  width: 50%;
-  transition: width .25s ease-out;
-  background-size: 200px;
-}
+  width: 100%;
+  transition: transform .25s ease-out;
 
-.terrain.one .bigscore {
-  color: #3faa7f;
-}
+  &.one {
+    left: 0;
+    background-color: #ac4d9d;
+    background-image: url(assets/images/board-corner-left.svg);
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: 350px;
+    transform-origin: left;
+  }
 
-.terrain.two .bigscore {
-  color: #ac4d9d;
-}
-
-.terrain.one {
-  left: 0;
-  background-color: #ac4d9d;
-  background-image: url(assets/images/board-corner-left.svg);
-  background-position: top left;
-  background-repeat: no-repeat;
-  background-size: 350px;
+  &.two {
+    background-color: #3faa7f;
+    right: 0;
+    background-image: url(assets/images/board-corner-right.svg);
+    background-position: top right;
+    background-repeat: no-repeat;
+    background-size: 350px;
+    transform-origin: right;
+  }  
 }
 
 
 .red-chunk {
   z-index: 2;
   background: #ac4d9d;
-}
-
-.terrain.two {
-  background-color: #3faa7f;
-  right: 0;
-  background-image: url(assets/images/board-corner-right.svg);
-  background-position: top right;
-  background-repeat: no-repeat;
-  background-size: 350px;
 }
 
 .blue-chunk {
@@ -384,7 +383,7 @@
   animation: bigScoreHideAnimation .15s ease-out;
 }
 
-.terrain .bestof {
+.bigscore-wrapper .bestof {
   box-sizing: border-box;
   font-size: 50px;
   position: absolute;
@@ -393,7 +392,7 @@
   text-align: center;
 }
 
-.terrain.one .bestof {
+.one .bestof {
   color: #3faa7f;
   right: 0;
   display: none;
@@ -409,7 +408,7 @@
   }
 }
 
-.terrain.two .bestof {
+.two .bestof {
   color: #ac4d9d;
   display: none;
   transform-origin: bottom left;
@@ -421,6 +420,21 @@
   0% {
     transform: rotate(60deg);
     opacity: 0;
+  }
+}
+
+.bigscore-wrapper {
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  z-index: 2;
+  
+  &.one {
+    left: 0;
+  }
+  
+  &.two {
+    right: 0;
   }
 }
 
@@ -507,3 +521,11 @@
 @keyframes team-2-scored-flash {
   5% { opacity: 1; }
 }
+
+
+.large-moon,
+.surface,
+.score-satellite {
+  animation: none !important;
+}
+
