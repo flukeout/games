@@ -16,7 +16,7 @@ window.Settings = {
   showBackground: true,
   sounds: false, //true
   music: false, 
-  player1Control : "player", // or "AI"
+  player1Control : "player", // or "AI" <- more like A"I" amirite
   player2Control : "player" // or "AI"
 };
 

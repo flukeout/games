@@ -77,6 +77,7 @@ function createBall(options){
 
     // For slowing things down
 
+
     brakesModeEnabled : window.Settings.brakesModeEnabled,
     // brakesModeEnabled : true,
     slowSpeedTarget: 9 / game.physicsSamplingRatio,
@@ -90,8 +91,10 @@ function createBall(options){
 
     hasTargetSpeed : false,
     targetSpeed : false,
-
-    delayBeforeCanSpinMS : 100,
+    
+    prepSpin: false,
+    canSpin : false, 
+    spinDirection : false,
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
     // lastTouchedBy : false,
@@ -189,40 +192,51 @@ function createBall(options){
         squashScale = minSquash
       }
 
+      // TODO-refactor this jesus.............
       this.element.querySelector(".body").style.transform = "rotate("+ movementAngle +"rad) scaleX(" + squashScale + ") scaleY(" + stretchScale + ")";
 
       var rotating = false;
       var direction;
 
-      let canSpin = false;
+      // this.canSpin = false;
 
       var controlPaddle = false;
 
-      for(var i = 0; i < game.paddles.length; i++) {
-        var p = game.paddles[i];
-        if(p.hasSpinPowerup == true) {
-          canSpin = true;
-          controlPaddle = p;
-        }
-      }
+      // for(var i = 0; i < game.paddles.length; i++) {
+      //   var p = game.paddles[i];
+      //   if(p.hasSpinPowerup == true) {
+      //     canSpin = true;
+      //     controlPaddle = p;
+      //   }
+      // }
 
-      if(canSpin) {
+      if(this.canSpin) {
 
-        if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio > .1) {
-          var a = movementAngle + Math.PI / 2;
-          rotating = true;
-          this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
-          if(this.rotationVelocity > this.rotationVelocityMax){
-            this.rotationVelocity = this.rotationVelocityMax;
+        // if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio > .1) {
+          
+          if(this.spinDirection == "cw") {
+            var a = movementAngle + Math.PI / 2;
+            this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
+            if(this.rotationVelocity > this.rotationVelocityMax){
+              this.rotationVelocity = this.rotationVelocityMax;
+            }
+          } else {
+            var a = movementAngle - Math.PI / 2;
+            this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
+            if(this.rotationVelocity < -this.rotationVelocityMax){
+              this.rotationVelocity = -this.rotationVelocityMax;
+            }
           }
-        } else if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio < -.1) {
-          var a = movementAngle - Math.PI / 2;
           rotating = true;
-          this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
-          if(this.rotationVelocity < -this.rotationVelocityMax){
-            this.rotationVelocity = -this.rotationVelocityMax;
-          }
-        }
+      
+        // } else if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio < -.1) {
+        //   var a = movementAngle - Math.PI / 2;
+        //   rotating = true;
+        //   this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
+        //   if(this.rotationVelocity < -this.rotationVelocityMax){
+        //     this.rotationVelocity = -this.rotationVelocityMax;
+        //   }
+        // }
       }
 
       if(rotating == false) {
@@ -291,8 +305,8 @@ function createBall(options){
       // document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
       // document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
 
-      var newX = Math.sin(a) *  .000075 * game.physicsSamplingRatio* this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
-      var newY = Math.cos(a) * -.000075 * game.physicsSamplingRatio * this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
+      var newX = Math.sin(a) *  .00015 * game.physicsSamplingRatio* this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
+      var newY = Math.cos(a) * -.00015 * game.physicsSamplingRatio * this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
 
       if(rotating && this.physics.speed * game.physicsSamplingRatio > 2) {
         Matter.Body.applyForce(this.physics, this.physics.position, {
@@ -302,11 +316,11 @@ function createBall(options){
       }
 
       // TODO: fix this so it doesn't happen every frame
-      if(canSpin){
-        this.element.classList.add("canSpin");
-      } else {
-        this.element.classList.remove("canSpin");
-      }
+      // if(this.canSpin || this.prepSpin){
+      //   this.element.classList.add("canSpin");
+      // } else {
+      //   this.element.classList.remove("canSpin");
+      // }
 
       // --Spinning ball garbage ends here.
 
@@ -371,7 +385,7 @@ function createBall(options){
       this.wordInProgress = false;
     },
 
-    hit: function(obj){
+    hit : function(obj){
 
       if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
         if(this.physics.speed > this.goingFastSpeedThreshold) {
@@ -382,10 +396,86 @@ function createBall(options){
         if(this.goalsWhileFast >= this.goalsWhileFastAllowed) {
           this.applyBrakes = true;
         }
+        this.endSpin();
       }
 
+      // Wall hugging test....
+      if(obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
+        
+
+        let xV = this.physics.velocity.x;
+        let yV = this.physics.velocity.y;
+
+        var movementAngle = Math.atan2(xV, yV);
+
+        let ratio = Math.abs(xV) / Math.abs(yV);
+        let totalVelocity = Math.abs(xV) + Math.abs(yV);
+
+        if(totalVelocity < 6) {
+          totalVelocity = 6;
+        }
+
+        let xRatio = .65;
+        let yRatio = .45;
+
+        if(xV > 0) {
+          // Going Right
+          if(yV < 0) {
+            // Going Down
+            this.spinDirection = "cw";
+            if(this.prepSpin && !this.canSpin) {
+              Matter.Body.setVelocity(this.physics, {
+                x: totalVelocity * xRatio,
+                y: -totalVelocity * yRatio
+              });
+            }
+          } else {
+            // Going Up
+            this.spinDirection = "ccw";
+            if(this.prepSpin && !this.canSpin) {
+              Matter.Body.setVelocity(this.physics, {
+                x: totalVelocity * xRatio,
+                y: totalVelocity * yRatio
+              });              
+            }
+          }
+        } else {
+          // Going Left
+          if(yV < 0) {
+            this.spinDirection = "ccw";
+            if(this.prepSpin && !this.canSpin) {
+              Matter.Body.setVelocity(this.physics, {
+                x: -totalVelocity * xRatio,
+                y: -totalVelocity * yRatio
+              });
+            }
+          } else {
+            this.spinDirection = "cw";
+            if(this.prepSpin && !this.canSpin) {
+              Matter.Body.setVelocity(this.physics, {
+                x: -totalVelocity * xRatio,
+                y: totalVelocity * yRatio
+              });
+            }
+          }
+        }
+      
+
+        if(this.prepSpin) {
+          this.prepSpin = false;
+          this.canSpin = true;
+        }
+
+
+      }
+
+      if(obj.label.indexOf("powerup") > -1) {
+        this.endSpin();
+      }
+      
       // TODO - WTF
       if(obj.label.indexOf("paddle") > -1) {
+        
         if(obj.label.indexOf("one") > -1) {
           this.lastTouchedPaddle = 1;
         }
@@ -394,6 +484,13 @@ function createBall(options){
           this.lastTouchedPaddle = 2;
         }
 
+        if(game.paddles[this.lastTouchedPaddle - 1].hasSpinPowerup === true) {
+          this.prepToSpin();
+        } else {
+          this.endSpin();
+        }
+
+        // Sticky powerup test
         if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
           var p = game.paddles[this.lastTouchedPaddle - 1];
           if(p.physics.angularSpeed < .04) {
@@ -429,6 +526,19 @@ function createBall(options){
       else {
         SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
       }
+    },
+
+    prepToSpin: function(){
+      this.canSpin = false;
+      this.prepSpin = true;
+      this.element.classList.add("canSpin");
+    },
+
+    endSpin: function(){
+      this.canSpin = false;
+      this.prepSpin = false;
+      this.element.classList.remove("canSpin");
+
     },
 
     // After a paddle hit, we want to check if the ball is going

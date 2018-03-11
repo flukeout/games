@@ -366,6 +366,7 @@ const updateFunctions = {
     }
   },
   spinPowerup: function (paddle) {
+    
     if(paddle.spinPowerupRemaining > 0) {
       paddle.spinPowerupRemaining = paddle.spinPowerupRemaining - paddle.dt;
     }
@@ -380,10 +381,11 @@ const updateFunctions = {
     if(paddle.hasSpinPowerup && paddle.spinPowerupRemaining <= 0) {
       paddle.spinPowerupRemaining = 0;
       paddle.hasSpinPowerup = false;
-      paddle.spinPowerupCountdown = false;
       paddle.element.classList.remove("powerup-spin");
       SoundManager.playSound('Powerup_Spin_WareOff');
     }
+
+
   },
   expandPowerup: function (paddle) {
     if(paddle.height < paddle.targetHeight) {
@@ -448,7 +450,6 @@ function createPaddle(options) {
       this.targetHeight = this.baseHeight;
       this.hasSpinPowerup = false;
       this.spinPowerupRemaining = 0;
-      this.spinPowerupCountdown = false;
     },
 
     physicsOptions : {
@@ -495,11 +496,6 @@ function createPaddle(options) {
     },
 
     hit: function(obj) {
-      // If I'm a ghost and I get hit by a ball I die (at the end of a game)
-
-      // if(obj.name == "ball" && this.spinPowerupRemaining > 0 && this.spinPowerupCountdown == false) {
-        // this.spinPowerupCountdown = true;
-      // }
 
       // If this is a clone (bone)
       if (this.cloneIndex) {
@@ -543,8 +539,7 @@ function createPaddle(options) {
 
     hasSpinPowerup : false,
     spinPowerupRemaining : 0,
-    spinPowerupCountdown: false,
-    spinPowerupTime : 5500,
+    spinPowerupTime : 7500,
     
     hasMagnetPowerup : false,
     magnetTimeout: false,
@@ -600,11 +595,6 @@ function createPaddle(options) {
       // For this powerup, we treat it as having a 'time remaining'
       // Gets reduced every frame, and added to when we hit a powerup.
       if(type == "spin") {
-        for(var i = 0; i < game.paddles.length; i++) {
-          var p = game.paddles[i];
-          p.hasSpinPowerup = false;
-          p.spinPowerupRemaining = 0;
-        }
         this.spinPowerupRemaining = this.spinPowerupRemaining + this.spinPowerupTime;
       }
 
