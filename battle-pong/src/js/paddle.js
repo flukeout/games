@@ -384,9 +384,8 @@ const updateFunctions = {
       paddle.element.classList.remove("powerup-spin");
       SoundManager.playSound('Powerup_Spin_WareOff');
     }
-
-
   },
+
   expandPowerup: function (paddle) {
     if(paddle.height < paddle.targetHeight) {
       paddle.changeHeight("grow");
