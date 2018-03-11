@@ -38,6 +38,8 @@ var game =  {
   terrainTwoEl : "",
   bodyEl : "",
 
+  spinWallEls: 0,
+
   timeBetweenRoundsMS: 2000, // Time between rounds of the game
 
   powerupManager: null,
@@ -52,6 +54,8 @@ var game =  {
     this.tiltEl = document.querySelector(".tilt-wrapper");
     this.bodyEl = document.querySelector("body");
     this.surfaceOverlayEl = document.querySelector(".surface .overlay");
+
+    this.spinWallEls = document.querySelectorAll(".spin-wall");
 
     this.terrainOneEl = document.querySelector(".terrain.one");
     this.terrainTwoEl = document.querySelector(".terrain.two");
@@ -69,6 +73,32 @@ var game =  {
     this.aiManager = new AIManager(this, engine);
   },
 
+  activeSpinPowerups : 0,
+
+  lostPowerup: function(player, type){
+    console.log("lost", player, type);
+    if(type === "spin") {
+      this.activeSpinPowerups--;
+      if(this.activeSpinPowerups < 0){
+        this.activeSpinPowerups = 0;
+      }
+      if(this.activeSpinPowerups === 0) {
+        this.spinWallEls.forEach(function(el){
+          el.style.display = "none";
+        });        
+      }
+    }
+  },
+
+  gotPowerup: function(player, type){
+    console.log("got", player, type);
+    if(type === "spin") {
+      this.activeSpinPowerups++;
+      this.spinWallEls.forEach(function(el){
+        el.style.display = "block";
+      });
+    }
+  },
 
   // When the loser survives the FINISH IT phase
   loserLived: function(){

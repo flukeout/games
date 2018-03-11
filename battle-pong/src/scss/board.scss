@@ -257,6 +257,36 @@
   overflow: hidden;
 }
 
+.spin-wall {
+  z-index: 4;
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background: #39f6ff;
+  opacity: .2;
+  animation: spinWall .5s ease-in-out infinite;
+  display: none;
+  
+  &.top {
+    transform-origin: top;
+    border-radius: 0 0 50% 50%;
+    top: 0;
+  }
+  
+  &.bottom {
+    transform-origin: bottom;
+    border-radius: 50% 50% 0 0;
+    bottom: 0;
+  }
+  
+  @keyframes spinWall {
+    50% {
+      transform: scaleY(2);
+      opacity: .4;
+    }
+  }
+}
+
 .red-chunk, .blue-chunk {
   z-index: 2;
 }
@@ -287,6 +317,7 @@
   height: 540px;
   position: relative;
   border: solid 20px #222;
+  // border-top: solid 20px darken(#39f6ff, 50%);
   box-sizing: border-box;
   -moz-transform-style: preserve-3d;
 
