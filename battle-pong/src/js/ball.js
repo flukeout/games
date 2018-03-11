@@ -18,6 +18,7 @@ function createBall(options){
 
     lastStepSpeed : 0,
     bodyEL : false,
+    spinnyEl : false,
 
     physicsOptions : {
       frictionAir: 0.00001 / game.physicsSamplingRatio,
@@ -130,6 +131,16 @@ function createBall(options){
 
     run : function(delta) {
       
+      // Populates elements so we don't have to reselect all the time
+      // would be nice to have an init to do this in.
+      if(!this.bodyEl) {
+        this.bodyEl = this.element.querySelector(".body");
+      }
+
+      if(!this.spinnyEl){
+        this.spinnyEl = this.element.querySelector(".spinny");
+      }
+
       if(this.hasTargetSpeed) {
         if(this.physics.speed > this.targetSpeed) {
           this.changeVelocityRatio(.9);
@@ -191,52 +202,26 @@ function createBall(options){
       if(squashScale < minSquash) {
         squashScale = minSquash
       }
-
-      // TODO-refactor this jesus.............
-      this.element.querySelector(".body").style.transform = "rotate("+ movementAngle +"rad) scaleX(" + squashScale + ") scaleY(" + stretchScale + ")";
+      
+      this.bodyEl.style.transform = "rotate("+ movementAngle +"rad) scaleX(" + squashScale + ") scaleY(" + stretchScale + ")";
 
       var rotating = false;
-      var direction;
 
-      // this.canSpin = false;
-
-      var controlPaddle = false;
-
-      // for(var i = 0; i < game.paddles.length; i++) {
-      //   var p = game.paddles[i];
-      //   if(p.hasSpinPowerup == true) {
-      //     canSpin = true;
-      //     controlPaddle = p;
-      //   }
-      // }
-
-      if(this.canSpin) {
-
-        // if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio > .1) {
-          
-          if(this.spinDirection == "cw") {
-            var a = movementAngle + Math.PI / 2;
-            this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
-            if(this.rotationVelocity > this.rotationVelocityMax){
-              this.rotationVelocity = this.rotationVelocityMax;
-            }
-          } else {
-            var a = movementAngle - Math.PI / 2;
-            this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
-            if(this.rotationVelocity < -this.rotationVelocityMax){
-              this.rotationVelocity = -this.rotationVelocityMax;
-            }
+      if(this.canSpin) {  
+        if(this.spinDirection == "cw") {
+          var a = movementAngle + Math.PI / 2;
+          this.rotationVelocity = this.rotationVelocity + this.rotationAccel;
+          if(this.rotationVelocity > this.rotationVelocityMax){
+            this.rotationVelocity = this.rotationVelocityMax;
           }
-          rotating = true;
-      
-        // } else if (controlPaddle.physics.angularVelocity * game.physicsSamplingRatio < -.1) {
-        //   var a = movementAngle - Math.PI / 2;
-        //   rotating = true;
-        //   this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
-        //   if(this.rotationVelocity < -this.rotationVelocityMax){
-        //     this.rotationVelocity = -this.rotationVelocityMax;
-        //   }
-        // }
+        } else {
+          var a = movementAngle - Math.PI / 2;
+          this.rotationVelocity = this.rotationVelocity - this.rotationAccel;
+          if(this.rotationVelocity < -this.rotationVelocityMax){
+            this.rotationVelocity = -this.rotationVelocityMax;
+          }
+        }
+        rotating = true;      
       }
 
       if(rotating == false) {
@@ -295,15 +280,8 @@ function createBall(options){
         modifier = modifier * -1;
       }
 
-      this.element.querySelector(".spinny").style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
-
-      // this.element.querySelector(".body").style.transform = "rotate("+ this.displayAngle +"deg)";
-
-      this.element.querySelector(".spinny").style.opacity = opacity;
-
-      // For debugging, displays the angle of the ball movement and 'curve force'
-      // document.querySelector(".arrow-1").style.transform = "rotate("+ movementAngle +"rad)";
-      // document.querySelector(".arrow-2").style.transform = "rotate("+ a +"rad)";
+      this.spinnyEl.style.transform = "rotate("+ this.displayAngle +"deg) scaleX(" + (scale * modifier) + ") scaleY("+scale+")";
+      this.spinnyEl.style.opacity = opacity;
 
       var newX = Math.sin(a) *  .00015 * game.physicsSamplingRatio* this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
       var newY = Math.cos(a) * -.00015 * game.physicsSamplingRatio * this.physics.speed * game.physicsSamplingRatio * rotationRatio; //.00005
