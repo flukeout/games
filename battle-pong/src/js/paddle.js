@@ -543,7 +543,9 @@ function createPaddle(options) {
     hasMagnetPowerup : false,
     magnetTimeout: false,
     magnetDuration : 7500,
+    
     noclipDuration : 5000,
+    noclipTimeout: false,
 
     // When we get a powerup
     powerup(type){
@@ -582,10 +584,10 @@ function createPaddle(options) {
         this.element.classList.add("powerup-noclip");
         game.showMessage("NOCLIP!", 1500);
         
-        clearTimeout(this.noclipPowerup);
+        clearTimeout(this.noclipTimeout);
         
         var that = this;
-        this.magnetTimeout = window.setTimeout(function(){
+        this.noclipTimeout = window.setTimeout(function(){
           that.element.classList.remove("powerup-noclip");
           that.hasNoclipPowerup = false;
         }, this.noclipDuration); 
