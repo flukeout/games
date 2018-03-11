@@ -316,11 +316,11 @@ function createBall(options){
       }
 
       // TODO: fix this so it doesn't happen every frame
-      if(this.canSpin || this.prepSpin){
-        this.element.classList.add("canSpin");
-      } else {
-        this.element.classList.remove("canSpin");
-      }
+      // if(this.canSpin || this.prepSpin){
+      //   this.element.classList.add("canSpin");
+      // } else {
+      //   this.element.classList.remove("canSpin");
+      // }
 
       // --Spinning ball garbage ends here.
 
@@ -396,17 +396,12 @@ function createBall(options){
         if(this.goalsWhileFast >= this.goalsWhileFastAllowed) {
           this.applyBrakes = true;
         }
-        this.canSpin = false;
-        this.prepSpin = false;
+        this.endSpin();
       }
 
       // Wall hugging test....
       if(obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
         
-        if(this.prepSpin) {
-          this.prepSpin = false;
-          this.canSpin = true;
-        }
 
         let xV = this.physics.velocity.x;
         let yV = this.physics.velocity.y;
@@ -416,17 +411,19 @@ function createBall(options){
         let ratio = Math.abs(xV) / Math.abs(yV);
         let totalVelocity = Math.abs(xV) + Math.abs(yV);
 
+        if(totalVelocity < 6) {
+          totalVelocity = 6;
+        }
 
-        // let totalV = Math.abs(xV) + Math.abs(yV);
         let xRatio = .65;
-        let yRatio = .35;
+        let yRatio = .45;
 
         if(xV > 0) {
           // Going Right
           if(yV < 0) {
             // Going Down
             this.spinDirection = "cw";
-            if(this.canSpin) {
+            if(this.prepSpin && !this.canSpin) {
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -435,7 +432,7 @@ function createBall(options){
           } else {
             // Going Up
             this.spinDirection = "ccw";
-            if(this.canSpin) {
+            if(this.prepSpin && !this.canSpin) {
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: totalVelocity * yRatio
@@ -446,7 +443,7 @@ function createBall(options){
           // Going Left
           if(yV < 0) {
             this.spinDirection = "ccw";
-            if(this.canSpin) {
+            if(this.prepSpin && !this.canSpin) {
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -454,31 +451,26 @@ function createBall(options){
             }
           } else {
             this.spinDirection = "cw";
-            if(this.canSpin) {
+            if(this.prepSpin && !this.canSpin) {
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: totalVelocity * yRatio
               });
             }
-
           }
         }
+      
 
-        // let prevY = this.physics.velocity.y;
-        // Matter.Body.setVelocity(this.physics, {
-        //   x: prevX,
-        //   y: prevY / 2
-        // })
-        // let direction = 1;
-        // if(this.physics.velocity.x < 0) {
-        //   direction = -1;
-        // }
-        // let totalVel = direction * (Math.abs(this.physics.velocity.x) + Math.abs(this.physics.velocity.y)); 
+        if(this.prepSpin) {
+          this.prepSpin = false;
+          this.canSpin = true;
+        }
+
+
       }
 
       if(obj.label.indexOf("powerup") > -1) {
-        this.canSpin = false;
-        this.prepSpin = false;
+        this.endSpin();
       }
       
       // TODO - WTF
@@ -493,13 +485,10 @@ function createBall(options){
         }
 
         if(game.paddles[this.lastTouchedPaddle - 1].hasSpinPowerup === true) {
-          this.canSpin = false;
-          this.prepSpin = true;
+          this.prepToSpin();
         } else {
-          this.canSpin = false;
-          this.prepSpin = false;
+          this.endSpin();
         }
-
 
         // Sticky powerup test
         if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
@@ -537,6 +526,19 @@ function createBall(options){
       else {
         SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
       }
+    },
+
+    prepToSpin: function(){
+      this.canSpin = false;
+      this.prepSpin = true;
+      this.element.classList.add("canSpin");
+    },
+
+    endSpin: function(){
+      this.canSpin = false;
+      this.prepSpin = false;
+      this.element.classList.remove("canSpin");
+
     },
 
     // After a paddle hit, we want to check if the ball is going
