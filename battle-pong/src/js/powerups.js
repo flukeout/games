@@ -5,7 +5,8 @@
   const powerUpScoreSoundNames = {
     clone: 'Powerup_Bones_Score',
     grow: 'Powerup_Enhance_Score',
-    spin: 'Powerup_Spin_Score'
+    spin: 'Powerup_Spin_Score',
+    noclip: 'Powerup_Spin_Score'
   };
   
   const powerupSpawnNames = {
@@ -75,7 +76,6 @@
         restitution: 1,
         label: "powerup-" + type
       }
-
 
       if(type == "mine") {
         properties.width = 56;
@@ -301,6 +301,9 @@
                 var paddle = game.paddles[i];
                 if(paddle.player == playerAffected) {
                   game.paddles[i].powerup(this.type);
+                  if(!game.paddles[i].hasSpinPowerup) {
+                    game.gotPowerup(playerAffected, this.type);  
+                  }
                 }
               }
             }

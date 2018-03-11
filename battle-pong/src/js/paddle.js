@@ -383,6 +383,7 @@ const updateFunctions = {
       paddle.hasSpinPowerup = false;
       paddle.element.classList.remove("powerup-spin");
       SoundManager.playSound('Powerup_Spin_WareOff');
+      game.lostPowerup(paddle.player, "spin");
     }
   },
 
@@ -448,6 +449,7 @@ function createPaddle(options) {
       this.mode = "normal";
       this.targetHeight = this.baseHeight;
       this.hasSpinPowerup = false;
+      game.lostPowerup(this.player, "spin");
       this.spinPowerupRemaining = 0;
     },
 
