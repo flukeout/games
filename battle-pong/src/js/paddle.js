@@ -422,8 +422,6 @@ const updateFunctions = {
 function createPaddle(options) {
   var options = options || {};
 
-
-
   return createObject({
     selector: options.selector,
     player: options.player,

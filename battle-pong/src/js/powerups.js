@@ -176,7 +176,6 @@
           document.querySelector(".blast-zone").append(line);
           line.style.left = thisX + "px";
 
-
           setTimeout(function(){
             game.moveTerrain(scoringPlayer, Math.abs(mineDelta * 100));  
           }, 400);
@@ -184,8 +183,6 @@
           setTimeout(function(){
             line.remove();
           }, 450);
-
-          
 
           objectsToRender.forEach((obj) => {
             if (obj === this) return;
