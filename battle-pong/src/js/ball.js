@@ -17,8 +17,6 @@ function createBall(options){
     },
 
     lastStepSpeed : 0,
-    bodyEL : false,
-    spinnyEl : false,
 
     physicsOptions : {
       frictionAir: 0.00001 / game.physicsSamplingRatio,
@@ -28,11 +26,6 @@ function createBall(options){
         category : 0x0001,
         mask : 0x0001
       }
-    },
-
-    launch : function(x,y){
-      this.element.classList.add('show');
-      Matter.Body.applyForce(this.physics, this.physics.position, {x : x, y : y});
     },
 
     timeSinceHit : 0,
@@ -78,7 +71,6 @@ function createBall(options){
 
     // For slowing things down
 
-
     brakesModeEnabled : window.Settings.brakesModeEnabled,
     // brakesModeEnabled : true,
     slowSpeedTarget: 9 / game.physicsSamplingRatio,
@@ -98,7 +90,6 @@ function createBall(options){
     spinDirection : false,
 
     lastHitPaddle : false, // The paddle that holds influence over the ball (for spinning)
-    // lastTouchedBy : false,
     lastTouchedPaddle: false,
 
     wooshPlayed: false,
@@ -115,6 +106,11 @@ function createBall(options){
         x : this.physics.velocity.x * ratio,
         y : this.physics.velocity.y * ratio
       });
+    },
+
+    launch : function(x,y){
+      this.element.classList.add('show');
+      Matter.Body.applyForce(this.physics, this.physics.position, {x : x, y : y});
     },
 
     setTargetSpeed: function(speed){
@@ -168,7 +164,6 @@ function createBall(options){
       if(this.physics.speed > this.maxSpeed) {
         this.changeVelocityRatio(this.maxSpeedSlowdownRatio);
       }
-
 
       // All this crap below just relates to curving the ball
       // and adding the spinning animation.
@@ -379,7 +374,6 @@ function createBall(options){
 
       // Wall hugging test....
       if(obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
-        
 
         let xV = this.physics.velocity.x;
         let yV = this.physics.velocity.y;
@@ -443,8 +437,6 @@ function createBall(options){
           this.prepSpin = false;
           this.canSpin = true;
         }
-
-
       }
 
       if(obj.label.indexOf("powerup") > -1) {
@@ -506,17 +498,18 @@ function createBall(options){
       }
     },
 
+
     prepToSpin: function(){
       this.canSpin = false;
       this.prepSpin = true;
       this.element.classList.add("canSpin");
     },
 
+
     endSpin: function(){
       this.canSpin = false;
       this.prepSpin = false;
       this.element.classList.remove("canSpin");
-
     },
 
     // After a paddle hit, we want to check if the ball is going
@@ -558,5 +551,4 @@ function createBall(options){
       this.spinSoundSequenceManager.stop();
     }
   });
-
 }

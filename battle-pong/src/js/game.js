@@ -2,7 +2,7 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
-    max : window.Settings.playTo || 2,         // First to this number wins
+    max : window.Settings.playTo || 2, // First to this number wins
     winner : false,  // Holds the winning paddle object
     loser : false    // Holds the losing paddle object
   },
@@ -10,7 +10,7 @@ var game =  {
   physicsStepMS : 1000 / 60 / 2,
   physicsSamplingRatio : 2, // This means 2 times per frame
 
-  terrainLinePercent : 50,  // The percent position between the players, 50 = 50% =
+  terrainLinePercent : 50,  // The percent position between the players, 0 to 100
   minTerrainChange : 5,
 
   freezeFrames : 0,
@@ -34,12 +34,6 @@ var game =  {
   boardWidth : 0,
   boardHeight: 0,
 
-  terrainOneEl : "",
-  terrainTwoEl : "",
-  bodyEl : "",
-
-  spinWallEls: 0,
-
   timeBetweenRoundsMS: 2000, // Time between rounds of the game
 
   powerupManager: null,
@@ -54,6 +48,8 @@ var game =  {
     this.tiltEl = document.querySelector(".tilt-wrapper");
     this.bodyEl = document.querySelector("body");
     this.surfaceOverlayEl = document.querySelector(".surface .overlay");
+
+    this.messageEl = document.querySelector(".score-display");
 
     this.spinWallEls = document.querySelectorAll(".spin-wall");
 
@@ -74,7 +70,8 @@ var game =  {
   },
 
   activeSpinPowerups : 0,
-
+  
+  // Lets the game know someone lost a powerup
   lostPowerup: function(player, type){
     console.log("lost", player, type);
     if(type === "spin") {
@@ -90,6 +87,8 @@ var game =  {
     }
   },
 
+
+  // Lets the game know someone got a powerup
   gotPowerup: function(player, type){
     console.log("got", player, type);
     if(type === "spin") {
@@ -272,24 +271,22 @@ var game =  {
 
   // Shows a message above the game board
   showMessage : function(text, duration){
+    this.messageEl.classList.add("show-message");
+    this.messageEl.innerHTML = text;
 
-    var scoreEl = document.querySelector(".score-display");
-
-    scoreEl.classList.add("show-message");
-    scoreEl.innerHTML = text;
-
+    var that = this;
     setTimeout(function(){
-      scoreEl.classList.remove("show-message");
+      that.messageEl.classList.remove("show-message");
     }, 250);
 
     if(duration) {
       setTimeout(function(){
-        scoreEl.classList.add("remove-message");
+        that.messageEl.classList.add("remove-message");
       }, duration - 250);
 
       setTimeout(function(){
-        scoreEl.innerHTML = "";
-        scoreEl.classList.remove("remove-message");
+        that.messageEl.innerHTML = "";
+        that.messageEl.classList.remove("remove-message");
       }, duration);
     }
   },
@@ -331,48 +328,34 @@ var game =  {
   showScore : function(){
     var that = this;
     var delay = 500;
+    
     var scoreOneEl = document.querySelector(".bigscore-wrapper.one .bigscore");
-    console.log(scoreOneEl);
     var scoreTwoEl = document.querySelector(".bigscore-wrapper.two .bigscore");
-
     var bestOfOne = document.querySelector(".bigscore-wrapper.one .bestof");
     var bestOfTwo = document.querySelector(".bigscore-wrapper.two .bestof");
+    
+    var els = [scoreOneEl, scoreTwoEl, bestOfOne, bestOfTwo];
 
     bestOfTwo.innerHTML = "OF " + ((this.score.max * 2) - 1);
-
-    // TODO simplify all this carp you moron
-    scoreOneEl.classList.remove("hide-animation");
-    scoreTwoEl.classList.remove("hide-animation")
-    bestOfOne.classList.remove("hide-animation");;
-    bestOfTwo.classList.remove("hide-animation");
+    
+    els.map(el => el.classList.remove("hide-animation"));
 
     setTimeout(function(){
       scoreOneEl.querySelector(".score-number").innerHTML = that.score.player1;
-      scoreOneEl.style.display = "block";
-      bestOfOne.style.display = "block";
       scoreTwoEl.querySelector(".score-number").innerHTML = that.score.player2;
-      scoreTwoEl.style.display = "block";
-      bestOfTwo.style.display = "block";
+      els.map(el => el.style.display = "block");
     }, delay);
 
     delay = delay + 1000;
 
     setTimeout(function(){
-      scoreOneEl.classList.add("hide-animation");
-      scoreTwoEl.classList.add("hide-animation");
-      bestOfOne.classList.add("hide-animation");
-      bestOfTwo.classList.add("hide-animation");
-
+      els.map(el => el.classList.add("hide-animation"));
     }, delay);
 
     delay = delay + 500;
 
     setTimeout(function(){
-      scoreOneEl.style.display = "none";
-      scoreTwoEl.style.display = "none";
-      bestOfOne.style.display = "none";
-      bestOfTwo.style.display = "none";
-
+      els.map(el => el.style.display = "none");
     }, delay);
   },
 
@@ -389,28 +372,8 @@ var game =  {
 
     this.showScore();
 
-    // Check if this is the final round
-    var finalRound = false;
-    let gamesPlayed = that.score.player1 + that.score.player2;
-    if(gamesPlayed === (that.score.max - 1) * 2) {
-      finalRound = true;
-    }
+    var finalRound = that.score.player1 + that.score.player2 + 2 === that.score.max * 2 ? true : false;
 
-    setTimeout(function(){
-      that.mode = "running";
-      that.updateBounds();
-      that.launchBall();
-
-      if(finalRound){
-        setTimeout(function(){
-          that.showMessage("CHAOS MODE", 1500);
-          that.launchBall();
-        }, 1500);
-      }
-
-    }, 1500);
-
-    
     ["winner-screen", "winner-two", "winner-one"].forEach(function(className){
       that.bodyEl.classList.remove(className);
     });
@@ -423,13 +386,25 @@ var game =  {
     this.terrainLinePercent = 50;
 
     this.updateBounds();
-
     this.updateScoreDisplay();
     
     setTimeout(function(){
       var message = finalRound ? "FINAL ROUND!!" : "GAME ON!";
       that.showMessage(message, 1500);
-    }, 1400)
+    }, 1400);
+
+    setTimeout(function(){
+      that.mode = "running";
+      that.updateBounds();
+      that.launchBall();
+
+      if(finalRound){
+        setTimeout(function(){
+          that.showMessage("CHAOS MODE", 1500);
+          that.launchBall();
+        }, 1500);
+      }
+    }, 1500);
   },
 
 
