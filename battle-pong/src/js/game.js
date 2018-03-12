@@ -135,7 +135,13 @@ var game =  {
   },
 
   pause: function () {
-    this.mode = "paused";
+    this.previousMode = this.mode;
+    this.mode = 'paused';
+  },
+
+  resume: function () {
+    this.mode = this.previousMode;
+    this.run();
   },
 
   run: function () {

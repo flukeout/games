@@ -100,6 +100,8 @@ document.addEventListener('DOMContentLoaded', function () {
     inputManager.setupInputForObject(rightPaddle);
   }
 
+  let rulesManager = new RulesManager(game);
+
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
   game.step();
 
