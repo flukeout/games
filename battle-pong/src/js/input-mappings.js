@@ -55,6 +55,22 @@ var gamepadInputLabels = {
   }
 };
 
+let inverseGamepadInputLabels = {};
+for (let gamepadType in gamepadInputLabels) {
+  let labels = gamepadInputLabels[gamepadType];
+  let inverseLabels = inverseGamepadInputLabels[gamepadType] = {buttons: {}, axes: {}};
+
+  for (let id in labels.buttons) {
+    let label = labels.buttons[id];
+    inverseLabels.buttons[label] = parseInt(id);
+  }
+
+  for (let id in labels.axes) {
+    let label = labels.axes[id];
+    inverseLabels.axes[label] = parseInt(id);
+  }
+}
+
 var keyboardInputLabelToActionMappings = [
   {
     "KeyW":       "up",

@@ -1,4 +1,4 @@
-function RulesManager (game) {
+function RulesManager (game, inputManager) {
   
   let displayingRules = false;
 
@@ -15,6 +15,19 @@ function RulesManager (game) {
       }
       displayingRules = !displayingRules;
     }
+  });
+
+  inputManager.waitForGamepadStartButtonPress(() => {
+    if (displayingRules) {
+      document.querySelector(".rules").classList.remove("visible");
+      game.resume();
+    }
+    else {
+      document.querySelector(".rules").classList.add("visible");
+      game.pause();
+      nextStep();
+    }
+    displayingRules = !displayingRules;
   });
 
   let stepList = [

@@ -5,15 +5,19 @@ var axisThreshold = 0.1;
 
 
 window.InputManager = function (onInputChanged) {
-  var savedInputLabelToActionMappings = localStorage.getItem('inputLabelToActionMappings');
+  let gamepadStartButtonCallback;
+  let maintainedObjects = [];
 
+  let savedInputLabelToActionMappings = localStorage.getItem('inputLabelToActionMappings');
   if (savedInputLabelToActionMappings) {
     savedInputLabelToActionMappings = JSON.parse(savedInputLabelToActionMappings);
     keyboardInputLabelToActionMappings = savedInputLabelToActionMappings.keyboard;
     gamepadInputLabelToActionMapping = savedInputLabelToActionMappings.gamepad;
   }
 
-  var maintainedObjects = [];
+  this.waitForGamepadStartButtonPress = function (callbackFunction) {
+    gamepadStartButtonCallback = callbackFunction;
+  };
 
   this.setupInputForObject = function (object) {
     object.setInputComponent(this.getComponentForNextAvailableInput());
@@ -41,7 +45,7 @@ window.InputManager = function (onInputChanged) {
     console.log('Gamepad Connected: ', e);
   }
 
-  function checkGamepads() {
+  function checkForNewGamepads() {
     var unusedGamepad = GamepadManager.getUnusedGamepad();
     if (unusedGamepad) {
       for (var i = 0; i < maintainedObjects.length; ++i) {
@@ -55,9 +59,38 @@ window.InputManager = function (onInputChanged) {
     }
   }
 
-  var gamepadCheckInterval = setInterval(function () {
-    checkGamepads();
+  setInterval(function () {
+    checkForNewGamepads();
   }, 500);
+
+  let configsWhereStartButtonWasPressed = [];
+
+  (function gamepadStartButtonLoop() {
+    // Make sure gamepads are refreshed. If they aren't, we don't really know if this frame is aligned with gamepad inputs
+    GamepadManager.refreshGamepads();
+
+    // If one of the controllers was pushing the start button, see if it still is
+    configsWhereStartButtonWasPressed = configsWhereStartButtonWasPressed.filter(gamepadConfig => {
+      let startButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.start];
+      let homeButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.home];
+      return startButton.pressed || homeButton.pressed;
+    });
+
+    // If any of the controllers started pressing the start button, notify gamepadStartButtonCallback
+    GamepadManager.getConfigsInUse().forEach(gamepadConfig => {
+      let startButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.start];
+      let homeButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.home];
+
+      if (startButton.pressed || homeButton.pressed) {
+        if (configsWhereStartButtonWasPressed.indexOf(gamepadConfig) === -1) {
+          configsWhereStartButtonWasPressed.push(gamepadConfig);
+          gamepadStartButtonCallback && gamepadStartButtonCallback();
+        }
+      }
+    });
+
+    requestAnimationFrame(gamepadStartButtonLoop);
+  })();
 
   window.addEventListener("gamepadconnected", onGamepadConnected);
   window.addEventListener("gamepaddisconnected", (e) => {
@@ -124,11 +157,11 @@ window.KeyboardManager = (function() {
 })();
 
 window.GamepadManager = (function () {
-  var gamepads;
-  var gamepadsInUse = [];
+  let gamepads;
+  let gamepadsInUse = [];
 
   function Config(gamepad) {
-    var inputMappingLabelType = 'standard';
+    let inputMappingLabelType = 'standard';
 
     if (gamepad.mapping) {
       inputMappingLabelType = gamepad.mapping;
@@ -137,28 +170,30 @@ window.GamepadManager = (function () {
       inputMappingLabelType = 'xbox';
     }
 
-    var inputLabelSet = gamepadInputLabels[inputMappingLabelType];
-    var inputLabelToActionMappingKeys = Object.keys(gamepadInputLabelToActionMapping);
-    var inputToActionMapping = {buttons: {}, axes: {}};
+    let inputLabelSet = gamepadInputLabels[inputMappingLabelType];
+    let inputLabelToActionMappingKeys = Object.keys(gamepadInputLabelToActionMapping);
+    let inputToActionMapping = {buttons: {}, axes: {}};
 
     Object.keys(inputLabelSet.buttons).forEach(function (inputNumber) {
-      var inputLabel = inputLabelSet.buttons[inputNumber];
+      let inputLabel = inputLabelSet.buttons[inputNumber];
       if (inputLabelToActionMappingKeys.indexOf(inputLabel) > -1) {
-        var action = gamepadInputLabelToActionMapping[inputLabel];
+        let action = gamepadInputLabelToActionMapping[inputLabel];
         inputToActionMapping.buttons[inputNumber] = action;
       }
     });
 
     Object.keys(inputLabelSet.axes).forEach(function (inputNumber) {
-      var inputLabel = inputLabelSet.axes[inputNumber];
+      let inputLabel = inputLabelSet.axes[inputNumber];
       if (inputLabelToActionMappingKeys.indexOf(inputLabel) > -1) {
-        var action = gamepadInputLabelToActionMapping[inputLabel];
+        let action = gamepadInputLabelToActionMapping[inputLabel];
         inputToActionMapping.axes[inputNumber] = action;
       }
     });
 
-    var gamepadID = gamepad.id + gamepad.index;
+    let gamepadID = gamepad.id + gamepad.index;
 
+    this.inputLabelMapping = inputLabelSet;
+    this.inverseInputLabelMapping = inverseGamepadInputLabels[inputMappingLabelType];
     this.inputToActionMapping = inputToActionMapping;
     this.id = gamepadID;
     this.type = inputMappingLabelType;
@@ -212,6 +247,9 @@ window.GamepadManager = (function () {
   return {
     refreshGamepads: refreshGamepads,
     getGamepads: getGamepads,
+    getConfigsInUse: function () {
+      return gamepadsInUse;
+    },
     getConfigByIndex: function (gamepadIndex) {
       return new Config(gamepads[gamepadIndex]);
     },
