@@ -1,0 +1,47 @@
+{
+  "name": "DEATHSTROID",
+  "version": "1.0.0",
+  "description": "DEATHSTROID",
+  "author": "Bobby Richter <iambobbyrichter@gmail.com> & Luke Pacholski <luke.pacholski@gmail.com>",
+  "main": "./app/index.js",
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "npm install && electron ./app",
+    "pack": "build --dir",
+    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false build",
+    "prepare": "node prepare.js"
+  },
+  "build": {
+    "appId": "com.DEATHSTROID.app",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "squirrel",
+      "icon": "build/icon.ico"
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "20.4.1",
+    "ncp": "2.0.0"
+  }
+}

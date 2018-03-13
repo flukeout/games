@@ -3,6 +3,7 @@ window.addEventListener("resize", resizeBoard);
 document.addEventListener('DOMContentLoaded', function () {
 
   resizeBoard();
+  setupRenderer(".world");
 
   const numPaddles = 2;
 

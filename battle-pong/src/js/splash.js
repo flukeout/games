@@ -122,7 +122,12 @@ function setupStartButton(){
 
     e.preventDefault();
     setTimeout(function(){
-      window.location.href = "../index.html";
+      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+        window.location.href = "../index.html";
+      }
+      else {
+        window.location.href = "index.html";
+      }
     }, 2500);
   })
 }

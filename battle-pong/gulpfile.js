@@ -8,13 +8,56 @@ const concat     = require('gulp-concat');
 const rename     = require("gulp-rename");
 const babel      = require("gulp-babel");
 
+const gameJSFiles = [
+  'settings.js',
+  'debug.js',
+  'particles.js',
+  'effects.js',
+  'ai.js',
+  'title.js',
+  'sounds.js',
+  'powerups.js',
+  'music.js',
+  'input-mappings.js',
+  'input.js',
+  'game.js',
+  'collisions.js',
+  'convert.js',
+  'components.js',
+  'paddle.js',
+  'ball.js',
+  'reactions.js',
+  'intro.js',
+  'menu.js',
+  'framerate.js',
+  'canvas-stars.js',
+  'rules.js',
+  'start.js'
+].map(file => { return './src/js/' + file });
+
+const splashJSFiles = [
+  'particles.js',
+  'settings.js',
+  'canvas-stars.js',
+  'music.js',
+  'sounds.js',
+  'splash.js'
+].map(file => { return './src/js/' + file });
+
 gulp.task('html', () => {
+  gulp.src('splash.html')
+    .pipe(replace(/<base href=".+">/g, ''))
+    .pipe(replace(/<script src="js\/.+"><\/script>.*/g,''))
+    .pipe(replace(/<!-- insert minified source here -->/g,'<script src="matter.min.js"></script><script src="splash.min.js"></script>'))
+    .pipe(plumber())
+    .pipe(gulp.dest('./build/'))
+
   gulp.src('index.html')
     .pipe(replace(/<base href=".+">/g, ''))
     .pipe(replace(/<script src="js\/.+"><\/script>.*/g,''))
-    .pipe(replace(/<!-- insert minified source here -->/g,'<script src="matter.min.js"></script><script src="battle-pong.min.js"></script>'))
+    .pipe(replace(/<!-- insert minified source here -->/g,'<script src="matter.min.js"></script><script src="deathstroid.min.js"></script>'))
     .pipe(plumber())
-    .pipe(gulp.dest('./build/app'))
+    .pipe(gulp.dest('./build/'))
 });
 
 gulp.task('css', () => {
@@ -24,74 +67,53 @@ gulp.task('css', () => {
       outputStyle: 'compressed'
     }))
     .pipe(gulp.dest('./src/'))
-    .pipe(gulp.dest('./build/app'))
+    .pipe(gulp.dest('./build/'))
 });
 
-gulp.task('js', () => {
-  gulp.src([
-      './src/js/settings.js',
-      './src/js/particles.js',
-      './src/js/effects.js',
-      './src/js/title.js',
-      './src/js/sounds.js',
-      './src/js/input-mappings.js',
-      './src/js/input.js',
-      './src/js/game.js',
-      './src/js/collisions.js',
-      './src/js/convert.js',
-      './src/js/components.js',
-      './src/js/paddle.js',
-      './src/js/ball.js',
-      './src/js/powerups.js',
-      './src/js/reactions.js',
-      './src/js/intro.js',
-      './src/js/menu.js',
-      './src/js/framerate.js',
-      './src/js/start.js'
-    ])
+function compileJS(files, destinationFilename) {
+  return gulp.src(files)
     .pipe(plumber())
     // .pipe(sourcemaps.init())
-    .pipe(concat('battle-pong.js'))
+    .pipe(concat(destinationFilename))
     // .pipe(gulp.dest('./build/')) // save .js
-    .pipe(babel({
-      presets: ['env']
-    }))
-    .pipe(uglify({
-      // toplevel: true
-    }))
+    // .pipe(babel({
+    //   presets: ['env']
+    // }))
+    // .pipe(uglify({
+    //   // toplevel: true
+    // }))
     .pipe(rename({
       extname: '.min.js'
     }))
     // .pipe(sourcemaps.write('maps'))
-    .pipe(gulp.dest('./build/app')) // save .min.js
+    .pipe(gulp.dest('./build/')) // save .min.js
+}
+
+gulp.task('js', () => {
+  compileJS(gameJSFiles, 'deathstroid.js');
+  compileJS(splashJSFiles, 'splash.js');
 
   gulp.src('./src/js/matter.min.js')
     .pipe(plumber())
-    .pipe(gulp.dest('./build/app'));
+    .pipe(gulp.dest('./build/'));
 });
 
 gulp.task('assets', () => {
   gulp.src(['src/assets/**/*'])
     .pipe(plumber())
-    .pipe(gulp.dest('./build/app/assets/'));
+    .pipe(gulp.dest('./build/assets/'));
   gulp.src(['src/fonts/**/*'])
     .pipe(plumber())
-    .pipe(gulp.dest('./build/app/fonts/'));
+    .pipe(gulp.dest('./build/fonts/'));
   gulp.src(['src/sounds/**/*'])
     .pipe(plumber())
-    .pipe(gulp.dest('./build/app/sounds/'));
+    .pipe(gulp.dest('./build/sounds/'));
+  gulp.src(['src/music/**/*'])
+    .pipe(plumber())
+    .pipe(gulp.dest('./build/music/'));
 });
 
-gulp.task('electron', () => {
-  gulp.src('electron/electron.js')
-    .pipe(plumber())
-    .pipe(gulp.dest('./build/app'));
-  gulp.src('electron/package.json')
-    .pipe(plumber())
-    .pipe(gulp.dest('./build/'));
-});
-
-gulp.task('build', ['css', 'html', 'js', 'assets', 'electron'], () => {
+gulp.task('build', ['css', 'html', 'js', 'assets'], () => {
 
 });
 
@@ -100,14 +122,12 @@ gulp.task('watch', [
   'html',
   'js',
   'assets',
-  'electron'
   ], () => {
   gulp.watch('src/scss/**/*', ['css']);
   gulp.watch('index.html', ['html']);
   gulp.watch('splash.html', ['html']);
   gulp.watch('src/js/**/*.js', ['js']);
-  gulp.watch('electron/**/*', ['electron']);
-  gulp.watch(['src/assets/**/*', 'src/fonts/**/', 'src/sounds/**/'], ['assets'])
+  gulp.watch(['src/assets/**/*', 'src/fonts/**/', 'src/sounds/**/', 'src/music/**/'], ['assets'])
 });
 
 gulp.task('default', ['watch']);
