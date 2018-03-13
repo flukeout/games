@@ -67,6 +67,10 @@ var game =  {
 
     this.powerupManager = new PowerupManager(this);
     this.aiManager = new AIManager(this, engine);
+
+    this.reactionMachine = new ReactionMachine();
+
+    initEffects();
   },
 
   activeSpinPowerups : 0,
@@ -724,14 +728,6 @@ var game =  {
     removalList.push(object);
   }
 }
-
-
-// Sets up the world
-document.addEventListener('DOMContentLoaded', function () {
-  reactionMachine = new ReactionMachine();
-  setupRenderer(".world");
-});
-
 
 function setupRenderer(selector){
 

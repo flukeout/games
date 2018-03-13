@@ -1,7 +1,7 @@
-document.addEventListener('DOMContentLoaded', function(){
+function initEffects() {
   startStars(30, window.innerWidth, 400);
-  // startWind(30, 100, 100);
-});
+  // startWind(30, 100, 100);  
+}
 
 // Flashes board border when a powerup scores
 // and adds some little particles
