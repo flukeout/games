@@ -659,11 +659,14 @@ var game =  {
     // Add a message near the impact that indicates
     // the force of the hit (in percentage points)
     if(terrainChange >= 10) {
+      
+      let messages = ["OW","NICE","OOF","POW"];
+
       showMessage({
-        text: "-" + Math.round(terrainChange) + "%",
+        text: messages[Math.floor(Math.random() * messages.length)],
         x: ballPhysics.position.x,
         y: ballPhysics.position.y,
-        fontSize : (20 + 35 * xForceRatio),
+        fontSize : (20 + 15 * xForceRatio),
         timeout: 2750
       });
 
