@@ -1,9 +1,3 @@
-@keyframes slowStrobe {
-  50% {
-    transform: scale(1.2);
-  }
-}
-
 @keyframes ballAppear {
   0% {
     transform: scale(.2);
@@ -11,13 +5,6 @@
   50% {
     transform: scale(1.2)
   }
-}
-
-
-.pixel {
-  background: white;
-  position: absolute;
-  z-index: 9999;
 }
 
 .ball {
@@ -32,34 +19,9 @@
   &.show {
     visibility: visible;
   }
-
-  &.clone-ball .body {
-     opacity: .5;
-     
-  }
   
-  &.ghost {
-    .body {
-        background: rgba(255,255,255,.2);
-        //  animation: strobeBall .15s ease-in-out infinite;
-        // @keyframes strobeBall {
-        //   50% {
-        //     background: rgba(255,255,255,.2);
-        //   }
-        // }
-
-
-    }
-  }
-
-  &.blinkBall .body {
-    animation: blinkBall .15s ease-in-out infinite;
-
-    @keyframes blinkBall {
-      50% {
-        opacity: 0;
-      }
-    }
+  &.ghost .body {
+    background: rgba(255,255,255,.2);
   }
 
   .spinny {
@@ -69,14 +31,14 @@
     position: absolute;
     top: -50%;
     left: -50%;
-    background-image: url(assets/images/spinny2.svg);
+    background-image: url(assets/images/spinny.svg);
     background-size: 100%;
     background-position: center;
     background-repeat: no-repeat;
   }
 
   &.sticky .body {
-    background: #222 !important;
+    background: #222;
   }
 
   &.canSpin .body {
@@ -92,26 +54,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    // animation: ballAppear .25s ease-out 1;
     transition: background .15s ease-out;
   }
-
-  &.overtime:before {
-    content: "";
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    top: -10px;
-    left: -10px;
-    box-sizing: border-box;
-    border: solid 4px rgba(255, 255, 255, .25);
-    animation: slowStrobe .5s ease-in-out infinite;
-    transform-origin: 50% 50%;
-    border-radius: 50%;
-  }
 }
-
-
 
 .fake-ball {
   position: absolute;
@@ -120,12 +65,4 @@
   background: white;
   border-radius: 15px;
   z-index: 9999999;
-}
-
-
-.tarPuff {
-  z-index: 2;
-  
-  background-image: url(assets/images/tar.svg);
-  background-size: contain;
 }

@@ -62,19 +62,6 @@
         transform: translateY(-15px);
       }
     }
-
-
-    @keyframes rotateSurface {
-      0% {
-        transform: rotate(-5deg);
-      }
-      50% {
-        transform: rotate(5deg);
-      }
-      100% {
-        transform: rotate(-5deg);
-      }
-    }
   }
 
   .large-moon {
@@ -313,14 +300,12 @@
 }
 
 .world {
-  width: 890px; // 1000px
+  width: 890px;
   height: 540px;
   position: relative;
   border: solid 20px #222;
-  // border-top: solid 20px darken(#39f6ff, 50%);
   box-sizing: border-box;
   -moz-transform-style: preserve-3d;
-
   animation: worldAppear 2s ease-out;
 
     @keyframes worldAppear {
@@ -360,8 +345,6 @@
   }
 }
 
-
-
 .one .bigscore {
   color: #3faa7f;
 }
@@ -397,7 +380,6 @@
     transform-origin: right;
   }  
 }
-
 
 .red-chunk {
   z-index: 2;

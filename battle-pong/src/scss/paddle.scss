@@ -91,13 +91,14 @@
     animation: powerupHit .5s ease-out;
   }
 
-  &.powerup-spin .body {
-    background: #5fffff;
-    animation: spinPowerupOn .15s ease-out 4;
-  }
 
   &.powerup-magnet .body {
     background: #222;
+  }
+
+  &.powerup-spin .body {
+    background: #5fffff;
+    animation: spinPowerupOn .15s ease-out 4;
   }
 
   &.powerup-noclip .body {
@@ -105,6 +106,19 @@
     background: rgba(255,255,255,.2);
     box-sizing: border-box;
   }
+  
+  &.powerup-noclip.powerup-spin .body {
+    border: solid 3px #5fffff;
+    background: rgba(95,255,255,.2);
+    box-sizing: border-box;
+  }
+
+  &.powerup-magnet.powerup-noclip .body {
+    border: solid 3px #000;
+    background: rgba(0,0,0,.2);
+    box-sizing: border-box;
+  }
+
 
   &.dead .body {
     background: rgba(255,255,255,0);

@@ -28,9 +28,25 @@ function powerupScored(x, y, type){
       options.x = options.x - 20;
     }
     makeParticle(options);
-
   }
 
+
+  var options = {
+    x : 0,
+    y : y,
+    width : 20,
+    height: 200,
+    classList : ['powerup-scored-beam', type],
+    lifespan: 40
+  }
+
+  if(x > 450) {
+    options.x = 850;
+  } else {
+    options.x = -20;
+  }
+
+  makeParticle(options);
 
   var el = document.createElement("div");
   el.classList.add("powerup-scored");
