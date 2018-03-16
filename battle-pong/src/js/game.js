@@ -677,6 +677,7 @@ var game =  {
     }
 
     this.moveTerrain(scoredByPlayerNum, terrainChange, scoringBall);
+    
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
 
     SoundManager.playRandomSoundFromBank('score');
@@ -693,10 +694,10 @@ var game =  {
 
     if(player === 1) {
       modifier = 1;
-      className = "red-chunk";
+      className = "pink-chunk";
     } else if (player === 2){
       modifier = -1;
-      className = "blue-chunk";
+      className = "green-chunk";
     }
 
     makeTerrainChunks(this.terrainLinePercent, modifier, className, this.boardWidth, this.boardHeight);

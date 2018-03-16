@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
+  initParticleEngine(".scene", 5);
+  loop();
   
   prepTitle();
 
@@ -17,13 +19,18 @@ document.addEventListener('DOMContentLoaded', function(){
 
   setupStartButton();
 
-  starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
+  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
 
   SoundManager.init();
   SoundManager.loadSettingsFromLocalStorage();
 
 });
+
+function loop(){
+  drawParticles();
+  requestAnimationFrame(loop);
+}
 
 
 let bestOfEls, 
@@ -97,8 +104,7 @@ function setupStartButton(){
       y : buttonPosition.y - 60,
       zR : getRandom(-8,8),
       xRv : getRandom(12,20),    
-      yV : 5,
-      yVa : .1,
+      yV : 7,
       zV : -40,
       xV : getRandom(-5,5),
       oV: -.02,
@@ -119,7 +125,9 @@ function setupStartButton(){
     timeoutClass(".overlay", "transition-out");
     timeoutClass(".credits", "transition-out");
     timeoutClass(".large-moon", "transition-out", 200);
-
+    timeoutClass(".sky", "transition-out", 200);
+    timeoutClass(".canvas-stars", "transition-out", 200);
+    
     e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
@@ -128,7 +136,7 @@ function setupStartButton(){
       else {
         window.location.href = "index.html";
       }
-    }, 2500);
+    }, 4000);
   })
 }
 
@@ -236,12 +244,6 @@ function updateBestOf(){
   });
 }
 
-
-
-
-
-
-
 // Separates the letters in the title into individual elements
 // to be animated.
 function prepTitle(){
@@ -266,7 +268,6 @@ function prepTitle(){
     titleEl.append(letterEl);
   }
 }
-
 
 // Variables for the particle loop
 var starsHeight;

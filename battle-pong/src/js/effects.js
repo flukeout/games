@@ -1,6 +1,5 @@
 function initEffects() {
   startStars(30, window.innerWidth, 400);
-  // startWind(30, 100, 100);  
 }
 
 // Flashes board border when a powerup scores
@@ -29,7 +28,6 @@ function powerupScored(x, y, type){
     }
     makeParticle(options);
   }
-
 
   var options = {
     x : 0,
