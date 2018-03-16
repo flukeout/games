@@ -373,14 +373,8 @@ var game =  {
   // Restarts a round
   restart : function(){
 
-    setTimeout(function(){
-      SoundManager.playSound("round-start");
-    }, 80)
-
     var that = this;
     var messageDelay = 0;
-
-    this.showScore();
 
     var finalRound = that.score.player1 + that.score.player2 + 2 === that.score.max * 2 ? true : false;
 
@@ -397,11 +391,21 @@ var game =  {
 
     this.updateBounds();
     this.updateScoreDisplay();
-    
+
+
+    setTimeout(function(){
+      SoundManager.playSound("round-start");
+    }, 2200);
+
+    setTimeout(function(){
+      that.showScore();
+    }, 2500);
+
+
     setTimeout(function(){
       var message = finalRound ? "FINAL ROUND!!" : "GAME ON!";
       that.showMessage(message, 1500);
-    }, 1400);
+    }, 4200);
 
     setTimeout(function(){
       that.mode = "running";
@@ -414,7 +418,7 @@ var game =  {
           that.launchBall();
         }, 1500);
       }
-    }, 1500);
+    }, 4200);
   },
 
 

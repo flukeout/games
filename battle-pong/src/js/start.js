@@ -109,11 +109,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // var menu = new MenuMachine(game);
 
   function startGame () {
-    // document.querySelector('.header').classList.add('show');
     document.querySelector('.score-wrapper').classList.add('show');
     game.restart();
     game.run();
-    // menu.waitToBeSummoned();
   }
 
   if (Settings.showIntro) {
