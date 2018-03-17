@@ -295,10 +295,14 @@
 }
 
 .winner-screen.winner-one  {
+  .sky {
   background-image: radial-gradient(
     200% 100% at bottom,
     #540c56 55%,
-    #000 100%);
+    #000 100%);  
+  }
+
+  
 
   .world {
     border: solid 20px #bd71b0;
@@ -307,10 +311,12 @@
 
 
 .winner-screen.winner-two {
-  background-image: radial-gradient(
+  .sku {
+    background-image: radial-gradient(
     200% 100% at bottom,
     #0b3322 55%,
     #000 100%);
+  }
 
   .world {
     border: solid 20px #66bb98;
