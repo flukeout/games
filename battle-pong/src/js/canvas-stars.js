@@ -13,7 +13,6 @@ function startStars(starCount, width, height){
 
 function makeStars(starCount){
   for(var i = 0; i < starCount; i++) {
-    console.log(canvasHeight);
     stars.push({
       x: getRandom(0, canvasWidth),
       y: getRandom(0, canvasHeight),

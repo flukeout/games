@@ -90,6 +90,20 @@ function timeoutClass(selector, className, timeout){
   },timeoutAccumulator)
 }
 
+
+function fadeOutScene(){
+  timeoutClass(".content", "transition-out", 100)
+  timeoutClass(".paddle-guy", "transition-out", 250);
+  timeoutClass(".surface", "transition-out", 200);
+  timeoutClass(".overlay", "transition-out");
+  timeoutClass(".credits", "transition-out");
+  timeoutClass(".large-moon", "transition-out", 200);
+  timeoutClass(".sky", "transition-out", 200);
+  timeoutClass(".canvas-stars", "transition-out", 200);
+}
+
+
+
 function setupStartButton(){
   var button = document.querySelector(".start-game");
   button.addEventListener("click", function(e){
@@ -119,22 +133,15 @@ function setupStartButton(){
     SoundManager.playSound("Power_Shot_V1");
     button.style.display = "none";
 
-    timeoutClass(".content", "transition-out", 100)
-    timeoutClass(".paddle-guy", "transition-out", 250);
-    timeoutClass(".surface", "transition-out", 200);
-    timeoutClass(".overlay", "transition-out");
-    timeoutClass(".credits", "transition-out");
-    timeoutClass(".large-moon", "transition-out", 200);
-    timeoutClass(".sky", "transition-out", 200);
-    timeoutClass(".canvas-stars", "transition-out", 200);
+    fadeOutScene();
     
     e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../index.html";
+        window.location.href = "../rules.html";
       }
       else {
-        window.location.href = "index.html";
+        window.location.href = "rules.html";
       }
     }, 4000);
   })

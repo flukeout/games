@@ -75,9 +75,9 @@ var game =  {
 
   activeSpinPowerups : 0,
   
+  
   // Lets the game know someone lost a powerup
   lostPowerup: function(player, type){
-    console.log("lost", player, type);
     if(type === "spin") {
       this.activeSpinPowerups--;
       if(this.activeSpinPowerups < 0){
@@ -310,14 +310,14 @@ var game =  {
 
     Matter.Body.set(ball.physics, {
       position: { 
-        x : this.boardWidth / 2, 
+        x : this.boardWidth / 2 - 50, 
         y : this.boardHeight / 2 - 15
       }
     });
  
     var chance = Math.floor(getRandom(0,2));
     var launchForce = (chance === 0 ? -1 : 1) * .02 * this.physicsSamplingRatio;
-    ball.launch(0, launchForce);
+    ball.launch(0, 0);
 
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(ball);

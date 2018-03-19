@@ -1,3 +1,6 @@
+.game {
+
+
 @keyframes rulesAppear {
   0% {
     opacity: 0;
@@ -343,4 +346,6 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
 }

@@ -8,7 +8,7 @@ window.Settings = {
   dashingEnabled : false,
   goalTimeoutMS : 250,
   powerupFrequency : 300,
-  maxPowerupCount : 2,
+  maxPowerupCount : 1,
   playTo : 2,
   mineForceRadius: 175,
   mineForceMultiplier: 0.00075,
