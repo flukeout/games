@@ -5,7 +5,6 @@ let ruleNavEls;
 document.addEventListener('DOMContentLoaded', function () {
 
   ruleNavEls = document.querySelectorAll(".rules-nav a");
-  
   ruleNavEls.forEach(function(el){
     let type = el.getAttribute("nav");
     rulenames.push(type);
@@ -34,19 +33,23 @@ document.addEventListener('DOMContentLoaded', function () {
   powerupEls = document.querySelectorAll(".powerup-row .icon");
 
   powerupEls.forEach(function(el){
+    let type = el.getAttribute("type");
+    powerupnames.push(type);
     el.addEventListener("click", function(el){
       let type = this.getAttribute("type");
       showPowerup(type);
     });
   })
 
-  showPowerup("grow");
+  showPowerup(powerupnames[0]);
   currentRule = rulenames[0];
   showRule(currentRule);
 });
 
 
 const showPowerup = type => {
+  currentPowerup = type;
+  
   powerupEls.forEach(function(el){
     el.classList.remove("selected");
   });
@@ -55,7 +58,7 @@ const showPowerup = type => {
   document.querySelector(".powerup-row .icon[type="+type+"]").classList.add("selected");
 
   // Hide all videos
-  document.querySelectorAll("video").forEach(function(el){
+  document.querySelectorAll(".powerups video").forEach(function(el){
     el.style.display = "none";
     el.pause();
     el.currentTime = 0;
@@ -63,7 +66,12 @@ const showPowerup = type => {
 
   // Show the proper video
   let video = document.querySelector("video." + type);
+  
+
   video.style.display = "block";
+
+  addTemporaryClassName(video, "videoPop", 250); 
+  
   video.play();
 
   // Display the rule text
@@ -87,6 +95,12 @@ let ruleEls;
 let nextButton;
 let powerupEls;
 
+const powerupnames = [];
+
+
+// Shows top level rule (rules, powerups, controls)
+
+
 
 const showRule = type => {
 
@@ -107,7 +121,19 @@ const showRule = type => {
   });
 }
 
+
 const nextRule = () => {
+  
+  if(currentRule === "powerups") {
+    let currentPowerupIndex = powerupnames.indexOf(currentPowerup);
+    currentPowerupIndex++;
+    let nextPowerup = powerupnames[currentPowerupIndex];
+    if(currentPowerupIndex < powerupnames.length) {
+      showPowerup(nextPowerup);
+      return;
+    }
+  }
+
   let currentIndex = rulenames.indexOf(currentRule);
   currentIndex++;
   if(currentIndex >= rulenames.length) {
@@ -115,10 +141,27 @@ const nextRule = () => {
   }
   let nextRule = rulenames[currentIndex];
   currentRule = nextRule;
+  
+  if(currentRule === "powerups") {
+    let nextPowerup = powerupnames[0];
+    showPowerup(nextPowerup);
+  }
+
   showRule(nextRule);
 }
 
 const previousRule = () => {
+  
+  if(currentRule === "powerups") {
+    let currentPowerupIndex = powerupnames.indexOf(currentPowerup);
+    currentPowerupIndex--;
+    let nextPowerup = powerupnames[currentPowerupIndex];
+    if(currentPowerupIndex >= 0) {
+      showPowerup(nextPowerup);
+      return;
+    }  
+  }
+
   let currentIndex = rulenames.indexOf(currentRule);
   currentIndex--;
   if(currentIndex < 0) {
@@ -126,9 +169,14 @@ const previousRule = () => {
   }
   let nextRule = rulenames[currentIndex];
   currentRule = nextRule;
+
+  if(currentRule === "powerups") {
+    let nextPowerup = powerupnames[powerupnames.length - 1];
+    showPowerup(nextPowerup);
+  }
+
   showRule(nextRule);
 }
-
 
 
 window.addEventListener("keydown", function(e){
@@ -209,9 +257,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
   initParticleEngine(".scene", 5);
   loop();
-  
-  // prepTitle();
-
   
   // setupStartButton();
 
@@ -295,28 +340,6 @@ function setupStartButton(){
 
 // Separates the letters in the title into individual elements
 // to be animated.
-function prepTitle(){
-  // return;
-  var titleEl =document.querySelector(".game-title .actual-title")
-  var titleString = titleEl.innerText;
-  titleEl.innerText = "";
-  
-  console.log(titleString);
-  var animationDelay = .1;
-
-  for(var i = 0; i < titleString.length; i++) {
-    var letterText = titleString.charAt(i);
-    if(letterText == " ") {
-      letterText = "&nbsp;&nbsp;";
-    }
-    var letterEl = document.createElement("span");
-    letterEl.classList.add("letter");
-    letterEl.innerHTML = letterText;
-    letterEl.style.animationDelay = animationDelay + "s";
-    animationDelay = animationDelay + .1;
-    titleEl.append(letterEl);
-  }
-}
 
 // Variables for the particle loop
 var starsHeight;
@@ -324,7 +347,6 @@ var starsHeight;
 // This shouldn't be in here, we should just import it from effects.js
 function addTemporaryClassName(element, className, durationMS){
   element.classList.remove(className);
-  element.style.width = element.clientWidth;
   element.classList.add(className);
   setTimeout(function(){
     element.classList.remove(className);

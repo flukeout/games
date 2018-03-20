@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function(){
   setupPlayerOptionss(playerOptionEls);
 
   setupStartButton();
+  setupRulesButton();
 
   starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
@@ -138,6 +139,27 @@ function setupStartButton(){
     e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+        window.location.href = "../index.html";
+      }
+      else {
+        window.location.href = "index.html";
+      }
+    }, 4000);
+  })
+}
+
+function setupRulesButton(){
+  var button = document.querySelector(".rules-button");
+  button.addEventListener("click", function(e){
+    
+    // Apply transitions one at a time, the number is a delay from the last time it was called
+    // so it's cumulative...
+
+    fadeOutScene();
+    
+    e.preventDefault();
+    setTimeout(function(){
+      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
       }
       else {
@@ -146,6 +168,7 @@ function setupStartButton(){
     }, 4000);
   })
 }
+
 
 // Sets up the music & sound toggle click handlers
 function setupToggles(els){

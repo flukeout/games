@@ -106,7 +106,7 @@
   }
 
   .game-title {
-    font-size: 80px;
+    font-size: 60px;
     color: white;
     margin: 35px 0 45px 0;
     text-align: center;
@@ -114,7 +114,7 @@
     transition: all .2s ease-out;
 
     .sub-title {
-      font-size: 39px;
+      font-size: 30px;
       /*opacity: .7;*/
     }
 
@@ -201,6 +201,7 @@
     z-index: 5;
     perspective: 1200px;
     transition: all .5s ease-out;
+    text-align: center;
 
     &.transition-out {
       opacity: 0;
@@ -303,8 +304,6 @@
       background: orange;
       display: inline-block;
       padding: 10px;
-      min-width: 80px;
-      border-radius: 10px;
       cursor: pointer;
     }
 
@@ -321,7 +320,7 @@
     color: white;
     position: relative;
     margin: 0 auto;
-    font-size: 30px;
+    font-size: 24px;
     text-align: center;
     text-transform: uppercase;
   }
@@ -334,7 +333,7 @@
     margin: 0 5px;
   
     .value {
-      min-width: 60px;
+      // min-width: 60px;
     }
 
     .value:before {
@@ -354,7 +353,7 @@
     background: #444;
     padding: 5px 14px 7px 14px ;
     line-height: 30px;
-    border-radius: 8px;
+    border-radius: 0px;
     cursor: pointer;
     display: inline-block;
 
@@ -369,6 +368,17 @@
 
   .enabled .value {
     content: "on";
+  }
+
+  .rules-button {
+    color: white;
+    font-size: 22px;
+    margin-top: 15px;
+    display: inline-block;
+    text-align: center;
+    padding: 10px 20px;
+    background: rgba(0,0,0,.5);
+    cursor: pointer;
   }
 
   .start-game, .start-game-particle {
@@ -436,6 +446,8 @@
     .name {
       font-size: 20px;
       opacity: .4;
+      margin-top: 15px;
+      display: inline-block;
     }
 
     .icon {
@@ -503,7 +515,7 @@
       opacity: 1;
     }
     .name {
-      transform: scale(1.2);
+      // transform: scale(1.2);
     }
   }
 

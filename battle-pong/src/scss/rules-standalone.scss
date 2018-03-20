@@ -19,11 +19,29 @@
       display: none;
     }
   }
+  
   video {
-    display: none;
     margin: 0 auto;
+    
+    &.videoPop {
+      animation: videoPop .25s ease-out;
+    }
   }
   
+  @keyframes videoPop {
+    0% {
+      opacity: .4;
+      transform: scale(.95);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   .powerup-explanation {
     color: rgba(255,255,255,.7);
     font-size: 25px;
@@ -114,7 +132,7 @@
 
   ul {
     list-style-type: none;
-    margin: 0;
+    margin: 0 0 30px 0;
     padding: 0;
   }
   
@@ -303,8 +321,6 @@
   }
 }
 
-
-
 .rules-page .rules {
   animation: rulesAppear .2s ease-out;
   position: relative;
@@ -319,12 +335,10 @@
   align-items: center;
   justify-content: center;
   
-
-
   img, video {
     width: 550px;
-    border: solid 10px rgba(255,255,255,.15);
-    border-radius: 3px;    
+    border: solid 15px rgba(255,255,255,.05);
+    border-radius: 5px;    
   }
   
   .rule-box {
@@ -339,7 +353,6 @@
     display: block;
   }
   
-
   p {
     color: rgba(255,255,255,.7);
     font-size: 30px;
@@ -348,13 +361,12 @@
 
   li {
     color: rgba(255,255,255,.7);
-    font-size: 30px;
-    padding: 25px 0;
+    font-size: 22px;
+    margin: 10px 0;
     position: relative;
     
     &:after {
       position: absolute;
-      content: "";
       color: white;
       height: 2px;
       background: rgba(255,255,255,.3);
