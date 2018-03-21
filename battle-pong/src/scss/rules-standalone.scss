@@ -187,9 +187,10 @@
     opacity: .4;
     user-select: none;
     
-    &:hover {
+    &:hover, &.selected {
       opacity: 1;
     }
+
   }
 
  .scene {
