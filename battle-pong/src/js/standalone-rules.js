@@ -28,6 +28,58 @@ document.addEventListener('DOMContentLoaded', function () {
     nextRule();
   })
 
+  let buttons = Array.prototype.slice.call(document.querySelectorAll('.buttons .button'));
+  buttons.forEach(button => {
+    button.onmouseover = e => {
+      buttons.forEach(otherButton => {
+        otherButton.classList.remove('selected');
+      });
+    };
+  });
+
+  let selectedButton;
+  window.addEventListener("keydown", function(e){
+    let previouslySelectedButton = selectedButton;
+    if (e.key === 'ArrowRight') {
+      if (!selectedButton) {
+        selectedButton = buttons[0];
+      }
+      else {
+        selectedButton = buttons[(buttons.indexOf(selectedButton) + 1) % buttons.length];
+      }
+
+      if (previouslySelectedButton) {
+        previouslySelectedButton.classList.remove('selected');
+      }
+      selectedButton.classList.add('selected');
+    }
+    else if (e.key === 'ArrowLeft') {
+      if (!selectedButton) {
+        selectedButton = buttons[buttons.length-1];
+      }
+      else {
+        let newIndex = buttons.indexOf(selectedButton) - 1;
+        if (newIndex < 0) newIndex = buttons.length - 1;
+        selectedButton = buttons[newIndex];
+      }
+
+      if (previouslySelectedButton) {
+        previouslySelectedButton.classList.remove('selected');
+      }
+      selectedButton.classList.add('selected');
+    }
+    else if (e.key === 'Enter') {
+      if (selectedButton.classList.contains('previous')) {
+        previousRule();
+      }
+      else if (selectedButton.classList.contains('next')) {
+        nextRule();
+      }
+      else if (selectedButton.classList.contains('start')) {
+        // start
+      }
+    }
+  });
   numRules = ruleEls.length;
 
   powerupEls = document.querySelectorAll(".powerup-row .icon");
@@ -178,19 +230,6 @@ const previousRule = () => {
   showRule(nextRule);
 }
 
-
-window.addEventListener("keydown", function(e){
-  // if(e.key === "Escape"){
-    // if (displayingRules) {
-      // document.querySelector(".rules").classList.remove("visible");
-    // }
-    // else {
-      // document.querySelector(".rules").classList.add("visible");
-      // nextStep();
-    // }
-    // displayingRules = !displayingRules;
-  // }
-});
 
 let stepList = [
   {
