@@ -87,5 +87,13 @@ function RulesManager (game, inputManager) {
       nextStep();
     }, currentStep.duration + currentStep.breakAfter);
   };
-
 }
+
+
+
+
+
+
+
+
+

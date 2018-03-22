@@ -4,6 +4,8 @@ let ruleNavEls;
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  setupNavButtons();
+
   ruleNavEls = document.querySelectorAll(".rules-nav a");
   ruleNavEls.forEach(function(el){
     let type = el.getAttribute("nav");
@@ -75,9 +77,13 @@ document.addEventListener('DOMContentLoaded', function () {
       else if (selectedButton.classList.contains('next')) {
         nextRule();
       }
-      else if (selectedButton.classList.contains('start')) {
-        // start
+      else if (selectedButton.classList.contains('start-game')) {
+        startGame();
       }
+      else if (selectedButton.classList.contains('go-back')) {
+        goBack();
+      }
+
     }
   });
   numRules = ruleEls.length;
@@ -289,22 +295,16 @@ const nextStep = () => {
 };
 
 
-
-
-
 document.addEventListener('DOMContentLoaded', function(){
 
   initParticleEngine(".scene", 5);
   loop();
-  
-  // setupStartButton();
 
   starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
 
   SoundManager.init();
   SoundManager.loadSettingsFromLocalStorage();
-
 });
 
 function loop(){
@@ -313,68 +313,72 @@ function loop(){
 }
 
 
-
 let timeoutAccumulator = 0;
 
-
-
 function timeoutClass(selector, className, timeout){
+  
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
+  
   setTimeout(function(){
+    console.log(selector);
     document.querySelector(selector).classList.add(className);
-  },timeoutAccumulator)
+  }, timeoutAccumulator)
 }
 
-function setupStartButton(){
-  var button = document.querySelector(".next");
-  button.addEventListener("click", function(e){
-    
-    // Apply transitions one at a time, the number is a delay from the last time it was called
-    // so it's cumulative...
-    var button = e.target;
-    var buttonPosition = button.getBoundingClientRect();
 
-    var options = {
-      x : buttonPosition.x,
-      y : buttonPosition.y - 60,
-      zR : getRandom(-8,8),
-      xRv : getRandom(12,20),    
-      yV : 7,
-      zV : -40,
-      xV : getRandom(-5,5),
-      oV: -.02,
-      width : 210,
-      height: 50,
-      className : 'start-game-particle',
-      lifespan: 1000
-    }
+function fadeOutScene(){
 
-    makeParticle(options);
-
-    SoundManager.playSound("Power_Shot_V1");
-    button.style.display = "none";
-
-    timeoutClass(".content", "transition-out", 100)
-    timeoutClass(".paddle-guy", "transition-out", 250);
-    timeoutClass(".surface", "transition-out", 200);
-    timeoutClass(".overlay", "transition-out");
-    timeoutClass(".credits", "transition-out");
-    timeoutClass(".large-moon", "transition-out", 200);
+    timeoutClass(".rules-nav", "transition-out", 100)
+    timeoutClass(".rules", "transition-out", 100)
+    timeoutClass(".buttons", "transition-out", 100)
     timeoutClass(".sky", "transition-out", 200);
     timeoutClass(".canvas-stars", "transition-out", 200);
-    
-    e.preventDefault();
-    setTimeout(function(){
-      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../index.html";
-      }
-      else {
-        window.location.href = "index.html";
-      }
-    }, 4000);
-  })
 }
 
+
+function setupNavButtons(){
+  var buttons = document.querySelectorAll(".nav-button");
+  
+  buttons.forEach(function(el){
+    
+    el.addEventListener("click", function(e){
+      let navTo = this.getAttribute("to");
+
+      if(navTo === "game") {
+        startGame();
+      } else if(navTo === "splash"){
+        goBack();
+      }
+      
+      
+    })
+  });
+}
+
+function goBack(){
+  let url = "splash.html";
+  fadeOutScene();
+  if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+    url = "../" + url;
+  }
+
+  setTimeout(function(){
+      window.location.href = url;
+  }, 2500);
+}
+
+
+function startGame(){
+  let url = "index.html";
+  fadeOutScene();
+  if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+    url = "../" + url;
+  }
+
+  setTimeout(function(){
+      window.location.href = url;
+  }, 2500);
+}
 
 
 // Separates the letters in the title into individual elements
@@ -388,6 +392,11 @@ function addTemporaryClassName(element, className, durationMS){
   element.classList.remove(className);
   element.classList.add(className);
   setTimeout(function(){
+    
     element.classList.remove(className);
   }, durationMS || 1000);
 }
+
+
+
+

@@ -1,5 +1,27 @@
 .rules-page {
 
+
+  .rules.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+    
+  }
+
+  .sky.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
+
+  .rules-nav.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
+
+  .buttons.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
+
   margin: 0;
   padding: 0;
   width: 100vw;
@@ -91,7 +113,6 @@
       background: rgba(255,255,255,.2);
     }
 
-
     .spin {
       background-image: url(assets/images/spinner.svg);
     }
@@ -112,8 +133,6 @@
       width: 65px;
       height: 65px;
     }
-
-
   }
 
 
@@ -203,7 +222,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      transition: opacity 3s ease-out;
+      transition: opacity 1.5s ease-out;
       
       &.transition-out {
         opacity: 0;
@@ -220,58 +239,16 @@
       bottom: 0;
       top: auto;
       opacity: .4;
-      transition: opacity 2s ease-out;
+      transition: opacity 1.5s ease-out;
       
       &.transition-out {
         opacity: 0;
       }
     }
 
-    .surface {
-      z-index: 2;
-    }
-
-    .surface {
-      top: 80vh;
-
-      &.transition-out {
-        transition: top 2s ease-in-out;
-        top: 100vh;
-      }
-    }
-
-    .large-moon {
-      top: 350px;
-      z-index: 2;
-
-      &.transition-out {
-        transition: top 2s ease-in-out;
-        top: 850px;
-      }
-    }
-
-    .overlay {
-      opacity: 0;
-
-      &.transition-out {
-        transition: opacity 2s ease-in-out;
-        opacity: .5;
-      }
-    }
 
     .stars {
       height: 100vh;
-    }
-
-    .stars .star {
-      background: white;
-      border-radius: 50%;
-      position: absolute;
-    }
-
-    .floating-paddle {
-      background: #876384;
-      position: absolute;
     }
   }
 
@@ -335,6 +312,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  
   
   img, video {
     width: 550px;
