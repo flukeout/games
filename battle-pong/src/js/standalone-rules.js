@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   setupNavButtons();
 
+
   ruleNavEls = document.querySelectorAll(".rules-nav a");
   ruleNavEls.forEach(function(el){
     let type = el.getAttribute("nav");
@@ -24,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector(".button.previous").addEventListener("click",function(){
     previousRule();
   })
-
   
   document.querySelector(".button.next").addEventListener("click",function(){
     nextRule();
@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   let selectedButton;
+  
   window.addEventListener("keydown", function(e){
     let previouslySelectedButton = selectedButton;
     if (e.key === 'ArrowRight') {
@@ -83,9 +84,10 @@ document.addEventListener('DOMContentLoaded', function () {
       else if (selectedButton.classList.contains('go-back')) {
         goBack();
       }
-
+      addTemporaryClassName(selectedButton, "poke", 250);
     }
   });
+  
   numRules = ruleEls.length;
 
   powerupEls = document.querySelectorAll(".powerup-row .icon");
@@ -102,6 +104,9 @@ document.addEventListener('DOMContentLoaded', function () {
   showPowerup(powerupnames[0]);
   currentRule = rulenames[0];
   showRule(currentRule);
+
+  nextStep();
+
 });
 
 

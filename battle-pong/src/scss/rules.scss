@@ -1,351 +1,351 @@
 .game {
 
 
-@keyframes rulesAppear {
-  0% {
-    opacity: 0;
-    transform: scale(.9);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.rules {
-  animation: rulesAppear .2s ease-out;
-  position: relative;
-  z-index: 2;
-  perspective: 1200px;
-  position: absolute;
-  padding: 80px;
-  box-sizing: border-box;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,.95);
-  display: none;
-  
-  &.visible {
-    display: block;
-  }
-  
-  h1 {
-    font-size: 30px;
-    color: white;
-    margin: 0px 0 10px 0;
-    transition: all .2s ease-out;
+  @keyframes rulesAppear {
+    0% {
+      opacity: 0;
+      transform: scale(.9);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      opacity: 1;
+    }
   }
 
-  p {
-    color: rgba(255,255,255,.7);
-    font-size: 22px;
-    margin: 0 0 30px 0; 
-  }
-
-  li {
-    color: rgba(255,255,255,.7);
-    font-size: 22px;
-    margin-bottom: 5px;
-  }
-  
-  .row {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 40px;
+  .rules {
+    animation: rulesAppear .2s ease-out;
+    position: relative;
+    z-index: 2;
+    perspective: 1200px;
+    position: absolute;
+    padding: 80px;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,.95);
+    display: none;
     
-    .col {
-      flex: 1;
-    }
-  }
-
-  .mines {
-    img {
-      width: 300px;
-    }
-  }
-
-
-  .powerups {
-    img {
-      width: 300px;
-      border: solid 10px rgba(255,255,255,.15);
-      border-radius: 3px;
-    }
-  }
-
-  .controls {
-  
-    padding-top: 15px;
-        
-    .controller {
-      width: 300px;
-      height: 200px;
-      background-image: url(assets/images/gamepad-body.svg);
-      background-size: 250px;
-      background-position: center;
-      background-repeat: no-repeat;
-      position: relative;
-      display: inline-block;
+    &.visible {
+      display: block;
     }
     
-     .analog-stick {
-        width: 24px;
-        height: 24px;
-        top: 105px;
-        border-radius: 50%;
-        position: absolute;
-        background: white;
-        opacity: .2;
-        
-        &.left {
-          left: 98px;
-        }
+    h1 {
+      font-size: 30px;
+      color: white;
+      margin: 0px 0 10px 0;
+      transition: all .2s ease-out;
+    }
+
+    p {
+      color: rgba(255,255,255,.7);
+      font-size: 22px;
+      margin: 0 0 30px 0; 
+    }
+
+    li {
+      color: rgba(255,255,255,.7);
+      font-size: 22px;
+      margin-bottom: 5px;
+    }
     
-        &.right {
-          left: 179px;
-        }
+    .row {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 40px;
+      
+      .col {
+        flex: 1;
+      }
+    }
+
+    .mines {
+      img {
+        width: 300px;
+      }
+    }
+
+
+    .powerups {
+      img {
+        width: 300px;
+        border: solid 10px rgba(255,255,255,.15);
+        border-radius: 3px;
+      }
+    }
+
+    .controls {
+    
+      padding-top: 15px;
+          
+      .controller {
+        width: 300px;
+        height: 200px;
+        background-image: url(assets/images/gamepad-body.svg);
+        background-size: 250px;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        display: inline-block;
       }
       
-      .shoulder-button {
-        width: 30px;
-        height: 10px;
-        top: 6px;
-        left: 58px;
+       .analog-stick {
+          width: 24px;
+          height: 24px;
+          top: 105px;
+          border-radius: 50%;
+          position: absolute;
+          background: white;
+          opacity: .2;
+          
+          &.left {
+            left: 98px;
+          }
+      
+          &.right {
+            left: 179px;
+          }
+        }
         
-        border-radius: 5px 5px 0 0;
-        position: absolute;
-        background: white;
-        transform-origin: bottom;
-        opacity: .2;
-        
-        &.left {
+        .shoulder-button {
+          width: 30px;
+          height: 10px;
+          top: 6px;
           left: 58px;
+          
+          border-radius: 5px 5px 0 0;
+          position: absolute;
+          background: white;
+          transform-origin: bottom;
+          opacity: .2;
+          
+          &.left {
+            left: 58px;
+          }
+      
+          &.right {
+            left: 212px;
+          }
         }
-    
-        &.right {
-          left: 212px;
+      
+      .paddle-container {
+        width: 100px;
+        position: relative;
+        display: inline-block;
+        height: 200px;
+
+        .paddle {
+          width: 20px;
+          height: 100px;
+          background: white;
+          left: calc(50% - 10px);
+          top: calc(50% - 60px);
         }
       }
-    
-    .paddle-container {
-      width: 100px;
-      position: relative;
-      display: inline-block;
-      height: 200px;
+    }
+  }
 
+
+
+  .rules .controls {
+
+    &.shoulder-left {
+      .shoulder-button.left {
+        transform: scaleY(.5);
+        opacity: 1;
+      }
+      
       .paddle {
-        width: 20px;
-        height: 100px;
-        background: white;
-        left: calc(50% - 10px);
-        top: calc(50% - 60px);
+        animation: spinLeft .5s infinite linear;
+      }
+    }  
+
+    &.shoulder-right {
+      .shoulder-button.right {
+        transform: scaleY(.5);
+        opacity: 1;
+      }
+      
+      .paddle {
+        animation: spinRight .5s infinite linear;
       }
     }
-  }
-}
-
-
-
-.rules .controls {
-
-  &.shoulder-left {
-    .shoulder-button.left {
-      transform: scaleY(.5);
-      opacity: 1;
+    
+    &.analog-move-x {
+      .analog-stick.left {
+        opacity: 1;
+        animation: analogWobbleX 1s infinite;
+      }
+      .paddle {
+        animation: paddleWobbleX 1s infinite;
+      }
     }
     
-    .paddle {
-      animation: spinLeft .5s infinite linear;
-    }
-  }  
-
-  &.shoulder-right {
-    .shoulder-button.right {
-      transform: scaleY(.5);
-      opacity: 1;
+    &.analog-move-y {
+      .analog-stick.left {
+        opacity: 1;
+        animation: analogWobbleY 1s infinite;
+      }
+      .paddle {
+        animation: paddleWobbleY 1s infinite;
+      }
     }
     
-    .paddle {
-      animation: spinRight .5s infinite linear;
+    &.analog-spin-right {
+      .analog-stick.right {
+        opacity: 1;
+        animation: analogSpinRight 1s infinite;
+      }
+      .paddle {
+        animation: spinRight .5s linear infinite;
+      }
+    }
+    
+    &.analog-spin-left {
+      .analog-stick.right {
+        opacity: 1;
+        animation: analogSpinLeft 1s infinite;
+      }
+      .paddle {
+        animation: spinLeft .5s linear infinite;
+      }
+    }
+
+
+  }
+
+  @keyframes analogSpinRight {
+    0% {
+      transform: translateY(0);
+      animation-timing-function: ease-in-out;
+    }
+    
+    10% {
+      transform: translateY(-10px);
+      animation-timing-function: ease-in-out;
+    }
+    90% {
+      transform: translateY(-10px);
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      transform: translateY(0px);
+      animation-timing-function: ease-in-out;
     }
   }
-  
-  &.analog-move-x {
-    .analog-stick.left {
-      opacity: 1;
-      animation: analogWobbleX 1s infinite;
+
+
+  @keyframes analogSpinLeft {
+    0% {
+      transform: translateY(0);
+      animation-timing-function: ease-in-out;
     }
-    .paddle {
-      animation: paddleWobbleX 1s infinite;
+    
+    10% {
+      transform: translateY(10px);
+      animation-timing-function: ease-in-out;
     }
-  }
-  
-  &.analog-move-y {
-    .analog-stick.left {
-      opacity: 1;
-      animation: analogWobbleY 1s infinite;
+    90% {
+      transform: translateY(10px);
+      animation-timing-function: ease-in-out;
     }
-    .paddle {
-      animation: paddleWobbleY 1s infinite;
-    }
-  }
-  
-  &.analog-spin-right {
-    .analog-stick.right {
-      opacity: 1;
-      animation: analogSpinRight 1s infinite;
-    }
-    .paddle {
-      animation: spinRight .5s linear infinite;
-    }
-  }
-  
-  &.analog-spin-left {
-    .analog-stick.right {
-      opacity: 1;
-      animation: analogSpinLeft 1s infinite;
-    }
-    .paddle {
-      animation: spinLeft .5s linear infinite;
+    100% {
+      transform: translateY(0px);
+      animation-timing-function: ease-in-out;
     }
   }
 
+  @keyframes analogWobbleX {
+    0% {
+      transform: translateX(0);
+      animation-timing-function: ease-in-out;
+    }
+    
+    25% {
+      transform: translateX(-10px);
+      animation-timing-function: ease-in-out;
+    }
+    75% {
+      transform: translateX(10px);
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      transform: translateX(0px);
+      animation-timing-function: ease-in-out;
+    }
+  }
 
-}
+  @keyframes paddleWobbleX {
+    0% {
+      transform: translateX(0);
+      animation-timing-function: ease-in-out;
+    }
+    
+    25% {
+      transform: translateX(-20px);
+      animation-timing-function: ease-in-out;
+    }
+    75% {
+      transform: translateX(20px);
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      transform: translateX(0px);
+      animation-timing-function: ease-in-out;
+    }
+  }
 
-@keyframes analogSpinRight {
-  0% {
-    transform: translateY(0);
-    animation-timing-function: ease-in-out;
+  @keyframes analogWobbleY {
+    0% {
+      transform: translateY(0);
+      animation-timing-function: ease-in-out;
+    }
+    
+    25% {
+      transform: translateY(-10px);
+      animation-timing-function: ease-in-out;
+    }
+    75% {
+      transform: translateY(10px);
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      transform: translateY(0px);
+      animation-timing-function: ease-in-out;
+    }
   }
-  
-  10% {
-    transform: translateY(-10px);
-    animation-timing-function: ease-in-out;
-  }
-  90% {
-    transform: translateY(-10px);
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: translateY(0px);
-    animation-timing-function: ease-in-out;
-  }
-}
 
+  @keyframes paddleWobbleY {
+    0% {
+      transform: translateY(0);
+      animation-timing-function: ease-in-out;
+    }
+    
+    25% {
+      transform: translateY(-20px);
+      animation-timing-function: ease-in-out;
+    }
+    75% {
+      transform: translateY(20px);
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      transform: translateY(0px);
+      animation-timing-function: ease-in-out;
+    }
+  }
 
-@keyframes analogSpinLeft {
-  0% {
-    transform: translateY(0);
-    animation-timing-function: ease-in-out;
+  @keyframes spinLeft {
+    100% {
+      transform: rotate(-360deg);
+    }
   }
-  
-  10% {
-    transform: translateY(10px);
-    animation-timing-function: ease-in-out;
-  }
-  90% {
-    transform: translateY(10px);
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: translateY(0px);
-    animation-timing-function: ease-in-out;
-  }
-}
 
-@keyframes analogWobbleX {
-  0% {
-    transform: translateX(0);
-    animation-timing-function: ease-in-out;
+  @keyframes spinRight {
+    100% {
+      transform: rotate(360deg);
+    }
   }
-  
-  25% {
-    transform: translateX(-10px);
-    animation-timing-function: ease-in-out;
-  }
-  75% {
-    transform: translateX(10px);
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: translateX(0px);
-    animation-timing-function: ease-in-out;
-  }
-}
-
-@keyframes paddleWobbleX {
-  0% {
-    transform: translateX(0);
-    animation-timing-function: ease-in-out;
-  }
-  
-  25% {
-    transform: translateX(-20px);
-    animation-timing-function: ease-in-out;
-  }
-  75% {
-    transform: translateX(20px);
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: translateX(0px);
-    animation-timing-function: ease-in-out;
-  }
-}
-
-@keyframes analogWobbleY {
-  0% {
-    transform: translateY(0);
-    animation-timing-function: ease-in-out;
-  }
-  
-  25% {
-    transform: translateY(-10px);
-    animation-timing-function: ease-in-out;
-  }
-  75% {
-    transform: translateY(10px);
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: translateY(0px);
-    animation-timing-function: ease-in-out;
-  }
-}
-
-@keyframes paddleWobbleY {
-  0% {
-    transform: translateY(0);
-    animation-timing-function: ease-in-out;
-  }
-  
-  25% {
-    transform: translateY(-20px);
-    animation-timing-function: ease-in-out;
-  }
-  75% {
-    transform: translateY(20px);
-    animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: translateY(0px);
-    animation-timing-function: ease-in-out;
-  }
-}
-
-@keyframes spinLeft {
-  100% {
-    transform: rotate(-360deg);
-  }
-}
-
-@keyframes spinRight {
-  100% {
-    transform: rotate(360deg);
-  }
-}
 
 }
