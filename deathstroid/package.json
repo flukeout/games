@@ -8,11 +8,20 @@
     "postinstall": "install-app-deps",
     "start": "npm install && electron ./app",
     "pack": "build --dir",
-    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false build",
-    "prepare": "node prepare.js"
+    "distlinux": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --linux",
+    "distwin": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win",
+    "distmac": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac",
+    "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -mwl",
+    "copy": "node copy.js"
   },
+  "homepage": "http://deathstroid.com",
   "build": {
     "appId": "com.DEATHSTROID.app",
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    },
     "dmg": {
       "contents": [
         {
@@ -28,20 +37,24 @@
       ]
     },
     "linux": {
+      "category": "Game",
       "target": [
         "AppImage",
         "deb"
       ]
     },
     "win": {
-      "target": "squirrel",
-      "icon": "build/icon.ico"
+      "target": [
+        "msi",
+        "zip"
+      ],
+      "icon": "build/icon.png"
     }
   },
-  "dependencies": {},
   "devDependencies": {
     "electron": "latest",
     "electron-builder": "20.4.1",
+    "electron-builder-squirrel-windows": "20.7.0",
     "ncp": "2.0.0"
   }
 }

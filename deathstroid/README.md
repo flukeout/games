@@ -20,16 +20,20 @@ Basically, this system encapsulates a processed & compiled version of `battle-po
 ### Get this packaging system ready
 
 * **Before doing anything with this system**, make sure you run `yarn` (which is just like `npm install`) to install all the dependencies we'll need to create the electron executable.
-* Run `yarn prepare` to prepare the system, and bring a copy of `battle-pong` over to be used in the app.
+* Run `yarn copy` to prepare the system, and bring a copy of `battle-pong` over to be used in the app.
 
 ### Make the app
 
-* Any time you make a change to `battle-pong`, you'll want to bring those changes over here. So, make sure you run `yarn prepare` if you changed anything.
+* Any time you make a change to `battle-pong`, you'll want to bring those changes over here. So, make sure you run `yarn copy` if you changed anything.
 * Run `yarn dist`
 
 Once `yarn dist` is finished, you will see a `dist` folder with distributable packages in it (e.g. a `dmg` for osx).
 
+### Building on every platform
+
+Follow the instructions at https://www.electron.build/multi-platform-build to install the proper docker images. Running `yarn dist` should work well at the end :).
+
 ### Run it in dev mode
 
-You can use `yarn dev` to run Electron without compiling. But, make sure you run `yarn prepare` first to bring changes over.
+You can use `yarn dev` to run Electron without compiling. But, make sure you run `yarn copy` first to bring changes over.
 

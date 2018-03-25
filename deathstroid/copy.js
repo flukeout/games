@@ -26,7 +26,7 @@ fs.mkdir(destPath, err => {
 
   filesToCopy.forEach(fileToCopy => {
     ncp(fileToCopy.from, fileToCopy.to, err => {
-      if (err) console.err('Couldn\'t copy ' + sourcePath);
+      if (err) console.error('Couldn\'t copy ' + sourcePath + fileToCopy.from, err);
     });
   });
 });
