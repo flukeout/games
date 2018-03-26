@@ -18,7 +18,11 @@ body {
   perspective: 1200px;
   overflow: hidden;
   background: black;
+}
 
+body.fade-out {
+  transition: opacity 1s ease-out;
+  opacity: 0;
 }
 
 .world canvas {

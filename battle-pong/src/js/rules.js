@@ -1,18 +1,12 @@
-function RulesManager (game, inputManager) {
+
+
+function PauseManager (game, inputManager) {
   
   let displayingRules = false;
 
   window.addEventListener("keydown", function(e){
     if(e.key === "Escape"){
-      if (displayingRules) {
-        document.querySelector(".pause-screen").classList.remove("visible");
-        game.resume();
-      }
-      else {
-        document.querySelector(".pause-screen").classList.add("visible");
-        game.pause();
-      }
-      displayingRules = !displayingRules;
+      displayingRules ? resumeGame() : pauseGame();
     }
   });
 
@@ -20,38 +14,54 @@ function RulesManager (game, inputManager) {
     el.addEventListener("click",function(){
       navigate(this.getAttribute("nav"));
     });
-    
   })
 
-  inputManager.waitForGamepadStartButtonPress(() => {
-    if (displayingRules) {
-      document.querySelector(".pause-screen").classList.remove("visible");
-      game.resume();
-    }
-    else {
-      document.querySelector(".pause-screen").classList.add("visible");
-      game.pause();
-    }
-    displayingRules = !displayingRules;
+  document.querySelector(".resume").addEventListener("click", function(){
+    resumeGame();
   });
 
+  inputManager.waitForGamepadStartButtonPress(() => {
+    displayingRules ? resumeGame() : pauseGame();
+  });
 
-
-  
+  function resumeGame(){
+  document.querySelector(".pause-screen").classList.remove("visible");
+  displayingRules = false;
+  game.resume();
 }
 
-
-function navigate(destination){
-  let url = destination + ".html";
-  
-  // fadeOutScene();
-  if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-    url = "../" + url;
+  function pauseGame(){
+    document.querySelector(".pause-screen").classList.add("visible");
+    game.pause();
+    displayingRules = true;
   }
-  setTimeout(function(){
-      window.location.href = url;
-  }, 0);
+
+  function navigate(destination){
+    let url = destination + ".html";
+    
+    fadeOutScene();
+  
+    if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+      url = "../" + url;
+    }
+  
+    setTimeout(function(){
+        window.location.href = url;
+    }, 1000);
+  }
+
+  function fadeOutScene(){
+    console.log("HI");
+    document.querySelector("body").classList.add("fade-out");
+  }
+
 }
+
+
+
+
+
+
 
 
 

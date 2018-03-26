@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inputManager.setupInputForObject(rightPaddle);
   }
 
-  let rulesManager = new RulesManager(game, inputManager);
+  let rulesManager = new PauseManager(game, inputManager);
 
   // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
   game.step();
