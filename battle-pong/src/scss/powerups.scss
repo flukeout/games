@@ -341,6 +341,50 @@
   100% { opacity: 0 }
 }
 
+.powerup-scored-beam {
+  z-index: 5;
+  position: absolute;
+  transform-style: preserve-3d;
+
+  &.magnet:after, &.noclip:after, &.clone:after {
+    background: linear-gradient(0deg, rgba(255,255,255,.6), rgba(255,255,255,0));
+  } 
+
+  &.spin:after {
+    background: linear-gradient(0deg, rgba(57,246,255,.6), rgba(57,246,255,0));
+  } 
+
+  &.grow:after {
+    background: linear-gradient(0deg, rgba(255,184,6,.6), rgba(255,184,6,0));
+  } 
+
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: -100px;
+    left: 0px;
+    width: 100%;
+    height: 100px;
+    transform-origin: bottom;
+    transform: rotateX(-40deg);
+    border-radius: 0 0 8px 8px;
+    animation: beam .5s ease-out;
+    animation-fill-mode: forwards;
+    
+    @keyframes beam {
+      0% {
+        transform: rotateX(-40deg);
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: rotateX(-40deg) translateY(-20px) scaleY(2) scaleX(.5);
+      }
+    }
+  }
+}
+
 
 .powerup-scored-particle {
   z-index: 5;
@@ -350,6 +394,21 @@
     background-size: 100%;
   }
   
+  &.noclip {
+    background: rgba(255,255,255,.4);
+  }
+  
+  &.clone {
+    background: #777;
+    border-radius: 50%;
+  }
+
+
+  &.spin {
+    background: #39f6ff;
+    border-radius: 50%;
+  }
+
   &.grow {
     background-image: url(assets/images/star.svg);
     background-size: 100%;

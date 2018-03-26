@@ -96,6 +96,11 @@
         </div>`;
       }
 
+      if(type == "noclip") {
+        properties.width = 28;
+        properties.height = 28;
+      }
+
       if(type == "magnet") {
         properties.ignoreRotation = true;
       }

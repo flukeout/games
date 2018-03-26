@@ -75,9 +75,9 @@ var game =  {
 
   activeSpinPowerups : 0,
   
+  
   // Lets the game know someone lost a powerup
   lostPowerup: function(player, type){
-    console.log("lost", player, type);
     if(type === "spin") {
       this.activeSpinPowerups--;
       if(this.activeSpinPowerups < 0){
@@ -373,14 +373,8 @@ var game =  {
   // Restarts a round
   restart : function(){
 
-    setTimeout(function(){
-      SoundManager.playSound("round-start");
-    }, 80)
-
     var that = this;
     var messageDelay = 0;
-
-    this.showScore();
 
     var finalRound = that.score.player1 + that.score.player2 + 2 === that.score.max * 2 ? true : false;
 
@@ -397,11 +391,21 @@ var game =  {
 
     this.updateBounds();
     this.updateScoreDisplay();
-    
+
+
+    setTimeout(function(){
+      SoundManager.playSound("round-start");
+    }, 2200);
+
+    setTimeout(function(){
+      that.showScore();
+    }, 2500);
+
+
     setTimeout(function(){
       var message = finalRound ? "FINAL ROUND!!" : "GAME ON!";
       that.showMessage(message, 1500);
-    }, 1400);
+    }, 4200);
 
     setTimeout(function(){
       that.mode = "running";
@@ -414,7 +418,7 @@ var game =  {
           that.launchBall();
         }, 1500);
       }
-    }, 1500);
+    }, 4200);
   },
 
 
@@ -659,11 +663,14 @@ var game =  {
     // Add a message near the impact that indicates
     // the force of the hit (in percentage points)
     if(terrainChange >= 10) {
+      
+      let messages = ["OW","NICE","OOF","POW"];
+
       showMessage({
-        text: "-" + Math.round(terrainChange) + "%",
+        text: messages[Math.floor(Math.random() * messages.length)],
         x: ballPhysics.position.x,
         y: ballPhysics.position.y,
-        fontSize : (20 + 35 * xForceRatio),
+        fontSize : (20 + 15 * xForceRatio),
         timeout: 2750
       });
 
@@ -674,6 +681,7 @@ var game =  {
     }
 
     this.moveTerrain(scoredByPlayerNum, terrainChange, scoringBall);
+    
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
 
     SoundManager.playRandomSoundFromBank('score');
@@ -690,10 +698,10 @@ var game =  {
 
     if(player === 1) {
       modifier = 1;
-      className = "red-chunk";
+      className = "pink-chunk";
     } else if (player === 2){
       modifier = -1;
-      className = "blue-chunk";
+      className = "green-chunk";
     }
 
     makeTerrainChunks(this.terrainLinePercent, modifier, className, this.boardWidth, this.boardHeight);

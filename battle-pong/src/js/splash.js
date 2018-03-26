@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
+  initParticleEngine(".scene", 5);
+  loop();
   
   prepTitle();
 
@@ -16,14 +18,20 @@ document.addEventListener('DOMContentLoaded', function(){
   setupPlayerOptionss(playerOptionEls);
 
   setupStartButton();
+  setupRulesButton();
 
-  starsHeight = document.querySelector(".stars").getBoundingClientRect().height;
+  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
 
   SoundManager.init();
   SoundManager.loadSettingsFromLocalStorage();
 
 });
+
+function loop(){
+  drawParticles();
+  requestAnimationFrame(loop);
+}
 
 
 let bestOfEls, 
@@ -83,8 +91,24 @@ function timeoutClass(selector, className, timeout){
   },timeoutAccumulator)
 }
 
+
+function fadeOutScene(){
+  timeoutClass(".content", "transition-out", 100)
+  timeoutClass(".paddle-guy", "transition-out", 250);
+  timeoutClass(".surface", "transition-out", 200);
+  timeoutClass(".overlay", "transition-out");
+  timeoutClass(".credits", "transition-out");
+  timeoutClass(".large-moon", "transition-out", 200);
+  timeoutClass(".sky", "transition-out", 200);
+  timeoutClass(".canvas-stars", "transition-out", 200);
+}
+
+
+
 function setupStartButton(){
+  
   var button = document.querySelector(".start-game");
+  
   button.addEventListener("click", function(e){
     
     // Apply transitions one at a time, the number is a delay from the last time it was called
@@ -94,15 +118,14 @@ function setupStartButton(){
 
     var options = {
       x : buttonPosition.x,
-      y : buttonPosition.y - 60,
+      y : buttonPosition.y,
       zR : getRandom(-8,8),
       xRv : getRandom(12,20),    
-      yV : 5,
-      yVa : .1,
+      yV : 7,
       zV : -40,
       xV : getRandom(-5,5),
       oV: -.02,
-      width : 210,
+      width : 20,
       height: 50,
       className : 'start-game-particle',
       lifespan: 1000
@@ -111,15 +134,10 @@ function setupStartButton(){
     makeParticle(options);
 
     SoundManager.playSound("Power_Shot_V1");
-    button.style.display = "none";
+    button.style.opacity = 0;
 
-    timeoutClass(".content", "transition-out", 100)
-    timeoutClass(".paddle-guy", "transition-out", 250);
-    timeoutClass(".surface", "transition-out", 200);
-    timeoutClass(".overlay", "transition-out");
-    timeoutClass(".credits", "transition-out");
-    timeoutClass(".large-moon", "transition-out", 200);
-
+    fadeOutScene();
+    
     e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
@@ -128,9 +146,31 @@ function setupStartButton(){
       else {
         window.location.href = "index.html";
       }
-    }, 2500);
+    }, 4000);
   })
 }
+
+function setupRulesButton(){
+  var button = document.querySelector(".rules-button");
+  button.addEventListener("click", function(e){
+    
+    // Apply transitions one at a time, the number is a delay from the last time it was called
+    // so it's cumulative...
+
+    fadeOutScene();
+    
+    e.preventDefault();
+    setTimeout(function(){
+      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+        window.location.href = "../rules.html";
+      }
+      else {
+        window.location.href = "rules.html";
+      }
+    }, 4000);
+  })
+}
+
 
 // Sets up the music & sound toggle click handlers
 function setupToggles(els){
@@ -236,17 +276,11 @@ function updateBestOf(){
   });
 }
 
-
-
-
-
-
-
 // Separates the letters in the title into individual elements
 // to be animated.
 function prepTitle(){
   // return;
-  var titleEl =document.querySelector(".game-title .actual-title")
+  var titleEl = document.querySelector(".game-title .actual-title")
   var titleString = titleEl.innerText;
   titleEl.innerText = "";
   
@@ -266,7 +300,6 @@ function prepTitle(){
     titleEl.append(letterEl);
   }
 }
-
 
 // Variables for the particle loop
 var starsHeight;

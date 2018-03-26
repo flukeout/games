@@ -106,7 +106,7 @@
   }
 
   .game-title {
-    font-size: 80px;
+    font-size: 60px;
     color: white;
     margin: 35px 0 45px 0;
     text-align: center;
@@ -114,13 +114,12 @@
     transition: all .2s ease-out;
 
     .sub-title {
-      font-size: 39px;
-      /*opacity: .7;*/
+      font-size: 30px;
     }
 
     .letter {
       animation: letterFloat 2s infinite;
-        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
+      text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
       display: inline-block;
 
       &:empty() {
@@ -182,56 +181,65 @@
     background: rgba(0,0,0,.6);
     text-align: center;
     font-weight: 300;
-    transition: all 1s ease-in;
-
-    &.transition-out {
-      transform: translateY(120px);
-      opacity: 0;
-    }
+    transition: transform 1s ease-in;
+    transform-origin: bottom;
 
     a {
       color: rgba(255,255,255,.6);
-      text-underline: none;
+      text-decoration: none;
     }
+
+    &.transition-out {
+      transform: rotateX(140deg);
+    }
+
   }
 
   .content {
     position: relative;
-    z-index: 2;
+    z-index: 5;
     perspective: 1200px;
     transition: all .5s ease-out;
+    text-align: center;
 
     &.transition-out {
       opacity: 0;
       transform: scale(.95);
     }
   }
-
+  
   .scene {
     z-index: 1;
 
     .canvas-stars {
       z-index: 1;
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      transition: opacity 3s ease-out;
+      
+      &.transition-out {
+        opacity: 0;
+      }
     }
     
-    .stars {
-      z-index: 1;
-    }
-
     .canvas-stars canvas {
       opacity: 1;
     }
 
     .sky {
-      background-image: radial-gradient(
-      200% 100% at bottom,
-    #540c56 55%,
-    #000 100%);
+      background-image: radial-gradient(200% 100% at bottom, #540c56 55%, #000 100%);
       height: 60%;
       bottom: 0;
       top: auto;
       opacity: .4;
+      transition: opacity 2s ease-out;
+      
+      &.transition-out {
+        opacity: 0;
+      }
     }
 
     .surface {
@@ -243,7 +251,7 @@
 
       &.transition-out {
         transition: top 2s ease-in-out;
-        top: 30vh;
+        top: 100vh;
       }
     }
 
@@ -253,9 +261,8 @@
 
       &.transition-out {
         transition: top 2s ease-in-out;
-        top: 45px;
+        top: 850px;
       }
-
     }
 
     .overlay {
@@ -296,8 +303,6 @@
       background: orange;
       display: inline-block;
       padding: 10px;
-      min-width: 80px;
-      border-radius: 10px;
       cursor: pointer;
     }
 
@@ -314,7 +319,7 @@
     color: white;
     position: relative;
     margin: 0 auto;
-    font-size: 30px;
+    font-size: 24px;
     text-align: center;
     text-transform: uppercase;
   }
@@ -327,7 +332,7 @@
     margin: 0 5px;
   
     .value {
-      min-width: 60px;
+      // min-width: 60px;
     }
 
     .value:before {
@@ -347,7 +352,7 @@
     background: #444;
     padding: 5px 14px 7px 14px ;
     line-height: 30px;
-    border-radius: 8px;
+    border-radius: 0px;
     cursor: pointer;
     display: inline-block;
 
@@ -364,38 +369,54 @@
     content: "on";
   }
 
-  .start-game, .start-game-particle {
-    color: white;
-    display: block;
-    text-decoration: none;
-    margin: 60px auto 0 auto;
-    width: 200px;
-    transform: rotateX(10deg);
-    text-align: center;
-    padding: 5px 0;
-    font-size: 40px;
-    background: #3faa7f;
-    cursor: pointer;
-    transition: transform .1s ease-out;
+  .buttons {
+    margin-top: 60px;
 
-    &:after {
-      content: "";
-      width: 100%;
-      height: 100%;
-      border: solid 8px rgba(0,0,0,.5);
-      position: absolute;
-      top: -8px;
-      left: -8px;
-    }
-
-    &:hover {
-      transform: scale(1.05);
+    .button {
+      display: inline-block;
+      text-align: center;
+      padding: 5px 20px;
+      font-size: 40px;
+      cursor: pointer;
+      color: white;
+      margin: 0 10px;
+      box-shadow: 6px 6px 0px rgba(0,0,0,.4);
+      cursor: pointer;
+      transition: transform .1s ease-out;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
     }
   }
 
+  .rules-button {
+    background: $green;
+    padding: 10px 20px;
+    
+  }
+
+
+  .start-game {
+    color: white;
+    z-index: 1;
+    transform: rotateX(10deg);
+    background: $pink;
+  }
+
   .start-game-particle {
+    background: $pink;
     transition: none;
     z-index: 999999;
+    display: block;
+    text-align: center;
+    padding: 5px 20px;
+    width: auto !important;
+    font-size: 40px;
+    cursor: pointer;
+    color: white;
+    margin: 0 10px;
+    box-shadow: 6px 6px 0px rgba(0,0,0,.4);
 
     &:before {
       content: "START!";
@@ -428,6 +449,8 @@
     .name {
       font-size: 20px;
       opacity: .4;
+      margin-top: 15px;
+      display: inline-block;
     }
 
     .icon {
@@ -455,8 +478,6 @@
       }
     }
   }
-  
-
 
   [data-powerup=grow] .icon {
     background-image: url(assets/images/star.svg);
@@ -497,7 +518,7 @@
       opacity: 1;
     }
     .name {
-      transform: scale(1.2);
+      // transform: scale(1.2);
     }
   }
 

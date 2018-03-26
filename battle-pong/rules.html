@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+<html>
+  <head>
+    <title></title>
+    <base href="src/">
+    <link rel="stylesheet" href="style.css"/>
+    <script src="js/particles.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/canvas-stars.js"></script>
+    <script src="js/music.js"></script>
+    <script src="js/sounds.js"></script>
+    <script src="js/standalone-rules.js"></script>
+    <!-- <script src="js/splash.js"></script> -->
+    <script src="js/particles.js"></script>
+    <!-- insert minified source here -->
+  </head>
+
+  <body class="rules-page">
+
+    <div class="scene">
+      <div class="sky"></div>
+      <div class="canvas-stars">
+        <canvas />
+      </div>
+    </div>
+
+    <div class="rules-nav">
+      <a nav="rules" href="#">RULES</a>
+      <a nav="powerups" href="#">POWERUPS</a>
+      <a nav="controls" href="#">CONTROLS</a>
+    </div>
+
+    <div class="rules">
+        
+      <div rule="controls" class="rule-box">
+        <div class="controls">
+          <div class="controller">
+            <div class="shoulder-button left"></div>
+            <div class="shoulder-button right"></div>
+            <div class="analog-stick left"></div>
+            <div class="analog-stick right"></div>
+          </div>
+          <div class="paddle-container">
+            <div class="paddle"></div>
+          </div>
+        </div>
+      </div>
+    
+      <div rule="rules" class="rule-box">
+        <ul>
+          <li>Score to expand your terrain</li>
+          <li>You can only move within your terrain</li>
+          <li>Capture the whole board to win</li>
+        </ul>
+        <video autoplay loop>
+          <source src="assets/videos/rule-movement.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div rule="powerups" class="rule-box">
+        <div class="powerups">
+          
+          <div class="powerup-row">
+            <div type="grow" class="icon grow"></div>
+            <div type="spin" class="icon spin"></div>
+            <div type="bones" class="icon clone"></div>
+            <div type="sticky" class="icon magnet"></div>
+            <div type="ghost" class="icon noclip"></div>
+            <div type="mine" class="icon mine"></div>
+          </div>
+
+          <div class="powerup-explanation">
+            <strong class="powerup-name">STAR</strong> - 
+            <span class="powerup-effect">Grows your paddle!</span>
+          </div>
+
+          <video class="grow" loop>
+            <source src="assets/videos/grow.mp4" type="video/mp4">
+          </video>
+          <video class="spin" loop>
+            <source src="assets/videos/spin.mp4" type="video/mp4">
+          </video>
+          <video class="bones" loop>
+            <source src="assets/videos/bones.mp4" type="video/mp4">
+          </video>
+          <video class="sticky" loop>
+            <source src="assets/videos/sticky.mp4" type="video/mp4">
+          </video>
+          <video class="ghost" loop>
+            <source src="assets/videos/ghost.mp4" type="video/mp4">
+          </video>
+          <video class="mine" loop>
+            <source src="assets/videos/mine.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <div class="button previous">&larr; Previous</div>
+      <div to="splash" class="button nav-button go-back green-button">HOME</div>
+      <div to="game" class="button nav-button start-game pink-button">PLAY</div>
+      
+      <div class="button next">Next &rarr;</div>
+    </div>
+    </div>
+  </body>
+</html>

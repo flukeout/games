@@ -372,7 +372,6 @@ function createBall(options){
         this.endSpin();
       }
 
-      // Wall hugging test....
       if(obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
 
         let xV = this.physics.velocity.x;
@@ -390,12 +389,15 @@ function createBall(options){
         let xRatio = .65;
         let yRatio = .45;
 
-        if(xV > 0) {
-          // Going Right
+        
+
+        if(this.lastTouchedPaddle === 1) {
+          // If the right-side player touched it, it goes to the left
           if(yV < 0) {
             // Going Down
             this.spinDirection = "cw";
             if(this.prepSpin && !this.canSpin) {
+      
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -412,7 +414,7 @@ function createBall(options){
             }
           }
         } else {
-          // Going Left
+          // Otherwise, it goes to the right
           if(yV < 0) {
             this.spinDirection = "ccw";
             if(this.prepSpin && !this.canSpin) {
@@ -431,7 +433,6 @@ function createBall(options){
             }
           }
         }
-      
 
         if(this.prepSpin) {
           this.prepSpin = false;

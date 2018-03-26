@@ -1,0 +1,659 @@
+.rules-page {
+
+  .rules.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+    
+  }
+
+  .sky.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
+
+  .rules-nav.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
+
+  .buttons.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
+
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+
+  h1 {
+    font-size: 40px;
+    color: white;
+    margin: 0px 0px 25px 0;
+    transition: all .2s ease-out;
+  }
+
+  .powerups {
+    video {
+      display: none;
+    }
+  }
+  
+  video {
+    margin: 0 auto;
+    
+    &.videoPop {
+      animation: videoPop .25s ease-out;
+    }
+  }
+  
+  @keyframes videoPop {
+    0% {
+      opacity: .4;
+      transform: scale(.95);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .powerup-explanation {
+    color: rgba(255,255,255,.7);
+    font-size: 25px;
+    margin-bottom: 20px;
+    
+    .powerup-name {
+      text-transform: uppercase;
+    }
+  }
+
+  .powerup-row {
+    text-align: center;
+    margin-bottom: 20px;
+
+    .icon {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      margin: 0 10px;
+      background-position: center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      vertical-align: middle;
+      opacity: .4;
+      transform: scale(.7);
+      transition: transform .1s ease-out;
+      
+      &.selected {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .grow {
+      background-image: url(assets/images/star.svg);
+      width: 50px;
+      height: 50px;
+    }
+
+    .noclip {
+      background-image: none;
+      background: transparent;
+      border: solid 4px white;
+      width: 30px;
+      height: 30px;
+      background: rgba(255,255,255,.2);
+    }
+
+    .spin {
+      background-image: url(assets/images/spinner.svg);
+    }
+
+    .clone {
+      background-image: url(assets/images/bone.svg);
+      background-color: #666;
+      background-size: 11px;
+      border-radius: 50%;
+    }
+    
+    .magnet {
+      background-image: url(assets/images/tar.svg);
+    }
+
+    .mine {
+      background-image: url(assets/images/mine.svg);
+      width: 65px;
+      height: 65px;
+    }
+  }
+
+
+  @keyframes rulesAppear {
+    0% {
+      opacity: 0;
+      transform: scale(.9);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0 0 30px 0;
+    padding: 0;
+  }
+  
+  .rules-nav {
+    text-align: center;
+    padding: 30px 0;
+    position: relative;
+    z-index: 99;
+    position: absolute;
+    width: 100vw;
+    
+    
+    a {
+      color: white;
+      margin: 0 20px;
+      font-size: 30px;
+      text-decoration: none;
+      opacity: .4;
+      
+      &.selected {
+        opacity: 1;
+        border-bottom: solid 4px white;
+        padding-bottom: 8px;
+      }
+    }
+  }
+  
+  .buttons {
+    position: absolute;
+    bottom: 0px;
+    text-align: center;
+    padding-bottom: 55px;
+    width: 100vw;
+  }
+  
+  .pink-button {
+    background: $pink; 
+  }
+
+  .green-button {
+    background: $green;
+  }
+
+  .green-button, .pink-button {
+    box-shadow: 6px 6px 0px rgba(0,0,0,.4);
+  }
+  
+  .button {
+    color: white;
+    display: inline-block;
+    z-index: 6;
+    text-decoration: none;   
+    padding: 8px 20px;
+    transform: rotateX(10deg);
+    text-align: center;
+    font-size: 25px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin: 0 15px;
+    position: relative;
+    transition: transform .1s ease-out;
+    user-select: none;
+    
+    &.poke {
+      animation: buttonPress .2s ease-out;
+      
+      @keyframes buttonPress {
+        0% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(.9);
+        }
+      }
+    }
+
+    
+    &.previous.selected, &.next.selected {
+    background: rgba(255,255,255,.15);  
+    }
+
+    &.selected.start-game, &.selected.go-back {
+      outline: solid 6px rgba(255,255,255,.15);
+
+    }
+
+    &.selected {
+      
+      &:after {
+        content: "";
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        top: 35px;
+        left: calc(50% - 28px);
+        background-image: url(assets/emojis/hand-point-right.svg);
+        background-size: contain;
+        animation: pointer .5s ease-in-out infinite;
+      }
+      
+      @keyframes pointer {
+        50% {
+          transform: translateY(5px); 
+        }
+      }
+    }
+
+  }
+
+ .scene {
+    z-index: 1;
+
+    .canvas-stars {
+      z-index: 1;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      transition: opacity 1.5s ease-out;
+      
+      &.transition-out {
+        opacity: 0;
+      }
+    }
+    
+    .canvas-stars canvas {
+      opacity: 1;
+    }
+
+    .sky {
+      background-image: radial-gradient(200% 100% at bottom, #540c56 55%, #000 100%);
+      height: 60%;
+      bottom: 0;
+      top: auto;
+      opacity: .4;
+      transition: opacity 1.5s ease-out;
+      
+      &.transition-out {
+        opacity: 0;
+      }
+    }
+
+
+    .stars {
+      height: 100vh;
+    }
+  }
+
+}
+
+.rules-page .rules {
+  animation: rulesAppear .2s ease-out;
+  position: relative;
+  perspective: 1200px;
+  width: 100vw;
+  height: 90vh;
+  box-sizing: border-box;
+  z-index: 4;
+  text-align: center;
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  
+  img, video {
+    width: 550px;
+    border: solid 15px rgba(255,255,255,.05);
+    border-radius: 5px;    
+  }
+  
+  .rule-box {
+    display: none;
+  }
+  
+  .rules-1 {
+    display: block;
+  }
+
+  &.visible {
+    display: block;
+  }
+  
+  p {
+    color: rgba(255,255,255,.7);
+    font-size: 30px;
+    margin: 0 0 30px 0; 
+  }
+
+  li {
+    color: rgba(255,255,255,.7);
+    font-size: 22px;
+    margin: 10px 0;
+    position: relative;
+    
+    &:after {
+      position: absolute;
+      color: white;
+      height: 2px;
+      background: rgba(255,255,255,.3);
+      bottom: -4px;
+      left: calc(50% - 100px);
+      width: 200px;
+    }
+    
+    &:last-child {
+      &:after {
+        display: none;
+      }
+    }
+  }
+  
+  .row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 40px;
+    
+    .col {
+      flex: 1;
+    }
+  }
+
+  .mines {
+    img {
+      width: 500px;
+    }
+  }
+
+
+
+
+  
+  
+
+  .controls {
+  
+    padding-top: 15px;
+        
+    .controller {
+      width: 300px;
+      height: 200px;
+      background-image: url(assets/images/gamepad-body.svg);
+      background-size: 250px;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      display: inline-block;
+    }
+    
+     .analog-stick {
+        width: 24px;
+        height: 24px;
+        top: 105px;
+        border-radius: 50%;
+        position: absolute;
+        background: white;
+        opacity: .2;
+        
+        &.left {
+          left: 98px;
+        }
+    
+        &.right {
+          left: 179px;
+        }
+      }
+      
+      .shoulder-button {
+        width: 30px;
+        height: 10px;
+        top: 6px;
+        left: 58px;
+        
+        border-radius: 5px 5px 0 0;
+        position: absolute;
+        background: white;
+        transform-origin: bottom;
+        opacity: .2;
+        
+        &.left {
+          left: 58px;
+        }
+    
+        &.right {
+          left: 212px;
+        }
+      }
+    
+    .paddle-container {
+      width: 100px;
+      position: relative;
+      display: inline-block;
+      height: 200px;
+
+      .paddle {
+        width: 20px;
+        height: 100px;
+        background: white;
+        left: calc(50% - 10px);
+        top: calc(50% - 60px);
+      }
+    }
+  }
+}
+
+
+.rules .controls {
+
+  &.shoulder-left {
+    .shoulder-button.left {
+      transform: scaleY(.5);
+      opacity: 1;
+    }
+    
+    .paddle {
+      animation: spinLeft .5s infinite linear;
+    }
+  }  
+
+  &.shoulder-right {
+    .shoulder-button.right {
+      transform: scaleY(.5);
+      opacity: 1;
+    }
+    
+    .paddle {
+      animation: spinRight .5s infinite linear;
+    }
+  }
+  
+  &.analog-move-x {
+    .analog-stick.left {
+      opacity: 1;
+      animation: analogWobbleX 1s infinite;
+    }
+    .paddle {
+      animation: paddleWobbleX 1s infinite;
+    }
+  }
+  
+  &.analog-move-y {
+    .analog-stick.left {
+      opacity: 1;
+      animation: analogWobbleY 1s infinite;
+    }
+    .paddle {
+      animation: paddleWobbleY 1s infinite;
+    }
+  }
+  
+  &.analog-spin-right {
+    .analog-stick.right {
+      opacity: 1;
+      animation: analogSpinRight 1s infinite;
+    }
+    .paddle {
+      animation: spinRight .5s linear infinite;
+    }
+  }
+  
+  &.analog-spin-left {
+    .analog-stick.right {
+      opacity: 1;
+      animation: analogSpinLeft 1s infinite;
+    }
+    .paddle {
+      animation: spinLeft .5s linear infinite;
+    }
+  }
+
+
+}
+
+@keyframes analogSpinRight {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: ease-in-out;
+  }
+  
+  10% {
+    transform: translateY(-10px);
+    animation-timing-function: ease-in-out;
+  }
+  90% {
+    transform: translateY(-10px);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateY(0px);
+    animation-timing-function: ease-in-out;
+  }
+}
+
+
+@keyframes analogSpinLeft {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: ease-in-out;
+  }
+  
+  10% {
+    transform: translateY(10px);
+    animation-timing-function: ease-in-out;
+  }
+  90% {
+    transform: translateY(10px);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateY(0px);
+    animation-timing-function: ease-in-out;
+  }
+}
+
+@keyframes analogWobbleX {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: ease-in-out;
+  }
+  
+  25% {
+    transform: translateX(-10px);
+    animation-timing-function: ease-in-out;
+  }
+  75% {
+    transform: translateX(10px);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateX(0px);
+    animation-timing-function: ease-in-out;
+  }
+}
+
+@keyframes paddleWobbleX {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: ease-in-out;
+  }
+  
+  25% {
+    transform: translateX(-20px);
+    animation-timing-function: ease-in-out;
+  }
+  75% {
+    transform: translateX(20px);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateX(0px);
+    animation-timing-function: ease-in-out;
+  }
+}
+
+@keyframes analogWobbleY {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: ease-in-out;
+  }
+  
+  25% {
+    transform: translateY(-10px);
+    animation-timing-function: ease-in-out;
+  }
+  75% {
+    transform: translateY(10px);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateY(0px);
+    animation-timing-function: ease-in-out;
+  }
+}
+
+@keyframes paddleWobbleY {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: ease-in-out;
+  }
+  
+  25% {
+    transform: translateY(-20px);
+    animation-timing-function: ease-in-out;
+  }
+  75% {
+    transform: translateY(20px);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: translateY(0px);
+    animation-timing-function: ease-in-out;
+  }
+}
+
+@keyframes spinLeft {
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes spinRight {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

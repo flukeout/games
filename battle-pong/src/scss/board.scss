@@ -1,3 +1,12 @@
+.game {
+  .surface {
+    animation: surfaceAppear 3s ease-out;
+  }
+  .large-moon {
+    animation: moonAppear 3s ease-out;
+  }
+}
+
 .scene {
   width: 100vw;
   height: 100vh;
@@ -13,22 +22,17 @@
   }
 
   .canvas-stars {
+    opacity: 1;
+    animation: starsAppear 3s ease-out;
+    
     canvas {
-      opacity: 1;
       position: relative;
     }
   }
-
-  .stars {
-    width: 100vw;
-    left: 0;
-    height: 40vh;
-    position: absolute;
-    top: 0;
-
-    img {
-      position: absolute;
-      width: 100%;
+  
+  @keyframes starsAppear {
+    0% {
+      opacity: 0;
     }
   }
 
@@ -41,7 +45,6 @@
     height: 150vh;
     position: absolute;
     top: 30vh;
-    animation: surfaceHover 10s ease-in-out;
  
     .overlay {
       width: 100%;
@@ -54,25 +57,12 @@
       left: 0;
       position: absolute;
       opacity: .5;
-      transition: opacity .2s ease-out;
+      transition: opacity .2s ease-in-out;
     }
 
-    @keyframes surfaceHover {
-      50% {
-        transform: translateY(-15px);
-      }
-    }
-
-
-    @keyframes rotateSurface {
+    @keyframes surfaceAppear {
       0% {
-        transform: rotate(-5deg);
-      }
-      50% {
-        transform: rotate(5deg);
-      }
-      100% {
-        transform: rotate(-5deg);
+        transform: translateY(600px);
       }
     }
   }
@@ -88,11 +78,10 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
-    animation: largerMoon 15s ease-in-out infinite;
 
-    @keyframes largerMoon {
-      50% {
-        transform: translateY(-20px) rotateZ(3deg);
+    @keyframes moonAppear {
+      0% {
+        transform: translateY(900px) rotateZ(13deg);
       }
     }
   }
@@ -119,15 +108,14 @@
     background-position: bottom;
     transform: rotateX(20deg) rotateY(0deg);
     background-repeat: no-repeat;
-
-    animation: shadowAppear 1.2s ease-out;
+    animation: shadowAppear 2s ease-out;
 
     @keyframes shadowAppear {
       0% {
         opacity: 0;
-        transform: rotateX(20deg) rotateY(0deg) translateY(-500px) scale(.8);
+        transform: rotateX(20deg) rotateY(0deg) translateY(-400px) scale(.8);
       }
-      50% {
+      75% {
         opacity: 0;
       }
       100% {
@@ -137,17 +125,14 @@
     }
 }
 
-
 .board-wrapper {
   transform-style: preserve-3d;
-  perspective: initial;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-
 
 .score-satellite {
   position: absolute;
@@ -159,21 +144,12 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  animation: satelliteAppear 2s ease-out, satelliteDrift 6.5s ease-out infinite;
+  animation: satelliteAppear 2s ease-out;
   animation-delay: 0s, 2s;
 
   @keyframes satelliteAppear {
     0% {
       transform: translateY(-250px);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes satelliteDrift {
-    50% {
-      transform: translateY(-10px) rotateZ(2deg);
     }
   }
 
@@ -187,7 +163,6 @@
     opacity: .5;
     text-align: center;
     transform: rotateZ(-10deg) skew(-6deg);
-    animation: screenFlicker .1s linear infinite;
 
     .player-1-score {
       color: #ca59b7;
@@ -206,22 +181,6 @@
       color: white;
       padding-left: 10px;
     }
-
-
-    @keyframes screenFlicker {
-      0% {
-        opacity: .5;
-      }
-      10% {
-        opacity: .75;
-      }
-      20% {
-        opacity: .5;
-      }
-
-    }
-
-
   }
 }
 
@@ -281,13 +240,13 @@
   
   @keyframes spinWall {
     50% {
-      transform: scaleY(2);
-      opacity: .4;
+      transform: scaleY(2.25);
+      opacity: .5;
     }
   }
 }
 
-.red-chunk, .blue-chunk {
+.pink-chunk, .green-chunk {
   z-index: 2;
 }
 
@@ -313,15 +272,13 @@
 }
 
 .world {
-  width: 890px; // 1000px
+  width: 890px;
   height: 540px;
   position: relative;
   border: solid 20px #222;
-  // border-top: solid 20px darken(#39f6ff, 50%);
   box-sizing: border-box;
   -moz-transform-style: preserve-3d;
-
-  animation: worldAppear 2s ease-out;
+  animation: worldAppear 4s ease-out;
 
     @keyframes worldAppear {
       0% {
@@ -338,10 +295,12 @@
 }
 
 .winner-screen.winner-one  {
-  background-image: radial-gradient(
-    200% 100% at bottom,
-    #540c56 55%,
-    #000 100%);
+  .sky {
+    background-image: radial-gradient(
+      200% 100% at bottom,
+      #540c56 55%,
+      #000 100%);  
+  }
 
   .world {
     border: solid 20px #bd71b0;
@@ -350,24 +309,24 @@
 
 
 .winner-screen.winner-two {
-  background-image: radial-gradient(
+  .sky {
+    background-image: radial-gradient(
     200% 100% at bottom,
     #0b3322 55%,
     #000 100%);
+  }
 
   .world {
     border: solid 20px #66bb98;
   }
 }
 
-
-
 .one .bigscore {
-  color: #3faa7f;
+  color: $green;
 }
 
 .two .bigscore {
-  color: #ac4d9d;
+  color: $pink;
 }
 
 .terrain {
@@ -379,7 +338,7 @@
 
   &.one {
     left: 0;
-    background-color: #ac4d9d;
+    background-color: $pink;
     background-image: url(assets/images/board-corner-left.svg);
     background-position: top left;
     background-repeat: no-repeat;
@@ -388,8 +347,8 @@
   }
 
   &.two {
-    background-color: #3faa7f;
     right: 0;
+    background-color: $green;
     background-image: url(assets/images/board-corner-right.svg);
     background-position: top right;
     background-repeat: no-repeat;
@@ -398,15 +357,14 @@
   }  
 }
 
-
-.red-chunk {
+.pink-chunk {
   z-index: 2;
-  background: #ac4d9d;
+  background: $pink;
 }
 
-.blue-chunk {
+.green-chunk {
   z-index: 1;
-  background: #3faa7f;
+  background: $green;
 }
 
 .bestof.hide-animation {
@@ -424,7 +382,7 @@
 }
 
 .one .bestof {
-  color: #3faa7f;
+  color: $green;
   right: 0;
   display: none;
   transform-origin: bottom right;
@@ -505,21 +463,9 @@
    }
 }
 
-.goal-one {
-  position: absolute;
-  width: 100px;
-  right: -5px;
-  opacity: .5;
-  height: 80px;
-  background: yellow;
-  transform: rotateY(90deg);
-  transform-origin: right;
-  z-index: 99999999;
-}
 
-.team-1-scored-flash .team-1-flash {
-  animation: team-1-scored-flash .5s ease-out;
-}
+// Border flash on the screen when a player scores
+// or gets a gunshot.
 
 .flash {
   position: absolute;
@@ -528,35 +474,23 @@
   width: 100vw;
   height: 100vh;
   opacity: 0;
+  box-sizing: border-box;
   will-change: opacity;
-  transform: translateZ(0);
 }
 
 .team-1-flash {
-  background: #ac4d9d;
+  border: solid 20px $pink;
 }
 
 .team-2-flash {
-  background: #3faa7f;
+  border: solid 20px $green;
 }
 
-
-@keyframes team-1-scored-flash {
-  5% { opacity: 1; }
-}
-
+.team-1-scored-flash .team-1-flash, 
 .team-2-scored-flash .team-2-flash {
-  animation: team-2-scored-flash .5s ease-out;
+  animation: scored-flash .5s ease-out;
 }
 
-@keyframes team-2-scored-flash {
-  5% { opacity: 1; }
+@keyframes scored-flash {
+  0% { opacity: .5; }
 }
-
-
-.large-moon,
-.surface,
-.score-satellite {
-  animation: none !important;
-}
-

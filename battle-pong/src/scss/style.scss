@@ -3,15 +3,26 @@
   src: url(fonts/Lato-Black.ttf);
 }
 
+$pink: #ac4d9d; 
+$green: #3faa7f;
+
 html, body {
   font-family: Lato;
   width: 100%;
   height: 100%;
   padding: 0;
-  margin: 0;
+  margin: 0;  
+}
+
+body {
+  perspective: 1200px;
   overflow: hidden;
   background: black;
-  perspective: 1200px;
+}
+
+body.fade-out {
+  transition: opacity 1s ease-out;
+  opacity: 0;
 }
 
 .world canvas {
@@ -32,8 +43,6 @@ html, body {
   height: 500px;
 }
 
-
-
 [data-physics] {
   will-change: transform;
 }
@@ -44,44 +53,13 @@ html, body {
 @import 'paddle';
 @import 'ball';
 @import 'powerups';
-@import 'intro';
 @import 'menu';
 @import 'score';
 @import 'header';
 @import 'splash';
-@import 'rules';
-
-.angle {
-  position: fixed;
-  bottom: 100px;
-  right: 100px;
-  width: 100px;
-  height: 100px;
-  background: rgba(255,255,255,.4);
-  border-radius: 50px;
-  display: none;
-
-  .arrow-1 {
-    position: absolute;
-    width: 2px;
-    height: 50px;
-    background: red;
-    top: 0;
-    left: 49px;
-    transform-origin: bottom;
-  }
-
-  .arrow-2 {
-    position: absolute;
-    width: 2px;
-    height: 25px;
-    background: blue;
-    top: 25px;
-    left: 49px;
-    transform-origin: bottom;
-  }
-
-}
+@import 'pause';
+@import 'rules-standalone';
+@import 'buttons';
 
 #fps {
   position: fixed;
