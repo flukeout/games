@@ -280,7 +280,7 @@ function updateBestOf(){
 // to be animated.
 function prepTitle(){
   // return;
-  var titleEl =document.querySelector(".game-title .actual-title")
+  var titleEl = document.querySelector(".game-title .actual-title")
   var titleString = titleEl.innerText;
   titleEl.innerText = "";
   

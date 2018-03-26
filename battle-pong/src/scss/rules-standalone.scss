@@ -73,7 +73,6 @@
     }
   }
 
-
   .powerup-row {
     text-align: center;
     margin-bottom: 20px;
@@ -300,51 +299,6 @@
     }
   }
 
-  .game-title {
-    font-size: 80px;
-    color: white;
-    margin: 35px 0 45px 0;
-    text-align: center;
-    transform: rotateX(15deg);
-    transition: all .2s ease-out;
-
-    .sub-title {
-      font-size: 39px;
-    }
-
-    .letter {
-      animation: letterFloat 2s infinite;
-        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
-      display: inline-block;
-
-      &:empty() {
-        width: 200px;
-      }
-    }
-
-    @keyframes letterFloat {
-      0% {
-        transform: translateY(0px);
-        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
-        animation-timing-function: ease-out;
-      }
-      25% {
-        transform: translateY(-6px);
-        text-shadow: 0px 6px 0px #ac4d9d, 0px 9px 0px #3faa7f;
-        animation-timing-function: ease-in;
-      }
-      50% {
-        transform: translateY(0px);
-        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
-        animation-timing-function: ease-out;
-      }
-      75% {
-        transform: translateY(6px);
-        text-shadow: 0px 0px 0px #ac4d9d, 0px 0px 0px #3faa7f;
-        animation-timing-function: ease-in;
-      }
-    }
-  }
 }
 
 .rules-page .rules {

@@ -115,12 +115,11 @@
 
     .sub-title {
       font-size: 30px;
-      /*opacity: .7;*/
     }
 
     .letter {
       animation: letterFloat 2s infinite;
-        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
+      text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
       display: inline-block;
 
       &:empty() {
