@@ -1,8 +1,5 @@
 .rules-page {
 
-
-
-
   .rules.transition-out {
     transition: opacity .5s ease-out;
     opacity: 0;
@@ -239,8 +236,8 @@
       outline: solid 6px rgba(255,255,255,.15);
 
     }
+
     &.selected {
-      
       
       &:after {
         content: "";
@@ -364,7 +361,6 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  
   
   img, video {
     width: 550px;

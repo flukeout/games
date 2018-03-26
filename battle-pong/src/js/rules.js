@@ -5,95 +5,53 @@ function RulesManager (game, inputManager) {
   window.addEventListener("keydown", function(e){
     if(e.key === "Escape"){
       if (displayingRules) {
-        document.querySelector(".rules").classList.remove("visible");
+        document.querySelector(".pause-screen").classList.remove("visible");
         game.resume();
       }
       else {
-        document.querySelector(".rules").classList.add("visible");
+        document.querySelector(".pause-screen").classList.add("visible");
         game.pause();
-        nextStep();
       }
       displayingRules = !displayingRules;
     }
   });
 
+  document.querySelectorAll("[nav]").forEach(function(el){
+    el.addEventListener("click",function(){
+      navigate(this.getAttribute("nav"));
+    });
+    
+  })
+
   inputManager.waitForGamepadStartButtonPress(() => {
     if (displayingRules) {
-      document.querySelector(".rules").classList.remove("visible");
+      document.querySelector(".pause-screen").classList.remove("visible");
       game.resume();
     }
     else {
-      document.querySelector(".rules").classList.add("visible");
+      document.querySelector(".pause-screen").classList.add("visible");
       game.pause();
-      nextStep();
     }
     displayingRules = !displayingRules;
   });
 
-  let stepList = [
-    {
-      step : "shoulder-left",
-      duration: 1000,
-      breakAfter : 250
-    },
-    {
-      step : "shoulder-right",
-      duration: 1000,
-      breakAfter : 500
-    },
-    {
-      step : "analog-move-x",
-      duration: 1000,
-      breakAfter : 0
-    },
-    {
-      step : "analog-move-y",
-      duration: 1000,
-      breakAfter : 250
-    },
-    {
-      step : "analog-spin-right",
-      duration: 1000,
-      breakAfter : 250
-    },
-    {
-      step : "analog-spin-left",
-      duration: 1000,
-      breakAfter : 250
-    }
-  ]
 
-  let currentStepNumber = 0;
-  let currentClass = "";
 
-  const nextStep = () => {
-    currentStep = stepList[currentStepNumber];
-
-    document.querySelector(".controls").classList.add(currentStep.step);
-
-    currentStepNumber++;
-
-    if(currentStepNumber >= stepList.length) {
-      currentStepNumber = 0;
-    }
-
-    setTimeout(function(){
-      if(currentStep) {
-       document.querySelector(".controls").classList.remove(currentStep.step);
-     }
-    }, currentStep.duration);
-
-    setTimeout(function(){
-      nextStep();
-    }, currentStep.duration + currentStep.breakAfter);
-  };
+  
 }
 
 
-
-
-
-
+function navigate(destination){
+  let url = destination + ".html";
+  
+  // fadeOutScene();
+  if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+    url = "../" + url;
+  }
+  setTimeout(function(){
+      window.location.href = url;
+  }, 0);
+}
 
 
 
