@@ -1,5 +1,3 @@
-
-
 function PauseManager (game, inputManager) {
   
   let displayingRules = false;
@@ -51,17 +49,6 @@ function PauseManager (game, inputManager) {
   }
 
   function fadeOutScene(){
-    console.log("HI");
     document.querySelector("body").classList.add("fade-out");
   }
-
 }
-
-
-
-
-
-
-
-
-

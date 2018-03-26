@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   setupNavButtons();
 
-
   ruleNavEls = document.querySelectorAll(".rules-nav a");
   ruleNavEls.forEach(function(el){
     let type = el.getAttribute("nav");
@@ -106,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function () {
   showRule(currentRule);
 
   nextStep();
-
 });
 
 
@@ -162,8 +160,6 @@ const powerupnames = [];
 
 
 // Shows top level rule (rules, powerups, controls)
-
-
 
 const showRule = type => {
 
@@ -401,7 +397,3 @@ function addTemporaryClassName(element, className, durationMS){
     element.classList.remove(className);
   }, durationMS || 1000);
 }
-
-
-
-

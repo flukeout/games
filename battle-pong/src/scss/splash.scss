@@ -398,31 +398,26 @@
   }
 
 
-
-  .start-game, .start-game-particle {
+  .start-game {
     color: white;
     z-index: 1;
     transform: rotateX(10deg);
-    
     background: $pink;
-
-
-    // &:after {
-    //   content: "";
-    //   width: 100%;
-    //   height: 100%;
-    //   border: solid 8px rgba(0,0,0,.5);
-    //   position: absolute;
-    //   top: -8px;
-    //   left: -8px;
-    // }
-
-
   }
 
   .start-game-particle {
+    background: $pink;
     transition: none;
     z-index: 999999;
+    display: block;
+    text-align: center;
+    padding: 5px 20px;
+    width: auto !important;
+    font-size: 40px;
+    cursor: pointer;
+    color: white;
+    margin: 0 10px;
+    box-shadow: 6px 6px 0px rgba(0,0,0,.4);
 
     &:before {
       content: "START!";

@@ -106,7 +106,9 @@ function fadeOutScene(){
 
 
 function setupStartButton(){
+  
   var button = document.querySelector(".start-game");
+  
   button.addEventListener("click", function(e){
     
     // Apply transitions one at a time, the number is a delay from the last time it was called
@@ -116,14 +118,14 @@ function setupStartButton(){
 
     var options = {
       x : buttonPosition.x,
-      y : buttonPosition.y - 60,
+      y : buttonPosition.y,
       zR : getRandom(-8,8),
       xRv : getRandom(12,20),    
       yV : 7,
       zV : -40,
       xV : getRandom(-5,5),
       oV: -.02,
-      width : 210,
+      width : 20,
       height: 50,
       className : 'start-game-particle',
       lifespan: 1000
@@ -132,7 +134,7 @@ function setupStartButton(){
     makeParticle(options);
 
     SoundManager.playSound("Power_Shot_V1");
-    button.style.display = "none";
+    button.style.opacity = 0;
 
     fadeOutScene();
     

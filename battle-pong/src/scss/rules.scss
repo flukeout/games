@@ -1,6 +1,5 @@
 .game {
 
-
   @keyframes rulesAppear {
     0% {
       opacity: 0;
@@ -25,7 +24,7 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0,0,0,.95);
-    // display: none;
+    display: none;
     
     .content {
       width: 100%;
@@ -61,4 +60,3 @@
   }
 
 }
-
