@@ -1,9 +1,16 @@
+// Animations that build the game screen
+
 .game {
   .surface {
     animation: surfaceAppear 3s ease-out;
   }
+
   .large-moon {
     animation: moonAppear 3s ease-out;
+  }
+  
+  .canvas-stars {
+    animation: starsAppear 3s ease-out;
   }
 }
 
@@ -23,7 +30,6 @@
 
   .canvas-stars {
     opacity: 1;
-    animation: starsAppear 3s ease-out;
     
     canvas {
       position: relative;
@@ -493,4 +499,22 @@
 
 @keyframes scored-flash {
   0% { opacity: .5; }
+}
+
+.menu-toggle {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  background-image: url(assets/images/pause.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 50%;
+  opacity: .3;
+  
+  &:hover {
+    opacity: .75;
+  }
 }

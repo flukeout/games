@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   });
 
-  
   ruleEls = document.querySelectorAll(".rule-box");
 
   document.querySelector(".button.previous").addEventListener("click",function(){
@@ -38,8 +37,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   });
 
-  let selectedButton;
-  
+  let selectedButton = buttons[3];
+  selectedButton.classList.add('selected');
+
   window.addEventListener("keydown", function(e){
     let previouslySelectedButton = selectedButton;
     if (e.key === 'ArrowRight') {

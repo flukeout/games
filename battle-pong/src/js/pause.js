@@ -8,6 +8,10 @@ function PauseManager (game, inputManager) {
     }
   });
 
+  document.querySelector(".menu-toggle").addEventListener("click",function(){
+    displayingRules ? resumeGame() : pauseGame();
+  })
+
   document.querySelectorAll("[nav]").forEach(function(el){
     el.addEventListener("click",function(){
       navigate(this.getAttribute("nav"));
@@ -23,10 +27,10 @@ function PauseManager (game, inputManager) {
   });
 
   function resumeGame(){
-  document.querySelector(".pause-screen").classList.remove("visible");
-  displayingRules = false;
-  game.resume();
-}
+    document.querySelector(".pause-screen").classList.remove("visible");
+    displayingRules = false;
+    game.resume();
+  }
 
   function pauseGame(){
     document.querySelector(".pause-screen").classList.add("visible");

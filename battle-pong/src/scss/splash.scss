@@ -4,7 +4,23 @@
   height: 100vh;
   transform-style: preserve-3d;
   perspective: 1000px;
-    
+  
+  display: none;
+  
+  &.appear {
+    display: block;
+    animation: splashAppear 1s ease-out;
+  }
+  
+  @keyframes splashAppear {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
   .paddle-guy.transition-out {
     animation: guyFly 1s ease-in;
     animation-fill-mode: forwards;
@@ -192,7 +208,6 @@
     &.transition-out {
       transform: rotateX(140deg);
     }
-
   }
 
   .content {
@@ -218,11 +233,14 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      transition: opacity 3s ease-out;
+      transition: opacity 2s ease-out;
       
       &.transition-out {
         opacity: 0;
       }
+      
+
+
     }
     
     .canvas-stars canvas {
