@@ -357,7 +357,7 @@ function setupNavButtons(){
 }
 
 function goBack(){
-  let url = "splash.html";
+  let url = "index.html";
   fadeOutScene();
   if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
     url = "../" + url;
@@ -370,7 +370,7 @@ function goBack(){
 
 
 function startGame(){
-  let url = "index.html";
+  let url = "game.html";
   fadeOutScene();
   if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
     url = "../" + url;

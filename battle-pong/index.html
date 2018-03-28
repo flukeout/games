@@ -4,144 +4,111 @@
 <html>
   <head>
     <title></title>
-    <!-- <link href="https://fonts.googleapis.com/css?family=Teko" rel="stylesheet"> -->
     <base href="src/">
     <link rel="stylesheet" href="style.css"/>
-    <!-- insert minified source here -->
-    <script src="js/matter.min.js"></script>   <!-- physics engine -->
+    <script src="js/particles.js"></script>
     <script src="js/settings.js"></script>
-    <script src="js/debug.js"></script>
-    <script src="js/particles.js"></script>    <!-- particle engine -->
-    <script src="js/effects.js"></script>      <!-- effects like the explosions -->
     <script src="js/canvas-stars.js"></script>
-    
-    <script src="js/pause.js"></script>
-    
-    <script src="js/ai.js"></script>
-    <script src="js/title.js"></script>        <!-- animates browser tab -->
-    <script src="js/sounds.js"></script>       <!-- handles loading & playing sounds -->
-    <script src="js/powerups.js"></script>
     <script src="js/music.js"></script>
-    <script src="js/input-mappings.js"></script>
-    <script src="js/input.js"></script>        <!-- keyboard and joystick controls -->
-    <script src="js/game.js"></script>         <!-- main game loop -->
-    <script src="js/collisions.js"></script>   <!-- handles collisions -->
-    <script src="js/convert.js"></script>      <!-- Get DOM elements properties for the engine -->
-    <script src="js/components.js"></script>   <!-- animates browser tab -->
-    <script src="js/paddle.js"></script>       <!-- the paddles -->
-    <script src="js/ball.js"></script>         <!-- the ball -->
-    <script src="js/reactions.js"></script>
-    <script src="js/intro.js"></script>
-    <script src="js/menu.js"></script>
-    <script src="js/framerate.js"></script>
-    <script src="js/start.js"></script>        <!-- fires everything up -->
+    <script src="js/sounds.js"></script>
+    <script src="js/splash.js"></script>
+    <script src="js/particles.js"></script>
+    <!-- insert minified source here -->
   </head>
 
-  <body class="game">
-    <div id="aidebug"></div>
+  <body class="splash">
+
+    <div class="paddle-guy">
+      <div class="jet jet-left"></div>
+      <div class="jet jet-right"></div>
+      <div class="guy"></div>
+    </div>      
 
     <div class="scene">
       <div class="sky"></div>
-      
       <div class="canvas-stars">
         <canvas />
       </div>
-
       <div class="large-moon"></div>
       <div class="surface">
         <div class="overlay"></div>
       </div>
     </div>
 
-    <div class="score-satellite">
-      <div class="score-screen">
-        <span class="player-1-score">3</span>
-        <span class="player-2-score">2</span>
+    <div class="content">
+      <div class="game-title">
+        <div class="actual-title">DEATHSTROID</div>
+        <div class="sub-title">Mobile Paddle Rocket Warriors</div>
       </div>
-    </div>
 
-    <div class="flash team-1-flash"></div>
-    <div class="flash team-2-flash"></div>
+      <div class="game-settings">
+        
+        <div class="option-group best-of" data-bestof>
+          <span class="label">Best of</span>
+          <span data-value="2" class="option value">3</span>
+          <span data-value="3" class="option value">5</span>
+          <span data-value="4" class="option value">7</span>
+        </div>
 
-    <div class="score-display">
-      <div class="message"></div>
-    </div>
-
-    <div class="board-shadow-wrapper">
-      <div class="board-shadow"></div>
-    </div>
-
-    <div class="board-wrapper hide">
-      <div class="shake-wrapper">
-        <div class="tilt-wrapper">
-          <div class="world">
-
-            <div class="terrain one"></div>
-            <div class="terrain two"></div>
-
-            <div class="bigscore-wrapper one">
-              <div class="bigscore">
-                <div class="score-number"></div>
-              </div>
-              <div class="bestof">BEST OF</div>
-            </div>
-
-            <div class="bigscore-wrapper two">
-              <div class="bigscore">
-                <div class="score-number"></div>
-              </div>
-              <div class="bestof"></div>
-            </div>
-
-            <div class="spin-wall top"></div>
-            <div class="spin-wall bottom"></div>
-            <div class="blast-zone"></div>
-
-            <div class="endzone one"></div>
-            <div class="endzone two"></div>
-
+        <div class="powerups">
+          <div class="powerup option" data-powerup="grow">
+            <div class="icon"></div>
+            <span class="name">GROW</span>
+          </div>
+          <div class="powerup option" data-powerup="noclip">
+            <div class="icon"></div>
+            <span class="name">NOCLIP</span>
+          </div>
+          <div class="powerup option" data-powerup="spin">
+            <div class="icon"></div>
+            <span class="name">WALL-SPIN</span>
+          </div>
+          <div class="powerup option" data-powerup="clone">
+            <div class="icon"></div>
+            <span class="name">BONES</span>
+          </div>
+          <div class="powerup option" data-powerup="magnet">
+            <div class="icon"></div>
+            <span class="name">STICKY</span>
+          </div>
+          <div class="powerup option" data-powerup="mine">
+            <div class="icon"></div>
+            <span class="name">MINES</span>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="loading"></div>
-
-    <div class="reaction-container one">
-      <div class="emoji"></div>
-      <div class="words"></div>
-    </div>
-    
-    <div class="reaction-container two">
-      <div class="emoji"></div>
-      <div class="words"></div>
-    </div>
-
-    <div class="pause-screen">
-      <div class="content">
         <div>
-          <div class="paused-title">
-            <span>GAME PAUSED</span>
+          <div class="option option-toggle" data-type="sounds">
+            Sounds <span class="value"></span>
           </div>
-
-          <h3>You are getting...</h3>
-          <h1>DEATHSTROID</h1>
-          
-          <div nav="splash" class="button pink-button">HOME</div>
-          <div nav="rules" class="button pink-button">RULES</div>
-          <div class="resume button green-button">RESUME</div>
-
-          <div class="score-wrapper">
-            <h2 class="controls-title">CONTROLS</h2>
-            <div class="input" data-player="1"><div class="help"></div></div>
-            <div class="input" data-player="2"><div class="help"></div></div>
+          <div class="option option-toggle" data-type="music">
+            Music <span class="value"></span>
           </div>
-
         </div>
-      </div>
-    </div>
-    
-    <div class="menu-toggle"></div>
 
+        <div class="player-options">
+          <div class="player-one player-option" player="1">
+            <span class="label">P1</span>
+          </div>
+          <div class="vs">VS</div>
+          <div class="player-two player-option" player="2">
+            <span class="label">CPU</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="buttons">
+        <div class="button rules-button">RULES!</div>
+        <div class="button start-game">START!</div>
+        
+      </div>
+
+    </div>
+      <div class="credits">
+        A game by <a target="_blank" href="https://twitter.com/flukeout">@flukeout</a> &amp; 
+        <a target="_blank" href="https://twitter.com/secretrobotron">@secretrobotron</a>
+        with audio by <a target="_blank" href="https://www.devonbirdaudio.com/">Devon Bird</a>
+      </div>
   </body>
 </html>

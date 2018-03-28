@@ -143,10 +143,10 @@ function setupStartButton(){
     e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../index.html";
+        window.location.href = "../game.html";
       }
       else {
-        window.location.href = "index.html";
+        window.location.href = "game.html";
       }
     }, 4000);
   })
