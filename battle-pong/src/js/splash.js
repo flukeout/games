@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function(){
   SoundManager.init();
   SoundManager.loadSettingsFromLocalStorage();
 
+  document.querySelector(".splash").classList.add("appear");
+
 });
 
 function loop(){
