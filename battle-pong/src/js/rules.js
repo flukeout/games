@@ -42,9 +42,9 @@ document.addEventListener('DOMContentLoaded', function () {
   let selectedButton = buttons[3];
   selectedButton.classList.add('selected');
 
-  window.addEventListener("keydown", function(e){
+  function moveCursor(direction) {
     let previouslySelectedButton = selectedButton;
-    if (e.key === 'ArrowRight') {
+    if (direction === 'right') {
       if (!selectedButton) {
         selectedButton = buttons[0];
       }
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       selectedButton.classList.add('selected');
     }
-    else if (e.key === 'ArrowLeft') {
+    else if (direction === 'left') {
       if (!selectedButton) {
         selectedButton = buttons[buttons.length-1];
       }
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       selectedButton.classList.add('selected');
     }
-    else if (e.key === 'Enter') {
+    else if (direction === 'go') {
       if (selectedButton.classList.contains('previous')) {
         previousRule();
       }
@@ -87,6 +87,16 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       addTemporaryClassName(selectedButton, "poke", 250);
     }
+  }
+
+  window.addEventListener("keydown", function(e){
+    let map = {
+      ArrowRight: 'right',
+      ArrowLeft: 'left',
+      Enter: 'go',
+    };
+
+    map[e.key] && moveCursor(map[e.key]);
   });
   
   numRules = ruleEls.length;
@@ -107,6 +117,23 @@ document.addEventListener('DOMContentLoaded', function () {
   showRule(currentRule);
 
   nextStep();
+
+  let gamepadManager = new InputManager.GamepadEventManager();
+
+  gamepadManager.onGamepadButtonDown('dPadLeft', function () {
+    moveCursor('left');
+  });
+
+  gamepadManager.onGamepadButtonDown('dPadRight', function () {
+    moveCursor('right');
+  });
+
+  gamepadManager.onGamepadButtonDown(['start', 'home', 'actionUp', 'actionDown', 'actionLeft', 'actionRight'], function () {
+    moveCursor('go');
+  });
+
+  gamepadManager.connectAllGamepads();
+  gamepadManager.start();
 });
 
 

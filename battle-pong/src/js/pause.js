@@ -22,9 +22,9 @@ function PauseManager (game, inputManager) {
     resumeGame();
   });
 
-  inputManager.waitForGamepadStartButtonPress(() => {
-    displayingRules ? resumeGame() : pauseGame();
-  });
+  // inputManager.waitForGamepadStartButtonPress(() => {
+  //   displayingRules ? resumeGame() : pauseGame();
+  // });
 
   function resumeGame(){
     document.querySelector(".pause-screen").classList.remove("visible");

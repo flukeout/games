@@ -5,7 +5,6 @@ var axisThreshold = 0.1;
 
 
 window.InputManager = function (onInputChanged) {
-  let gamepadStartButtonCallback;
   let maintainedObjects = [];
 
   let savedInputLabelToActionMappings = localStorage.getItem('inputLabelToActionMappings');
@@ -14,10 +13,6 @@ window.InputManager = function (onInputChanged) {
     keyboardInputLabelToActionMappings = savedInputLabelToActionMappings.keyboard;
     gamepadInputLabelToActionMapping = savedInputLabelToActionMappings.gamepad;
   }
-
-  this.waitForGamepadStartButtonPress = function (callbackFunction) {
-    gamepadStartButtonCallback = callbackFunction;
-  };
 
   this.setupInputForObject = function (object) {
     object.setInputComponent(this.getComponentForNextAvailableInput());
@@ -62,35 +57,6 @@ window.InputManager = function (onInputChanged) {
   setInterval(function () {
     checkForNewGamepads();
   }, 500);
-
-  let configsWhereStartButtonWasPressed = [];
-
-  (function gamepadStartButtonLoop() {
-    // Make sure gamepads are refreshed. If they aren't, we don't really know if this frame is aligned with gamepad inputs
-    GamepadManager.refreshGamepads();
-
-    // If one of the controllers was pushing the start button, see if it still is
-    configsWhereStartButtonWasPressed = configsWhereStartButtonWasPressed.filter(gamepadConfig => {
-      let startButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.start];
-      let homeButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.home];
-      return startButton.pressed || homeButton.pressed;
-    });
-
-    // If any of the controllers started pressing the start button, notify gamepadStartButtonCallback
-    GamepadManager.getConfigsInUse().forEach(gamepadConfig => {
-      let startButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.start];
-      let homeButton = gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons.home];
-
-      if (startButton.pressed || homeButton.pressed) {
-        if (configsWhereStartButtonWasPressed.indexOf(gamepadConfig) === -1) {
-          configsWhereStartButtonWasPressed.push(gamepadConfig);
-          gamepadStartButtonCallback && gamepadStartButtonCallback();
-        }
-      }
-    });
-
-    requestAnimationFrame(gamepadStartButtonLoop);
-  })();
 
   window.addEventListener("gamepadconnected", onGamepadConnected);
   window.addEventListener("gamepaddisconnected", (e) => {
@@ -155,6 +121,116 @@ window.KeyboardManager = (function() {
     }
   };
 })();
+
+InputManager.GamepadEventManager = function () {
+  let buttonCallbacks = {up: {}, down: {}};
+  let configs = [];
+
+  let buttonsDown = {};
+  let buttonsToCheck = [];
+
+  function gamepadCheckLoop() {
+    // Make sure gamepads are refreshed. If they aren't, we don't really know if this frame is aligned with gamepad inputs
+    GamepadManager.refreshGamepads();
+
+    let buttonsDownThisTime = {};
+    
+    configs.forEach(gamepadConfig => {
+      buttonsToCheck.forEach(button => {
+        if (gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons[button]].pressed) {
+          buttonsDownThisTime[button] = true;
+        }
+      });
+    });
+
+    buttonsToCheck.forEach(button => {
+      // Wasn't stored before, but was pressed now!
+      if (!buttonsDown[button] && buttonsDownThisTime[button]) {
+        buttonsDown[button] = Date.now() + 250;
+        setTimeout(() => sendButtonDownEvent(button), 10);
+      }
+      // STILL held down (wow)!
+      else if (buttonsDown[button] && buttonsDownThisTime[button]) {
+        let now = Date.now();
+        if (now > buttonsDown[button]) {
+          buttonsDown[button] = now + 50;
+          setTimeout(() => sendButtonDownEvent(button), 10);
+        }
+      }
+      // Let go
+      else if (buttonsDown[button] && !buttonsDownThisTime[button]) {
+        delete buttonsDown[button];
+        setTimeout(() => sendButtonUpEvent(button), 10);
+      }
+    });
+
+    requestAnimationFrame(gamepadCheckLoop);
+  }
+
+  function resetButtonsToCheck() {
+    let upButtonsToCheck = Object.keys(buttonCallbacks.up);
+    let downButtonsToCheck = Object.keys(buttonCallbacks.down);
+    buttonsToCheck = downButtonsToCheck.concat(upButtonsToCheck.filter(button => {
+      return downButtonsToCheck.indexOf(button) === -1;
+    }));
+  }
+
+  function sendButtonDownEvent(button) {
+    buttonCallbacks.down[button] && buttonCallbacks.down[button].forEach(f => f());
+  }
+
+  function sendButtonUpEvent(button) {
+    buttonCallbacks.up[button] && buttonCallbacks.up[button].forEach(f => f());
+  }
+
+  this.onGamepadButtonDown = function (button, callbackFunction) {
+    if (Array.isArray(button)) {
+      button.forEach(b => this.onGamepadButtonDown(b, callbackFunction));
+    }
+    else {
+      buttonCallbacks.down[button] = buttonCallbacks.down[button] || [];
+      buttonCallbacks.down[button].push(callbackFunction);
+      resetButtonsToCheck();
+    }
+  };
+
+  this.onGamepadButtonUp = function (button, callbackFunction) {
+    if (Array.isArray(button)) {
+      button.forEach(b => this.onGamepadButtonDown(b, callbackFunction));
+    }
+    else {
+      buttonCallbacks.up[button] = buttonCallbacks.up[button] || [];
+      buttonCallbacks.up[button].push(callbackFunction);
+      resetButtonsToCheck();
+    }
+  };
+
+  this.start = function () {
+    gamepadCheckLoop();
+
+    window.addEventListener("gamepadconnected", e => {
+      this.connectAllGamepads();
+    });
+    window.addEventListener("gamepaddisconnected", e => {
+      this.connectAllGamepads();
+    });
+
+  };
+
+  this.connectAllGamepads = function () {
+    let gamepads = GamepadManager.getGamepads();
+
+    if (configs.length) {
+      configs = [];
+    }
+
+    gamepads.forEach(gamepad => {
+      configs.push(GamepadManager.getConfigByIndex(gamepad.index));
+    });
+
+    console.log(configs);
+  };
+};
 
 window.GamepadManager = (function () {
   let gamepads;
