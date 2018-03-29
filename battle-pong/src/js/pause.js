@@ -22,20 +22,18 @@ function PauseManager (game, inputManager) {
     resumeGame();
   });
 
-  // inputManager.waitForGamepadStartButtonPress(() => {
-  //   displayingRules ? resumeGame() : pauseGame();
-  // });
-
   function resumeGame(){
     document.querySelector(".pause-screen").classList.remove("visible");
     displayingRules = false;
     game.resume();
+    deselectAllButtons();
   }
 
   function pauseGame(){
     document.querySelector(".pause-screen").classList.add("visible");
     game.pause();
     displayingRules = true;
+    selectButton(0);
   }
 
   function navigate(destination){
@@ -55,4 +53,6 @@ function PauseManager (game, inputManager) {
   function fadeOutScene(){
     document.querySelector("body").classList.add("fade-out");
   }
+
+  setupInputButtons();
 }

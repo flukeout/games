@@ -226,35 +226,12 @@
       }
     }
 
-    
     &.previous.selected, &.next.selected {
     background: rgba(255,255,255,.15);  
     }
 
     &.selected.start-game, &.selected.go-back {
       outline: solid 6px rgba(255,255,255,.15);
-
-    }
-
-    &.selected {
-      
-      &:after {
-        content: "";
-        position: absolute;
-        height: 50px;
-        width: 50px;
-        top: 35px;
-        left: calc(50% - 28px);
-        background-image: url(assets/emojis/hand-point-right.svg);
-        background-size: contain;
-        animation: pointer .5s ease-in-out infinite;
-      }
-      
-      @keyframes pointer {
-        50% {
-          transform: translateY(5px); 
-        }
-      }
     }
 
   }
@@ -656,4 +633,3 @@
     transform: rotate(360deg);
   }
 }
-

@@ -1,32 +1,60 @@
 .button {
-	color: white;
-	display: inline-block;
-	z-index: 6;
-	text-decoration: none;   
-	padding: 8px 20px;
-	transform: rotateX(10deg);
-	text-align: center;
-	font-size: 25px;
-	text-transform: uppercase;
-	cursor: pointer;
-	margin: 0 15px;
-	position: relative;
-	transition: transform .1s ease-out;
-	user-select: none;
-	
-	&:hover {
-		transform: scale(1.1);
-	}
+  color: white;
+  display: inline-block;
+  z-index: 6;
+  text-decoration: none;
+  padding: 8px 20px;
+  transform: rotateX(10deg);
+  text-align: center;
+  font-size: 25px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin: 0 15px;
+  position: relative;
+  transition: transform .1s ease-out;
+  user-select: none;
 
- 	&.pink-button {
-    	background: $pink; 
-  	}
+  &:hover {
+    transform: scale(1.1);
+  }
 
-  	&.green-button {
-    	background: $green;
-  	}
+  &.pink-button {
+    background: $pink; 
+  }
 
-  	.green-button, .pink-button {
-    	box-shadow: 6px 6px 0px rgba(0,0,0,.4);
-  	}
+  &.green-button {
+    background: $green;
+  }
+
+  .green-button, .pink-button {
+    box-shadow: 6px 6px 0px rgba(0,0,0,.4);
+  }
 }
+
+.gamepad-button {
+  position: relative;
+  
+  &.input-selected {
+      z-index: 9999;
+
+      &:after {
+        content: "";
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        bottom: -35px;
+        left: calc(50% - 28px);
+        background-image: url(assets/emojis/hand-point-right.svg);
+        background-size: contain;
+        animation: pointer .5s ease-in-out infinite;
+        z-index: 999999;
+      }
+      
+      @keyframes pointer {
+        50% {
+          transform: translateY(5px); 
+        }
+      }
+    }
+ }
+ 

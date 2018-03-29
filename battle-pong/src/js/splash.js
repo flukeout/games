@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
   document.querySelector(".splash").classList.add("appear");
 
+  setupInputButtons();
+  selectButton(0);
+
 });
 
 function loop(){

@@ -240,8 +240,6 @@ function bumpScreen(direction){
 // TODO - fix the timeout
 
 function addTemporaryClassName(element, className, durationMS){
-
-
   element.classList.remove(className);
   element.style.width = element.clientWidth;
   element.classList.add(className);
