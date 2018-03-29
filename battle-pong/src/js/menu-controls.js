@@ -82,8 +82,8 @@ function moveCursor(direction) {
   selectedButton.classList.add('input-selected');
 
   if (direction === 'go' && selectedButton) {
-    selectedButton.click();
     if(selectedButton) {
+      selectedButton.click();
       addTemporaryClassName(selectedButton, "poke", 250);
     }
   }
