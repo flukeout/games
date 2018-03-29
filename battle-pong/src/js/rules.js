@@ -22,9 +22,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelector(".button.previous").addEventListener("click",function(){
     previousRule();
+    addTemporaryClassName(this, "poke", 250);
   })
   
   document.querySelector(".button.next").addEventListener("click",function(){
+    addTemporaryClassName(this, "poke", 250);
     nextRule();
   })
 
@@ -127,7 +129,6 @@ const showPowerup = type => {
 
   // Show the proper video
   let video = document.querySelector("video." + type);
-  
 
   video.style.display = "block";
 
@@ -328,7 +329,6 @@ function timeoutClass(selector, className, timeout){
 
 
 function fadeOutScene(){
-
     timeoutClass(".rules-nav", "transition-out", 100)
     timeoutClass(".rules", "transition-out", 100)
     timeoutClass(".buttons", "transition-out", 100)
@@ -339,25 +339,21 @@ function fadeOutScene(){
 
 function setupNavButtons(){
   var buttons = document.querySelectorAll(".nav-button");
-  
   buttons.forEach(function(el){
-    
     el.addEventListener("click", function(e){
       let navTo = this.getAttribute("to");
-
+      addTemporaryClassName(this, "poke", 250);
       if(navTo === "game") {
         startGame();
       } else if(navTo === "splash"){
         goBack();
       }
-      
-      
     })
   });
 }
 
 function goBack(){
-  let url = "splash.html";
+  let url = "index.html";
   fadeOutScene();
   if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
     url = "../" + url;
@@ -370,7 +366,7 @@ function goBack(){
 
 
 function startGame(){
-  let url = "index.html";
+  let url = "game.html";
   fadeOutScene();
   if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
     url = "../" + url;
@@ -393,7 +389,6 @@ function addTemporaryClassName(element, className, durationMS){
   element.classList.remove(className);
   element.classList.add(className);
   setTimeout(function(){
-    
     element.classList.remove(className);
   }, durationMS || 1000);
 }

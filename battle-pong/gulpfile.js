@@ -45,14 +45,14 @@ const splashJSFiles = [
 ].map(file => { return './src/js/' + file });
 
 gulp.task('html', () => {
-  gulp.src('splash.html')
+  gulp.src('index.html')
     .pipe(replace(/<base href=".+">/g, ''))
     .pipe(replace(/<script src="js\/.+"><\/script>.*/g,''))
     .pipe(replace(/<!-- insert minified source here -->/g,'<script src="matter.min.js"></script><script src="splash.min.js"></script>'))
     .pipe(plumber())
     .pipe(gulp.dest('./build/'))
 
-  gulp.src('index.html')
+  gulp.src('game.html')
     .pipe(replace(/<base href=".+">/g, ''))
     .pipe(replace(/<script src="js\/.+"><\/script>.*/g,''))
     .pipe(replace(/<!-- insert minified source here -->/g,'<script src="matter.min.js"></script><script src="deathstroid.min.js"></script>'))
