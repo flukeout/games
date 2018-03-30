@@ -45,47 +45,11 @@ const setupInputButtons = defaultButtonNum => {
 
 function moveCursor(direction) {
 
-  
-
   if(!selectedButton) {
     return;
   }
 
- 
-
-  // if (direction === 'right') {
-  //   selectedIndex++;
-  //   if(selectedIndex >= buttons.length) {
-  //     selectedIndex = 0;
-  //   }
-  //   deselectAllButtons();
-  // }
-
   findButton(selectedButton, direction);
-//   if (direction === 'down') {
-//     findButton(selectedButton, 'down');
-//   }
-
-//   if (direction === 'up') {
-//     findButton(selectedButton, 'up');
-//   }
-
-// if (direction === 'left') {
-//     findButton(selectedButton, 'left');
-//   }
-
-  // if (direction === 'left') {
-  //   selectedIndex--;
-  //   if(selectedIndex < 0) {
-  //     selectedIndex = buttons.length - 1;
-  //   }
-  //   deselectAllButtons();
-  // }
-
-  
-
-  selectedButton = buttons[selectedIndex];
-  selectedButton.classList.add('input-selected');
 
   if (direction === 'go' && selectedButton) {
     if(selectedButton) {
@@ -95,6 +59,7 @@ function moveCursor(direction) {
   }
 }
 
+// Returns the center coordinates of a button
 const getCenter = el => {
   let rect = el.getBoundingClientRect();
   return {
@@ -103,6 +68,8 @@ const getCenter = el => {
   }
 }
 
+// Returns an array of possible buttons that are in the desired
+// direction from the base button.
 const getOptions = (baseCenter, buttons, direction) => {
   let options = [];
 
@@ -145,9 +112,7 @@ const getOptions = (baseCenter, buttons, direction) => {
   return options;
 }
 
-let lowestY;
-let highestY;
-
+// Selects a button closest to thisButton for a given Direction
 const findButton = (thisButton, direction) => {
 
   let thisCenter = getCenter(thisButton);
@@ -189,7 +154,6 @@ const selectButton = num => {
 }
 
 const deselectAllButtons = () => {
-  
   buttons.forEach(button => {
     button.classList.remove('input-selected');
   });
