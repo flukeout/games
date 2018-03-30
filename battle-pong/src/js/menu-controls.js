@@ -62,7 +62,6 @@ function moveCursor(direction) {
   if (direction === 'go' && selectedButton) {
     if(selectedButton) {
       selectedButton.click();
-      addTemporaryClassName(selectedButton, "poke", 250);
     }
   }
 }
@@ -80,9 +79,9 @@ const getCenter = el => {
 // direction from the base button. And at least a range of of
 // maximum value on the opposite axis.
 // Also returns these buttons along with a distance from the current button.
-const getOptions = (baseCenter, buttons, direction) => {
+const getOptions = (baseCenter, buttons, direction, axisRange) => {
   let options = [];
-  let maxOppositeAxisRange = 75;
+  let maxOppositeAxisRange = axisRange || 75;
 
   buttons.forEach(button => {
     let center = getCenter(button);
@@ -127,9 +126,17 @@ const getOptions = (baseCenter, buttons, direction) => {
 const selectButtonByDirection = (thisButton, direction) => {
 
   let thisButtonCenter = getCenter(thisButton);
-  let options = getOptions(thisButtonCenter, buttons, direction);
+  let options = [];
+  
+  let maxRange = 200;
+  let range = 75;
 
-  if(options.length == 0) {
+  while(options.length === 0 && range < maxRange) {
+    options = getOptions(thisButtonCenter, buttons, direction, range);
+    range = range + 25;
+  }
+
+  if(options.length === 0) {
     return;
   }
 

@@ -160,17 +160,18 @@
     z-index: 99;
     position: absolute;
     width: 100vw;
-    
-    
+
     a {
       color: white;
       margin: 0 20px;
       font-size: 30px;
       text-decoration: none;
-      opacity: .4;
+
+      color: rgba(255,255,255,.4);
+      display: inline-block;
       
       &.selected {
-        opacity: 1;
+        color: white;
         border-bottom: solid 4px white;
         padding-bottom: 8px;
       }
@@ -212,19 +213,6 @@
     position: relative;
     transition: transform .1s ease-out;
     user-select: none;
-    
-    &.poke {
-      animation: buttonPress .2s ease-out;
-      
-      @keyframes buttonPress {
-        0% {
-          transform: scale(1);
-        }
-        40% {
-          transform: scale(.9);
-        }
-      }
-    }
 
     &.previous.selected, &.next.selected {
     background: rgba(255,255,255,.15);  

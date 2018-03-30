@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el.addEventListener("click",function(e){
       let type = this.getAttribute("nav");
       showRule(type);
+      addTemporaryClassName(e.target, "poke", 250);
       e.preventDefault();
     })
   });
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   nextStep();
   setupInputButtons();
-  selectButtonByIndex(3);
+  selectButtonByIndex(12);
 });
 
 
