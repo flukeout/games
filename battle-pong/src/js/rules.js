@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   nextStep();
   setupInputButtons();
-  selectButton(3);
+  selectButtonByIndex(3);
 });
 
 

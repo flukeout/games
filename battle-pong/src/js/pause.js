@@ -33,7 +33,7 @@ function PauseManager (game, inputManager) {
     document.querySelector(".pause-screen").classList.add("visible");
     game.pause();
     displayingRules = true;
-    selectButton(0);
+    selectButtonByIndex(0);
   }
 
   function navigate(destination){

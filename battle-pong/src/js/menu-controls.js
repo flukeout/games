@@ -23,6 +23,14 @@ const setupInputButtons = defaultButtonNum => {
     moveCursor('right');
   });
 
+  gamepadManager.onGamepadButtonDown('dPadDown', function () {
+    moveCursor('down');
+  });
+
+  gamepadManager.onGamepadButtonDown('dPadUp', function () {
+    moveCursor('up');
+  });
+
   gamepadManager.onGamepadButtonDown(['start', 'home', 'actionUp', 'actionDown', 'actionLeft', 'actionRight'], function () {
     moveCursor('go');
   });
@@ -49,7 +57,7 @@ function moveCursor(direction) {
     return;
   }
 
-  findButton(selectedButton, direction);
+  selectButtonByDirection(selectedButton, direction);
 
   if (direction === 'go' && selectedButton) {
     if(selectedButton) {
@@ -69,9 +77,12 @@ const getCenter = el => {
 }
 
 // Returns an array of possible buttons that are in the desired
-// direction from the base button.
+// direction from the base button. And at least a range of of
+// maximum value on the opposite axis.
+// Also returns these buttons along with a distance from the current button.
 const getOptions = (baseCenter, buttons, direction) => {
   let options = [];
+  let maxOppositeAxisRange = 75;
 
   buttons.forEach(button => {
     let center = getCenter(button);
@@ -79,25 +90,25 @@ const getOptions = (baseCenter, buttons, direction) => {
 
     if(direction === "down" 
         && center.y > baseCenter.y
-        && Math.abs(center.x - baseCenter.x) < 75) {
+        && Math.abs(center.x - baseCenter.x) < maxOppositeAxisRange) {
       conditionMet = true;
     }
 
     if(direction === "up" 
         && center.y < baseCenter.y
-        && Math.abs(center.x - baseCenter.x) < 75) {
+        && Math.abs(center.x - baseCenter.x) < maxOppositeAxisRange) {
       conditionMet = true;
     }
 
     if(direction === "left" 
         && center.x < baseCenter.x
-        && Math.abs(center.y - baseCenter.y) < 75) {
+        && Math.abs(center.y - baseCenter.y) < maxOppositeAxisRange) {
       conditionMet = true;
     }
 
     if(direction === "right" 
         && center.x > baseCenter.x
-        && Math.abs(center.y - baseCenter.y) < 75) {
+        && Math.abs(center.y - baseCenter.y) < maxOppositeAxisRange) {
       conditionMet = true;
     }
     
@@ -113,10 +124,10 @@ const getOptions = (baseCenter, buttons, direction) => {
 }
 
 // Selects a button closest to thisButton for a given Direction
-const findButton = (thisButton, direction) => {
+const selectButtonByDirection = (thisButton, direction) => {
 
-  let thisCenter = getCenter(thisButton);
-  let options = getOptions(thisCenter, buttons, direction);
+  let thisButtonCenter = getCenter(thisButton);
+  let options = getOptions(thisButtonCenter, buttons, direction);
 
   if(options.length == 0) {
     return;
@@ -124,7 +135,9 @@ const findButton = (thisButton, direction) => {
 
   let minDistance = false;
   let closestButton;
-
+  
+  // Finds the closets button in absolute terms
+  // from the range of possible buttons.  
   options.forEach(option => {
     if(!minDistance){
       minDistance = option.delta;
@@ -139,7 +152,6 @@ const findButton = (thisButton, direction) => {
   selectButtonEl(closestButton);
 }
 
-
 const selectButtonEl = el => {
   deselectAllButtons();
   selectedIndex = buttons.indexOf(el);
@@ -147,7 +159,8 @@ const selectButtonEl = el => {
   el.classList.add('input-selected');
 }
 
-const selectButton = num => {
+const selectButtonByIndex = num => {
+  deselectAllButtons();
   selectedIndex = num || 0;
   selectedButton = buttons[num];
   selectedButton.classList.add('input-selected');

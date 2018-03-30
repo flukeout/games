@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelector(".splash").classList.add("appear");
 
   setupInputButtons();
-  selectButton(0);
+  selectButtonByIndex(0);
 
 });
 
