@@ -502,9 +502,6 @@ var game =  {
 
     this.bodyEl.classList.add("winner-screen");
 
-    this.scoreOneEl.classList.remove("on");
-    this.scoreTwoEl.classList.remove("on");
-
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");
 
@@ -557,6 +554,9 @@ var game =  {
 
     this.paddles[0].maxX = false;
     this.paddles[1].minX = false;
+
+    this.goalOneEl.classList.remove("on");
+    this.goalTwoEl.classList.remove("on");
 
     if(ball) {
       if(ball.physics.speed > ball.wordSpeed) {
