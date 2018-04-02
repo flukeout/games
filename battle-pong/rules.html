@@ -11,10 +11,11 @@
     <script src="js/canvas-stars.js"></script>
     <script src="js/music.js"></script>
     <script src="js/sounds.js"></script>
-    <script src="js/rules.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/input-mappings.js"></script>
     <script src="js/input.js"></script>
+    <script src="js/menu-controls.js"></script>
+    <script src="js/rules.js"></script>
     <!-- insert minified source here -->
   </head>
 
@@ -28,9 +29,9 @@
     </div>
 
     <div class="rules-nav">
-      <a nav="rules" href="#">RULES</a>
-      <a nav="powerups" href="#">POWERUPS</a>
-      <a nav="controls" href="#">CONTROLS</a>
+      <a class="gamepad-button" nav="rules" href="#">RULES</a>
+      <a class="gamepad-button" nav="powerups" href="#">POWERUPS</a>
+      <a class="gamepad-button" nav="controls" href="#">CONTROLS</a>
     </div>
 
     <div class="rules">
@@ -64,12 +65,12 @@
         <div class="powerups">
           
           <div class="powerup-row">
-            <div type="grow" class="icon grow"></div>
-            <div type="spin" class="icon spin"></div>
-            <div type="bones" class="icon clone"></div>
-            <div type="sticky" class="icon magnet"></div>
-            <div type="ghost" class="icon noclip"></div>
-            <div type="mine" class="icon mine"></div>
+            <div type="grow"    class="gamepad-button icon grow"></div>
+            <div type="spin"    class="gamepad-button icon spin"></div>
+            <div type="bones"   class="gamepad-button icon clone"></div>
+            <div type="sticky"  class="gamepad-button icon magnet"></div>
+            <div type="ghost"   class="gamepad-button icon noclip"></div>
+            <div type="mine"    class="gamepad-button icon mine"></div>
           </div>
 
           <div class="powerup-explanation">
@@ -100,11 +101,10 @@
     </div>
 
     <div class="buttons">
-      <div class="button previous">&larr; Previous</div>
-      <div to="splash" class="button nav-button go-back green-button">HOME</div>
-      <div to="game" class="button nav-button start-game pink-button">PLAY</div>
-      
-      <div class="button next">Next &rarr;</div>
+      <div to="splash" class="gamepad-button button nav-button go-back green-button">HOME</div>
+      <div to="game" class="gamepad-button button nav-button start-game pink-button">PLAY</div>
+      <div class="gamepad-button button previous">&larr; Previous</div>
+      <div class="gamepad-button button next">Next &rarr;</div>
     </div>
     </div>
   </body>

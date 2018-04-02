@@ -160,17 +160,18 @@
     z-index: 99;
     position: absolute;
     width: 100vw;
-    
-    
+
     a {
       color: white;
       margin: 0 20px;
       font-size: 30px;
       text-decoration: none;
-      opacity: .4;
+
+      color: rgba(255,255,255,.4);
+      display: inline-block;
       
       &.selected {
-        opacity: 1;
+        color: white;
         border-bottom: solid 4px white;
         padding-bottom: 8px;
       }
@@ -212,49 +213,13 @@
     position: relative;
     transition: transform .1s ease-out;
     user-select: none;
-    
-    &.poke {
-      animation: buttonPress .2s ease-out;
-      
-      @keyframes buttonPress {
-        0% {
-          transform: scale(1);
-        }
-        40% {
-          transform: scale(.9);
-        }
-      }
-    }
 
-    
     &.previous.selected, &.next.selected {
     background: rgba(255,255,255,.15);  
     }
 
     &.selected.start-game, &.selected.go-back {
       outline: solid 6px rgba(255,255,255,.15);
-
-    }
-
-    &.selected {
-      
-      &:after {
-        content: "";
-        position: absolute;
-        height: 50px;
-        width: 50px;
-        top: 35px;
-        left: calc(50% - 28px);
-        background-image: url(assets/emojis/hand-point-right.svg);
-        background-size: contain;
-        animation: pointer .5s ease-in-out infinite;
-      }
-      
-      @keyframes pointer {
-        50% {
-          transform: translateY(5px); 
-        }
-      }
     }
 
   }
@@ -656,4 +621,3 @@
     transform: rotate(360deg);
   }
 }
-

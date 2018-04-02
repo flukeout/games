@@ -4,7 +4,7 @@ function initEffects() {
 
 // Flashes board border when a powerup scores
 // and adds some little particles
-function powerupScored(x, y, type){
+function powerupScored(x, y, type) {
 
   for(var i = 0; i < 4; i++) {
     var options = {
@@ -172,67 +172,38 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
 // * Loop over the percentages and generate the values?
 // * Then we can add more steps
 function shakeScreen(){
+  let tD = 40;  // Max translate delta
+  let rD = 2;   // Max rotate delta 
+  let keyframes = [];
 
-  var styleTag = document.createElement("style");
-  document.head.appendChild(styleTag);
-
-  styleTag.innerHTML = `
-    @keyframes shake-one {
-      0% {
-        transform: translateX(`+ getRandom(-20,-10)+ `px) translateY(`+ getRandom(-20,-10)+ `px);
-      }
-      25% {
-        transform: translateX(`+ getRandom(10,15)+ `px) translateY(`+ getRandom(10,15)+ `px) rotate(`+getRandom(1,4)+`deg);
-      }
-      50% {
-        transform: translateX(`+ getRandom(-10,-5)+ `px) translateY(`+ getRandom(-10,-5)+ `px);
-      }
-      75% {
-        transform: translateX(`+ getRandom(5,10)+ `px) translateY(`+ getRandom(5,10)+ `px) rotate(`+getRandom(-1,-3)+`deg);
-      }
-    }`;
-
-  document.querySelector(".shake-wrapper").style.animation = "shake-one .2s ease-out";
-
-  setTimeout(function(styleTag,shakeEl) {
-    return function(){
-      styleTag.remove();
-      document.querySelector(".shake-wrapper").style.animation = "";
-    };
-  }(styleTag),250);
-
-}
-
-
-function bumpScreen(direction){
-
-  var styleTag = document.createElement("style");
-  document.head.appendChild(styleTag);
-
-  var distance = -5;
-  if(direction == "down") {
-    distance = 5;
+  let options = {
+    duration: 300,
+    easing: "ease-out"
   }
 
-  styleTag.innerHTML = `
-    @keyframes shake-one {
-      30% {
-        transform: translateY(`+ distance + `px);
-        transition-timing-function: ease-out;
-      }
-    }`;
+  let direction = Math.random() >= .5 ? 1 : -1;
 
-  document.querySelector(".shake-wrapper").style.transitionTimingFunction = "ease-out";
-  document.querySelector(".shake-wrapper").style.animation = "shake-one .2s ease-out";
+  // translateY(${ xD * getRandom(.5 * tran, tran) }px)
+  // rotate(${ xD * getRandom(0,rot) }deg)
 
-  setTimeout(function(styleTag,shakeEl) {
-    return function(){
-      styleTag.remove();
-      document.querySelector(".shake-wrapper").style.animation = "";
-    };
-  }(styleTag),250);
+  for(var i = 0; i < 4; i++){
+    let frame = {
+      transform: `
+        translateX(${ direction * getRandom(.5 * tD, tD) }px)
+        rotate(${ direction * getRandom(.5 * rD, rD) }deg)`
+    }
+    direction = direction * -1;
+    tD = tD * .75;
+    tD = rD * .75;
+    keyframes.push(frame);
+  }
 
+  // Final untransformed keyframe.
+  keyframes.push({ transform: "rotate(0) translateX(0) translateY(0)" });
+
+  document.querySelector(".shake-wrapper").animate(keyframes, options);
 }
+
 
 // Used to add animations by applying a class, then removing it
 // If this happens in rapid succession (less than 1000ms apart,
@@ -240,8 +211,6 @@ function bumpScreen(direction){
 // TODO - fix the timeout
 
 function addTemporaryClassName(element, className, durationMS){
-
-
   element.classList.remove(className);
   element.style.width = element.clientWidth;
   element.classList.add(className);

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el.addEventListener("click",function(e){
       let type = this.getAttribute("nav");
       showRule(type);
+      addTemporaryClassName(e.target, "poke", 250);
       e.preventDefault();
     })
   });
@@ -30,75 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
     nextRule();
   })
 
-  let buttons = Array.prototype.slice.call(document.querySelectorAll('.buttons .button'));
-  buttons.forEach(button => {
-    button.onmouseover = e => {
-      buttons.forEach(otherButton => {
-        otherButton.classList.remove('selected');
-      });
-    };
-  });
-
-  let selectedButton = buttons[3];
-  selectedButton.classList.add('selected');
-
-  function moveCursor(direction) {
-    let previouslySelectedButton = selectedButton;
-    if (direction === 'right') {
-      if (!selectedButton) {
-        selectedButton = buttons[0];
-      }
-      else {
-        selectedButton = buttons[(buttons.indexOf(selectedButton) + 1) % buttons.length];
-      }
-
-      if (previouslySelectedButton) {
-        previouslySelectedButton.classList.remove('selected');
-      }
-      selectedButton.classList.add('selected');
-    }
-    else if (direction === 'left') {
-      if (!selectedButton) {
-        selectedButton = buttons[buttons.length-1];
-      }
-      else {
-        let newIndex = buttons.indexOf(selectedButton) - 1;
-        if (newIndex < 0) newIndex = buttons.length - 1;
-        selectedButton = buttons[newIndex];
-      }
-
-      if (previouslySelectedButton) {
-        previouslySelectedButton.classList.remove('selected');
-      }
-      selectedButton.classList.add('selected');
-    }
-    else if (direction === 'go') {
-      if (selectedButton.classList.contains('previous')) {
-        previousRule();
-      }
-      else if (selectedButton.classList.contains('next')) {
-        nextRule();
-      }
-      else if (selectedButton.classList.contains('start-game')) {
-        startGame();
-      }
-      else if (selectedButton.classList.contains('go-back')) {
-        goBack();
-      }
-      addTemporaryClassName(selectedButton, "poke", 250);
-    }
-  }
-
-  window.addEventListener("keydown", function(e){
-    let map = {
-      ArrowRight: 'right',
-      ArrowLeft: 'left',
-      Enter: 'go',
-    };
-
-    map[e.key] && moveCursor(map[e.key]);
-  });
-  
   numRules = ruleEls.length;
 
   powerupEls = document.querySelectorAll(".powerup-row .icon");
@@ -117,23 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
   showRule(currentRule);
 
   nextStep();
-
-  let gamepadManager = new InputManager.GamepadEventManager();
-
-  gamepadManager.onGamepadButtonDown('dPadLeft', function () {
-    moveCursor('left');
-  });
-
-  gamepadManager.onGamepadButtonDown('dPadRight', function () {
-    moveCursor('right');
-  });
-
-  gamepadManager.onGamepadButtonDown(['start', 'home', 'actionUp', 'actionDown', 'actionLeft', 'actionRight'], function () {
-    moveCursor('go');
-  });
-
-  gamepadManager.connectAllGamepads();
-  gamepadManager.start();
+  setupInputButtons();
+  selectButtonByIndex(12);
 });
 
 

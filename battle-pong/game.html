@@ -14,9 +14,6 @@
     <script src="js/particles.js"></script>    <!-- particle engine -->
     <script src="js/effects.js"></script>      <!-- effects like the explosions -->
     <script src="js/canvas-stars.js"></script>
-    
-    <script src="js/pause.js"></script>
-    
     <script src="js/ai.js"></script>
     <script src="js/title.js"></script>        <!-- animates browser tab -->
     <script src="js/sounds.js"></script>       <!-- handles loading & playing sounds -->
@@ -24,6 +21,8 @@
     <script src="js/music.js"></script>
     <script src="js/input-mappings.js"></script>
     <script src="js/input.js"></script>        <!-- keyboard and joystick controls -->
+    <script src="js/menu-controls.js"></script>
+    <script src="js/pause.js"></script>
     <script src="js/game.js"></script>         <!-- main game loop -->
     <script src="js/collisions.js"></script>   <!-- handles collisions -->
     <script src="js/convert.js"></script>      <!-- Get DOM elements properties for the engine -->
@@ -31,8 +30,6 @@
     <script src="js/paddle.js"></script>       <!-- the paddles -->
     <script src="js/ball.js"></script>         <!-- the ball -->
     <script src="js/reactions.js"></script>
-    <script src="js/intro.js"></script>
-    <script src="js/menu.js"></script>
     <script src="js/framerate.js"></script>
     <script src="js/start.js"></script>        <!-- fires everything up -->
   </head>
@@ -127,16 +124,15 @@
           <h3>You are getting...</h3>
           <h1>DEATHSTROID</h1>
           
-          <div nav="index" class="button pink-button">HOME</div>
-          <div nav="rules" class="button pink-button">RULES</div>
-          <div class="resume button green-button">RESUME</div>
+          <div nav="index" class="gamepad-button button pink-button">HOME</div>
+          <div nav="rules" class="gamepad-button button pink-button">RULES</div>
+          <div class="gamepad-button resume button green-button">RESUME</div>
 
           <div class="score-wrapper">
             <h2 class="controls-title">CONTROLS</h2>
             <div class="input" data-player="1"><div class="help"></div></div>
             <div class="input" data-player="2"><div class="help"></div></div>
           </div>
-
         </div>
       </div>
     </div>

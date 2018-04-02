@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
   document.querySelector(".splash").classList.add("appear");
 
+  setupInputButtons();
+  selectButtonByIndex(0);
+
 });
 
 function loop(){
@@ -48,7 +51,7 @@ function setupPlayerOptionss(els){
   els.forEach(function(el){
     el.addEventListener("click",function(el){
       var playerNum = this.getAttribute("player");
-      addTemporaryClassName(this, "pop", 500); 
+      addTemporaryClassName(this, "poke", 250); 
       SoundManager.playSound("ui");
       var key = "player" + playerNum + "Control";
       var currentSetting = window.Settings[key];
@@ -112,9 +115,6 @@ function setupStartButton(){
   var button = document.querySelector(".start-game");
   
   button.addEventListener("click", function(e){
-    
-    // Apply transitions one at a time, the number is a delay from the last time it was called
-    // so it's cumulative...
     var button = e.target;
     var buttonPosition = button.getBoundingClientRect();
 
@@ -122,7 +122,7 @@ function setupStartButton(){
       x : buttonPosition.x,
       y : buttonPosition.y,
       zR : getRandom(-8,8),
-      xRv : getRandom(12,20),    
+      xRv : getRandom(12,20),
       yV : 7,
       zV : -40,
       xV : getRandom(-5,5),
@@ -154,14 +154,10 @@ function setupStartButton(){
 
 function setupRulesButton(){
   var button = document.querySelector(".rules-button");
+  
   button.addEventListener("click", function(e){
-    
-    // Apply transitions one at a time, the number is a delay from the last time it was called
-    // so it's cumulative...
-
+    addTemporaryClassName(e.target, "poke", 250);
     fadeOutScene();
-    
-    e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
@@ -181,7 +177,7 @@ function setupToggles(els){
       var toggle = this.parentNode;
       var toggleType = toggle.getAttribute("data-type");
       var settingEnabled = window.Settings[toggleType];
-      addTemporaryClassName(this, "pop", 500);
+      addTemporaryClassName(this, "pokoe", 250);
       if(settingEnabled) {
         saveSetting(toggleType, false);
       } else {
@@ -218,7 +214,7 @@ function setupPowerups(els){
       } else {
         powerupToggle(powerupType, "enable");
       }
-      addTemporaryClassName(this, "pop", 500);
+      addTemporaryClassName(this, "poke", 250);
       updatePowerups(els);
       SoundManager.playSound("ui");
     });
@@ -259,7 +255,7 @@ function updatePowerups(els){
 function setupBestOf(){
   bestOfEls.forEach(function(option){
     option.addEventListener("click",function(){
-      addTemporaryClassName(option, "pop", 500);
+      addTemporaryClassName(option, "poke", 250);
       var value = parseInt(this.getAttribute("data-value"));
       saveSetting("playTo", value);
       updateBestOf();

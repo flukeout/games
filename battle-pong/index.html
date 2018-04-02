@@ -11,8 +11,11 @@
     <script src="js/canvas-stars.js"></script>
     <script src="js/music.js"></script>
     <script src="js/sounds.js"></script>
-    <script src="js/splash.js"></script>
     <script src="js/particles.js"></script>
+    <script src="js/input-mappings.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/menu-controls.js"></script>
+    <script src="js/splash.js"></script>
     <!-- insert minified source here -->
   </head>
 
@@ -22,7 +25,7 @@
       <div class="jet jet-left"></div>
       <div class="jet jet-right"></div>
       <div class="guy"></div>
-    </div>      
+    </div>
 
     <div class="scene">
       <div class="sky"></div>
@@ -45,33 +48,33 @@
         
         <div class="option-group best-of" data-bestof>
           <span class="label">Best of</span>
-          <span data-value="2" class="option value">3</span>
-          <span data-value="3" class="option value">5</span>
-          <span data-value="4" class="option value">7</span>
+          <span data-value="2" class="gamepad-button option value">3</span>
+          <span data-value="3" class="gamepad-button option value">5</span>
+          <span data-value="4" class="gamepad-button option value">7</span>
         </div>
 
         <div class="powerups">
-          <div class="powerup option" data-powerup="grow">
+          <div class="gamepad-button powerup option" data-powerup="grow">
             <div class="icon"></div>
             <span class="name">GROW</span>
           </div>
-          <div class="powerup option" data-powerup="noclip">
+          <div class="gamepad-button powerup option" data-powerup="noclip">
             <div class="icon"></div>
             <span class="name">NOCLIP</span>
           </div>
-          <div class="powerup option" data-powerup="spin">
+          <div class="gamepad-button powerup option" data-powerup="spin">
             <div class="icon"></div>
             <span class="name">WALL-SPIN</span>
           </div>
-          <div class="powerup option" data-powerup="clone">
+          <div class="gamepad-button powerup option" data-powerup="clone">
             <div class="icon"></div>
             <span class="name">BONES</span>
           </div>
-          <div class="powerup option" data-powerup="magnet">
+          <div class="gamepad-button powerup option" data-powerup="magnet">
             <div class="icon"></div>
             <span class="name">STICKY</span>
           </div>
-          <div class="powerup option" data-powerup="mine">
+          <div class="gamepad-button powerup option" data-powerup="mine">
             <div class="icon"></div>
             <span class="name">MINES</span>
           </div>
@@ -79,19 +82,19 @@
 
         <div>
           <div class="option option-toggle" data-type="sounds">
-            Sounds <span class="value"></span>
+            Sounds <span class="gamepad-button value"></span>
           </div>
           <div class="option option-toggle" data-type="music">
-            Music <span class="value"></span>
+            Music <span class="gamepad-button value"></span>
           </div>
         </div>
 
         <div class="player-options">
-          <div class="player-one player-option" player="1">
+          <div class="gamepad-button player-one player-option" player="1">
             <span class="label">P1</span>
           </div>
           <div class="vs">VS</div>
-          <div class="player-two player-option" player="2">
+          <div class="gamepad-button player-two player-option" player="2">
             <span class="label">CPU</span>
           </div>
         </div>
@@ -99,8 +102,8 @@
       </div>
 
       <div class="buttons">
-        <div class="button rules-button">RULES!</div>
-        <div class="button start-game">START!</div>
+        <div class="gamepad-button button rules-button">RULES!</div>
+        <div class="gamepad-button button start-game">START!</div>
         
       </div>
 
