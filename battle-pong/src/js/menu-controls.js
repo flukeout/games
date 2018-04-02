@@ -32,7 +32,6 @@ const setupInputButtons = (rulesManager) => {
   });
 
   gamepadManager.onGamepadButtonDown(['start', 'home'], function () {
-    console.log('whyyyy');
     if (rulesManager) {
       rulesManager.toggleRules();
     }
