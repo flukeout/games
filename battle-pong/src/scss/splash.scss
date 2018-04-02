@@ -188,6 +188,7 @@
   }
 
   .credits {
+    display: none;
     position: absolute;
     bottom: 0px;
     width: 100vw;
@@ -208,6 +209,37 @@
     &.transition-out {
       transform: rotateX(140deg);
     }
+
+    &.show {
+      display: block;
+    }
+
+    .credit {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      padding: 20px 0;
+
+      &.before-show {
+        left: -100vw;
+      }
+
+      &.show {
+        left: 0;
+      }
+
+      &.after-show {
+        left: 100vw;
+      }
+
+      .name {
+        color: rgba(255,255,255,.6);
+      }
+
+      transition: left .5s;
+    }
+
+    height: 1em;
   }
 
   .content {
