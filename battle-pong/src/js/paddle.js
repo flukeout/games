@@ -15,7 +15,7 @@ const paddleActions = paddleKeyboardActions.concat(paddleGamepadActions);
 
 // Tweak these three
 const frictionAir = .2;  // .01
-const maxForce = 0.01;   // .004
+const maxForce = 0.016;   // .004
 const spinSpeed = .2; // .2
 const maxSpinVelocity = 2.7;
 const dashVelocityMaximum = 450;
@@ -230,7 +230,7 @@ const updateFunctions = {
       let angularVelocity = spinDirection * spinVelocity;
       
       if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
+        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);
       }
   
       paddle.spin(angularVelocity);
@@ -250,14 +250,16 @@ const updateFunctions = {
     }
   },
   analogSpin: function (paddle) {
+
+    let dominantAngle = Math.abs(paddle.actions.spinX) >
+                        Math.abs(paddle.actions.spinY) ? "X" : "Y";
+
     // Only activate this if there's a real desire to do so :)
-    if (Math.abs(paddle.actions.spinX) > 0.2) {
-      let angularVelocity = spinVelocity * paddle.actions.spinX;
+    if (Math.abs(paddle.actions.spinX) > 0.4 && dominantAngle == "X") {
       
-      if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, dashVelocityMaximum, .5, 1);  
-      }
-  
+      let modifier = paddle.actions.spinX > 0 ? 1 : -1;
+      let angularVelocity = spinVelocity * modifier;
+        
       paddle.spin(angularVelocity);
 
       if(angularVelocity >= 0) {
@@ -268,13 +270,12 @@ const updateFunctions = {
         paddle.targetAngle = (Math.floor(paddle.physics.angle / HALF_PI) * HALF_PI);
       }
     }
-    else if (Math.abs(paddle.actions.spinY) > 0.2) {
-      let angularVelocity = spinVelocity * -paddle.actions.spinY * paddle.analogSpinDirection;
-      
-      if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, dashVelocityMaximum, .5, 1);  
-      }
-  
+    
+    if (Math.abs(paddle.actions.spinY) > 0.4 && dominantAngle == "Y") {
+
+      let modifier = paddle.actions.spinY > 0 ? -1 : 1;
+      let angularVelocity = spinVelocity * modifier;
+
       paddle.spin(angularVelocity);
 
       if(angularVelocity >= 0) {

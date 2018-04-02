@@ -528,6 +528,7 @@ function createBall(options){
 
           // We want to make sure that the paddle is rotating before
           // we allow firing the gun.
+
           var hitPaddleObj = game.paddles[this.lastTouchedPaddle - 1];
           if(hitPaddleObj.physics.angularSpeed < .04) {
             return;

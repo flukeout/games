@@ -49,7 +49,7 @@ var game =  {
     this.bodyEl = document.querySelector("body");
     this.surfaceOverlayEl = document.querySelector(".surface .overlay");
 
-    this.messageEl = document.querySelector(".score-display");
+    this.messageEl = document.querySelector(".top-message");
 
     this.spinWallEls = document.querySelectorAll(".spin-wall");
 
@@ -62,6 +62,14 @@ var game =  {
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", e => {
       var scoringPlayer = e.detail.side == "left" ? 2 : 1;
+      var scoredBy = e.detail.lastTouchedPaddle || 0;
+
+      if(e.detail.side === "right" && scoredBy === 2) {
+        return;
+      }
+      if(e.detail.side === "left" && scoredBy === 1) {
+        return;
+      }
       this.playerScored(scoringPlayer, e.detail.ball);
     });
 
@@ -86,7 +94,7 @@ var game =  {
       if(this.activeSpinPowerups === 0) {
         this.spinWallEls.forEach(function(el){
           el.style.display = "none";
-        });        
+        });
       }
     }
   },
@@ -94,7 +102,6 @@ var game =  {
 
   // Lets the game know someone got a powerup
   gotPowerup: function(player, type){
-    console.log("got", player, type);
     if(type === "spin") {
       this.activeSpinPowerups++;
       this.spinWallEls.forEach(function(el){
