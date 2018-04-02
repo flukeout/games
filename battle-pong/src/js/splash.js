@@ -281,8 +281,7 @@ function prepTitle(){
   var titleEl = document.querySelector(".game-title .actual-title")
   var titleString = titleEl.innerText;
   titleEl.innerText = "";
-  
-  console.log(titleString);
+
   var animationDelay = .1;
 
   for(var i = 0; i < titleString.length; i++) {

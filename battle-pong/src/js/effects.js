@@ -1,3 +1,13 @@
+let effectsElements = {};
+document.addEventListener('DOMContentLoaded', function () {
+  effectsElements.body = document.querySelector("body");
+  effectsElements.world = document.querySelector(".world");
+  effectsElements.blastZone = document.querySelector(".blast-zone");
+  effectsElements.shakeWrapper = document.querySelector(".shake-wrapper");
+  effectsElements.scene = document.querySelector(".scene");
+});
+
+
 function initEffects() {
   startStars(30, window.innerWidth, 400);
 }
@@ -57,7 +67,7 @@ function powerupScored(x, y, type) {
 
   el.classList.add(type || "grow");
   
-  document.querySelector(".world").appendChild(el);
+  effectsElements.world.appendChild(el);
 
   setTimeout(function(el) {
     return function(){
@@ -104,7 +114,7 @@ function mineExplosion(xposition, yposition, size){
     };
   }(particle.el),500);
 
-  document.querySelector(".world").appendChild(particle.el);
+  effectsElements.world.appendChild(particle.el);
 
   SoundManager.temporaryLowPass();
 }
@@ -119,7 +129,7 @@ function makeCracks(x, y){
   cracks.style.height = size + "px";
   cracks.style.transform = "translate3d(" + (x - size/2) + "px, " + (y - size/2) + "px , 0) rotate("+getRandom(0,360)+"deg)";
 
-  document.querySelector(".blast-zone").appendChild(cracks);
+  effectsElements.blastZone.appendChild(cracks);
 
   setTimeout(function(el) {
     return function(){
@@ -162,8 +172,7 @@ function makeExplosion(xposition, yposition, size, blastDirection, type){
       el.remove();
     };
   }(particle.el),500);
-
-  document.querySelector(".world").appendChild(particle.el);
+  effectsElements.world.appendChild(particle.el);
 }
 
 
@@ -201,7 +210,7 @@ function shakeScreen(){
   // Final untransformed keyframe.
   keyframes.push({ transform: "rotate(0) translateX(0) translateY(0)" });
 
-  document.querySelector(".shake-wrapper").animate(keyframes, options);
+  effectsElements.shakeWrapper.animate(keyframes, options);
 }
 
 
@@ -234,28 +243,8 @@ function addBallTrail(x,y){
   makeParticle(options);
 }
 
-
 // When you blast a ball really hard
-function fireGun(x, y, angle, player){
-
-  // for(var i = 0; i < 8; i++){
-  //   var options = {
-  //     x : x - 3,
-  //     y : y - 3,
-  //     angle: angle + 180,
-  //     zRv : getRandom(-5,5),
-  //     speedA: -.06,
-  //     oV : -.04,
-  //     o: 3,
-  //     width : 6,
-  //     height: 6,
-  //     className : 'puff'
-  //   }
-  //   var angleMod = getRandom(-20,20);
-  //   options.angle = options.angle + angleMod;
-  //   options.speed = 6 - 2 * (Math.abs(angleMod) / 20);
-  //   makeParticle(options);
-  // }
+function fireGun(x, y, angle, player) {
 
   // This is the front blast!
   var options = {
@@ -267,6 +256,7 @@ function fireGun(x, y, angle, player){
     oV: -.05,
     className : 'fire'
   }
+  
   makeParticle(options);
 
   // This is the back blast!
@@ -282,7 +272,8 @@ function fireGun(x, y, angle, player){
 
   makeParticle(options);
 
-  addTemporaryClassName(document.querySelector("body"), "team-" + player + "-scored-flash", 500);
+  let aplayer = 1;
+  addTemporaryClassName(effectsElements.body, "team-" + aplayer + "-scored-flash", 500);
   
   shakeScreen();
 
@@ -500,7 +491,7 @@ function showMessage(options){
   messageEl.appendChild(messageBody);
 
   messageEl.style.transform = "translateX("+ options.x +"px) translateY(" + options.y +"px)";
-  document.querySelector(".world").appendChild(messageEl);
+  effectsElements.world.appendChild(messageEl);
 
   setTimeout(function(el) {
     return function() {
@@ -539,6 +530,6 @@ function makeTerrainChunks(terrainLine, modifier, className, boardWidth, boardHe
 
 document.addEventListener('DOMContentLoaded', e => {
   if (Settings.showBackground === false) {
-    document.querySelector('.scene').style.display = 'none';
+    effectsElements.scene.style.display = 'none';
   }
 });
