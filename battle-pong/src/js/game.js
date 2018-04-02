@@ -56,6 +56,10 @@ var game =  {
     this.terrainOneEl = document.querySelector(".terrain.one");
     this.terrainTwoEl = document.querySelector(".terrain.two");
 
+    this.goalOneEl = document.querySelector(".goal.one");
+    this.goalTwoEl = document.querySelector(".goal.two");
+
+
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
 
@@ -99,6 +103,19 @@ var game =  {
     }
   },
 
+
+  ballHitPaddle(player){
+    this.goalOneEl.classList.remove("on");
+    this.goalTwoEl.classList.remove("on");
+    
+    if(player === 1) {
+      this.goalTwoEl.classList.add("on");
+    } else {
+      this.goalOneEl.classList.add("on");
+    }
+
+    console.log("Ball hit player paddle", player);
+  },
 
   // Lets the game know someone got a powerup
   gotPowerup: function(player, type){
@@ -484,6 +501,9 @@ var game =  {
     setTimeout(() => { this.mode = "finish"; }, 50);
 
     this.bodyEl.classList.add("winner-screen");
+
+    this.scoreOneEl.classList.remove("on");
+    this.scoreTwoEl.classList.remove("on");
 
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");

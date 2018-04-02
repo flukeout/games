@@ -369,6 +369,13 @@ function createBall(options){
         if(this.goalsWhileFast >= this.goalsWhileFastAllowed) {
           this.applyBrakes = true;
         }
+      }
+
+      if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 2) {
+        this.endSpin();
+      }
+
+      if(obj.label.indexOf("wall-right") > -1 && this.lastTouchedPaddle === 1) {
         this.endSpin();
       }
 
@@ -455,6 +462,8 @@ function createBall(options){
           this.lastTouchedPaddle = 2;
         }
 
+        game.ballHitPaddle(this.lastTouchedPaddle);
+
         if(game.paddles[this.lastTouchedPaddle - 1].hasSpinPowerup === true) {
           this.prepToSpin();
         } else {
@@ -506,7 +515,6 @@ function createBall(options){
       this.element.classList.add("canSpin");
     },
 
-
     endSpin: function(){
       this.canSpin = false;
       this.prepSpin = false;
@@ -528,14 +536,15 @@ function createBall(options){
 
           // We want to make sure that the paddle is rotating before
           // we allow firing the gun.
-
           var hitPaddleObj = game.paddles[this.lastTouchedPaddle - 1];
-          if(hitPaddleObj.physics.angularSpeed < .04) {
+          let isSpinning = hitPaddleObj.checkIsPlayerSpinning();
+
+          if(!isSpinning) {
             return;
           }
 
           if(!this.wordInProgress) {
-            this.startWord();  
+            this.startWord();
           }
 
           var xDelta = this.physics.velocity.x;

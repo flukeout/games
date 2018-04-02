@@ -216,6 +216,7 @@ const updateFunctions = {
       }
     }
   },
+
   stagedSpin: function (paddle) {
     let spinDirection = 0;
 
@@ -482,6 +483,21 @@ function createPaddle(options) {
     force: function (x, y) {
       Matter.Body.applyForce(this.physics, this.physics.position, { x: x * this.movementRatio, y: y * this.movementRatio});
     },
+
+    checkIsPlayerSpinning: function(){
+      let a = this.actions;
+      if(
+        a.spinClockwise ||
+        a.spinCounterClockwise ||
+        Math.abs(a.spinX) > .4 ||
+        Math.abs(a.spinY) > .4
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
 
     spin: function (v) {
 
