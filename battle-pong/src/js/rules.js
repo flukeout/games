@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
   showRule(currentRule);
 
   nextStep();
-  setupInputButtons(this);
+  setupInputButtons();
   selectButtonByIndex(12);
 });
 
