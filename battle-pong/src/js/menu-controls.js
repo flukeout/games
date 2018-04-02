@@ -2,7 +2,7 @@ let buttons;
 let selectedButton;
 let selectedIndex;
 
-const setupInputButtons = defaultButtonNum => {
+const setupInputButtons = (rulesManager) => {
   
   buttons = Array.prototype.slice.call(document.querySelectorAll('.gamepad-button'));
   buttons.forEach(button => {
@@ -31,7 +31,17 @@ const setupInputButtons = defaultButtonNum => {
     moveCursor('up');
   });
 
-  gamepadManager.onGamepadButtonDown(['start', 'home', 'actionUp', 'actionDown', 'actionLeft', 'actionRight'], function () {
+  gamepadManager.onGamepadButtonDown(['start', 'home'], function () {
+    console.log('whyyyy');
+    if (rulesManager) {
+      rulesManager.toggleRules();
+    }
+    else {
+      moveCursor('go');
+    }
+  });
+
+  gamepadManager.onGamepadButtonDown(['actionUp', 'actionDown', 'actionLeft', 'actionRight'], function () {
     moveCursor('go');
   });
 
