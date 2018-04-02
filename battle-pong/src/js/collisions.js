@@ -27,7 +27,6 @@ Events.on(engine, 'collisionEnd', function(event) {
     pairLabels.push(pair.bodyA.label);
     pairLabels.push(pair.bodyB.label);
 
-
     // If the ball is involved
     var ballLookup = pairLabels.indexOf("ball");
 
@@ -45,8 +44,19 @@ Events.on(engine, 'collisionEnd', function(event) {
         } else {
           ballObj = pair.bodyB;
         }
+        
+        let scoringBall;
+        for(var k = 0; k < game.balls.length; k++){
+          if(ballObj === game.balls[k].physics) {
+            scoringBall = game.balls[k];
+          }
+        }
 
-        event.detail.ball = ballObj;
+        if(scoringBall) {
+          event.detail.lastTouchedPaddle = scoringBall.lastTouchedPaddle;
+          event.detail.ball = ballObj;
+        }
+        
 
         document.dispatchEvent(new CustomEvent(event.type, {
           detail: event.detail
