@@ -214,7 +214,6 @@ InputManager.GamepadEventManager = function () {
     window.addEventListener("gamepaddisconnected", e => {
       this.connectAllGamepads();
     });
-
   };
 
   this.connectAllGamepads = function () {

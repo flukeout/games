@@ -8,6 +8,10 @@ function PauseManager (game, inputManager) {
     }
   });
 
+  this.toggleRules = function () {
+    displayingRules ? resumeGame() : pauseGame();
+  };
+
   document.querySelector(".menu-toggle").addEventListener("click",function(){
     displayingRules ? resumeGame() : pauseGame();
   })
@@ -54,5 +58,5 @@ function PauseManager (game, inputManager) {
     document.querySelector("body").classList.add("fade-out");
   }
 
-  setupInputButtons();
+  setupInputButtons(this);
 }
