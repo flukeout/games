@@ -336,6 +336,22 @@
   color: $pink;
 }
 
+.goal {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: -40px;
+  width: 40px;
+
+
+  &.one {
+    
+    background-color: $pink;
+    
+  }
+}
+
+
 .terrain {
   position: absolute;
   height: 100%;
