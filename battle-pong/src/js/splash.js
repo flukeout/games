@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
+  const CREDITS_DELAY = 3000;
 
   initParticleEngine(".scene", 5);
   loop();
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function(){
   setupInputButtons();
   selectButtonByIndex(0);
 
+  startCredits(CREDITS_DELAY);
 });
 
 function loop(){
@@ -309,4 +311,157 @@ function addTemporaryClassName(element, className, durationMS){
   setTimeout(function(){
     element.classList.remove(className);
   }, durationMS || 1000);
+}
+
+function startCredits(timeoutDelay) {
+  let creditsContainer = document.querySelector('.credits');
+  let realCredits = Array.prototype.slice.call(creditsContainer.querySelectorAll('.credit'));
+  let creditsToShow = [];
+  let lastCredit = null;
+  let creditToRemove = null;
+
+  let bonusFirstWords = [
+    'Executive',
+    'Assistant',
+    'Planetary',
+    'Visual',
+    'Monetary'
+  ];
+
+  let fistWords = [
+    'User',
+    'Cinematic',
+    'Effect',
+    'Wildlife',
+    'Robot',
+    'Pong',
+    'Genetic',
+    'Spatial',
+    'Quantum',
+    'Vacation',
+    'Vacuum',
+    'Masonic',
+    'Geographic',
+    'Geological',
+    'Mathematics',
+    'Financial',
+    'Morphology',
+    'Destruction',
+    'Paddle',
+    'Physics',
+    'Pentatonic',
+    'Flux'
+  ];
+
+  let secondWords = [
+    'Programming',
+    'Assessment',
+    'Science',
+    'Forecasting',
+    'Design',
+    'Inquiry',
+    'Research',
+    'Arbitration',
+    'Collection',
+    'Verification',
+    'Taxation',
+    'Molding',
+    'Crafting',
+    'Production',
+    'Appreciation',
+    'Accounting',
+  ];
+
+  let bonusSecondWords = [
+    'Lead',
+    'Carrier',
+    'Consultant',
+    'Assistant',
+    'Support',
+    'Tailor',
+    'Expert',
+    'Professor',
+    'Researcher'
+  ];
+
+  let names = [
+    'Bobby Richter',
+    'Luke Pacholski'
+  ];
+
+  function creditsLoop() {
+    if (creditToRemove) {
+      creditsContainer.removeChild(creditToRemove);
+      creditToRemove = null;
+    }
+
+    if (lastCredit) {
+      lastCredit.classList.remove('show');
+      lastCredit.classList.add('after-show');
+      creditToRemove = lastCredit;
+      lastCredit = null;
+    }
+
+    if (creditsToShow.length === 0) {
+      let fakeCredits = [];
+
+      for (let i = 0, r = Math.round(5 + Math.random() * 10); i < r; ++i) {
+        let credit = names[Math.floor(Math.random() * names.length)];
+
+
+        let firstWord = fistWords[Math.floor(Math.random() * fistWords.length)];
+        let secondWord = secondWords[Math.floor(Math.random() * secondWords.length)];
+
+        let title = firstWord + ' ' + secondWord;
+
+        if (Math.random() < 0.4) {
+          title = bonusFirstWords[Math.floor(Math.random() * bonusFirstWords.length)] + ' ' + title;
+        }
+
+        if (Math.random() < 0.5) {
+          title += ' ' + bonusSecondWords[Math.floor(Math.random() * bonusSecondWords.length)];
+        }
+
+        title += ': ';
+
+        let fakeCredit = document.createElement('div');
+        fakeCredit.classList.add('credit');
+
+        let titleNode = document.createElement('span');
+        titleNode.classList.add('title');
+        titleNode.textContent = title;
+
+        let nameNode = document.createElement('span');
+        nameNode.classList.add('name');
+        nameNode.textContent = credit;
+
+        fakeCredit.appendChild(titleNode);
+        fakeCredit.appendChild(nameNode);
+        fakeCredits.push(fakeCredit);
+      }
+
+      creditsToShow = realCredits.map(c => { return c.cloneNode(true); }).concat(fakeCredits);
+
+      creditsToShow.forEach(c => {
+        c.classList.add('before-show');
+        creditsContainer.appendChild(c);
+      });
+    }
+    else {
+      let nextCredit = creditsToShow.shift();
+      
+      nextCredit.classList.remove('before-show');
+      nextCredit.classList.add('show');
+
+      lastCredit = nextCredit;
+    }
+
+    setTimeout(creditsLoop, timeoutDelay);
+  }
+
+  creditsLoop();
+
+  realCredits.forEach(c => { creditsContainer.removeChild(c); });
+
+  creditsContainer.classList.add('show');
 }
