@@ -19,7 +19,6 @@ Events.on(engine, 'collisionEnd', function(event) {
   var physicsObjectA;
   var physicsObjectB;
 
-
   for (var i = 0, j = pairs.length; i != j; ++i) {
     var pair = pairs[i];
     var pairLabels = [];
@@ -56,7 +55,6 @@ Events.on(engine, 'collisionEnd', function(event) {
           event.detail.lastTouchedPaddle = scoringBall.lastTouchedPaddle;
           event.detail.ball = ballObj;
         }
-        
 
         document.dispatchEvent(new CustomEvent(event.type, {
           detail: event.detail
