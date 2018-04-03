@@ -395,7 +395,7 @@ function createBall(options){
             // Going Down
             this.spinDirection = "cw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Powerup_Spin_Score");
+              SoundManager.playSound("Paddle_Dash_V1");
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -405,7 +405,7 @@ function createBall(options){
             // Going Up
             this.spinDirection = "ccw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Powerup_Spin_Score");
+              SoundManager.playSound("Paddle_Dash_V1");
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: totalVelocity * yRatio
@@ -417,7 +417,7 @@ function createBall(options){
           if(yV < 0) {
             this.spinDirection = "ccw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Powerup_Spin_Score");
+              SoundManager.playSound("Paddle_Dash_V1");
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -426,7 +426,7 @@ function createBall(options){
           } else {
             this.spinDirection = "cw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Powerup_Spin_Score");
+              SoundManager.playSound("Paddle_Dash_V1");
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: totalVelocity * yRatio
