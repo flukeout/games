@@ -288,15 +288,6 @@ function createBall(options){
         });
       }
 
-      // TODO: fix this so it doesn't happen every frame
-      // if(this.canSpin || this.prepSpin){
-      //   this.element.classList.add("canSpin");
-      // } else {
-      //   this.element.classList.remove("canSpin");
-      // }
-
-      // --Spinning ball garbage ends here.
-
       // The paddle hit stuff needs a one frame delay before taking effect seemingly.
       // This is the way around that. Should be easier?
       if(this.gotPaddleHit) {
@@ -404,7 +395,7 @@ function createBall(options){
             // Going Down
             this.spinDirection = "cw";
             if(this.prepSpin && !this.canSpin) {
-      
+              SoundManager.playSound("Powerup_Spin_Score");
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -414,10 +405,11 @@ function createBall(options){
             // Going Up
             this.spinDirection = "ccw";
             if(this.prepSpin && !this.canSpin) {
+              SoundManager.playSound("Powerup_Spin_Score");
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: totalVelocity * yRatio
-              });              
+              });
             }
           }
         } else {
@@ -425,6 +417,7 @@ function createBall(options){
           if(yV < 0) {
             this.spinDirection = "ccw";
             if(this.prepSpin && !this.canSpin) {
+              SoundManager.playSound("Powerup_Spin_Score");
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -433,6 +426,7 @@ function createBall(options){
           } else {
             this.spinDirection = "cw";
             if(this.prepSpin && !this.canSpin) {
+              SoundManager.playSound("Powerup_Spin_Score");
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: totalVelocity * yRatio
@@ -475,6 +469,7 @@ function createBall(options){
           var p = game.paddles[this.lastTouchedPaddle - 1];
           if(p.physics.angularSpeed < .04) {
             this.setTargetSpeed(0);
+            SoundManager.playRandomSoundFromBank("sticky-hit");
           } else {
             this.removeTargetSpeed();
           }
@@ -502,11 +497,19 @@ function createBall(options){
 
       if (obj.label.indexOf("wall") > -1) {
         SoundManager.playSound("Ball_Bounce_Wall", null, { volume: percentage, pan : pan });
-      }
-      else {
+      } else {
         SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
       }
+
+      //asdf
+      if (obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
+          if(this.canSpin) {
+            SoundManager.playRandomSoundFromBank("spin-wall-bounce");  
+          }
+      }
     },
+
+
 
 
     prepToSpin: function(){

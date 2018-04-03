@@ -593,6 +593,7 @@ function createPaddle(options) {
         this.magnetTimeout = window.setTimeout(function(){
           that.element.classList.remove("powerup-magnet");
           that.hasMagnetPowerup = false;
+          SoundManager.playSound('Powerup_Sticky_WareOff');
         }, this.magnetDuration); 
       }
 
@@ -600,13 +601,13 @@ function createPaddle(options) {
         this.hasNoclipPowerup = true;
         this.element.classList.add("powerup-noclip");
         game.showMessage("NOCLIP!", 1500);
-        
         clearTimeout(this.noclipTimeout);
         
         var that = this;
         this.noclipTimeout = window.setTimeout(function(){
           that.element.classList.remove("powerup-noclip");
           that.hasNoclipPowerup = false;
+          SoundManager.playSound('Powerup_Ghost_WareOff');
         }, this.noclipDuration); 
       }
 
