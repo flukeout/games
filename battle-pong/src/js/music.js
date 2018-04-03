@@ -7,7 +7,7 @@
   };
 
   const files = [
-    'music/Contagion_Loop_BaseLayer.mp3',
+    'music/new-base-layer.mp3',
     'music/Contagion_Loop_TopLayer.mp3'
   ];
 
@@ -21,7 +21,7 @@
       }
     },
     base: {
-      file: 'music/Contagion_Loop_BaseLayer.mp3',
+      file: 'music/new-base-layer.mp3',
       moods: {
         default: 1,
         quiet: 0.2

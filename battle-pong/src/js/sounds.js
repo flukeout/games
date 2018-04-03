@@ -192,7 +192,77 @@ let sounds = {
     url : "sounds/Powerup_Spin_Score.mp3",
     volume : 1
   },
-  
+
+  "Powerup_Ghost_Score" : {
+    url : "sounds/Powerup_Ghost_Score.mp3",
+    volume : 1
+  },
+  "Powerup_Ghost_WareOff" : {
+    url : "sounds/Powerup_Ghost_WareOff.mp3",
+    volume : 1
+  },
+
+
+  "Powerup_Sticky_Score" : {
+    url : "sounds/Powerup_Sticky_Score.mp3",
+    volume : 1
+  },
+  "Powerup_Sticky_WareOff" : {
+    url : "sounds/Powerup_Sticky_WareOff.mp3",
+    volume : 1
+  },
+
+
+  "Powerup_Sticky_Hit_V1" : {
+    url : "sounds/Powerup_Sticky_Hit_V1.mp3",
+    volume : 1
+  },
+  "Powerup_Sticky_Hit_V2" : {
+    url : "sounds/Powerup_Sticky_Hit_V2.mp3",
+    volume : 1
+  },
+  "Powerup_Sticky_Hit_V3" : {
+    url : "sounds/Powerup_Sticky_Hit_V3.mp3",
+    volume : 1
+  },
+  "Powerup_Sticky_Hit_V4" : {
+    url : "sounds/Powerup_Sticky_Hit_V4.mp3",
+    volume : 1
+  },
+  "Powerup_Sticky_Hit_V5" : {
+    url : "sounds/Powerup_Sticky_Hit_V5.mp3",
+    volume : 1
+  },
+  "Powerup_Sticky_Hit_V6" : {
+    url : "sounds/Powerup_Sticky_Hit_V6.mp3",
+    volume : 1
+  },
+
+
+  "Powerup_Spin_Wall_Bounce_V1" : {
+    url : "sounds/Powerup_Spin_Wall_Bounce_V1.mp3",
+    volume : 1
+  },
+  "Powerup_Spin_Wall_Bounce_V2" : {
+    url : "sounds/Powerup_Spin_Wall_Bounce_V2.mp3",
+    volume : 1
+  },
+  "Powerup_Spin_Wall_Bounce_V3" : {
+    url : "sounds/Powerup_Spin_Wall_Bounce_V3.mp3",
+    volume : 1
+  },
+  "Powerup_Spin_Wall_Bounce_V4" : {
+    url : "sounds/Powerup_Spin_Wall_Bounce_V4.mp3",
+    volume : 1
+  },
+
+
+
+
+
+
+
+
   "Powerup_Enhance_WareOff" : {
     url : "sounds/Powerup_Enhance_WareOff.mp3",
     volume : 1
@@ -357,6 +427,24 @@ let soundBanks = {
       "Paddle_Dash_V3",
       "Paddle_Dash_V4",
       "Paddle_Dash_V5"
+    ]
+  },
+  "spin-wall-bounce": {
+    sounds: [
+      "Powerup_Spin_Wall_Bounce_V1",
+      "Powerup_Spin_Wall_Bounce_V2",
+      "Powerup_Spin_Wall_Bounce_V3",
+      "Powerup_Spin_Wall_Bounce_V4"
+    ]
+  },
+  "sticky-hit": {
+    sounds: [
+      "Powerup_Sticky_Hit_V1",
+      "Powerup_Sticky_Hit_V2",
+      "Powerup_Sticky_Hit_V3",
+      "Powerup_Sticky_Hit_V4",
+      "Powerup_Sticky_Hit_V5",
+      "Powerup_Sticky_Hit_V6"
     ]
   },
   "score": {

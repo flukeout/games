@@ -6,7 +6,8 @@
     clone: 'Powerup_Bones_Score',
     grow: 'Powerup_Enhance_Score',
     spin: 'Powerup_Spin_Score',
-    noclip: 'Powerup_Spin_Score'
+    noclip: 'Powerup_Ghost_Score',
+    magnet: 'Powerup_Sticky_Score'
   };
   
   const powerupSpawnNames = {
@@ -58,7 +59,6 @@
       let powerUp = this.createPowerup(x, y, type);
       powerUp.element.classList.add(type);
 
-      // powerUp.launch(getRandom(-.01,.01),getRandom(-.01,.01));
       SoundManager.playSound(powerupSpawnNames[type] || powerupSpawnNames.default);
     };
 
