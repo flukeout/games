@@ -443,10 +443,19 @@
   .rules-button {
     background: $green;
     padding: 10px 20px;
-    
   }
 
 
+  .gleam {
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 1;
+    transform-origin: left;
+  }
   .start-game {
     color: white;
     z-index: 1;
@@ -570,6 +579,11 @@
     .name {
       // transform: scale(1.2);
     }
+  }
+
+  .sound-options {
+    position: relative;
+    left: -40px;
   }
 
   [data-sounds] {

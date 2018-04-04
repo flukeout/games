@@ -205,20 +205,41 @@ function updateToggles(els){
   });
 }
 
+const powerupOn = {
+  clone: 'Powerup_Bones_Score',
+  grow: 'Powerup_Enhance_Score',
+  spin: 'Powerup_Spin_Score',
+  mine: 'beep',
+  noclip: 'Powerup_Ghost_Score',
+  magnet: 'Powerup_Sticky_Score'
+};
+
+const powerupOff = {
+  grow: 'Powerup_Enhance_WareOff',
+  spin: 'Powerup_Spin_WareOff',
+  noclip: 'Powerup_Ghost_WareOff',
+  magnet: 'Powerup_Sticky_WareOff'
+};
+
+
 // Best Of Options
 function setupPowerups(els){
   els.forEach(function(el){
     el.addEventListener("click",function(){
       var powerupType = this.getAttribute("data-powerup");
       var isEnabled = this.classList.contains("enabled");
+
       if(isEnabled){
-        powerupToggle(powerupType, "disable");       
+        powerupToggle(powerupType, "disable");
+        let soundName = powerupOff[powerupType] || "ui";
+        SoundManager.playSound(soundName);
       } else {
+        let soundName = powerupOn[powerupType] || "ui";
+        SoundManager.playSound(soundName);
         powerupToggle(powerupType, "enable");
       }
       addTemporaryClassName(this, "poke", 250);
       updatePowerups(els);
-      SoundManager.playSound("ui");
     });
   });
   updatePowerups(els);

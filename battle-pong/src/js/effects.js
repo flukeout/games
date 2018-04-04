@@ -533,3 +533,52 @@ document.addEventListener('DOMContentLoaded', e => {
     effectsElements.scene.style.display = 'none';
   }
 });
+
+
+
+function buttonGleam(element) {
+  let gleam = document.createElement("div");
+  gleam.classList.add("gleam");
+  element.appendChild(gleam);
+
+  let width = element.getBoundingClientRect().width;
+  let duration = mapScale(width, 50, 180, 300, 350);
+
+  let options = {
+    duration: duration,
+    easing: "ease-in-out"
+  }
+
+  let keyframes = [
+    {
+      transform: "scaleX(0)",
+      transformOrigin: "left",
+      opacity: .4,
+      offet: 0
+    },
+    {
+      transform: "scaleX(1)",
+      transformOrigin: "left",
+      opacity: .5,
+      offset: .3
+    },
+    {
+      transformOrigin: "right",
+      transform: "scaleX(1)",
+      opacity: .5,
+      offset: .7
+    },
+    {
+      opacity: .4,
+      transform: "scaleX(0)",
+      transformOrigin: "right",
+      offset: 1
+    }
+  ]
+  
+  let gleamAnimation = gleam.animate(keyframes, options);
+  gleamAnimation.onfinish = function(e){
+    gleam.remove();
+  }
+
+}
