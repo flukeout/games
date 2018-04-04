@@ -124,7 +124,7 @@
   .game-title {
     font-size: 60px;
     color: white;
-    margin: 35px 0 45px 0;
+    margin: 0 0 45px 0;
     text-align: center;
     transform: rotateX(15deg);
     transition: all .2s ease-out;
@@ -242,7 +242,21 @@
     height: 1em;
   }
 
+  .content-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    z-index: 5;
+    align-items: center;
+    
+  }
+
   .content {
+    margin: 0 auto;
+    padding-bottom: 90px;
     position: relative;
     z-index: 5;
     perspective: 1200px;
@@ -404,10 +418,7 @@
     &.enabled .value {
       background-color: #ac4d9c;
       text-decoration: none;
-      
-      .value {
-        color: white;
-      }
+      color: white;
 
       .icon {
         background-size: 24px;
@@ -424,6 +435,7 @@
     background: rgba(255,255,255,.15);
     padding: 6px 14px 7px 14px;
     line-height: 30px;
+    font-size: 22px;
     border-radius: 0px;
     cursor: pointer;
     display: inline-block;
@@ -535,7 +547,7 @@
   }
 
   .powerup {
-    display: inline-block;    
+    display: inline-block;
     position: relative;
     margin: 0 12px;
     
@@ -611,9 +623,6 @@
       opacity: 1;
     }
   }
-
-
-
 
   [data-sounds] {
     margin-right: 25px;
