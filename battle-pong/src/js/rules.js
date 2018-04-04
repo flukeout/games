@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el.addEventListener("click",function(e){
       let type = this.getAttribute("nav");
       showRule(type);
+      SoundManager.playSound("ui");
       addTemporaryClassName(e.target, "poke", 250);
       e.preventDefault();
     })
@@ -23,11 +24,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelector(".button.previous").addEventListener("click",function(){
     previousRule();
+    SoundManager.playSound("ui");
     addTemporaryClassName(this, "poke", 250);
   })
   
   document.querySelector(".button.next").addEventListener("click",function(){
     addTemporaryClassName(this, "poke", 250);
+    SoundManager.playSound("ui");
     nextRule();
   })
 
@@ -41,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     el.addEventListener("click", function(el){
       let type = this.getAttribute("type");
       showPowerup(type);
+      SoundManager.playSound("ui");
     });
   })
 
@@ -285,6 +289,7 @@ function setupNavButtons(){
   var buttons = document.querySelectorAll(".nav-button");
   buttons.forEach(function(el){
     el.addEventListener("click", function(e){
+      SoundManager.playSound("ui");
       let navTo = this.getAttribute("to");
       addTemporaryClassName(this, "poke", 250);
       if(navTo === "game") {

@@ -62,7 +62,9 @@ function setupPlayerOptionss(els){
       } else {
         saveSetting(key, "player");
       }
+      
       updatePlayerOptions(els);
+      buttonGleam(el.target);
     });
   });
   updatePlayerOptions(els);
@@ -141,7 +143,9 @@ function setupStartButton(){
     button.style.opacity = 0;
 
     fadeOutScene();
-    
+
+    buttonGleam(button);
+
     e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
@@ -160,6 +164,7 @@ function setupRulesButton(){
   button.addEventListener("click", function(e){
     addTemporaryClassName(e.target, "poke", 250);
     fadeOutScene();
+    buttonGleam(e.target);
     SoundManager.playSound("ui");
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
@@ -177,6 +182,7 @@ function setupRulesButton(){
 function setupToggles(els){
   els.forEach(function(el){
     el.querySelector(".value").addEventListener("click",function(el){
+      addTemporaryClassName(this, "poke", 250); 
       var toggle = this.parentNode;
       var toggleType = toggle.getAttribute("data-type");
       var settingEnabled = window.Settings[toggleType];
@@ -185,6 +191,7 @@ function setupToggles(els){
         saveSetting(toggleType, false);
       } else {
         saveSetting(toggleType, true);
+        buttonGleam(this);
       }
       updateToggles(els);
       SoundManager.playSound("ui");
@@ -280,6 +287,7 @@ function setupBestOf(){
   bestOfEls.forEach(function(option){
     option.addEventListener("click",function(){
       addTemporaryClassName(option, "poke", 250);
+      buttonGleam(option);
       var value = parseInt(this.getAttribute("data-value"));
       saveSetting("playTo", value);
       updateBestOf();

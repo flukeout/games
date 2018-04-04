@@ -177,10 +177,9 @@ const selectButtonEl = el => {
   selectedButton = el;
   el.classList.add('input-selected');
 
-  if(el.classList.contains("gleamer")){
-    buttonGleam(el);
-  }
-  
+  // if(el.classList.contains("gleamer")){
+  //   buttonGleam(el);
+  // }
 }
 
 const selectButtonByIndex = num => {

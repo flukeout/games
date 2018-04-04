@@ -135,7 +135,7 @@
 
     .letter {
       animation: letterFloat 2s infinite;
-      text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
+      // text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;;
       display: inline-block;
 
       &:empty() {
@@ -146,22 +146,22 @@
     @keyframes letterFloat {
       0% {
         transform: translateY(0px);
-        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
+        // text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
         animation-timing-function: ease-out;
       }
       25% {
         transform: translateY(-6px);
-        text-shadow: 0px 6px 0px #ac4d9d, 0px 9px 0px #3faa7f;
+        // text-shadow: 0px 6px 0px #ac4d9d, 0px 9px 0px #3faa7f;
         animation-timing-function: ease-in;
       }
       50% {
         transform: translateY(0px);
-        text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
+        // text-shadow: 0px 3px 0px #ac4d9d, 0px 6px 0px #3faa7f;
         animation-timing-function: ease-out;
       }
       75% {
         transform: translateY(6px);
-        text-shadow: 0px 0px 0px #ac4d9d, 0px 0px 0px #3faa7f;
+        // text-shadow: 0px 0px 0px #ac4d9d, 0px 0px 0px #3faa7f;
         animation-timing-function: ease-in;
       }
     }
@@ -352,7 +352,7 @@
     .player-option {
       background: orange;
       display: inline-block;
-      padding: 10px;
+      padding: 6px 12px 7px 12px;
       cursor: pointer;
     }
 
@@ -379,39 +379,63 @@
   }
 
   .option-toggle {
-    margin: 0 5px;
-  
+    margin: 0 8px;
+
     .value {
-      // min-width: 60px;
+      position: relative;
+      padding-right: 50px;
+      
+      .icon {
+        content: "";
+        position: absolute;
+        top: 8px;
+        opacity: .6;
+        right: 13px;
+        width: 24px;
+        height: 24px;
+        background-image: url(assets/images/icon-x.svg);
+        background-size: 17px;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
     }
 
-    .value:before {
-      content: "OFF";
-    }
 
     &.enabled .value {
-      background: #ac4d9c;
-      &:before {
-        content: "ON";  
+      background-color: #ac4d9c;
+      text-decoration: none;
+      
+      .value {
+        color: white;
+      }
+
+      .icon {
+        background-size: 24px;
+        top: 8px;
+        right: 12px;
+        background-image: url(assets/images/icon-check.svg);
+        opacity: 1;
       }
     }
   }
 
   .value {
     margin: 0 4px;
-    background: #444;
-    padding: 5px 14px 7px 14px ;
+    background: rgba(255,255,255,.15);
+    padding: 6px 14px 7px 14px;
     line-height: 30px;
     border-radius: 0px;
     cursor: pointer;
     display: inline-block;
+    color: rgba(255,255,255,.6);
 
     &:hover {
-      background: rgba(255,255,255,.3);
+      background-image: rgba(255,255,255,.3);
     }
 
     &.selected {
       background: #ac4d9c;
+      color: rgba(255,255,255,1);
     }
   }
 
@@ -420,7 +444,7 @@
   }
 
   .buttons {
-    margin-top: 60px;
+    margin-top: 40px;
 
     .button {
       display: inline-block;
@@ -433,17 +457,25 @@
       box-shadow: 6px 6px 0px rgba(0,0,0,.4);
       cursor: pointer;
       transition: transform .1s ease-out;
-      
+
       &:hover {
         transform: scale(1.05);
       }
+
+
+      &.rules-button {
+        background: $pink;
+        font-size: 30px;
+      }
+      
+      &.start-game {
+        padding: 10px 45px;
+        margin-bottom: 20px;
+      }
+
     }
   }
 
-  .rules-button {
-    background: $green;
-    padding: 10px 20px;
-  }
 
 
   .gleam {
@@ -456,20 +488,22 @@
     opacity: 1;
     transform-origin: left;
   }
+  
   .start-game {
     color: white;
     z-index: 1;
+    padding: 10px 20px;
     transform: rotateX(10deg);
-    background: $pink;
+    background: $green;
   }
 
   .start-game-particle {
-    background: $pink;
+    background: $green;
     transition: none;
     z-index: 999999;
     display: block;
     text-align: center;
-    padding: 5px 20px;
+    padding: 10px 45px;
     width: auto !important;
     font-size: 40px;
     cursor: pointer;
@@ -576,15 +610,10 @@
     .icon, .name {
       opacity: 1;
     }
-    .name {
-      // transform: scale(1.2);
-    }
   }
 
-  .sound-options {
-    position: relative;
-    left: -40px;
-  }
+
+
 
   [data-sounds] {
     margin-right: 25px;
