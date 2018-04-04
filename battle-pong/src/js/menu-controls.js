@@ -97,13 +97,13 @@ const getOptions = (baseCenter, buttons, direction, axisRange) => {
     let conditionMet = false;
 
     if(direction === "down" 
-        && center.y > baseCenter.y
+        && (center.y - baseCenter.y > 10)
         && Math.abs(center.x - baseCenter.x) < maxOppositeAxisRange) {
       conditionMet = true;
     }
 
     if(direction === "up" 
-        && center.y < baseCenter.y
+        && (center.y - baseCenter.y < -10)
         && Math.abs(center.x - baseCenter.x) < maxOppositeAxisRange) {
       conditionMet = true;
     }
@@ -120,12 +120,21 @@ const getOptions = (baseCenter, buttons, direction, axisRange) => {
       conditionMet = true;
     }
     
-    if(conditionMet) {
+    if(conditionMet && (direction === "right" || direction === "left")) {
       options.push({
         el: button,
-        delta: Math.sqrt(Math.pow((center.x - baseCenter.x), 2) + Math.pow((center.y - baseCenter.y), 2))
+        delta: Math.sqrt(Math.pow((center.x - baseCenter.x), 2) + Math.pow((center.y - baseCenter.y) * 3, 2))
       });
     }
+
+    if(conditionMet && (direction === "up" || direction === "down")) {
+      options.push({
+        el: button,
+        delta: Math.sqrt(Math.pow((center.x - baseCenter.x) * 3, 2) + Math.pow((center.y - baseCenter.y), 2))
+      });
+    }
+
+
   });
 
   return options;
@@ -137,13 +146,7 @@ const selectButtonByDirection = (thisButton, direction) => {
   let thisButtonCenter = getCenter(thisButton);
   let options = [];
   
-  let maxRange = 200;
-  let range = 75;
-
-  while(options.length === 0 && range < maxRange) {
-    options = getOptions(thisButtonCenter, buttons, direction, range);
-    range = range + 25;
-  }
+  options = getOptions(thisButtonCenter, buttons, direction, 150);
 
   if(options.length === 0) {
     return;
@@ -173,6 +176,10 @@ const selectButtonEl = el => {
   selectedIndex = buttons.indexOf(el);
   selectedButton = el;
   el.classList.add('input-selected');
+
+  // if(el.classList.contains("gleamer")){
+  //   buttonGleam(el);
+  // }
 }
 
 const selectButtonByIndex = num => {

@@ -62,7 +62,9 @@ function setupPlayerOptionss(els){
       } else {
         saveSetting(key, "player");
       }
+      
       updatePlayerOptions(els);
+      buttonGleam(el.target);
     });
   });
   updatePlayerOptions(els);
@@ -141,7 +143,9 @@ function setupStartButton(){
     button.style.opacity = 0;
 
     fadeOutScene();
-    
+
+    buttonGleam(button);
+
     e.preventDefault();
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
@@ -160,6 +164,8 @@ function setupRulesButton(){
   button.addEventListener("click", function(e){
     addTemporaryClassName(e.target, "poke", 250);
     fadeOutScene();
+    buttonGleam(e.target);
+    SoundManager.playSound("ui");
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
@@ -176,6 +182,7 @@ function setupRulesButton(){
 function setupToggles(els){
   els.forEach(function(el){
     el.querySelector(".value").addEventListener("click",function(el){
+      addTemporaryClassName(this, "poke", 250); 
       var toggle = this.parentNode;
       var toggleType = toggle.getAttribute("data-type");
       var settingEnabled = window.Settings[toggleType];
@@ -184,6 +191,7 @@ function setupToggles(els){
         saveSetting(toggleType, false);
       } else {
         saveSetting(toggleType, true);
+        buttonGleam(this);
       }
       updateToggles(els);
       SoundManager.playSound("ui");
@@ -205,20 +213,41 @@ function updateToggles(els){
   });
 }
 
+const powerupOn = {
+  clone: 'Powerup_Bones_Score',
+  grow: 'Powerup_Enhance_Score',
+  spin: 'Powerup_Spin_Score',
+  mine: 'beep',
+  noclip: 'Powerup_Ghost_Score',
+  magnet: 'Powerup_Sticky_Score'
+};
+
+const powerupOff = {
+  grow: 'Powerup_Enhance_WareOff',
+  spin: 'Powerup_Spin_WareOff',
+  noclip: 'Powerup_Ghost_WareOff',
+  magnet: 'Powerup_Sticky_WareOff'
+};
+
+
 // Best Of Options
 function setupPowerups(els){
   els.forEach(function(el){
     el.addEventListener("click",function(){
       var powerupType = this.getAttribute("data-powerup");
       var isEnabled = this.classList.contains("enabled");
+
       if(isEnabled){
-        powerupToggle(powerupType, "disable");       
+        powerupToggle(powerupType, "disable");
+        let soundName = powerupOff[powerupType] || "ui";
+        SoundManager.playSound(soundName);
       } else {
+        let soundName = powerupOn[powerupType] || "ui";
+        SoundManager.playSound(soundName);
         powerupToggle(powerupType, "enable");
       }
       addTemporaryClassName(this, "poke", 250);
       updatePowerups(els);
-      SoundManager.playSound("ui");
     });
   });
   updatePowerups(els);
@@ -258,6 +287,7 @@ function setupBestOf(){
   bestOfEls.forEach(function(option){
     option.addEventListener("click",function(){
       addTemporaryClassName(option, "poke", 250);
+      buttonGleam(option);
       var value = parseInt(this.getAttribute("data-value"));
       saveSetting("playTo", value);
       updateBestOf();
