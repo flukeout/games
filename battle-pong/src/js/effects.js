@@ -534,8 +534,6 @@ document.addEventListener('DOMContentLoaded', e => {
   }
 });
 
-
-
 function buttonGleam(element) {
   let gleam = document.createElement("div");
   gleam.classList.add("gleam");
@@ -580,5 +578,4 @@ function buttonGleam(element) {
   gleamAnimation.onfinish = function(e){
     gleam.remove();
   }
-
 }
