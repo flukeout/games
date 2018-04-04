@@ -160,6 +160,7 @@ function setupRulesButton(){
   button.addEventListener("click", function(e){
     addTemporaryClassName(e.target, "poke", 250);
     fadeOutScene();
+    SoundManager.playSound("ui");
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
