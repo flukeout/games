@@ -73,39 +73,6 @@ const updateFunctions = {
       return;
     }
 
-    if(paddle.dashDelay > 0) {
-      paddle.element.classList.add("dashing");
-    }
-
-    // Dashing particles
-    if(paddle.dashDelay > 350 && paddle.frameTicks % 2 == 0 && paddle.physics.speed > 1) {
-
-      let movementAngle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
-      var size = getRandom(15,25);
-
-      let options = {
-        x : getRandom(paddle.physics.bounds.min.x, paddle.physics.bounds.max.x) - size/2,
-        y : getRandom(paddle.physics.bounds.min.y, paddle.physics.bounds.max.y) - size/2,
-        width: size,
-        height: size,
-        className: 'paddlePuff',
-        lifespan: 50,
-        color: "#fff",
-        angle : movementAngle + getRandom(-10,10),
-        speed: 7.5 - (5 * size/25),
-        speedA: -.02 - (.02 * size/25),
-      }
-
-      options.height = options.width;
-
-      if(paddle.player == 0) {
-        options.color = "#913987";
-      } else {
-        options.color =  "#2b8e63";
-      }
-
-      makeParticle(options);
-    }
     // End of dashing paticles
   },
   dashStart: function (paddle) {
