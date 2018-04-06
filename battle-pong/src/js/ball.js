@@ -146,6 +146,26 @@ function createBall(options){
         }
       }
 
+      if(this.frameTicks % 2 === 0 && this.hasTargetSpeed) {
+        let options = {
+          x : this.physics.position.x - 10,
+          y : this.physics.position.y - 10,
+          width: 20,
+          height: 20,
+          className: 'oilSlick',
+          lifespan: 50,
+          color: "#913987",
+          scaleV: -.005
+        }
+        
+        if(this.physics.position.x > game.centerX) {
+          options.color = "#2b8e63";
+        }
+        makeParticle(options);
+      }
+
+      this.frameTicks++;
+
       if(this.physics.speed < this.slowSpeedTarget && this.applyBrakes) {
         this.applyBrakes = false;
         this.goalsWhileFast = 0;
@@ -248,13 +268,10 @@ function createBall(options){
       }
 
       // Adds trails after the ball when it's goign fast enough
-      if(this.frameTicks > 1 & this.physics.speed * game.physicsSamplingRatio > 7) {
+      if(this.frameTicks % 2 == 0 & this.physics.speed * game.physicsSamplingRatio > 7) {
         if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
           addBallTrail(this.physics.position.x, this.physics.position.y);
         }
-        this.frameTicks = 0;
-      } else {
-        this.frameTicks++;
       }
 
       this.displayAngle = this.displayAngle + this.rotationVelocity; // What we show the ball doing
@@ -467,7 +484,10 @@ function createBall(options){
         // Sticky powerup test
         if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
           var p = game.paddles[this.lastTouchedPaddle - 1];
-          if(p.physics.angularSpeed < .04) {
+          
+          let isSpinning = p.checkIsPlayerSpinning();
+
+          if(!isSpinning) {
             this.setTargetSpeed(0);
             SoundManager.playRandomSoundFromBank("sticky-hit");
           } else {

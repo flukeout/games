@@ -12,6 +12,7 @@ var game =  {
 
   terrainLinePercent : 50,  // The percent position between the players, 0 to 100
   minTerrainChange : 5,
+  centerX : 0,
 
   freezeFrames : 0,
 
@@ -58,7 +59,6 @@ var game =  {
 
     this.goalOneEl = document.querySelector(".goal.one");
     this.goalTwoEl = document.querySelector(".goal.two");
-
 
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
@@ -477,6 +477,8 @@ var game =  {
       }
     }
 
+    this.centerX = this.terrainLinePercent / 100 * this.boardWidth;
+
     var leftWidth = Math.floor(this.boardWidth * this.terrainLinePercent/100);
     var rightWidth = this.boardWidth - leftWidth;
 
@@ -501,6 +503,9 @@ var game =  {
     setTimeout(() => { this.mode = "finish"; }, 50);
 
     this.bodyEl.classList.add("winner-screen");
+
+    this.goalOneEl.classList.remove("on");
+    this.goalTwoEl.classList.remove("on");
 
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");
