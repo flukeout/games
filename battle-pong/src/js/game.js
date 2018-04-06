@@ -105,16 +105,18 @@ var game =  {
 
 
   ballHitPaddle(player){
+    if(game.mode != "running"){
+      return;
+    }
+
     this.goalOneEl.classList.remove("on");
     this.goalTwoEl.classList.remove("on");
-    
+
     if(player === 1) {
       this.goalTwoEl.classList.add("on");
     } else {
       this.goalOneEl.classList.add("on");
     }
-
-    console.log("Ball hit player paddle", player);
   },
 
   // Lets the game know someone got a powerup
@@ -608,9 +610,7 @@ var game =  {
 
   },
 
-
   flashTimeout : false, // Tracks if a flashing background animation is happening
-
 
   unghostBall(){
       for(let ball of game.balls){
@@ -619,7 +619,6 @@ var game =  {
       for(let paddle of game.paddles){
         paddle.physics.collisionFilter.category = 0x0001;
       }
-
   },
 
   playerScored : function(player, ballPhysics){
@@ -628,18 +627,6 @@ var game =  {
 
     var that = this;
   
-    if(ballPhysics){
-      for(let ball of game.balls){
-        ball.element.classList.add("ghost");
-      }
-      for(let paddle of game.paddles){
-        paddle.physics.collisionFilter.category = 0x0002;
-      }
-      setTimeout(function(){
-        that.unghostBall();
-      }, 300);
-    }
-
     if(this.timeSinceEndzoneHitMS < this.goalTimeoutMS) {
       return;
     }
@@ -679,6 +666,24 @@ var game =  {
       blastDirection = "right";
       xPos = 0;
     }
+
+
+
+    if(ballPhysics){
+      for(let ball of game.balls){
+        ball.element.classList.add("ghost");
+      }
+      for(let paddle of game.paddles){
+        if(scoredByPlayerNum === paddle.player) {
+          paddle.physics.collisionFilter.category = 0x0002;
+        }
+      }
+      setTimeout(function(){
+        that.unghostBall();
+      }, 300);
+    }
+
+
 
     makeExplosion(xPos, ballPhysics.position.y, 75, blastDirection);
 
