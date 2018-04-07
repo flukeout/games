@@ -8,32 +8,73 @@
 
   const files = [
     'music/new-base-layer.mp3',
-    'music/Contagion_Loop_TopLayer.mp3'
+    'music/GamplayMusic1_Intro_Layer1.mp3',
+    'music/GamplayMusic1_Intro_Layer2.mp3',
+    'music/GamplayMusic1_Intro_Layer3.mp3',
+    'music/GamplayMusic1_PartA_Layer1.mp3',
+    'music/GamplayMusic1_PartA_Layer2.mp3',
+    'music/GamplayMusic1_PartA_Layer3.mp3',
+    'music/GamplayMusic1_PartA_Layer4.mp3'
   ];
 
-  const layerDefinitions = {
-    top: {
-      file: 'music/Contagion_Loop_TopLayer.mp3',
-      moods: {
-        default: 0,
-        // intense: 1,
-        // quiet: 0.2
-      }
-    },
-    base: {
-      file: 'music/new-base-layer.mp3',
-      moods: {
-        default: 1,
-        quiet: 0.2
-      }
+  const songs = {
+    gameplay: {
+      layers: {
+        one: {
+          file: 'music/GamplayMusic1_PartA_Layer1.mp3',
+          moods: {
+            default: 1,
+            pause: 1,
+            level1: 1,
+            level2: 1,
+            level3: 1,
+            level4: 1
+          }
+        },
+        two: {
+          file: 'music/GamplayMusic1_PartA_Layer2.mp3',
+          moods: {
+            default: 1,
+            pause: 0,
+            level1: 1,
+            level2: 1,
+            level3: 1,
+            level4: 1
+          }
+        },
+        three: {
+          file: 'music/GamplayMusic1_PartA_Layer3.mp3',
+          moods: {
+            default: 0,
+            pause: 0,
+            level1: 0,
+            level2: 0,
+            level3: 1,
+            level4: 1
+          }
+        },
+        four: {
+          file: 'music/GamplayMusic1_PartA_Layer4.mp3',
+          moods: {
+            default: 0,
+            pause: 0,
+            level1: 0,
+            level2: 0,
+            level3: 0,
+            level4: 1
+          }
+        }
+      }      
     }
   };
+
+  let layerDefinitions = songs.gameplay.layers;
 
   let duckingProfiles = {
     'test':                 {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    },
     'dash':                 {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
     'score':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
-    'super-hard-shot':      {   gain: 0.7,    attack: 0.003,    sustain: 0.1,   release: 1.3    },
+    'super-hard-shot':      {   gain: 0.7,    attack: 0.003,  sustain: 0.1, release: 1.3  },
     'swish':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
     'mine-collision':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
     'mine-explosion':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
@@ -291,6 +332,10 @@
 
     this.getActiveLayers = () => {
       return activeLayers;
+    };
+
+    this.getContext = () => {
+      return audioContext;
     };
   };
 
