@@ -525,6 +525,14 @@ let loops = {
 };
 
 let soundEvents = {
+  'Ghost_Paddle_Enemy_Territory': () => {
+    SoundManager.temporaryLowPass();
+    // uh oh!...
+  },
+  'Super_Hard_Shot': () => {
+    SoundManager.playRandomSoundFromBank("super-hard-shot");
+    SoundManager.musicEngine.setMoodTemporarily('intense');
+  },
   'Mine_Explosion': () => {
     SoundManager.playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
     SoundManager.temporaryLowPass();

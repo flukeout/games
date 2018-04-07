@@ -276,9 +276,7 @@ function fireGun(x, y, angle, player) {
   
   shakeScreen();
 
-  SoundManager.playRandomSoundFromBank("super-hard-shot");
-
-  SoundManager.musicEngine.setMoodTemporarily('intense');
+  SoundManager.fireEvent('Super_Hard_Shot');
 
   document.dispatchEvent(new CustomEvent("emotion", {detail: {
     player: player,
