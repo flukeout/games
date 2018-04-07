@@ -19,6 +19,7 @@
 
   const songs = {
     gameplay: {
+      loopAt: 34.89,
       layers: {
         one: {
           file: 'music/GamplayMusic1_PartA_Layer1.mp3',
@@ -68,7 +69,8 @@
     }
   };
 
-  let layerDefinitions = songs.gameplay.layers;
+  let currentSong = songs.gameplay;
+  let layerDefinitions = currentSong.layers;
 
   let duckingProfiles = {
     'test':                 {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    },
@@ -85,6 +87,7 @@
 
   window.Music = function (audioContext) {
     let activeLayers = {};
+    let lastLoopTime = 0;
 
     audioContext = audioContext || new AudioContext();
     
@@ -108,30 +111,49 @@
       let gainNode = audioContext.createGain();
 
       let layer = {
-        init: function () {
-          let sourceNode = audioContext.createBufferSource();
-          sourceNode.buffer = buffer;
-
+        source: null,
+        lastSource: null,
+        init: () => {
           let gainValue = layerDefinitions[layerName].moods.default;
           gainValue = isNaN(Number(gainValue)) ? 0 : gainValue;
           gainNode.gain.setTargetAtTime(gainValue, audioContext.currentTime, 0);
 
-          sourceNode.connect(gainNode);
           gainNode.connect(duckingNode);
 
-          sourceNode.loop = true;
-
-          layer.source = sourceNode;
+          layer.source = layer.createSourceNode();
         },
-        start: function () {
+        createSourceNode: () => {
+          let sourceNode = audioContext.createBufferSource();
+          sourceNode.buffer = buffer;
+          sourceNode.connect(gainNode);
+          sourceNode.loop = false;
+          return sourceNode;          
+        },
+        start: () => {
           layer.init(0);
           layer.source.start(0);
         },
-        stop: function () {
+        stop: () => {
+          // TODO: Make sure this still works with looping
           if (layer.source) {
             layer.source.stop();
             layer.source.disconnect(gainNode);
           }
+        },
+        getLoopSwappingReady: function () {
+          let newSourceNode = layer.createSourceNode();
+          let oldSourceNode = layer.source;
+          newSourceNode.start(lastLoopTime + currentSong.loopAt);
+          layer.source = newSourceNode;
+
+          // TODO: Make sure this actually disconnects when it rolls over
+          if (layer.lastSource) {
+            layer.lastSource.disconnect(gainNode);
+          }
+
+          layer.lastSource = oldSourceNode;
+
+          console.log('Getting loop swapping ready: ', audioContext.currentTime, lastLoopTime + currentSong.loopAt);
         },
         source: null,
         gain: gainNode,
@@ -289,16 +311,37 @@
       }
     };
 
+    let loopCheckInterval = 0;
+
     this.start = function (options) {
       for (let layer in activeLayers) {
         activeLayers[layer].start();
       }
+
+      lastLoopTime = audioContext.currentTime;
+
+      console.log('Starting', lastLoopTime);
+      console.log('Should loop at ', lastLoopTime + currentSong.loopAt);
+
+      loopCheckInterval = setInterval(() => {
+        if (audioContext.currentTime - lastLoopTime > currentSong.loopAt - 1) {
+          for (let layerName in activeLayers) {
+            let layer = activeLayers[layerName];
+            console.log(layerName);
+            layer.getLoopSwappingReady();
+          }
+
+          lastLoopTime += currentSong.loopAt;
+        }
+      }, 100);
     };
 
     this.stop = function () {
       for (let layer in activeLayers) {
         activeLayers[layer].stop();
       }
+
+      clearInterval(loopCheckInterval);
     };
 
     this.getSettingsForOutput = function () {
