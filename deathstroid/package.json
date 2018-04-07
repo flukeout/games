@@ -20,21 +20,26 @@
     "mac": {
       "target": [
         "dmg"
-      ]
+      ],
+      "icon": "build/icon.png"
     },
     "dmg": {
       "contents": [
         {
-          "x": 110,
-          "y": 150
+          "x": 390,
+          "y": 220
         },
         {
-          "x": 240,
-          "y": 150,
+          "x": 645,
+          "y": 220,
           "type": "link",
           "path": "/Applications"
         }
-      ]
+      ],
+      "window": {
+        "width": 720,
+        "height": 402
+      }
     },
     "linux": {
       "category": "Game",
