@@ -7,22 +7,21 @@
   };
 
   const files = [
-    'music/new-base-layer.mp3',
     'music/GamplayMusic1_Intro_Layer1.mp3',
     'music/GamplayMusic1_Intro_Layer2.mp3',
     'music/GamplayMusic1_Intro_Layer3.mp3',
-    'music/GamplayMusic1_PartA_Layer1.mp3',
-    'music/GamplayMusic1_PartA_Layer2.mp3',
-    'music/GamplayMusic1_PartA_Layer3.mp3',
-    'music/GamplayMusic1_PartA_Layer4.mp3'
+    'music/GamplayMusic1_PartA&B_Layer1.mp3',
+    'music/GamplayMusic1_PartA&B_Layer2.mp3',
+    'music/GamplayMusic1_PartA&B_Layer3.mp3',
+    'music/GamplayMusic1_PartA&B_Layer4.mp3'
   ];
 
   const songs = {
     gameplay: {
-      loopAt: 34.89,
+      loopAt: 69.81818181,
       layers: {
         one: {
-          file: 'music/GamplayMusic1_PartA_Layer1.mp3',
+          file: 'music/GamplayMusic1_PartA&B_Layer1.mp3',
           moods: {
             default: 1,
             pause: 1,
@@ -33,7 +32,7 @@
           }
         },
         two: {
-          file: 'music/GamplayMusic1_PartA_Layer2.mp3',
+          file: 'music/GamplayMusic1_PartA&B_Layer2.mp3',
           moods: {
             default: 1,
             pause: 0,
@@ -44,7 +43,7 @@
           }
         },
         three: {
-          file: 'music/GamplayMusic1_PartA_Layer3.mp3',
+          file: 'music/GamplayMusic1_PartA&B_Layer3.mp3',
           moods: {
             default: 0,
             pause: 0,
@@ -55,7 +54,7 @@
           }
         },
         four: {
-          file: 'music/GamplayMusic1_PartA_Layer4.mp3',
+          file: 'music/GamplayMusic1_PartA&B_Layer4.mp3',
           moods: {
             default: 0,
             pause: 0,
