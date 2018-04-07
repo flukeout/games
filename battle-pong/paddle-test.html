@@ -140,6 +140,9 @@
           Matter.Resolver._restingThresh = 0.1;
         },
 
+        // purposely empty because it's useless here
+        lostPowerup: () => {},
+
         run: function () {
           (function loop() {
             game.step();

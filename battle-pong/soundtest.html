@@ -237,6 +237,7 @@
             data: {
               status: 'Loading',
               moods: musicEngine.getMoods(),
+              layerDefinitions: musicEngine.getLayerDefinitions(),
               moodToSet: 'default',
               currentMood: 'default',
               moodActive: false,
@@ -302,6 +303,16 @@
 
           setInterval(() => {
             musicVue.ducking = musicEngine.duckingNode.gain.value;
+
+            let musicLayers = musicEngine.getActiveLayers();
+            for (let layerName in musicLayers) {
+              let layer = musicLayers[layerName];
+              let gainValue = layer.gain.gain.value;
+              let colourValue = 255 - (gainValue * 255);
+              let layerDisplay = document.querySelector('section.music-layers [data-layer="' + layerName + '"]');
+              layerDisplay.style.backgroundColor = 'rgb(' + colourValue + ', 255, ' + colourValue + ')';
+              layerDisplay.querySelector('.gain-value').textContent = Math.round(gainValue * 1000)/1000;
+            }
           }, 25);
         }
 
@@ -533,6 +544,12 @@
         <section>
           <h2>Global Gain</h2>
           <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model.number="globalGain" @change="globalGainChanged"></div>
+        </section>
+        <section class="music-layers">
+          <h2>Layers</h2>
+          <div v-for="(layer, name) in layerDefinitions">
+            <div :data-layer="name"><b>{{name}}</b>: {{layer.file}} [<span class="gain-value">0</span>]</div>
+          </div>
         </section>
         <section>
           <h2>Moods</h2>

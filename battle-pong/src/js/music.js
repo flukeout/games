@@ -16,8 +16,8 @@
       file: 'music/Contagion_Loop_TopLayer.mp3',
       moods: {
         default: 0,
-        intense: 1,
-        quiet: 0.2
+        // intense: 1,
+        // quiet: 0.2
       }
     },
     base: {
@@ -283,6 +283,14 @@
 
     this.clearSettingsFromLocalStorage = function () {
       localStorage.removeItem('music');
+    };
+
+    this.getLayerDefinitions = () => {
+      return layerDefinitions;
+    };
+
+    this.getActiveLayers = () => {
+      return activeLayers;
     };
   };
 

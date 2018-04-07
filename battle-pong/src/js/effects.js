@@ -78,7 +78,6 @@ function powerupScored(x, y, type) {
 
 function mineExplosion(xposition, yposition, size){
 
-  SoundManager.playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
   shakeScreen();
 
   // Adds the orange blast
@@ -116,7 +115,7 @@ function mineExplosion(xposition, yposition, size){
 
   effectsElements.world.appendChild(particle.el);
 
-  SoundManager.temporaryLowPass();
+  SoundManager.fireEvent('Mine_Explosion');
 }
 
 
