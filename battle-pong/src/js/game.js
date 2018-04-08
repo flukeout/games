@@ -397,7 +397,10 @@ var game =  {
 
 
   // Restarts a round
-  restart : function(){
+  restart : function(initialDelay){
+
+    let delay = initialDelay || 0;
+
 
     var that = this;
     var messageDelay = 0;
@@ -421,17 +424,21 @@ var game =  {
 
     setTimeout(function(){
       SoundManager.playSound("round-start");
-    }, 2200);
+    }, delay);
+
+    delay = delay + 50;
 
     setTimeout(function(){
       that.showScore();
-    }, 2500);
+    }, delay);
 
+    delay = delay + 1700;
 
     setTimeout(function(){
       var message = finalRound ? "FINAL ROUND!!" : "GAME ON!";
       that.showMessage(message, 1500);
-    }, 4200);
+    }, delay);
+
 
     setTimeout(function(){
       that.mode = "running";
@@ -444,7 +451,7 @@ var game =  {
           that.launchBall();
         }, 1500);
       }
-    }, 4200);
+    }, delay);
   },
 
 
