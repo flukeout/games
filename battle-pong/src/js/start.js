@@ -74,12 +74,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var frameRateMonitor  = new FrameRateMonitor();
   }
 
-  var music = new Music();
-  music.load().then(() => {
-    if (Settings.music) music.start();
+  SoundManager.init().then(() => {
+    if (Settings.music) SoundManager.musicEngine.start();
   });
-
-  SoundManager.init();
   SoundManager.loadSettingsFromLocalStorage();
   
   game.init();

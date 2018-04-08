@@ -191,8 +191,19 @@
       return allMoods;
     };
 
-    this.setGlobalGain = function (value) {
-      globalGainNode.gain.setTargetAtTime(value, audioContext.currentTime, 0);
+    let oldGlobalGain = defaultGlobalGainValue;
+    this.temporarilyReduceGain = function (percentage) {
+      oldGlobalGain = this.getGlobalGain();
+      this.setGlobalGain(oldGlobalGain * percentage, 0.15);
+    };
+
+    this.resetGlobalGain = function () {
+      this.setGlobalGain(oldGlobalGain, 0.75);
+    };
+
+    this.setGlobalGain = function (value, ramp) {
+      ramp = ramp || 0;
+      globalGainNode.gain.setTargetAtTime(value, audioContext.currentTime, ramp);
     };
 
     this.getGlobalGain = () => { return globalGainNode.gain.value; };

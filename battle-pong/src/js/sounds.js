@@ -6,6 +6,8 @@
 // Prevent all of these variables and constants from polluting the global scope
 (function () {
 
+const superHardShotIntensityInjection = 15;
+
 const temporaryLowPassSettings = {
   startFrequency: 500,
   endFrequency: 20000,
@@ -531,7 +533,7 @@ let soundEvents = {
   },
   'Super_Hard_Shot': () => {
     SoundManager.playRandomSoundFromBank("super-hard-shot");
-    SoundManager.musicEngine.setMoodTemporarily('intense');
+    musicEngine.addIntensity(superHardShotIntensityInjection);
   },
   'Mine_Explosion': () => {
     SoundManager.playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
@@ -540,16 +542,19 @@ let soundEvents = {
   'Finish_It_Heartbeat_Start': () => {
     SoundManager.startLoop('Finish_It_Heartbeat');
     musicEngine.setMood('quiet');
+    musicEngine.temporarilyReduceGain(0.2);
   },
   'Finish_It_Heartbeat_Stop_Hit': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Hit');
     musicEngine.setMood('default');
+    musicEngine.resetGlobalGain();
   },
   'Finish_It_Heartbeat_Stop_Miss': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Miss');
     musicEngine.setMood('default');
+    musicEngine.resetGlobalGain();
   }
 };
 
