@@ -164,8 +164,6 @@
           }
 
           layer.lastSource = oldSourceNode;
-
-          console.log('Getting loop swapping ready: ', audioContext.currentTime, lastLoopTime + currentSong.loopAt);
         },
         source: null,
         gain: gainNode,
@@ -376,9 +374,6 @@
       }
 
       lastLoopTime = audioContext.currentTime;
-
-      console.log('Starting', lastLoopTime);
-      console.log('Should loop at ', lastLoopTime + currentSong.loopAt);
 
       maintenanceInterval = setInterval(() => {
         if (audioContext.currentTime - lastLoopTime > currentSong.loopAt - 1) {
