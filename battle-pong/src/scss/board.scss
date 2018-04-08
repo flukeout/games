@@ -151,7 +151,12 @@
   background-repeat: no-repeat;
   background-size: contain;
   animation: satelliteAppear 2s ease-out;
-  animation-delay: 0s, 2s;
+  animation-delay: 0s;
+  transition: transform 1.5s ease-in-out;
+
+  &.fly-up {
+    transform: translateY(-200px);
+  }
 
   @keyframes satelliteAppear {
     0% {
@@ -553,4 +558,204 @@
   &:hover {
     opacity: .75;
   }
+}
+
+.winner-two .between-round-score {
+   .screen {
+    background: $green;
+  }
+  .restart {
+    background: $pink;
+  }
+
+}
+
+.winner-one .between-round-score {
+  .screen {
+    background: $pink;
+  }
+  .restart {
+    background: $green;
+  }
+}
+
+
+.between-round-score {
+  position: fixed;
+  top: -10vh;
+  left: -10vw;
+  width: 120vw;
+  height: 120vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: rgba(0,0,0,.8);
+  transform: rotateX(-12deg);
+  perspective: 1200px;
+  animation: betweenRoundAppear 1s ease-out;
+  
+  @keyframes betweenRoundAppear {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  &.fadeout {
+    animation: betweenFadeout 1s ease-in-out;
+    opacity: 0;
+    
+    .score-wrapper {
+      transform: translateY(-1000px);
+      opacity: 0;
+    }
+    
+    @keyframes betweenFadeout {
+      0% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+  }
+
+ .score-wrapper {
+    position: relative;
+    width: 600px;
+    margin: 0 auto;
+    color: white;
+    text-align: center;
+    font-size: 35px;
+    line-height: 40px;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    top: -50px;
+    transform: scale(1);
+    perspective: 1200;
+    transform-style: preserve-3d;
+    transition: all 1s ease-in;
+    animation: scoreAppear 2s ease-out;
+    
+    @keyframes scoreAppear {
+      0% {
+        transform: translateY(-1000px);
+      }
+      30% {
+        transform: translateY(-1000px);
+      }
+      80% {
+        transform: translateY(35px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    .wing {
+      position: absolute;
+      height: 340px;
+      width: 175px;
+      top: 185px;
+      animation: wingrotate 3s ease-in-out infinite;
+      animation-direction: alternate;
+      
+      @keyframes wingrotate {
+        0% {
+          transform: rotateX(-25deg);
+        }
+        100% {
+          transform: rotateX(25deg);
+        }
+      }
+    }
+
+    .left-wing {
+      left: -175px;
+      background-image: url(assets/images/wing-left.svg);
+      background-position: left;
+      background-size: cover;
+    }
+    
+    .right-wing {
+      right: -175px;
+      background-position: right;
+      background-size: cover;
+      background-image: url(assets/images/wing-right.svg);
+      animation-direction: alternate reverse;
+    }
+
+    .satellite-top {
+      background-image: url(assets/images/satellite-top.svg);
+      background-position: bottom;
+      background-repeat: no-repeat;
+      height: 120px;
+    }
+
+    .screen-wrapper {
+      background: #585B6D;
+      padding: 20px;
+      border-radius: 0 0 3px 3px;
+    }
+
+    .screen {
+      border: solid 10px #1F2235;
+      border-width: 5px 10px 14px 10px;
+      border-radius: 20px;
+      padding: 15px 0;
+      position: relative;
+      transform: rotateZ(0);
+    }
+    
+    .divider {
+      position: relative;
+      top: -4px;
+    }
+
+    h2 {
+      font-size: 25px;
+      margin: 0;
+      opacity: .65;
+    }
+    
+    h1 {
+      font-size: 50px;
+      margin: 0 0 20px 0;
+    }
+    
+    .scores {
+      font-size: 50px;
+    }
+  }
+
+  .stats {
+    font-size: 20px;
+    margin: 30px auto 30px auto;
+    color: rgba(255,255,255,1);
+    border: solid 1px rgba(255,255,255,1);
+    opacity: .5;
+
+    td {
+      text-align: center;
+      padding: 3px 45px;
+      border: solid 1px rgba(255,255,255,1);
+    }
+
+    h3 {
+      margin: 0;
+    }
+  }
+  
+  .restart {
+    box-shadow: 0 -5px 0 rgba(0,0,0,.3);
+    margin-bottom: 4px;
+  }
+  
+  .settings {
+    font-size: 20px;
+  }
+
 }

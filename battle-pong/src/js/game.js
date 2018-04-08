@@ -2,6 +2,8 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
+    total1: 0,
+    total2: 0,
     max : window.Settings.playTo || 2, // First to this number wins
     winner : false,  // Holds the winning paddle object
     loser : false    // Holds the losing paddle object
@@ -23,6 +25,7 @@ var game =  {
   // roundover - round is over (about to reset)
   // gameover - game is over (loser screen)
   // finish - finish it
+  // betweenrounds - shows score after game, before new game starts
   // pregame - before a game starts
   // paused - game loop is paused
   // startup - kickstarting the game loop
@@ -59,6 +62,8 @@ var game =  {
 
     this.goalOneEl = document.querySelector(".goal.one");
     this.goalTwoEl = document.querySelector(".goal.two");
+
+    this.betweenRoundsEl = document.querySelector(".between-round-score");
 
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
@@ -146,8 +151,13 @@ var game =  {
     }, 1500);
 
     setTimeout(() => {
-      this.restart();
+      this.scoreDisplay();
     }, 2500);
+
+    setTimeout(() => {
+      document.querySelector(".score-satellite").classList.add("fly-up");
+    }, 2000);
+
   },
 
   // When the loser dies during the FINISH IT phase
@@ -155,13 +165,57 @@ var game =  {
     this.removeBalls();
     SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Hit');
     
-    setTimeout(() => {      
+    setTimeout(() => {
       this.showMessage("YOU MONSTER", 1750);
-    }, 1000);
+    }, 1250);
 
     setTimeout(() => {
-      this.restart();
+      document.querySelector(".score-satellite").classList.add("fly-up");
+    }, 2000);
+
+    setTimeout(() => {
+      this.scoreDisplay();
     }, 3000);
+  },
+
+  // Showd the screen between rounds
+  scoreDisplay: function() {
+    console.log(this.score);
+    this.mode = "betweenrounds";
+    
+    this.betweenRoundsEl.style.display = "flex";
+
+    // selects the "Rematch"
+    selectButtonByRowCol(2,1);
+
+    this.betweenRoundsEl.querySelector(".player-1-score").innerText = this.score.player1;
+    this.betweenRoundsEl.querySelector(".player-2-score").innerText = this.score.player2;
+
+    this.betweenRoundsEl.querySelector("h1").innerText = "PLAYER " + (game.score.winner.player + 1) + " WINS!"
+
+
+    this.betweenRoundsEl.querySelector(".player-1-total-score").innerText = this.score.total1;
+    this.betweenRoundsEl.querySelector(".player-2-total-score").innerText = this.score.total2;
+
+  },
+
+  // When teh rematch button is pressed between rounds
+  // Clears off the between rounds screen...
+  rematch: function(){
+    
+    // reset scores...    
+    this.score.player1 = 0;
+    this.score.player2 = 0;
+
+    let that = this;
+
+    this.betweenRoundsEl.classList.add("fadeout");
+
+    setTimeout(() => {
+      that.betweenRoundsEl.style.display = "none";
+      that.betweenRoundsEl.classList.remove("fadeout");
+      that.restart();
+    }, 1000);
   },
 
   pause: function () {
@@ -399,6 +453,12 @@ var game =  {
   // Restarts a round
   restart : function(initialDelay){
 
+    if(this.mode == "pregame") {
+      return;
+    }
+
+    document.querySelector(".score-satellite").classList.remove("fly-up");
+
     let delay = initialDelay || 0;
 
 
@@ -522,13 +582,12 @@ var game =  {
     if(this.score.winner == this.paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
       this.bodyEl.classList.add("winner-one");
+      this.score.total1++;
     } else {
       this.showMessage("Player 2 Wins!", 1500);
       this.bodyEl.classList.add("winner-two");
+      this.score.total2++;
     }
-
-    this.score.player1 = 0;
-    this.score.player2 = 0;
 
     setTimeout(() => {
       var minY = that.score.loser.physics.bounds.min.y;
@@ -557,7 +616,6 @@ var game =  {
       SoundManager.fireEvent('Finish_It_Heartbeat_Start');
       
       this.aiManager.setBall(ball);
-
     }, 2000);
 
   },
@@ -598,9 +656,7 @@ var game =  {
 
     this.updateScoreDisplay();
 
-
     SoundManager.playSound("Win_Cheer");
-
 
     if(winner == this.paddles[0]) {
       this.bodyEl.classList.add("winner-one");

@@ -137,10 +137,10 @@ const selectButtonByDirection = (thisButton, direction) => {
     }
   }
 
-
   let thisIndex = rows.indexOf(row);
+  
   if(direction === "down") {
-    if(row < rows.length) {
+    if(rows.indexOf(row) + 1 < rows.length) {
       row = rows[thisIndex + 1];
     } else {
       row = rows[0];
@@ -176,6 +176,14 @@ const selectButtonEl = el => {
   selectedButton = el;
   el.classList.add('input-selected');
 }
+
+const selectButtonByRowCol = (row,col) => {
+  deselectAllButtons();
+  selectedButton = document.querySelector(`[row='${row}'][col='${col}']`);
+  selectedButton.classList.add('input-selected');
+}
+
+
 
 const selectButtonByIndex = num => {
   deselectAllButtons();

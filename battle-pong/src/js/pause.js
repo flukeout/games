@@ -15,7 +15,19 @@ function PauseManager (game, inputManager) {
   document.querySelector(".menu-toggle").addEventListener("click",function(){
     displayingRules ? resumeGame() : pauseGame();
     SoundManager.playSound("ui");
-  })
+  });
+
+  document.querySelector(".button.restart").addEventListener("click",function(e){
+    game.rematch();
+    addTemporaryClassName(e.target, "poke", 250);
+    buttonGleam(e.target);
+    SoundManager.playSound("ui");
+  });
+
+  document.querySelector(".button.settings").addEventListener("click",function(){
+    navigate("index");
+    SoundManager.playSound("ui");
+  });
 
   document.querySelectorAll("[nav]").forEach(function(el){
     el.addEventListener("click",function(e){
@@ -24,7 +36,7 @@ function PauseManager (game, inputManager) {
       buttonGleam(e.target);
       navigate(this.getAttribute("nav"));
     });
-  })
+  });
 
   document.querySelector(".resume").addEventListener("click", function(el){
     SoundManager.playSound("ui");
@@ -41,6 +53,10 @@ function PauseManager (game, inputManager) {
   }
 
   function pauseGame(){
+    if(game.mode == "betweenrounds") {
+      return;
+    }
+
     document.querySelector(".pause-screen").classList.add("visible");
     game.pause();
     displayingRules = true;
