@@ -598,6 +598,10 @@ var game =  {
 
     this.updateScoreDisplay();
 
+
+    SoundManager.playSound("Win_Cheer");
+
+
     if(winner == this.paddles[0]) {
       this.bodyEl.classList.add("winner-one");
     } else {
@@ -610,6 +614,7 @@ var game =  {
       this.gameOver();
     } else {
       var that = this;
+      this.showMessage("NICE ROUND!", 2000); 
       setTimeout(function(){
         that.restart()
       },this.timeBetweenRoundsMS);
@@ -771,8 +776,6 @@ var game =  {
     // this whole function should just be cosmetic.
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver(scoringBall);
-      SoundManager.playSound("Win_Cheer");
-      this.showMessage("NICE", 1500);
     }
   },
 
