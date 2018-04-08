@@ -1,5 +1,5 @@
 (function () {
-
+  const intensityReductionFactor = .01;
   const temporaryLevelDelayRecoveryTimeInSeconds = 1.5;
   
   const temporaryMoodDurations = {
@@ -68,6 +68,14 @@
     }
   };
 
+  let intensityThresholds = {
+    default: -1,
+    level1: 0,
+    level2: 5,
+    level3: 10,
+    level4: 20
+  };
+
   let currentSong = songs.gameplay;
   let layerDefinitions = currentSong.layers;
 
@@ -87,6 +95,7 @@
   window.Music = function (audioContext) {
     let activeLayers = {};
     let lastLoopTime = 0;
+    let intensity = 0;
 
     audioContext = audioContext || new AudioContext();
     
@@ -103,8 +112,11 @@
 
     this.duckingNode = duckingNode;
     this.globalGainNode = globalGainNode;
+
+    this.currentIntensity = intensity;
     
     let duckingTimeout = -1;
+    let currentMood = 'default';
 
     function createLayer(layerName, buffer) {
       let gainNode = audioContext.createGain();
@@ -240,7 +252,10 @@
       });
     };
 
+    // this.transitionToMood = function ()
+
     this.setMood = function (mood) {
+      currentMood = mood;
       for (let layerName in activeLayers) {
         this.setLayerMood(layerName, mood, temporaryMoodDurations[mood]);
       }      
@@ -310,7 +325,7 @@
       }
     };
 
-    let loopCheckInterval = 0;
+    let maintenanceInterval = 0;
 
     this.start = function (options) {
       for (let layer in activeLayers) {
@@ -322,17 +337,32 @@
       console.log('Starting', lastLoopTime);
       console.log('Should loop at ', lastLoopTime + currentSong.loopAt);
 
-      loopCheckInterval = setInterval(() => {
+      maintenanceInterval = setInterval(() => {
         if (audioContext.currentTime - lastLoopTime > currentSong.loopAt - 1) {
           for (let layerName in activeLayers) {
             let layer = activeLayers[layerName];
-            console.log(layerName);
             layer.getLoopSwappingReady();
           }
 
           lastLoopTime += currentSong.loopAt;
         }
-      }, 100);
+
+        intensity -= intensity * intensityReductionFactor;
+        this.currentIntensity = intensity;
+
+        let moodWithLowestThreshold;
+        let lowestThreshold = -1;
+        for (let mood in intensityThresholds) {
+          if (intensityThresholds[mood] <= intensity && intensityThresholds[mood] > lowestThreshold) {
+            moodWithLowestThreshold = mood;
+            lowestThreshold = intensityThresholds[mood];
+          }
+        }
+
+        if (currentMood !== moodWithLowestThreshold) {
+          this.setMood(moodWithLowestThreshold);
+        }
+      }, 50);
     };
 
     this.stop = function () {
@@ -340,7 +370,7 @@
         activeLayers[layer].stop();
       }
 
-      clearInterval(loopCheckInterval);
+      clearInterval(maintenanceInterval);
     };
 
     this.getSettingsForOutput = function () {
@@ -378,6 +408,10 @@
 
     this.getContext = () => {
       return audioContext;
+    };
+
+    this.addIntensity = (newIntensity) => {
+      intensity += Number(newIntensity);
     };
   };
 

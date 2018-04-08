@@ -272,6 +272,9 @@
               },
               duckingProfileChanged: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
+              },
+              addIntensity: (e) => {
+                musicEngine.addIntensity(document.querySelector('section.intensity input').value);
               }
             }
           });
@@ -549,6 +552,14 @@
           <h2>Layers</h2>
           <div v-for="(layer, name) in layerDefinitions">
             <div :data-layer="name"><b>{{name}}</b>: {{layer.file}} [<span class="gain-value">0</span>]</div>
+          </div>
+        </section>
+        <section class="intensity">
+          <h2>Intensity</h2>
+          <div>
+            <input type="number" min="0" max="255" value="1">
+            <button v-on:click="addIntensity">Add Intensity</button>
+            <span>{{musicEngine.currentIntensity}}</span>
           </div>
         </section>
         <section>
