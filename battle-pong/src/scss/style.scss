@@ -81,3 +81,15 @@ body.fade-out {
   height: 2em;
   z-index: 99999999;
 }
+
+
+.gleam {
+  top: 0;
+  left: 0;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: white;
+  opacity: 1;
+  transform-origin: left;
+}
