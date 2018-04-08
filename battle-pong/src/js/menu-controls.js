@@ -84,89 +84,88 @@ const getCenter = el => {
   }
 }
 
-// Returns an array of possible buttons that are in the desired
-// direction from the base button. And at least a range of of
-// maximum value on the opposite axis.
-// Also returns these buttons along with a distance from the current button.
-const getOptions = (baseCenter, buttons, direction, axisRange) => {
-  let options = [];
-  let maxOppositeAxisRange = axisRange || 75;
 
-  buttons.forEach(button => {
-    let center = getCenter(button);
-    let conditionMet = false;
-
-    if(direction === "down" 
-        && (center.y - baseCenter.y > 10)
-        && Math.abs(center.x - baseCenter.x) < maxOppositeAxisRange) {
-      conditionMet = true;
-    }
-
-    if(direction === "up" 
-        && (center.y - baseCenter.y < -10)
-        && Math.abs(center.x - baseCenter.x) < maxOppositeAxisRange) {
-      conditionMet = true;
-    }
-
-    if(direction === "left" 
-        && center.x < baseCenter.x
-        && Math.abs(center.y - baseCenter.y) < maxOppositeAxisRange) {
-      conditionMet = true;
-    }
-
-    if(direction === "right" 
-        && center.x > baseCenter.x
-        && Math.abs(center.y - baseCenter.y) < maxOppositeAxisRange) {
-      conditionMet = true;
-    }
-    
-    if(conditionMet && (direction === "right" || direction === "left")) {
-      options.push({
-        el: button,
-        delta: Math.sqrt(Math.pow((center.x - baseCenter.x), 2) + Math.pow((center.y - baseCenter.y) * 3, 2))
-      });
-    }
-
-    if(conditionMet && (direction === "up" || direction === "down")) {
-      options.push({
-        el: button,
-        delta: Math.sqrt(Math.pow((center.x - baseCenter.x) * 3, 2) + Math.pow((center.y - baseCenter.y), 2))
-      });
-    }
-
-
-  });
-
-  return options;
-}
 
 // Selects a button closest to thisButton for a given Direction
 const selectButtonByDirection = (thisButton, direction) => {
 
   let thisButtonCenter = getCenter(thisButton);
-  let options = [];
-  
-  options = getOptions(thisButtonCenter, buttons, direction, 150);
+  let col = parseInt(thisButton.getAttribute("col"));
+  let row = parseInt(thisButton.getAttribute("row"));
 
-  if(options.length === 0) {
-    return;
-  }
 
-  let minDistance = false;
-  let closestButton;
-  
-  // Finds the closets button in absolute terms
-  // from the range of possible buttons.  
-  options.forEach(option => {
-    if(!minDistance){
-      minDistance = option.delta;
-      closestButton = option.el;
-    }
-    if(option.delta < minDistance) {
-      minDistance = option.delta;
-      closestButton = option.el;
+  let nextSelector = false;
+
+  let allButtons = document.querySelectorAll("[row][col]");
+
+  // Get the number of rows
+  let rows = [];
+  allButtons.forEach( el => { 
+    if(el.offsetParent) {
+      let row = parseInt(el.getAttribute("row"));
+      if(rows.indexOf(row) < 0) {
+        rows.push(row);
+      }
     }
   });
+
+  let numRows = Math.max(...rows);
+
+  let rowButtons = document.querySelectorAll(`[row="${row}"]`);
+  if(direction === "right") {
+    if(col < rowButtons.length) {
+      nextSelector =`[row="${row}"][col="${col+1}"]`;
+    } else {
+      nextSelector =`[row="${row}"][col="1"]`;
+    }
+  }
+
+  if(direction === "left") {
+    if(col > 1) {
+      nextSelector =`[row="${row}"][col="${col-1}"]`;
+    } else {
+      nextSelector =`[row="${row}"][col="${rowButtons.length}"]`;
+    }
+  }
+  
+  if(nextSelector) { 
+    let nextOption = document.querySelector(nextSelector);
+
+    if(nextOption){
+      selectButtonEl(nextOption);
+      return;
+    }
+  }
+
+
+  let thisIndex = rows.indexOf(row);
+  if(direction === "down") {
+    if(row < rows.length) {
+      row = rows[thisIndex + 1];
+    } else {
+      row = rows[0];
+    }
+  }
+
+  if(direction === "up") {
+    if(rows.indexOf(row) === 0) {
+      row = rows[rows.length - 1];
+    } else {
+      row = rows[thisIndex - 1];
+    }
+  }
+
+  let nextRowButtons = document.querySelectorAll(`[row="${row}"]`);
+  let closestButton = false;
+  
+  let delta = 9999999;
+  nextRowButtons.forEach(button => {
+    let xDelta = Math.abs(thisButtonCenter.x - getCenter(button).x)
+    if( xDelta < delta) {
+      closestButton = button;
+      delta = xDelta;
+    }
+  })
 
   selectButtonEl(closestButton);
 }
@@ -176,10 +175,6 @@ const selectButtonEl = el => {
   selectedIndex = buttons.indexOf(el);
   selectedButton = el;
   el.classList.add('input-selected');
-
-  // if(el.classList.contains("gleamer")){
-  //   buttonGleam(el);
-  // }
 }
 
 const selectButtonByIndex = num => {

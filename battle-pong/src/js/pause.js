@@ -14,15 +14,22 @@ function PauseManager (game, inputManager) {
 
   document.querySelector(".menu-toggle").addEventListener("click",function(){
     displayingRules ? resumeGame() : pauseGame();
+    SoundManager.playSound("ui");
   })
 
   document.querySelectorAll("[nav]").forEach(function(el){
-    el.addEventListener("click",function(){
+    el.addEventListener("click",function(e){
+      addTemporaryClassName(e.target, "poke", 250);
+      SoundManager.playSound("ui");
+      buttonGleam(e.target);
       navigate(this.getAttribute("nav"));
     });
   })
 
-  document.querySelector(".resume").addEventListener("click", function(){
+  document.querySelector(".resume").addEventListener("click", function(el){
+    SoundManager.playSound("ui");
+    addTemporaryClassName(el.target, "poke", 250);
+    buttonGleam(el.target);
     resumeGame();
   });
 
@@ -37,7 +44,7 @@ function PauseManager (game, inputManager) {
     document.querySelector(".pause-screen").classList.add("visible");
     game.pause();
     displayingRules = true;
-    selectButtonByIndex(0);
+    selectButtonByIndex(2);
   }
 
   function navigate(destination){
