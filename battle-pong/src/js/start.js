@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function startGame () {
     document.querySelector('.score-wrapper').classList.add('show');
-    game.restart();
+    game.restart(2200);
     game.run();
   }
 
