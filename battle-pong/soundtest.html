@@ -11,6 +11,10 @@
         let soundVue;
 
         SoundManager.init().then(() => {
+          console.log('ready...?');
+          SoundManager.musicEngine.cueSong('gameplay');
+          startSoundEngineMonitor();
+          startMusicEngineMonitor();
           musicVue.status = 'Ready';
         });
 
@@ -275,6 +279,9 @@
               },
               addIntensity: (e) => {
                 musicEngine.addIntensity(document.querySelector('section.intensity input').value);
+              },
+              changeSong(e) {
+                musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
               }
             }
           });
@@ -307,7 +314,7 @@
           setInterval(() => {
             musicVue.ducking = musicEngine.duckingNode.gain.value;
 
-            let musicLayers = musicEngine.getActiveLayers();
+            let musicLayers = musicEngine.getLayers();
             for (let layerName in musicLayers) {
               let layer = musicLayers[layerName];
               let gainValue = layer.gain.gain.value;
@@ -318,9 +325,6 @@
             }
           }, 25);
         }
-
-        startSoundEngineMonitor();
-        startMusicEngineMonitor();
       });
     </script>
     <style>
@@ -547,6 +551,11 @@
         <section>
           <h2>Global Gain</h2>
           <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model.number="globalGain" @change="globalGainChanged"></div>
+        </section>
+        <section>
+          <h2>Songs</h2>
+          <div>Current song: {{musicEngine.currentSongName}}</div>
+          <button v-for="(song, name) in musicEngine.getSongs()" v-on:click="changeSong" :data-song-name="name">{{name}}</button>
         </section>
         <section class="music-layers">
           <h2>Layers</h2>

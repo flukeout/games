@@ -18,8 +18,34 @@
   ];
 
   const songs = {
+    menu: {
+      loopDuration: 69.81818181,
+      layers: {
+        one: {
+          file: 'music/MenuMusic1.mp3',
+          moods: { default: 1 }
+        }
+      }
+    },
+    gameplayIntro: {
+      loopDuration: 34.9090909090,
+      layers: {
+        one: {
+          file: 'music/GamplayMusic1_Intro_Layer1.mp3',
+          moods: { default: 1 }
+        },
+        two: {
+          file: 'music/GamplayMusic1_Intro_Layer2.mp3',
+          moods: { default: 1 }
+        },
+        three: {
+          file: 'music/GamplayMusic1_Intro_Layer3.mp3',
+          moods: { default: 1 }
+        }
+      }
+    },
     gameplay: {
-      loopAt: 69.81818181,
+      loopDuration: 69.81818181,
       layers: {
         one: {
           file: 'music/GamplayMusic1_PartA&B_Layer1.mp3',
@@ -77,9 +103,6 @@
     level4: 20
   };
 
-  let currentSong = songs.gameplay;
-  let layerDefinitions = currentSong.layers;
-
   let duckingProfiles = {
     'test':                 {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    },
     'dash':                 {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
@@ -94,12 +117,9 @@
   const defaultGlobalGainValue = window.Settings.music ? .3 : 0;
 
   window.Music = function (audioContext) {
-    let activeLayers = {};
-    let lastLoopTime = 0;
-    let intensity = 0;
+    let currentSong = null;
+    let preparedSongs = {};
 
-    audioContext = audioContext || new AudioContext();
-    
     let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
     
@@ -108,6 +128,116 @@
     duckingNode.connect(globalGainNode);
     globalGainNode.connect(audioContext.destination);
 
+    this.duckingNode = duckingNode;
+    this.globalGainNode = globalGainNode;
+
+    this.getDuckingProfiles = () => { return duckingProfiles; };
+    this.getMoods = function () { return currentSong.getMoods(); };
+    this.temporarilyReduceGain = function (percentage) { return currentSong.temporarilyReduceGain(percentage); };
+    this.resetGlobalGain = function () { return currentSong.resetGlobalGain(); };
+    this.setGlobalGain = function (value, ramp) { return currentSong.setGlobalGain(value, ramp); };
+    this.getGlobalGain = () => { return currentSong.getGlobalGain(); };
+    this.duck = function (profileName) { return currentSong.duck(profileName); };
+    this.transitionToMood = function (mood) { return currentSong.transitionToMood(mood); };
+    this.setMood = function (mood) { return currentSong.setMood(mood); };
+    this.setMoodTemporarily = function (mood) { return currentSong.setMoodTemporarily(mood); };
+    this.transitionLayerMood = function (layerName, mood, oldMood) { return currentSong.transitionLayerMood(layerName, mood, oldMood) };
+    this.setLayerMood = function (layerName, mood) { return currentSong.setLayerMood(layerName, mood); };
+    this.setLayerMoodTemporarily = function (layerName, mood, time) { return currentSong.setLayerMoodTemporarily(layerName, mood, time); };
+    this.setLevels = function (levels) { return currentSong.setLevels(levels); };
+    this.getLayerDefinitions = () => { return currentSong.getLayerDefinitions(); };
+    this.getLayers = () => { return currentSong.getLayers(); };
+    this.getContext = () => { return currentSong.getContext(); };
+    this.addIntensity = (newIntensity) => { return currentSong.addIntensity(newIntensity); };
+
+    this.currentSongName = null;
+
+    this.cueSong = function (songName) {
+      if (currentSong) {
+        currentSong.stop();        
+      }
+      
+      currentSong = preparedSongs[songName];
+
+      this.currentSongName = songName;
+    };
+
+    this.load = function () {
+      return new Promise(async (resolve, reject) => {
+        let buffers = {};
+        let requests = {};
+
+        files.forEach(file => {
+          requests[file] = new Promise((requestResolve, requestReject) => {
+            let request = new XMLHttpRequest();
+            request.open('GET', file, true);
+            request.responseType = 'arraybuffer';
+            request.onload = () => audioContext.decodeAudioData(request.response, buffer => requestResolve(buffer));
+            request.send();
+          });
+        });
+
+        // TODO: make these load asynchronously
+        for (let file in requests) {
+          buffers[file] = await requests[file];
+        }
+
+        let songPromises = [];
+        for (let songName in songs) {
+          preparedSongs[songName] = new Song(songName, audioContext, songs[songName], globalGainNode, duckingNode);
+          songPromises.push(preparedSongs[songName].load());
+        }
+
+        Promise.all(songPromises).then(() => {
+          resolve();
+        });
+      });
+    };
+
+    this.start = function (options) {
+      return currentSong.start(options);
+    };
+
+    this.stop = function () {
+      return currentSong.stop();
+    };
+
+    this.getSettingsForOutput = function () {
+      return {
+        duckingProfiles: duckingProfiles,
+        globalGainValue: globalGainNode.gain.value
+      };
+    };
+
+    this.loadSettingsFromLocalStorage = function () {
+      let storedSettings = localStorage.getItem('music');
+      
+      if (storedSettings) {
+        let parsedSettings = JSON.parse(storedSettings);
+        duckingProfiles = parsedSettings.duckingProfiles;
+        globalGainNode.gain.setTargetAtTime(parsedSettings.globalGainValue, audioContext.currentTime, 0);
+      }
+    };
+
+    this.saveSettingsToLocalStorage = function () {
+      localStorage.setItem('music', JSON.stringify(this.getSettingsForOutput()));
+    };
+
+    this.clearSettingsFromLocalStorage = function () {
+      localStorage.removeItem('music');
+    };
+
+    this.getSongs = () => { return songs; };
+  };
+
+  let Song = function (songName, audioContext, songDefinition, globalGainNode, duckingNode) {
+    let layers = {};
+    let lastLoopTime = 0;
+    let intensity = 0;
+    let layerDefinitions = songDefinition.layers;
+
+    audioContext = audioContext || new AudioContext();
+    
     this.temporaryMoodDurations = temporaryMoodDurations;
     this.currentDuckingProfile = null;
 
@@ -155,7 +285,7 @@
         getLoopSwappingReady: function () {
           let newSourceNode = layer.createSourceNode();
           let oldSourceNode = layer.source;
-          newSourceNode.start(lastLoopTime + currentSong.loopAt);
+          newSourceNode.start(lastLoopTime + songDefinition.loopDuration);
           layer.source = newSourceNode;
 
           // TODO: Make sure this actually disconnects when it rolls over
@@ -255,7 +385,7 @@
         }
 
         for (let layerName in layerDefinitions) {
-          activeLayers[layerName] = createLayer(layerName, buffers[layerDefinitions[layerName].file]);
+          layers[layerName] = createLayer(layerName, buffers[layerDefinitions[layerName].file]);
         }
 
         resolve();
@@ -265,26 +395,26 @@
     this.transitionToMood = function (mood) {
       let oldMood = currentMood;
       currentMood = mood;
-      for (let layerName in activeLayers) {
+      for (let layerName in layers) {
         this.transitionLayerMood(layerName, mood, oldMood);
       }
     };
 
     this.setMood = function (mood) {
       currentMood = mood;
-      for (let layerName in activeLayers) {
+      for (let layerName in layers) {
         this.setLayerMood(layerName, mood);
       }
     }
 
     this.setMoodTemporarily = function (mood) {
-      for (let layerName in activeLayers) {
+      for (let layerName in layers) {
         this.setLayerMoodTemporarily(layerName, mood, temporaryMoodDurations[mood]);
       }
     };
 
     this.transitionLayerMood = function (layerName, mood, oldMood) {
-      let layer = activeLayers[layerName];
+      let layer = layers[layerName];
       if (!layer) {
         console.warn('No music layer named ', layerName);
         return;
@@ -298,7 +428,7 @@
 
       // layer.gain.gain.linearRampToValueAtTime(defaultGainValue, audioContext.currentTime + temporaryLevelDelayRecoveryTimeInSeconds);
 
-      if (!activeLayers[layerName].gain) return;
+      if (!layers[layerName].gain) return;
 
       layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
       layer.gain.gain.setTargetAtTime(moodValue, audioContext.currentTime, moodTransitionFactor);
@@ -307,7 +437,7 @@
     };
 
     this.setLayerMood = function (layerName, mood) {
-      let layer = activeLayers[layerName];
+      let layer = layers[layerName];
       if (!layer) {
         console.warn('No music layer named ', layerName);
         return;
@@ -319,7 +449,7 @@
         return;
       }
 
-      if (!activeLayers[layerName].gain) return;
+      if (!layers[layerName].gain) return;
 
       layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
       layer.gain.gain.setTargetAtTime(moodValue, audioContext.currentTime, 0);
@@ -328,7 +458,7 @@
     };
 
     this.setLayerMoodTemporarily = function (layerName, mood, time) {
-      let layer = activeLayers[layerName];
+      let layer = layers[layerName];
       if (!layer) {
         console.warn('No music layer named ', layerName);
         return;
@@ -359,8 +489,8 @@
 
     this.setLevels = function (levels) {
       for (let layer in levels) {
-        if (!activeLayers[layer].gain) return;
-        activeLayers[layer].gain.gain.setTargetAtTime(levels[layer], audioContext.currentTime, 0);
+        if (!layers[layer].gain) return;
+        layers[layer].gain.gain.setTargetAtTime(levels[layer], audioContext.currentTime, 0);
       }
     };
 
@@ -380,20 +510,20 @@
     }
 
     this.start = function (options) {
-      for (let layer in activeLayers) {
-        activeLayers[layer].start();
+      for (let layer in layers) {
+        layers[layer].start();
       }
 
       lastLoopTime = audioContext.currentTime;
 
       maintenanceInterval = setInterval(() => {
-        if (audioContext.currentTime - lastLoopTime > currentSong.loopAt - 1) {
-          for (let layerName in activeLayers) {
-            let layer = activeLayers[layerName];
+        if (audioContext.currentTime - lastLoopTime > songDefinition.loopDuration - 1) {
+          for (let layerName in layers) {
+            let layer = layers[layerName];
             layer.getLoopSwappingReady();
           }
 
-          lastLoopTime += currentSong.loopAt;
+          lastLoopTime += songDefinition.loopDuration;
         }
 
         intensity -= intensity * intensityReductionFactor;
@@ -416,49 +546,16 @@
     };
 
     this.stop = function () {
-      for (let layer in activeLayers) {
-        activeLayers[layer].stop();
+      for (let layer in layers) {
+        layers[layer].stop();
       }
 
       clearInterval(maintenanceInterval);
     };
 
-    this.getSettingsForOutput = function () {
-      return {
-        duckingProfiles: duckingProfiles,
-        globalGainValue: globalGainNode.gain.value
-      };
-    };
-
-    this.loadSettingsFromLocalStorage = function () {
-      let storedSettings = localStorage.getItem('music');
-      
-      if (storedSettings) {
-        let parsedSettings = JSON.parse(storedSettings);
-        duckingProfiles = parsedSettings.duckingProfiles;
-        globalGainNode.gain.setTargetAtTime(parsedSettings.globalGainValue, audioContext.currentTime, 0);
-      }
-    };
-
-    this.saveSettingsToLocalStorage = function () {
-      localStorage.setItem('music', JSON.stringify(this.getSettingsForOutput()));
-    };
-
-    this.clearSettingsFromLocalStorage = function () {
-      localStorage.removeItem('music');
-    };
-
-    this.getLayerDefinitions = () => {
-      return layerDefinitions;
-    };
-
-    this.getActiveLayers = () => {
-      return activeLayers;
-    };
-
-    this.getContext = () => {
-      return audioContext;
-    };
+    this.getLayerDefinitions = () => { return layerDefinitions; };
+    this.getLayers = () => { return layers; };
+    this.getContext = () => { return audioContext; };
 
     this.addIntensity = (newIntensity) => {
       intensity += Number(newIntensity);
