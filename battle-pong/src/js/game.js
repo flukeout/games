@@ -126,7 +126,6 @@ var game =  {
 
 
   ballHitPaddle(player){
-    console.log(player);
     if(game.mode != "running"){
       return;
     }
@@ -526,13 +525,6 @@ var game =  {
       that.mode = "running";
       that.updateBounds();
       that.launchBall();
-
-      if(finalRound){
-        setTimeout(function(){
-          that.showMessage("CHAOS MODE", 1500);
-          that.launchBall();
-        }, 1500);
-      }
     }, delay);
   },
 
