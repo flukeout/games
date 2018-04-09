@@ -278,10 +278,19 @@
                 musicEngine.addIntensity(document.querySelector('section.intensity input').value);
               },
               changeSong(e) {
+                musicEngine.stop();
                 musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
+                musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+              },
+              playSongChain(e) {
+                musicEngine.playSongChain(e.srcElement.getAttribute('data-song-chain-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
               }
             }
+          });
+
+          musicEngine.addSongChainListener(() => {
+            musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
           });
 
           document.addEventListener('musicmoodstart', (e) => {
@@ -549,6 +558,10 @@
         <section>
           <h2>Global Gain</h2>
           <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model.number="globalGain" @change="globalGainChanged"></div>
+        </section>
+        <section>
+          <h2>Song Chains</h2>
+          <button v-for="(songChain, name) in musicEngine.getSongChains()" v-on:click="playSongChain" :data-song-chain-name="name">{{name}}</button>
         </section>
         <section>
           <h2>Songs</h2>

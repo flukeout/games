@@ -97,10 +97,10 @@
   };
 
   let songChains = {
-    gameplay: {
+    gameplay: [
       { name: 'gameplayIntro' },
       { name: 'gameplay', loop: true }
-    }
+    ]
   };
 
   let intensityThresholds = {
@@ -127,6 +127,7 @@
   window.Music = function (audioContext) {
     let currentSong = null;
     let preparedSongs = {};
+    let songChainListeners = [];
 
     let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
@@ -163,12 +164,13 @@
     this.currentSongName = null;
 
     this.cueSong = function (songName) {
-      if (currentSong) {
-        currentSong.stop();
-      }
-      
       currentSong = preparedSongs[songName];
 
+      if (!preparedSongs[songName]) {
+        console.warn('No song named ', songName);
+      }
+
+      this.currentSong = currentSong;
       this.currentSongName = songName;
 
       this.status = 'ready';
@@ -207,6 +209,33 @@
       });
     };
 
+    this.addSongChainListener = function (listener) {
+      songChainListeners.push(listener);
+    };
+
+    this.playSongChain = function (name) {
+      // TODO: uncouple this stuff a bit so that you can hit playSongChain more than once...
+
+      let songChain = songChains[name].slice();
+
+      if (currentSong) {
+        currentSong.stop();
+      }
+
+      let playNextSong = () => {
+        let nextSong = songChain.shift();
+        currentSong.clearLoopListeners();
+        this.cueSong(nextSong.name);
+        if (!nextSong.loop) {
+          currentSong.addLoopListener(playNextSong);
+        }
+        this.start({ loop: nextSong.loop });
+        songChainListeners.forEach(l => l());
+      };
+
+      playNextSong();
+    };
+
     this.start = function (options) {
       this.status = 'playing';
       return currentSong.start(options);
@@ -243,6 +272,7 @@
     };
 
     this.getSongs = () => { return songs; };
+    this.getSongChains = () => { return songChains; };
   };
 
   let Song = function (songName, audioContext, buffers, songDefinition, globalGainNode, duckingNode) {
@@ -250,6 +280,7 @@
     let lastLoopTime = 0;
     let intensity = 0;
     let layerDefinitions = songDefinition.layers;
+    let loopListeners = [];
 
     audioContext = audioContext || new AudioContext();
     
@@ -510,6 +541,14 @@
       return moodWithLowestThreshold;
     }
 
+    this.addLoopListener = function (loopListener) {
+      loopListeners.push(loopListener);
+    };
+
+    this.clearLoopListeners = function () {
+      loopListeners = [];
+    };
+
     this.start = function (options) {
       for (let layer in layers) {
         layers[layer].start();
@@ -518,15 +557,27 @@
       lastLoopTime = audioContext.currentTime;
 
       maintenanceInterval = setInterval(() => {
+
+        // Looping login
         if (audioContext.currentTime - lastLoopTime > songDefinition.loopDuration - 1) {
-          for (let layerName in layers) {
-            let layer = layers[layerName];
-            layer.getLoopSwappingReady();
+          if (options.loop) {
+            for (let layerName in layers) {
+              let layer = layers[layerName];
+              layer.getLoopSwappingReady();
+            }
           }
 
+          let remainingTime = (lastLoopTime + songDefinition.loopDuration) - audioContext.currentTime;
+
           lastLoopTime += songDefinition.loopDuration;
+
+          // TODO: this is... a terrible way of relying on specific timing. :(
+          setTimeout(function () {
+            loopListeners.forEach(l => l());
+          }, remainingTime * 1000);
         }
 
+        // Intensity logic
         intensity -= intensity * intensityReductionFactor;
         this.currentIntensity = intensity;
 
