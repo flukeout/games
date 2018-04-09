@@ -183,6 +183,11 @@ const selectButtonByRowCol = (row,col) => {
   selectedButton.classList.add('input-selected');
 }
 
+const selectButtonBySelector = selector => {
+  deselectAllButtons();
+  selectedButton = document.querySelector(selector);
+  selectedButton.classList.add('input-selected');
+}
 
 
 const selectButtonByIndex = num => {
