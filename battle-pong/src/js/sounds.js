@@ -418,6 +418,11 @@ let sounds = {
     volume : 1
   },
 
+  'MenuMusic': {
+    url: 'music/MenuMusic1.mp3',
+    volume: 1
+  }
+
 };
 
 let soundBanks = {
@@ -523,6 +528,11 @@ let loops = {
   },
   'Powerup_Spin_Spin': {
     sound: 'Powerup_Spin_Spin_Loop'
+  },
+  'Menu_Music': {
+    sound: 'MenuMusic',
+    inDuration: 2,
+    outDuration: 2
   }
 };
 
@@ -732,6 +742,10 @@ function playSound(name, options){
     volume: sounds[name].volume || 1,
     pan: sounds[name].pan || 0,
     timeout: sounds[name].timeout || false
+  };
+
+  if ('volume' in options) {
+    soundOptions.volume = options.volume;
   }
 
   for(var k in options){
@@ -747,8 +761,9 @@ function playSound(name, options){
   panNode.pan.setTargetAtTime(soundOptions.pan, soundContext.currentTime, 0);
 
   var volume = soundContext.createGain();
+  volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0);
 
-  volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0); // Should we make this a multiplier of the original?
+  let gainRamp = options.gainRamp || 0;
 
   // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
   if (options.excludeFromLowPassFilter) {
@@ -799,12 +814,24 @@ function startLoop(name, options) {
 
   if (loop.active) return;
 
+  let finalVolume = sounds[loop.sound].volume;
+  let startVolume = loop.inDuration ? 0 : sounds[loop.sound].volume;
+
+  options.volume = startVolume;
+
   let sound = playSound(loop.sound, options);
   sound.source.loop = true;
 
   // :)
   loop.source = sound.source;
   loop.active = true;
+  loop.gain = sound.gain;
+
+
+  if (loop.inDuration) {
+    // Should we make this a multiplier of the original?  
+    loop.gain.gain.linearRampToValueAtTime(finalVolume, soundContext.currentTime + loop.inDuration);
+  }
 
   document.dispatchEvent(new CustomEvent('loopstarted', {detail: name}));
 
@@ -824,10 +851,23 @@ function stopLoop(name, options) {
   }
 
   if (loop.active) {
-    loop.source.stop(options.stop || soundContext.currentTime);
+    let oldSource = loop.source;
+
+    function doStop () {
+      oldSource.stop(options.stop || soundContext.currentTime);
+      document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));      
+    }
+
     loop.source = null;
     loop.active = false;
-    document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));
+    
+    if (loop.outDuration) {
+      loop.gain.gain.linearRampToValueAtTime(0, soundContext.currentTime + loop.outDuration);
+      setTimeout(doStop, loop.outDuration * 1000);
+    }
+    else {
+      doStop();
+    }
   }
 }
 

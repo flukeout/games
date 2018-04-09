@@ -24,8 +24,10 @@ document.addEventListener('DOMContentLoaded', function(){
   starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
 
-  SoundManager.init();
-  SoundManager.loadSettingsFromLocalStorage();
+  SoundManager.init().then(() => {
+    SoundManager.loadSettingsFromLocalStorage();
+    SoundManager.startLoop('Menu_Music', { gainRamp: 0.75 });
+  });
 
   document.querySelector(".splash").classList.add("appear");
 
@@ -147,6 +149,8 @@ function setupStartButton(){
     buttonGleam(button);
 
     e.preventDefault();
+
+    SoundManager.stopLoop('Menu_Music');
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../game.html";
