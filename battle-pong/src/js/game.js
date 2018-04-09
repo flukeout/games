@@ -18,6 +18,9 @@ var game =  {
 
   freezeFrames : 0,
 
+  leftGoalEnabled: false,
+  rightGoalEnabled: false,
+
   ownGoalCooldownMS: 1000,    // How much to wait before allowign consecutive own goal
   ownGoalCooldownTimerMS : 0, // Keeps track of the cooldown for own goal
 
@@ -68,17 +71,30 @@ var game =  {
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
 
+
+    var that = this;
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", e => {
       var scoringPlayer = e.detail.side == "left" ? 2 : 1;
       var scoredBy = e.detail.lastTouchedPaddle || 0;
 
-      if(e.detail.side === "right" && scoredBy === 2) {
+      // if(e.detail.side === "right" && scoredBy === 2) {
+      //   return;
+      // }
+
+      // if(e.detail.side === "left" && scoredBy === 1) {
+      //   return;
+      // }
+
+      if(e.detail.side === "right" && !this.rightGoalEnabled) {
         return;
       }
-      if(e.detail.side === "left" && scoredBy === 1) {
+
+      if(e.detail.side === "left" && !this.leftGoalEnabled) {
         return;
       }
+
+
       this.playerScored(scoringPlayer, e.detail.ball);
     });
 
@@ -110,17 +126,24 @@ var game =  {
 
 
   ballHitPaddle(player){
+    console.log(player);
     if(game.mode != "running"){
       return;
     }
+
+    this.leftGoalEnabled = false;
+    this.rightGoalEnabled = false;
 
     this.goalOneEl.classList.remove("on");
     this.goalTwoEl.classList.remove("on");
 
     if(player === 1) {
+      this.rightGoalEnabled = true;
       this.goalTwoEl.classList.add("on");
     } else {
+      this.leftGoalEnabled = true;
       this.goalOneEl.classList.add("on");
+      
     }
   },
 
@@ -499,7 +522,6 @@ var game =  {
       that.showMessage(message, 1500);
     }, delay);
 
-
     setTimeout(function(){
       that.mode = "running";
       that.updateBounds();
@@ -576,6 +598,10 @@ var game =  {
     this.goalOneEl.classList.remove("on");
     this.goalTwoEl.classList.remove("on");
 
+    this.leftGoalEnabled = false;
+    this.rightGoalEnabled = false;
+
+
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");
 
@@ -626,6 +652,10 @@ var game =  {
 
     this.paddles[0].maxX = false;
     this.paddles[1].minX = false;
+
+    
+    this.leftGoalEnabled = false;
+    this.rightGoalEnabled = false;
 
     this.goalOneEl.classList.remove("on");
     this.goalTwoEl.classList.remove("on");
