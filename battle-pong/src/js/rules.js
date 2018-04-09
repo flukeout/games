@@ -55,6 +55,12 @@ document.addEventListener('DOMContentLoaded', function () {
   nextStep();
   setupInputButtons();
   selectButtonByIndex(12);
+
+  SoundManager.init().then(() => {
+    SoundManager.loadSettingsFromLocalStorage();
+    SoundManager.startLoop('Menu_Music', { gainRamp: 0.75 });
+  });
+
 });
 
 
@@ -308,8 +314,10 @@ function goBack(){
     url = "../" + url;
   }
 
+  SoundManager.stopLoop('Menu_Music');
+
   setTimeout(function(){
-      window.location.href = url;
+    window.location.href = url;
   }, 2500);
 }
 
@@ -321,8 +329,10 @@ function startGame(){
     url = "../" + url;
   }
 
+  SoundManager.stopLoop('Menu_Music');
+
   setTimeout(function(){
-      window.location.href = url;
+    window.location.href = url;
   }, 2500);
 }
 

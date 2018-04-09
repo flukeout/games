@@ -607,21 +607,25 @@ let musicEngine;
 let soundBankMemory = {};
 
 function loadSound(name){
-  var sound = sounds[name];
-  var url = sound.url;
-  var buffer = sound.buffer;
+  return new Promise((resolve, reject) => {
 
-  var request = new XMLHttpRequest();
-  request.open('GET', url, true);
-  request.responseType = 'arraybuffer';
+    var sound = sounds[name];
+    var url = sound.url;
+    var buffer = sound.buffer;
 
-  request.onload = function() {
-    soundContext.decodeAudioData(request.response, function(newBuffer) {
-      sound.buffer = newBuffer;
-    });
-  }
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
 
-  request.send();
+    request.onload = function() {
+      soundContext.decodeAudioData(request.response, function(newBuffer) {
+        sound.buffer = newBuffer;
+        resolve();
+      });
+    }
+
+    request.send();
+  });
 }
 
 function playRandomSoundFromBank(soundBankName, options) {
@@ -920,11 +924,11 @@ window.SoundManager = {
       musicEngine.globalGainNode.connect(globalBiquadFilter);
       globalBiquadFilter.connect(soundContext.destination);
 
-      for(var key in sounds) {
-        loadSound(key);
-      }
 
-      musicEngine.load().then(() => {
+      let promises = Object.keys(sounds).map(key => { return loadSound(key); });
+
+      promises.push(musicEngine.load());
+      Promise.all(promises).then(() => {
         resolve();
       });
     });

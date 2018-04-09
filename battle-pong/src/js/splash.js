@@ -170,6 +170,7 @@ function setupRulesButton(){
     fadeOutScene();
     buttonGleam(e.target);
     SoundManager.playSound("ui");
+    SoundManager.stopLoop('Menu_Music');
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
