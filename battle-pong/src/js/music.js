@@ -14,7 +14,8 @@
     'music/GamplayMusic1_PartA&B_Layer1.mp3',
     'music/GamplayMusic1_PartA&B_Layer2.mp3',
     'music/GamplayMusic1_PartA&B_Layer3.mp3',
-    'music/GamplayMusic1_PartA&B_Layer4.mp3'
+    'music/GamplayMusic1_PartA&B_Layer4.mp3',
+    'music/MenuMusic1.mp3'
   ];
 
   const songs = {
@@ -95,6 +96,13 @@
     }
   };
 
+  let songChains = {
+    gameplay: {
+      { name: 'gameplayIntro' },
+      { name: 'gameplay', loop: true }
+    }
+  };
+
   let intensityThresholds = {
     default: -1,
     level1: 0,
@@ -150,16 +158,20 @@
     this.getContext = () => { return currentSong.getContext(); };
     this.addIntensity = (newIntensity) => { return currentSong.addIntensity(newIntensity); };
 
+    this.status = 'loading';
+
     this.currentSongName = null;
 
     this.cueSong = function (songName) {
       if (currentSong) {
-        currentSong.stop();        
+        currentSong.stop();
       }
       
       currentSong = preparedSongs[songName];
 
       this.currentSongName = songName;
+
+      this.status = 'ready';
     };
 
     this.load = function () {
@@ -184,21 +196,24 @@
 
         let songPromises = [];
         for (let songName in songs) {
-          preparedSongs[songName] = new Song(songName, audioContext, songs[songName], globalGainNode, duckingNode);
+          preparedSongs[songName] = new Song(songName, audioContext, buffers, songs[songName], globalGainNode, duckingNode);
           songPromises.push(preparedSongs[songName].load());
         }
 
         Promise.all(songPromises).then(() => {
+          this.status = 'ready';
           resolve();
         });
       });
     };
 
     this.start = function (options) {
+      this.status = 'playing';
       return currentSong.start(options);
     };
 
     this.stop = function () {
+      this.status = 'stopped';
       return currentSong.stop();
     };
 
@@ -230,7 +245,7 @@
     this.getSongs = () => { return songs; };
   };
 
-  let Song = function (songName, audioContext, songDefinition, globalGainNode, duckingNode) {
+  let Song = function (songName, audioContext, buffers, songDefinition, globalGainNode, duckingNode) {
     let layers = {};
     let lastLoopTime = 0;
     let intensity = 0;
@@ -280,6 +295,7 @@
           if (layer.source) {
             layer.source.stop();
             layer.source.disconnect(gainNode);
+            layer.source = null;
           }
         },
         getLoopSwappingReady: function () {
@@ -366,25 +382,10 @@
 
     this.load = function () {
       return new Promise(async (resolve, reject) => {
-        let buffers = {};
-        let requests = {};
-
-        files.forEach(file => {
-          requests[file] = new Promise((requestResolve, requestReject) => {
-            let request = new XMLHttpRequest();
-            request.open('GET', file, true);
-            request.responseType = 'arraybuffer';
-            request.onload = () => audioContext.decodeAudioData(request.response, buffer => requestResolve(buffer));
-            request.send();
-          });
-        });
-
-        // TODO: make these load asynchronously
-        for (let file in requests) {
-          buffers[file] = await requests[file];
-        }
-
         for (let layerName in layerDefinitions) {
+          if (!buffers[layerDefinitions[layerName].file]) {
+            console.warn('Buffer for', layerName, 'does not exist.');
+          }
           layers[layerName] = createLayer(layerName, buffers[layerDefinitions[layerName].file]);
         }
 
