@@ -224,11 +224,16 @@
 
       let playNextSong = () => {
         let nextSong = songChain.shift();
-        currentSong.clearLoopListeners();
+        let oldIntensity = 0;
+        if (currentSong) {
+          currentSong.clearLoopListeners();
+          oldIntensity = currentSong.getIntensity();
+        }
         this.cueSong(nextSong.name);
         if (!nextSong.loop) {
           currentSong.addLoopListener(playNextSong);
         }
+        currentSong.setIntensity(oldIntensity);
         this.start({ loop: nextSong.loop });
         songChainListeners.forEach(l => l());
       };
@@ -550,8 +555,20 @@
     };
 
     this.start = function (options) {
+      let endedLayers = 0;
+      let numLayers = Object.keys(layers).length;
+
       for (let layer in layers) {
         layers[layer].start();
+
+        if (!options.loop) {
+          layers[layer].source.addEventListener('ended', (e) => {
+            ++endedLayers;
+            if (endedLayers === numLayers) {
+              this.stop();
+            }
+          });
+        }
       }
 
       lastLoopTime = audioContext.currentTime;
@@ -609,8 +626,18 @@
     this.getLayers = () => { return layers; };
     this.getContext = () => { return audioContext; };
 
+    this.getIntensity = () => { return intensity; };
+
     this.addIntensity = (newIntensity) => {
       intensity += Number(newIntensity);
+      let suggestedMood = getLowestIntensityMood();
+      if (currentMood !== suggestedMood) {
+        this.setMood(suggestedMood);
+      }
+    };
+
+    this.setIntensity = newIntensity => {
+      intensity = Number(newIntensity);
       let suggestedMood = getLowestIntensityMood();
       if (currentMood !== suggestedMood) {
         this.setMood(suggestedMood);

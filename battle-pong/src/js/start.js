@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   SoundManager.init().then(() => {
-    if (Settings.music) SoundManager.musicEngine.start();
+    if (Settings.music) SoundManager.musicEngine.playSongChain('gameplay');
   });
   SoundManager.loadSettingsFromLocalStorage();
   
