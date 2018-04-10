@@ -4,7 +4,7 @@
     <script src="js/settings.js"></script>
     <script src="js/music.js"></script>
     <script src="js/sounds.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="../vue.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         let musicVue;
@@ -281,6 +281,12 @@
                 musicEngine.stop();
                 musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+              },
+              changeSongLooped(e) {
+                musicEngine.stop();
+                musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
+                musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+                musicEngine.start({loop: true});
               },
               playSongChain(e) {
                 musicEngine.playSongChain(e.srcElement.getAttribute('data-song-chain-name'));
@@ -566,7 +572,11 @@
         <section>
           <h2>Songs</h2>
           <div>Current song: {{musicEngine.currentSongName}}</div>
-          <button v-for="(song, name) in musicEngine.getSongs()" v-on:click="changeSong" :data-song-name="name">{{name}}</button>
+          <div v-for="(song, name) in musicEngine.getSongs()">
+            {{name}}
+            <button  v-on:click="changeSong" :data-song-name="name">Cue</button>
+            <button  v-on:click="changeSongLooped" :data-song-name="name">Play Looped</button>
+          </div>
         </section>
         <section class="music-layers">
           <h2>Layers</h2>

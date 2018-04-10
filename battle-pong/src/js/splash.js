@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
   SoundManager.init().then(() => {
     SoundManager.loadSettingsFromLocalStorage();
-    SoundManager.startLoop('Menu_Music', { gainRamp: 0.75 });
+    SoundManager.musicEngine.cueSong('menu');
+    SoundManager.musicEngine.start( {loop: true} );
   });
 
   document.querySelector(".splash").classList.add("appear");
@@ -416,7 +417,11 @@ function startCredits(timeoutDelay) {
     'Tailor',
     'Expert',
     'Professor',
-    'Researcher'
+    'Researcher',
+    'Manager',
+    'Painter',
+    'Franchising',
+    'Manufacturing'
   ];
 
   let names = [

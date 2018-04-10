@@ -767,8 +767,6 @@ function playSound(name, options){
   var volume = soundContext.createGain();
   volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0);
 
-  let gainRamp = options.gainRamp || 0;
-
   // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
   if (options.excludeFromLowPassFilter) {
     panNode.connect(soundContext.destination);
@@ -830,7 +828,6 @@ function startLoop(name, options) {
   loop.source = sound.source;
   loop.active = true;
   loop.gain = sound.gain;
-
 
   if (loop.inDuration) {
     // Should we make this a multiplier of the original?  
