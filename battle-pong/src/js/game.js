@@ -2,6 +2,8 @@ var game =  {
   score : {
     player1 : 0,
     player2 : 0,
+    total1: 0,
+    total2: 0,
     max : window.Settings.playTo || 2, // First to this number wins
     winner : false,  // Holds the winning paddle object
     loser : false    // Holds the losing paddle object
@@ -16,6 +18,9 @@ var game =  {
 
   freezeFrames : 0,
 
+  leftGoalEnabled: false,
+  rightGoalEnabled: false,
+
   ownGoalCooldownMS: 1000,    // How much to wait before allowign consecutive own goal
   ownGoalCooldownTimerMS : 0, // Keeps track of the cooldown for own goal
 
@@ -23,6 +28,7 @@ var game =  {
   // roundover - round is over (about to reset)
   // gameover - game is over (loser screen)
   // finish - finish it
+  // betweenrounds - shows score after game, before new game starts
   // pregame - before a game starts
   // paused - game loop is paused
   // startup - kickstarting the game loop
@@ -60,20 +66,35 @@ var game =  {
     this.goalOneEl = document.querySelector(".goal.one");
     this.goalTwoEl = document.querySelector(".goal.two");
 
+    this.betweenRoundsEl = document.querySelector(".between-round-score");
+
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
 
+
+    var that = this;
     // Event listener for ball hitting an Endzone
     document.addEventListener("ballHitEndzone", e => {
       var scoringPlayer = e.detail.side == "left" ? 2 : 1;
       var scoredBy = e.detail.lastTouchedPaddle || 0;
 
-      if(e.detail.side === "right" && scoredBy === 2) {
+      // if(e.detail.side === "right" && scoredBy === 2) {
+      //   return;
+      // }
+
+      // if(e.detail.side === "left" && scoredBy === 1) {
+      //   return;
+      // }
+
+      if(e.detail.side === "right" && !this.rightGoalEnabled) {
         return;
       }
-      if(e.detail.side === "left" && scoredBy === 1) {
+
+      if(e.detail.side === "left" && !this.leftGoalEnabled) {
         return;
       }
+
+
       this.playerScored(scoringPlayer, e.detail.ball);
     });
 
@@ -109,13 +130,19 @@ var game =  {
       return;
     }
 
+    this.leftGoalEnabled = false;
+    this.rightGoalEnabled = false;
+
     this.goalOneEl.classList.remove("on");
     this.goalTwoEl.classList.remove("on");
 
     if(player === 1) {
+      this.rightGoalEnabled = true;
       this.goalTwoEl.classList.add("on");
     } else {
+      this.leftGoalEnabled = true;
       this.goalOneEl.classList.add("on");
+      
     }
   },
 
@@ -146,8 +173,13 @@ var game =  {
     }, 1500);
 
     setTimeout(() => {
-      this.restart();
+      this.scoreDisplay();
     }, 2500);
+
+    setTimeout(() => {
+      document.querySelector(".score-satellite").classList.add("fly-up");
+    }, 2000);
+
   },
 
   // When the loser dies during the FINISH IT phase
@@ -155,13 +187,57 @@ var game =  {
     this.removeBalls();
     SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Hit');
     
-    setTimeout(() => {      
+    setTimeout(() => {
       this.showMessage("YOU MONSTER", 1750);
-    }, 1000);
+    }, 1250);
 
     setTimeout(() => {
-      this.restart();
+      document.querySelector(".score-satellite").classList.add("fly-up");
+    }, 2000);
+
+    setTimeout(() => {
+      this.scoreDisplay();
     }, 3000);
+  },
+
+  // Showd the screen between rounds
+  scoreDisplay: function() {
+    console.log(this.score);
+    this.mode = "betweenrounds";
+    
+    this.betweenRoundsEl.style.display = "flex";
+
+    // selects the "Rematch"
+    selectButtonByRowCol(2,1);
+
+    this.betweenRoundsEl.querySelector(".player-1-score").innerText = this.score.player1;
+    this.betweenRoundsEl.querySelector(".player-2-score").innerText = this.score.player2;
+
+    this.betweenRoundsEl.querySelector("h1").innerText = "PLAYER " + (game.score.winner.player + 1) + " WINS!"
+
+
+    this.betweenRoundsEl.querySelector(".player-1-total-score").innerText = this.score.total1;
+    this.betweenRoundsEl.querySelector(".player-2-total-score").innerText = this.score.total2;
+
+  },
+
+  // When teh rematch button is pressed between rounds
+  // Clears off the between rounds screen...
+  rematch: function(){
+    
+    // reset scores...    
+    this.score.player1 = 0;
+    this.score.player2 = 0;
+
+    let that = this;
+
+    this.betweenRoundsEl.classList.add("fadeout");
+
+    setTimeout(() => {
+      that.betweenRoundsEl.style.display = "none";
+      that.betweenRoundsEl.classList.remove("fadeout");
+      that.restart();
+    }, 1000);
   },
 
   pause: function () {
@@ -399,6 +475,12 @@ var game =  {
   // Restarts a round
   restart : function(initialDelay){
 
+    if(this.mode == "pregame") {
+      return;
+    }
+
+    document.querySelector(".score-satellite").classList.remove("fly-up");
+
     let delay = initialDelay || 0;
 
 
@@ -439,18 +521,10 @@ var game =  {
       that.showMessage(message, 1500);
     }, delay);
 
-
     setTimeout(function(){
       that.mode = "running";
       that.updateBounds();
       that.launchBall();
-
-      if(finalRound){
-        setTimeout(function(){
-          that.showMessage("CHAOS MODE", 1500);
-          that.launchBall();
-        }, 1500);
-      }
     }, delay);
   },
 
@@ -516,19 +590,22 @@ var game =  {
     this.goalOneEl.classList.remove("on");
     this.goalTwoEl.classList.remove("on");
 
+    this.leftGoalEnabled = false;
+    this.rightGoalEnabled = false;
+
+
     this.score.loser.mode = "ghost";
     this.score.loser.element.classList.add("loser");
 
     if(this.score.winner == this.paddles[0]) {
       this.showMessage("Player 1 Wins!", 1500);
       this.bodyEl.classList.add("winner-one");
+      this.score.total1++;
     } else {
       this.showMessage("Player 2 Wins!", 1500);
       this.bodyEl.classList.add("winner-two");
+      this.score.total2++;
     }
-
-    this.score.player1 = 0;
-    this.score.player2 = 0;
 
     setTimeout(() => {
       var minY = that.score.loser.physics.bounds.min.y;
@@ -557,7 +634,6 @@ var game =  {
       SoundManager.fireEvent('Finish_It_Heartbeat_Start');
       
       this.aiManager.setBall(ball);
-
     }, 2000);
 
   },
@@ -568,6 +644,10 @@ var game =  {
 
     this.paddles[0].maxX = false;
     this.paddles[1].minX = false;
+
+    
+    this.leftGoalEnabled = false;
+    this.rightGoalEnabled = false;
 
     this.goalOneEl.classList.remove("on");
     this.goalTwoEl.classList.remove("on");
@@ -598,6 +678,8 @@ var game =  {
 
     this.updateScoreDisplay();
 
+    SoundManager.playSound("Win_Cheer");
+
     if(winner == this.paddles[0]) {
       this.bodyEl.classList.add("winner-one");
     } else {
@@ -610,6 +692,7 @@ var game =  {
       this.gameOver();
     } else {
       var that = this;
+      this.showMessage("NICE ROUND!", 2000); 
       setTimeout(function(){
         that.restart()
       },this.timeBetweenRoundsMS);
@@ -771,8 +854,6 @@ var game =  {
     // this whole function should just be cosmetic.
     if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
       this.roundOver(scoringBall);
-      SoundManager.playSound("Win_Cheer");
-      this.showMessage("NICE", 1500);
     }
   },
 

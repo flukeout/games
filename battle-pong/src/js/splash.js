@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelector(".splash").classList.add("appear");
 
   setupInputButtons();
-  selectButtonByIndex(0);
+  selectButtonBySelector(".start-game");
 
   startCredits(CREDITS_DELAY);
 });
