@@ -151,7 +151,7 @@ function setupStartButton(){
 
     e.preventDefault();
 
-    SoundManager.stopLoop('Menu_Music');
+    SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../game.html";
@@ -171,7 +171,7 @@ function setupRulesButton(){
     fadeOutScene();
     buttonGleam(e.target);
     SoundManager.playSound("ui");
-    SoundManager.stopLoop('Menu_Music');
+    SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";

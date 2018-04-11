@@ -311,7 +311,7 @@ function goBack(){
     url = "../" + url;
   }
 
-  SoundManager.stopLoop('Menu_Music');
+  SoundManager.musicEngine.fadeOut(2);
 
   setTimeout(function(){
     window.location.href = url;
@@ -326,7 +326,7 @@ function startGame(){
     url = "../" + url;
   }
 
-  SoundManager.stopLoop('Menu_Music');
+  SoundManager.musicEngine.fadeOut(2);
 
   setTimeout(function(){
     window.location.href = url;
