@@ -4,13 +4,16 @@
     <script src="js/settings.js"></script>
     <script src="js/music.js"></script>
     <script src="js/sounds.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="../vue.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         let musicVue;
         let soundVue;
 
         SoundManager.init().then(() => {
+          SoundManager.musicEngine.cueSong('gameplay');
+          startSoundEngineMonitor();
+          startMusicEngineMonitor();
           musicVue.status = 'Ready';
         });
 
@@ -248,11 +251,15 @@
             methods: {
               start: () => {
                 musicEngine.start();
-                musicVue.status = 'Playing';
               },
               stop: () => {
                 musicEngine.stop();
-                musicVue.status = 'Ready';
+              },
+              fadeIn: () => {
+                musicEngine.fadeIn(2);
+              },
+              fadeOut: () => {
+                musicEngine.fadeOut(2);
               },
               setMood: (e) => {
                 musicEngine.setMood(e.srcElement.value);
@@ -272,8 +279,30 @@
               },
               duckingProfileChanged: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
+              },
+              addIntensity: (e) => {
+                musicEngine.addIntensity(document.querySelector('section.intensity input').value);
+              },
+              changeSong(e) {
+                musicEngine.stop();
+                musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
+                musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+              },
+              changeSongLooped(e) {
+                musicEngine.stop();
+                musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
+                musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+                musicEngine.start({loop: true});
+              },
+              playSongChain(e) {
+                musicEngine.playSongChain(e.srcElement.getAttribute('data-song-chain-name'));
+                musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
               }
             }
+          });
+
+          musicEngine.addSongChainListener(() => {
+            musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
           });
 
           document.addEventListener('musicmoodstart', (e) => {
@@ -304,7 +333,7 @@
           setInterval(() => {
             musicVue.ducking = musicEngine.duckingNode.gain.value;
 
-            let musicLayers = musicEngine.getActiveLayers();
+            let musicLayers = musicEngine.getLayers();
             for (let layerName in musicLayers) {
               let layer = musicLayers[layerName];
               let gainValue = layer.gain.gain.value;
@@ -315,9 +344,6 @@
             }
           }, 25);
         }
-
-        startSoundEngineMonitor();
-        startMusicEngineMonitor();
       });
     </script>
     <style>
@@ -536,8 +562,14 @@
         </section>
         <section>
           <h2>State</h2>
-          <div class="status">Status: {{status}}</div>
-          <div>Play: <button class="start" v-on:click="start" :disabled="status != 'Ready'">Start</button><button class="start" v-on:click="stop" :disabled="status != 'Playing'">Stop</button></div>
+          <div class="status">Status: {{musicEngine.status}}</div>
+          <div>
+            Play:
+            <button class="start" v-on:click="start" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Start</button>
+            <button class="start" v-on:click="fadeIn" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Fade In</button>
+            <button class="start" v-on:click="stop" :disabled="musicEngine.status != 'playing'">Stop</button>
+            <button class="start" v-on:click="fadeOut" :disabled="musicEngine.status != 'playing'">Fade Out</button>
+          </div>
         </section>
       </div>
       <div class="scrollable">
@@ -545,10 +577,31 @@
           <h2>Global Gain</h2>
           <div>Global Gain <input type="range" min="0" max="1" step="0.01" v-model.number="globalGain" @change="globalGainChanged"></div>
         </section>
+        <section>
+          <h2>Song Chains</h2>
+          <button v-for="(songChain, name) in musicEngine.getSongChains()" v-on:click="playSongChain" :data-song-chain-name="name">{{name}}</button>
+        </section>
+        <section>
+          <h2>Songs</h2>
+          <div>Current song: {{musicEngine.currentSongName}}</div>
+          <div v-for="(song, name) in musicEngine.getSongs()">
+            {{name}}
+            <button  v-on:click="changeSong" :data-song-name="name">Cue</button>
+            <button  v-on:click="changeSongLooped" :data-song-name="name">Play Looped</button>
+          </div>
+        </section>
         <section class="music-layers">
           <h2>Layers</h2>
           <div v-for="(layer, name) in layerDefinitions">
             <div :data-layer="name"><b>{{name}}</b>: {{layer.file}} [<span class="gain-value">0</span>]</div>
+          </div>
+        </section>
+        <section class="intensity">
+          <h2>Intensity</h2>
+          <div>
+            <input type="number" min="0" max="255" value="10">
+            <button v-on:click="addIntensity">Add Intensity</button>
+            <span>{{musicEngine.currentIntensity}}</span>
           </div>
         </section>
         <section>

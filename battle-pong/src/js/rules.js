@@ -55,6 +55,13 @@ document.addEventListener('DOMContentLoaded', function () {
   nextStep();
   setupInputButtons();
   selectButtonByIndex(12);
+
+  SoundManager.init().then(() => {
+    SoundManager.loadSettingsFromLocalStorage();
+    SoundManager.musicEngine.cueSong('menu');
+    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+  });
+
 });
 
 
@@ -246,15 +253,11 @@ const nextStep = () => {
 
 
 document.addEventListener('DOMContentLoaded', function(){
-
   initParticleEngine(".scene", 5);
   loop();
 
   starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
-
-  SoundManager.init();
-  SoundManager.loadSettingsFromLocalStorage();
 });
 
 function loop(){
@@ -308,8 +311,10 @@ function goBack(){
     url = "../" + url;
   }
 
+  SoundManager.musicEngine.fadeOut(2);
+
   setTimeout(function(){
-      window.location.href = url;
+    window.location.href = url;
   }, 2500);
 }
 
@@ -321,8 +326,10 @@ function startGame(){
     url = "../" + url;
   }
 
+  SoundManager.musicEngine.fadeOut(2);
+
   setTimeout(function(){
-      window.location.href = url;
+    window.location.href = url;
   }, 2500);
 }
 

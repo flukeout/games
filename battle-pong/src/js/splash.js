@@ -24,8 +24,11 @@ document.addEventListener('DOMContentLoaded', function(){
   starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
 
-  SoundManager.init();
-  SoundManager.loadSettingsFromLocalStorage();
+  SoundManager.init().then(() => {
+    SoundManager.loadSettingsFromLocalStorage();
+    SoundManager.musicEngine.cueSong('menu');
+    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+  });
 
   document.querySelector(".splash").classList.add("appear");
 
@@ -147,6 +150,8 @@ function setupStartButton(){
     buttonGleam(button);
 
     e.preventDefault();
+
+    SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../game.html";
@@ -166,6 +171,7 @@ function setupRulesButton(){
     fadeOutScene();
     buttonGleam(e.target);
     SoundManager.playSound("ui");
+    SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
@@ -411,7 +417,11 @@ function startCredits(timeoutDelay) {
     'Tailor',
     'Expert',
     'Professor',
-    'Researcher'
+    'Researcher',
+    'Manager',
+    'Painter',
+    'Franchising',
+    'Manufacturing'
   ];
 
   let names = [
