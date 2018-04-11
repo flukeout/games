@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
   SoundManager.init().then(() => {
     SoundManager.loadSettingsFromLocalStorage();
     SoundManager.musicEngine.cueSong('menu');
-    SoundManager.musicEngine.start( {loop: true} );
+    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
   });
 
 });

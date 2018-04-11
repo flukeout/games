@@ -248,11 +248,19 @@
 
     this.stop = function () {
       this.status = 'stopped';
+      currentSong.resetSongGainNode();
       return currentSong.stop();
     };
 
+    this.fadeIn = function (duration) {
+      this.status = 'playing';
+      return currentSong.fadeIn(duration);
+    };
+
     this.fadeOut = function (duration) {
-      return currentSong.fadeOut(duration);
+      return currentSong.fadeOut(duration).then(() => {
+        this.status = 'stopped';
+      });
     };
 
     this.getSettingsForOutput = function () {
@@ -365,6 +373,10 @@
 
       return layer;
     }
+
+    this.resetSongGainNode = () => {
+      songGainNode.gain.setValueAtTime(1, audioContext.currentTime);
+    };
 
     this.getDuckingProfiles = () => {
       return duckingProfiles;
@@ -633,11 +645,24 @@
       }
 
       clearInterval(maintenanceInterval);
+
+      songGainNode.gain.cancelScheduledValues(audioContext.currentTime);
+    };
+
+    this.fadeIn = function (duration, options) {
+      songGainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      songGainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + duration);
+      this.start(options);
     };
 
     this.fadeOut = function (duration) {
       songGainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration);
-      setTimeout(this.stop, duration * 1000);
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.stop();
+          resolve();
+        }, duration * 1000);
+      });
     };
 
     this.getLayerDefinitions = () => { return layerDefinitions; };

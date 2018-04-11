@@ -255,6 +255,9 @@
               stop: () => {
                 musicEngine.stop();
               },
+              fadeIn: () => {
+                musicEngine.fadeIn(2);
+              },
               fadeOut: () => {
                 musicEngine.fadeOut(2);
               },
@@ -563,6 +566,7 @@
           <div>
             Play:
             <button class="start" v-on:click="start" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Start</button>
+            <button class="start" v-on:click="fadeIn" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Fade In</button>
             <button class="start" v-on:click="stop" :disabled="musicEngine.status != 'playing'">Stop</button>
             <button class="start" v-on:click="fadeOut" :disabled="musicEngine.status != 'playing'">Fade Out</button>
           </div>
