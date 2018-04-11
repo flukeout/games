@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   SoundManager.init().then(() => {
     SoundManager.loadSettingsFromLocalStorage();
-    SoundManager.startLoop('Menu_Music', { gainRamp: 0.75 });
+    SoundManager.musicEngine.cueSong('menu');
+    SoundManager.musicEngine.start( {loop: true} );
   });
 
 });
@@ -252,15 +253,11 @@ const nextStep = () => {
 
 
 document.addEventListener('DOMContentLoaded', function(){
-
   initParticleEngine(".scene", 5);
   loop();
 
   starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
-
-  SoundManager.init();
-  SoundManager.loadSettingsFromLocalStorage();
 });
 
 function loop(){

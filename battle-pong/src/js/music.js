@@ -165,7 +165,6 @@
 
     this.cueSong = function (songName) {
       currentSong = preparedSongs[songName];
-
       if (!preparedSongs[songName]) {
         console.warn('No song named ', songName);
       }
@@ -177,6 +176,7 @@
     };
 
     this.load = function () {
+      console.log('loading music');
       return new Promise(async (resolve, reject) => {
         let buffers = {};
         let requests = {};
@@ -251,6 +251,10 @@
       return currentSong.stop();
     };
 
+    this.fadeOut = function (duration) {
+      return currentSong.fadeOut(duration);
+    };
+
     this.getSettingsForOutput = function () {
       return {
         duckingProfiles: duckingProfiles,
@@ -288,6 +292,8 @@
     let loopListeners = [];
 
     audioContext = audioContext || new AudioContext();
+
+    let songGainNode = audioContext.createGain();
     
     this.temporaryMoodDurations = temporaryMoodDurations;
     this.currentDuckingProfile = null;
@@ -300,6 +306,9 @@
     let duckingTimeout = -1;
     let currentMood = 'default';
 
+    songGainNode.connect(duckingNode);
+    songGainNode.gain.setTargetAtTime(1, audioContext.currentTime, 0);
+
     function createLayer(layerName, buffer) {
       let gainNode = audioContext.createGain();
 
@@ -311,7 +320,7 @@
           gainValue = isNaN(Number(gainValue)) ? 0 : gainValue;
           gainNode.gain.setTargetAtTime(gainValue, audioContext.currentTime, 0);
 
-          gainNode.connect(duckingNode);
+          gainNode.connect(songGainNode);
 
           layer.source = layer.createSourceNode();
         },
@@ -330,6 +339,8 @@
           // TODO: Make sure this still works with looping
           if (layer.source) {
             layer.source.stop();
+
+            // TODO: More cleanup to get rid of nodes that aren't needed anymore
             layer.source.disconnect(gainNode);
             layer.source = null;
           }
@@ -558,6 +569,8 @@
       let endedLayers = 0;
       let numLayers = Object.keys(layers).length;
 
+      options = options || {};
+
       for (let layer in layers) {
         layers[layer].start();
 
@@ -620,6 +633,11 @@
       }
 
       clearInterval(maintenanceInterval);
+    };
+
+    this.fadeOut = function (duration) {
+      songGainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration);
+      setTimeout(this.stop, duration * 1000);
     };
 
     this.getLayerDefinitions = () => { return layerDefinitions; };

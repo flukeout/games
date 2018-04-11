@@ -255,6 +255,9 @@
               stop: () => {
                 musicEngine.stop();
               },
+              fadeOut: () => {
+                musicEngine.fadeOut(2);
+              },
               setMood: (e) => {
                 musicEngine.setMood(e.srcElement.value);
               },
@@ -557,7 +560,12 @@
         <section>
           <h2>State</h2>
           <div class="status">Status: {{musicEngine.status}}</div>
-          <div>Play: <button class="start" v-on:click="start" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Start</button><button class="start" v-on:click="stop" :disabled="musicEngine.status != 'playing'">Stop</button></div>
+          <div>
+            Play:
+            <button class="start" v-on:click="start" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Start</button>
+            <button class="start" v-on:click="stop" :disabled="musicEngine.status != 'playing'">Stop</button>
+            <button class="start" v-on:click="fadeOut" :disabled="musicEngine.status != 'playing'">Fade Out</button>
+          </div>
         </section>
       </div>
       <div class="scrollable">
