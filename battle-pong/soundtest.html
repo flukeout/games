@@ -288,11 +288,17 @@
                 musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
               },
-              changeSongLooped(e) {
+              playSongLooped(e) {
                 musicEngine.stop();
                 musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
                 musicEngine.start({loop: true});
+              },
+              fadeInSongLooped(e) {
+                musicEngine.stop();
+                musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
+                musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+                musicEngine.fadeIn(2, {loop: true});
               },
               playSongChain(e) {
                 musicEngine.playSongChain(e.srcElement.getAttribute('data-song-chain-name'));
@@ -587,7 +593,8 @@
           <div v-for="(song, name) in musicEngine.getSongs()">
             {{name}}
             <button  v-on:click="changeSong" :data-song-name="name">Cue</button>
-            <button  v-on:click="changeSongLooped" :data-song-name="name">Play Looped</button>
+            <button  v-on:click="playSongLooped" :data-song-name="name">Play Looped</button>
+            <button  v-on:click="fadeInSongLooped" :data-song-name="name">Fade In Looped</button>
           </div>
         </section>
         <section class="music-layers">

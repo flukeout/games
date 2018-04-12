@@ -176,7 +176,6 @@
     };
 
     this.load = function () {
-      console.log('loading music');
       return new Promise(async (resolve, reject) => {
         let buffers = {};
         let requests = {};
@@ -252,9 +251,9 @@
       return currentSong.stop();
     };
 
-    this.fadeIn = function (duration) {
+    this.fadeIn = function (duration, options) {
       this.status = 'playing';
-      return currentSong.fadeIn(duration);
+      return currentSong.fadeIn(duration, options);
     };
 
     this.fadeOut = function (duration) {
