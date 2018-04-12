@@ -2,6 +2,7 @@
   const intensityReductionFactor = .01;
   const moodTransitionFactor = 0.95;
   const temporaryLevelDelayRecoveryTimeInSeconds = 1.5;
+  const defaultGlobalGainValue = .3;
   
   const temporaryMoodDurations = {
     intense: 3500
@@ -122,8 +123,6 @@
     'bones-collide':        {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    }
   };
 
-  const defaultGlobalGainValue = window.Settings.music ? .3 : 0;
-
   window.Music = function (audioContext) {
     let currentSong = null;
     let preparedSongs = {};
@@ -132,7 +131,7 @@
     let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
     
-    globalGainNode.gain.setTargetAtTime(defaultGlobalGainValue, audioContext.currentTime, 0);
+    globalGainNode.gain.setValueAtTime(defaultGlobalGainValue, audioContext.currentTime);
 
     duckingNode.connect(globalGainNode);
     globalGainNode.connect(audioContext.destination);
@@ -272,10 +271,12 @@
     this.loadSettingsFromLocalStorage = function () {
       let storedSettings = localStorage.getItem('music');
       
+      console.log('loading...?', storedSettings);
       if (storedSettings) {
         let parsedSettings = JSON.parse(storedSettings);
         duckingProfiles = parsedSettings.duckingProfiles;
-        globalGainNode.gain.setTargetAtTime(parsedSettings.globalGainValue, audioContext.currentTime, 0);
+        globalGainNode.gain.setValueAtTime(parsedSettings.globalGainValue, audioContext.currentTime);
+        console.log(parsedSettings.globalGainValue);
       }
     };
 

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function(){
   SoundManager.init().then(() => {
     SoundManager.loadSettingsFromLocalStorage();
     SoundManager.musicEngine.cueSong('menu');
-    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+    if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
   });
 
   document.querySelector(".splash").classList.add("appear");
@@ -201,6 +201,15 @@ function setupToggles(els){
       }
       updateToggles(els);
       SoundManager.playSound("ui");
+
+      if (toggleType === 'music') {
+        if (Settings[toggleType]) {
+          SoundManager.musicEngine.fadeIn(2, {loop: true});
+        }
+        else {
+          SoundManager.musicEngine.stop();
+        }
+      }
     });
   });
   updateToggles(els);
