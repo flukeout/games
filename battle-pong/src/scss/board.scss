@@ -219,7 +219,7 @@
 }
 
 .blast-zone {
-  z-index: 3;
+  z-index: 4;
   position: absolute;
   width: calc(100% + 40px);
   height: calc(100% + 40px);
@@ -227,6 +227,17 @@
   height: 100%;
   overflow: hidden;
 }
+
+.particle-canvas {
+  z-index: 3;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: .15;
+}
+
 
 .spin-wall {
   z-index: 4;
