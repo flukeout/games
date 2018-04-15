@@ -2,69 +2,85 @@ document.addEventListener('DOMContentLoaded', function () {
   startTrail()
 });
 
-let trailCanvas, trailCtx, trailCanvasHeigth, trailCanvasWidth;
-// let stars = [];
+let trailCanvas,
+    trailCtx,
+    trailCanvasHeigth,
+    trailCanvasWidth;
 
 function startTrail(){
   trailCanvas = document.querySelector(".particle-canvas");
-
   trailCanvasWidth = 890;
   trailCanvasHeigth = 540;
-
   trailCanvas.width = 850;
   trailCanvas.height = 500;
-
-  console.log(trailCanvasWidth, trailCanvasHeigth);
-  
   trailCtx = trailCanvas.getContext("2d");
-  
   window.requestAnimationFrame(drawTrail);
 }
 
 let ballPosition = [];
+let lastPos = {};
+let ticks = 0;
+let maxTrailLength = 30;
 let frames = 0;
 
 function drawTrail() { 
-    
     frames++;
-    let pushing = false;
     
-
-
+    let pushing = false;
     if(game.balls[0]) {
-      if(game.balls[0].physics.speed > game.balls[0].wordSpeed) {
+      // if(game.balls[0].hasTrail) {
         pushing = true;
         ballPosition.push({
           x : parseFloat(game.balls[0].physics.position.x),
           y : parseFloat(game.balls[0].physics.position.y),
-          speed : parseFloat(game.balls[0].physics.speed)
+          speed : parseFloat(game.balls[0].physics.speed),
+          frame : parseInt(frames)
         });
-      }
+      // }
     }
 
-    if(ballPosition.length > 80) {
+    if(ballPosition.length > maxTrailLength) {
       ballPosition.shift();
     }
 
-    if(pushing == false && ballPosition.length > 1) {
-     ballPosition.shift();
-     ballPosition.shift();
+    if(pushing == false && ballPosition.length > 0) {
      ballPosition.shift(); 
     }
+    
+    trailCtx.clearRect(0, 0, trailCanvasWidth, trailCanvasHeigth); // Clear canvas
 
-    // console.log(ballPosition.length);
+    for(var i = 1; i < ballPosition.length; i++) {
 
-    // let pos = ballPosition[0];
-    // trailCtx.globalCompositeOperation = 'destination-over';
-    trailCtx.clearRect(0, 0, trailCanvasWidth, trailCanvasHeigth); // clear canvas
-
-    for(var i = 0; i < ballPosition.length; i++) {
       let pos = ballPosition[i];
+      let prevPos = ballPosition[i-1];
+
+      trailCtx.lineJoin = trailCtx.lineCap = 'round';
       trailCtx.beginPath();
-      trailCtx.fillStyle = "#fff";
-      let sizeMult = EasingFunctions.easeInQuad(i/ballPosition.length);
-      trailCtx.arc(pos.x, pos.y, 25 * sizeMult, 0, 2 * Math.PI, false);
-      trailCtx.fill();
+      trailCtx.strokeStyle = "#39f6ff"
+      
+      trailCtx.moveTo(prevPos.x, prevPos.y);
+      let sizeMult = 1;
+      if(i < (ballPosition.length / 2)) {
+        sizeMult = EasingFunctions.easeOutQuad((ballPosition.length - i)/ (ballPosition.length/2));
+      }
+      
+      trailCtx.lineTo(pos.x, pos.y);
+      // trailCtx.lineWidth = 30 + Math.abs(Math.sin(pos.frame/2.5)) * 30;
+      // trailCtx.lineWidth = 40 * sizeMult + ((game.balls[0].physics.speed / 10) * 30);
+      trailCtx.lineWidth = 40 * sizeMult;
+      
+      trailCtx.stroke();
+      
+
+
+
+      // let pos = ballPosition[i];
+      // trailCtx.beginPath();
+      // trailCtx.fillStyle = "#fff";
+      // let sizeMult = EasingFunctions.easeInQuad(i/ballPosition.length);
+      // sizeMult = 1;
+      // trailCtx.arc(pos.x, pos.y, 25 * sizeMult, 0, 2 * Math.PI, false);
+      // trailCtx.fill();
     }
 
 
