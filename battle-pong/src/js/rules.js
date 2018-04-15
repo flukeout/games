@@ -62,6 +62,40 @@ document.addEventListener('DOMContentLoaded', function () {
     SoundManager.musicEngine.fadeIn( 2, {loop: true} );
   });
 
+
+//
+
+  // var inputManager = new InputManager((paddle) => {
+  //   var playerNumber = game.paddles.indexOf(paddle);
+  //   var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
+  //   var helpElement = inputDisplayElement.querySelector('.help');
+  //   inputDisplayElement.setAttribute('data-type', paddle.inputComponent.type);
+
+  //   if (paddle.inputComponent.type === 'keyboard') {
+  //     helpElement.innerHTML = Object.keys(paddle.inputComponent.inputToActionMapping).map(function (key) {
+  //       return key
+  //             .replace('Key', '')
+  //             .replace('ArrowUp', '↑')
+  //             .replace('ArrowDown', '↓')
+  //             .replace('ArrowLeft', '←')
+  //             .replace('ArrowRight', '→')
+  //             .replace('Comma', ',')
+  //             .replace('Period', '.')
+  //     }).join('');
+  //   }
+  //   else {
+  //     helpElement.innerHTML = '';
+  //   }
+
+  //   console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
+  
+  // });
+
+//
+
+
+
+
 });
 
 
