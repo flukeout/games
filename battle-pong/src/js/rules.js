@@ -62,40 +62,6 @@ document.addEventListener('DOMContentLoaded', function () {
     SoundManager.musicEngine.fadeIn( 2, {loop: true} );
   });
 
-
-//
-
-  // var inputManager = new InputManager((paddle) => {
-  //   var playerNumber = game.paddles.indexOf(paddle);
-  //   var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
-  //   var helpElement = inputDisplayElement.querySelector('.help');
-  //   inputDisplayElement.setAttribute('data-type', paddle.inputComponent.type);
-
-  //   if (paddle.inputComponent.type === 'keyboard') {
-  //     helpElement.innerHTML = Object.keys(paddle.inputComponent.inputToActionMapping).map(function (key) {
-  //       return key
-  //             .replace('Key', '')
-  //             .replace('ArrowUp', '↑')
-  //             .replace('ArrowDown', '↓')
-  //             .replace('ArrowLeft', '←')
-  //             .replace('ArrowRight', '→')
-  //             .replace('Comma', ',')
-  //             .replace('Period', '.')
-  //     }).join('');
-  //   }
-  //   else {
-  //     helpElement.innerHTML = '';
-  //   }
-
-  //   console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
-  
-  // });
-
-//
-
-
-
-
 });
 
 
@@ -277,33 +243,28 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-
 let timeoutAccumulator = 0;
 
 function timeoutClass(selector, className, timeout){
-  
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
-  
   setTimeout(function(){
-    console.log(selector);
     document.querySelector(selector).classList.add(className);
   }, timeoutAccumulator)
 }
 
-
 function fadeOutScene(){
-    timeoutClass(".rules-nav", "transition-out", 100)
-    timeoutClass(".rules", "transition-out", 100)
-    timeoutClass(".buttons", "transition-out", 100)
-    timeoutClass(".sky", "transition-out", 200);
-    timeoutClass(".canvas-stars", "transition-out", 200);
+  timeoutClass(".rules-nav", "transition-out", 100);
+  timeoutClass(".rules", "transition-out", 100);
+  timeoutClass(".buttons", "transition-out", 100);
+  timeoutClass(".sky", "transition-out", 200);
+  timeoutClass(".canvas-stars", "transition-out", 200);
 }
-
 
 function setupNavButtons(){
   var buttons = document.querySelectorAll(".nav-button");
   buttons.forEach(function(el){
     el.addEventListener("click", function(e){
+      buttonGleam(e.target);
       SoundManager.playSound("ui");
       let navTo = this.getAttribute("to");
       addTemporaryClassName(this, "poke", 250);
