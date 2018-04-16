@@ -7,8 +7,8 @@ function startStars(starCount, width, height){
   canvasHeight = canvas.height = height;
   
   ctx = canvas.getContext("2d");
-  // makeStars(starCount);
-  // window.requestAnimationFrame(drawStars);
+  makeStars(starCount);
+  window.requestAnimationFrame(drawStars);
 }
 
 function makeStars(starCount){
@@ -17,7 +17,7 @@ function makeStars(starCount){
       x: getRandom(0, canvasWidth),
       y: getRandom(0, canvasHeight),
       radius: getRandom(2,3),
-      opacity: getRandom(.1,.7),    
+      opacity: getRandom(.1,.7),
       speed: getRandom(5, 20)
     })
   }

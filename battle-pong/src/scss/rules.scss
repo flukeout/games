@@ -202,7 +202,7 @@
     color: white;
     display: inline-block;
     z-index: 6;
-    text-decoration: none;   
+    text-decoration: none;
     padding: 8px 20px;
     transform: rotateX(10deg);
     text-align: center;
@@ -214,8 +214,14 @@
     transition: transform .1s ease-out;
     user-select: none;
 
+    &.previous, &.next {
+      margin: 0 5px;
+      padding: 8px 10px;
+    }
+
+
     &.previous.selected, &.next.selected {
-    background: rgba(255,255,255,.15);  
+      background: rgba(255,255,255,.15);
     }
 
     &.selected.start-game, &.selected.go-back {
@@ -352,22 +358,39 @@
     display: flex;
     flex-direction: row;
     width: 100%;
+    transform: rotateX(10deg);
     
     .diagram {
       width: 50%;
+      border: solid 8px rgba(255,255,255,.2);
+      position: relative;
+      margin: 0 20px;
+      padding: 55px 0 25px 0;
       
       h2 {
-        color: white;
+        color: black;
         text-align: center;
+        background: #444;
+        display: inline-block;
+        padding: 12px 12px;
+        border-radius: 50%;
+        font-size: 28px;
+        margin: 0 0 30px 0;
+        position: absolute;
+        top: -40px;
+        left: calc(50% - 35px);
+        border: solid 6px black;
+        
       }
       
       .control-diagram {
-        width: 300px;
+        width: 400px;
         margin: 0 auto;
         height: 300px;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
+        
       }
       
       &.player-one-controls {

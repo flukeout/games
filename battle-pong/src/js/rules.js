@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
   currentRule = rulenames[0];
   showRule(currentRule);
 
-  nextStep();
+  // nextStep();
   setupInputButtons();
   selectButtonByIndex(12);
 
@@ -262,28 +262,6 @@ let stepList = [
 ]
 
 let currentStepNumber = 0;
-
-const nextStep = () => {
-  currentStep = stepList[currentStepNumber];
-
-  document.querySelector(".controls").classList.add(currentStep.step);
-
-  currentStepNumber++;
-
-  if(currentStepNumber >= stepList.length) {
-    currentStepNumber = 0;
-  }
-
-  setTimeout(function(){
-    if(currentStep) {
-     document.querySelector(".controls").classList.remove(currentStep.step);
-   }
-  }, currentStep.duration);
-
-  setTimeout(function(){
-    nextStep();
-  }, currentStep.duration + currentStep.breakAfter);
-};
 
 
 document.addEventListener('DOMContentLoaded', function(){
