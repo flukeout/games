@@ -7,8 +7,8 @@ function startStars(starCount, width, height){
   canvasHeight = canvas.height = height;
   
   ctx = canvas.getContext("2d");
-  makeStars(starCount);
-  window.requestAnimationFrame(drawStars);
+  // makeStars(starCount);
+  // window.requestAnimationFrame(drawStars);
 }
 
 function makeStars(starCount){
