@@ -715,6 +715,36 @@ function temporaryLowPass() {
   document.dispatchEvent(new CustomEvent('lowpassstarted', {detail: null}));
 }
 
+function startLowPass(attack) {
+    // Set up the initial effect
+  globalBiquadFilter.type = 'lowpass';
+
+  attack = attack || temporaryLowPassSettings.attack;
+
+  if (!Number.isFinite(attack)) attack = temporaryLowPassSettings.attack;
+
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.startFrequency, soundContext.currentTime + attack);
+}
+
+let stopLowPassTimeout = -1;
+function stopLowPass(release) {
+  release = release || Number(temporaryLowPassSettings.release);
+
+  if (!Number.isFinite(release)) release = temporaryLowPassSettings.release;
+
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency, soundContext.currentTime + release);
+
+  if (stopLowPassTimeout > -1) {
+    clearTimeout(stopLowPassTimeout);
+  }
+
+  stopLowPassTimeout = setTimeout(() => {
+    globalBiquadFilter.type = 'allpass';
+  }, release * 1000);
+}
+
 function playSound(name, options){
   if (!Settings.sounds) return;
 
@@ -903,6 +933,8 @@ window.SoundManager = {
   startLoop: startLoop,
   stopLoop: stopLoop,
   temporaryLowPass: temporaryLowPass,
+  startLowPass: startLowPass,
+  stopLowPass: stopLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
   temporaryLowPassSettings: temporaryLowPassSettings,
