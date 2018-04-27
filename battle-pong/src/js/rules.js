@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
   currentRule = rulenames[0];
   showRule(currentRule);
 
-  nextStep();
+  // nextStep();
   setupInputButtons();
   selectButtonByIndex(12);
 
@@ -229,28 +229,6 @@ let stepList = [
 
 let currentStepNumber = 0;
 
-const nextStep = () => {
-  currentStep = stepList[currentStepNumber];
-
-  document.querySelector(".controls").classList.add(currentStep.step);
-
-  currentStepNumber++;
-
-  if(currentStepNumber >= stepList.length) {
-    currentStepNumber = 0;
-  }
-
-  setTimeout(function(){
-    if(currentStep) {
-     document.querySelector(".controls").classList.remove(currentStep.step);
-   }
-  }, currentStep.duration);
-
-  setTimeout(function(){
-    nextStep();
-  }, currentStep.duration + currentStep.breakAfter);
-};
-
 
 document.addEventListener('DOMContentLoaded', function(){
   initParticleEngine(".scene", 5);
@@ -265,33 +243,28 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-
 let timeoutAccumulator = 0;
 
 function timeoutClass(selector, className, timeout){
-  
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
-  
   setTimeout(function(){
-    console.log(selector);
     document.querySelector(selector).classList.add(className);
   }, timeoutAccumulator)
 }
 
-
 function fadeOutScene(){
-    timeoutClass(".rules-nav", "transition-out", 100)
-    timeoutClass(".rules", "transition-out", 100)
-    timeoutClass(".buttons", "transition-out", 100)
-    timeoutClass(".sky", "transition-out", 200);
-    timeoutClass(".canvas-stars", "transition-out", 200);
+  timeoutClass(".rules-nav", "transition-out", 100);
+  timeoutClass(".rules", "transition-out", 100);
+  timeoutClass(".buttons", "transition-out", 100);
+  timeoutClass(".sky", "transition-out", 200);
+  timeoutClass(".canvas-stars", "transition-out", 200);
 }
-
 
 function setupNavButtons(){
   var buttons = document.querySelectorAll(".nav-button");
   buttons.forEach(function(el){
     el.addEventListener("click", function(e){
+      buttonGleam(e.target);
       SoundManager.playSound("ui");
       let navTo = this.getAttribute("to");
       addTemporaryClassName(this, "poke", 250);
