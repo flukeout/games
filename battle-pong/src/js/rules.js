@@ -50,6 +50,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   showPowerup(powerupnames[0]);
   currentRule = rulenames[0];
+  if (window.location.hash) {
+    let prospectiveRule = window.location.hash.substr(1);
+    if (rulenames.indexOf(prospectiveRule) > -1) {
+      currentRule = prospectiveRule;
+    }
+  }
   showRule(currentRule);
 
   // nextStep();
@@ -62,6 +68,27 @@ document.addEventListener('DOMContentLoaded', function () {
     SoundManager.musicEngine.fadeIn( 2, {loop: true} );
   });
 
+  let leftPaddle = createObject({noBody: true});
+  let rightPaddle = createObject({noBody: true});
+
+  var inputManager = new InputManager((paddle) => {
+    let selector = (paddle === leftPaddle ? '.player-one-controls' : '.player-two-controls')
+    document.querySelector(selector).setAttribute('data-type', paddle.inputComponent.type);
+  });
+
+  if (Settings.player1Control === 'AI') {
+    document.querySelector('.player-one-controls').setAttribute('data-type', 'ai');
+  }
+  else {
+    inputManager.setupInputForObject(leftPaddle);
+  }
+
+  if (Settings.player2Control === 'AI') {
+    document.querySelector('.player-two-controls').setAttribute('data-type', 'ai');
+  }
+  else {
+    inputManager.setupInputForObject(rightPaddle);
+  }
 });
 
 
