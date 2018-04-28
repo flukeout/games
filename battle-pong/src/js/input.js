@@ -20,6 +20,16 @@ window.InputManager = function (onInputChanged) {
     onInputChanged(object);
   };
 
+  this.resetManagedObjects = function () {
+    maintainedObjects.forEach(o => {
+      o.setInputComponent(null);
+    });
+  };
+
+  this.forgetManagedObjects = function () {
+    maintainedObjects = [];
+  };
+
   this.createInputComponentFromConfigIndex = function (type, index) {
     let manager = (type === 'gamepad' ? GamepadManager : KeyboardManager);
     let createFunction = (type === 'gamepad' ? createGamepadInputComponent : createKeyboardInputComponent);
