@@ -1,6 +1,28 @@
 // Animations that build the game screen
 
-.game {
+.game.loading {
+  .surface {
+    visibility: hidden;
+  }
+
+  .large-moon {
+    visibility: hidden;
+  }
+  
+  .canvas-stars {
+    visibility: hidden;
+  }
+
+  .score-satellite {
+    visibility: hidden;
+  }
+
+  .world {
+    visibility: hidden;
+  }
+}
+
+.game.ready {
   .surface {
     animation: surfaceAppear 3s ease-out;
   }
@@ -11,6 +33,18 @@
   
   .canvas-stars {
     animation: starsAppear 3s ease-out;
+  }
+
+  .score-satellite {
+    animation: satelliteAppear 2s ease-out;
+  }
+
+  .world {
+    animation: worldAppear 4s ease-out;
+  }
+  
+  #loading {
+    display: none;  
   }
 }
 
@@ -150,7 +184,6 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  animation: satelliteAppear 2s ease-out;
   animation-delay: 0s;
   transition: transform 1.5s ease-in-out;
 
@@ -290,7 +323,6 @@
   border: solid 20px #222;
   box-sizing: border-box;
   -moz-transform-style: preserve-3d;
-  animation: worldAppear 4s ease-out;
 
   @keyframes worldAppear {
     0% {
