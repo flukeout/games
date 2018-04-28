@@ -130,6 +130,8 @@ var game =  {
       return;
     }
 
+    console.log("ballhtpaddle");
+
     this.leftGoalEnabled = false;
     this.rightGoalEnabled = false;
 
@@ -142,7 +144,6 @@ var game =  {
     } else {
       this.leftGoalEnabled = true;
       this.goalOneEl.classList.add("on");
-      
     }
   },
 
@@ -200,9 +201,8 @@ var game =  {
     }, 3000);
   },
 
-  // Showd the screen between rounds
+  // Shows the screen between rounds
   scoreDisplay: function() {
-    console.log(this.score);
     this.mode = "betweenrounds";
     
     this.betweenRoundsEl.style.display = "flex";
@@ -212,10 +212,7 @@ var game =  {
 
     this.betweenRoundsEl.querySelector(".player-1-score").innerText = this.score.player1;
     this.betweenRoundsEl.querySelector(".player-2-score").innerText = this.score.player2;
-
     this.betweenRoundsEl.querySelector("h1").innerText = "PLAYER " + (game.score.winner.player + 1) + " WINS!"
-
-
     this.betweenRoundsEl.querySelector(".player-1-total-score").innerText = this.score.total1;
     this.betweenRoundsEl.querySelector(".player-2-total-score").innerText = this.score.total2;
 
@@ -645,7 +642,6 @@ var game =  {
     this.paddles[0].maxX = false;
     this.paddles[1].minX = false;
 
-    
     this.leftGoalEnabled = false;
     this.rightGoalEnabled = false;
 
@@ -656,8 +652,9 @@ var game =  {
       if(ball.physics.speed > ball.wordSpeed) {
         addFakeBall(ball.physics);
       }
-      this.removeBalls();
     }
+
+    this.removeBalls();
 
     this.mode = "roundover";
 
