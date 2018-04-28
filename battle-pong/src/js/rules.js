@@ -3,66 +3,66 @@ const rulenames = [];
 let ruleNavEls;
 
 document.addEventListener('DOMContentLoaded', function () {
-
-  setupNavButtons();
-
-  ruleNavEls = document.querySelectorAll(".rules-nav a");
-  ruleNavEls.forEach(function(el){
-    let type = el.getAttribute("nav");
-    rulenames.push(type);
-
-    el.addEventListener("click",function(e){
-      let type = this.getAttribute("nav");
-      showRule(type);
-      SoundManager.playSound("ui");
-      addTemporaryClassName(e.target, "poke", 250);
-      e.preventDefault();
-    })
-  });
-
-  ruleEls = document.querySelectorAll(".rule-box");
-
-  document.querySelector(".button.previous").addEventListener("click",function(){
-    previousRule();
-    SoundManager.playSound("ui");
-    addTemporaryClassName(this, "poke", 250);
-  })
-  
-  document.querySelector(".button.next").addEventListener("click",function(){
-    addTemporaryClassName(this, "poke", 250);
-    SoundManager.playSound("ui");
-    nextRule();
-  })
-
-  numRules = ruleEls.length;
-
-  powerupEls = document.querySelectorAll(".powerup-row .icon");
-
-  powerupEls.forEach(function(el){
-    let type = el.getAttribute("type");
-    powerupnames.push(type);
-    el.addEventListener("click", function(el){
-      let type = this.getAttribute("type");
-      showPowerup(type);
-      SoundManager.playSound("ui");
-    });
-  })
-
-  showPowerup(powerupnames[0]);
-  currentRule = rulenames[0];
-  if (window.location.hash) {
-    let prospectiveRule = window.location.hash.substr(1);
-    if (rulenames.indexOf(prospectiveRule) > -1) {
-      currentRule = prospectiveRule;
-    }
-  }
-  showRule(currentRule);
-
-  // nextStep();
-  setupInputButtons();
-  selectButtonByIndex(12);
-
   SoundManager.init().then(() => {
+
+    setupNavButtons();
+
+    ruleNavEls = document.querySelectorAll(".rules-nav a");
+    ruleNavEls.forEach(function(el){
+      let type = el.getAttribute("nav");
+      rulenames.push(type);
+
+      el.addEventListener("click",function(e){
+        let type = this.getAttribute("nav");
+        showRule(type);
+        SoundManager.playSound("ui");
+        addTemporaryClassName(e.target, "poke", 250);
+        e.preventDefault();
+      })
+    });
+
+    ruleEls = document.querySelectorAll(".rule-box");
+
+    document.querySelector(".button.previous").addEventListener("click",function(){
+      previousRule();
+      SoundManager.playSound("ui");
+      addTemporaryClassName(this, "poke", 250);
+    })
+    
+    document.querySelector(".button.next").addEventListener("click",function(){
+      addTemporaryClassName(this, "poke", 250);
+      SoundManager.playSound("ui");
+      nextRule();
+    })
+
+    numRules = ruleEls.length;
+
+    powerupEls = document.querySelectorAll(".powerup-row .icon");
+
+    powerupEls.forEach(function(el){
+      let type = el.getAttribute("type");
+      powerupnames.push(type);
+      el.addEventListener("click", function(el){
+        let type = this.getAttribute("type");
+        showPowerup(type);
+        SoundManager.playSound("ui");
+      });
+    })
+
+    showPowerup(powerupnames[0]);
+    currentRule = rulenames[0];
+    if (window.location.hash) {
+      let prospectiveRule = window.location.hash.substr(1);
+      if (rulenames.indexOf(prospectiveRule) > -1) {
+        currentRule = prospectiveRule;
+      }
+    }
+    showRule(currentRule);
+
+    // nextStep();
+    setupInputButtons();
+    selectButtonByIndex(12);
+
     SoundManager.loadSettingsFromLocalStorage();
     SoundManager.musicEngine.cueSong('menu');
     SoundManager.musicEngine.fadeIn( 2, {loop: true} );

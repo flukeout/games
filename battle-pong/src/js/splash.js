@@ -10,34 +10,38 @@ let timeoutAccumulator = 0;
 
 document.addEventListener('DOMContentLoaded', function(){
   const CREDITS_DELAY = 3000;
-
-  paddles.push(createObject({noBody: true}));
-  paddles.push(createObject({noBody: true}));
-
-  initParticleEngine(".scene", 5);
-  loop();
-  
-  prepTitle();
-
-  bestOfEls = document.querySelectorAll(".best-of .option");
-  setupBestOf();
-
-  powerupEls = document.querySelectorAll(".powerups .powerup");
-  setupPowerups(powerupEls);
-
-  toggleEls = document.querySelectorAll(".option-toggle");
-  setupToggles(toggleEls);
-
-  playerOptionEls = document.querySelectorAll(".player-options .player-option");
-  setupPlayerOptionss(playerOptionEls);
-
-  setupStartButton();
-  setupRulesButton();
-
-  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
-  startStars(50, window.innerWidth, window.innerHeight);
-
   SoundManager.init().then(() => {
+    initParticleEngine(".scene", 5);
+    loop();
+    
+    prepTitle();
+
+    paddles.push(createObject({noBody: true}));
+    paddles.push(createObject({noBody: true}));
+
+    initParticleEngine(".scene", 5);
+    loop();
+    
+    prepTitle();
+
+    bestOfEls = document.querySelectorAll(".best-of .option");
+    setupBestOf();
+
+    powerupEls = document.querySelectorAll(".powerups .powerup");
+    setupPowerups(powerupEls);
+
+    toggleEls = document.querySelectorAll(".option-toggle");
+    setupToggles(toggleEls);
+
+    playerOptionEls = document.querySelectorAll(".player-options .player-option");
+    setupPlayerOptionss(playerOptionEls);
+
+    setupStartButton();
+    setupRulesButton();
+
+    starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
+    startStars(50, window.innerWidth, window.innerHeight);
+
     SoundManager.loadSettingsFromLocalStorage();
     SoundManager.musicEngine.cueSong('menu');
     if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );

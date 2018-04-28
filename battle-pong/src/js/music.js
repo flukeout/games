@@ -256,9 +256,12 @@
     };
 
     this.fadeOut = function (duration) {
-      return currentSong.fadeOut(duration).then(() => {
-        this.status = 'stopped';
-      });
+      if (currentSong) {
+        return currentSong.fadeOut(duration).then(() => {
+          this.status = 'stopped';
+        });
+      }
+      return null;
     };
 
     this.getSettingsForOutput = function () {
