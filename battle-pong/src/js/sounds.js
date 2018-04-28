@@ -103,6 +103,18 @@ let sounds = {
     volume : 1,
     limit: 100
   },
+  "Ball_Bounce_OwnEndzone_V1" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V1.mp3",
+    volume : 1,
+  },
+  "Ball_Bounce_OwnEndzone_V2" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V2.mp3",
+    volume : 1,
+  },
+  "Ball_Bounce_OwnEndzone_V3" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V3.mp3",
+    volume : 1,
+  },
 
   "Powerup_Bones_Disapear_1" : {
     url : "sounds/Powerup_Bones_Disapear_1.mp3",
@@ -179,6 +191,11 @@ let sounds = {
   },
   "Powerup_Bones_Collision_Low_V13" : {
     url : "sounds/Powerup_Bones_Collision_Low_V13.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bones_Deselect" : {
+    url : "sounds/Powerup_Bones_Deselect.mp3",
     volume : 1
   },
 
@@ -418,6 +435,11 @@ let sounds = {
     volume : 1
   },
 
+  "Powerup_Spin_Startup" : {
+    url : "sounds/Powerup_Spin_Startup.mp3",
+    volume : 1
+  },
+
   'MenuMusic': {
     url: 'music/MenuMusic1.mp3',
     volume: 1
@@ -518,6 +540,13 @@ let soundBanks = {
       "Powerup_Bones_Collision_Low_V11",
       "Powerup_Bones_Collision_Low_V12",
       "Powerup_Bones_Collision_Low_V13"
+    ]
+  },
+  "ball-bounce-own-endzone": {
+    sounds: [
+      "Ball_Bounce_OwnEndzone_V1",
+      "Ball_Bounce_OwnEndzone_V2",
+      "Ball_Bounce_OwnEndzone_V3"
     ]
   }
 };
