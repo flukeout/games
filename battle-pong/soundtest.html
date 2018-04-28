@@ -116,9 +116,6 @@
               spitItOut: () => {
                 showOutputModal(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
               },
-              lowPassFilter: () => {
-                SoundManager.temporaryLowPass();
-              },
               fireEvent: (clickEvent) => {
                 var name = clickEvent.srcElement.getAttribute('data-name');
                 SoundManager.fireEvent(name);
@@ -501,7 +498,11 @@
               <td><input type="number" v-model.number="SoundManager.temporaryLowPassSettings.release"></td>
             </tr>
           </table>
-          <div>Make rocket go now: <button v-on:click="SoundManager.temporaryLowPass">Temporary Low Pass</button></div>
+          <div>
+            <button v-on:click="SoundManager.temporaryLowPass">Temporary</button>
+            <button v-on:click="SoundManager.startLowPass">Start</button>
+            <button v-on:click="SoundManager.stopLowPass">Stop</button>
+          </div>
         </section>
 
         <section>

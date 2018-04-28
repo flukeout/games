@@ -519,10 +519,8 @@
   width: 50px;
   height: 50px;
   cursor: pointer;
-  background-image: url(assets/images/pause.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50%;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 2em;
   opacity: .3;
   
   &:hover {
