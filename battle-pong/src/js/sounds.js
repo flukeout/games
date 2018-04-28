@@ -10,7 +10,7 @@ const superHardShotIntensityInjection = 15;
 
 const temporaryLowPassSettings = {
   startFrequency: 500,
-  endFrequency: 20000,
+  endFrequency: 10000,
   attack: 0,
   sustain: 1.666,
   release: 1.666,
@@ -103,6 +103,18 @@ let sounds = {
     volume : 1,
     limit: 100
   },
+  "Ball_Bounce_OwnEndzone_V1" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V1.mp3",
+    volume : 1,
+  },
+  "Ball_Bounce_OwnEndzone_V2" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V2.mp3",
+    volume : 1,
+  },
+  "Ball_Bounce_OwnEndzone_V3" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V3.mp3",
+    volume : 1,
+  },
 
   "Powerup_Bones_Disapear_1" : {
     url : "sounds/Powerup_Bones_Disapear_1.mp3",
@@ -179,6 +191,11 @@ let sounds = {
   },
   "Powerup_Bones_Collision_Low_V13" : {
     url : "sounds/Powerup_Bones_Collision_Low_V13.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bones_Deselect" : {
+    url : "sounds/Powerup_Bones_Deselect.mp3",
     volume : 1
   },
 
@@ -418,6 +435,11 @@ let sounds = {
     volume : 1
   },
 
+  "Powerup_Spin_Startup" : {
+    url : "sounds/Powerup_Spin_Startup.mp3",
+    volume : 1
+  },
+
   'MenuMusic': {
     url: 'music/MenuMusic1.mp3',
     volume: 1
@@ -519,6 +541,13 @@ let soundBanks = {
       "Powerup_Bones_Collision_Low_V12",
       "Powerup_Bones_Collision_Low_V13"
     ]
+  },
+  "ball-bounce-own-endzone": {
+    sounds: [
+      "Ball_Bounce_OwnEndzone_V1",
+      "Ball_Bounce_OwnEndzone_V2",
+      "Ball_Bounce_OwnEndzone_V3"
+    ]
   }
 };
 
@@ -537,9 +566,11 @@ let loops = {
 };
 
 let soundEvents = {
-  'Ghost_Paddle_Enemy_Territory': () => {
-    SoundManager.temporaryLowPass();
-    // uh oh!...
+  'Ghost_Enters_Paddle_Enemy_Territory': () => {
+    SoundManager.startLowPass(500, .1, 10000);
+  },
+  'Ghost_Leaves_Paddle_Enemy_Territory': () => {
+    SoundManager.stopLowPass(10000, .1);
   },
   'Super_Hard_Shot': () => {
     SoundManager.playRandomSoundFromBank("super-hard-shot");
@@ -713,6 +744,41 @@ function temporaryLowPass() {
   }, (temporaryLowPassSettings.attack + temporaryLowPassSettings.sustain + temporaryLowPassSettings.release) * 1000);
 
   document.dispatchEvent(new CustomEvent('lowpassstarted', {detail: null}));
+}
+
+function startLowPass(frequency, attack, startFrequency) {
+  attack = attack || 0;
+  frequency = frequency || 0;
+  startFrequency = startFrequency || globalBiquadFilter.frequency;
+  if (isNaN(attack)) attack = 0;
+  if (isNaN(frequency)) frequency = 0;
+  if (isNaN(startFrequency)) startFrequency = 0;
+
+    // Set up the initial effect
+  globalBiquadFilter.type = 'lowpass';
+
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.setValueAtTime(startFrequency, soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(frequency, soundContext.currentTime + attack);
+}
+
+let stopLowPassTimeout = -1;
+function stopLowPass(endFrequency, release) {
+  release = release || 0;
+  endFrequency = endFrequency || 0;
+  if (isNaN(release)) release = 0;
+  if (isNaN(endFrequency)) endFrequency = 0;
+
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(endFrequency, soundContext.currentTime + release);
+
+  if (stopLowPassTimeout > -1) {
+    clearTimeout(stopLowPassTimeout);
+  }
+
+  stopLowPassTimeout = setTimeout(() => {
+    globalBiquadFilter.type = 'allpass';
+  }, release * 1000);
 }
 
 function playSound(name, options){
@@ -903,6 +969,8 @@ window.SoundManager = {
   startLoop: startLoop,
   stopLoop: stopLoop,
   temporaryLowPass: temporaryLowPass,
+  startLowPass: startLowPass,
+  stopLowPass: stopLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
   temporaryLowPassSettings: temporaryLowPassSettings,

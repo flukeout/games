@@ -3,7 +3,6 @@ const paddleKeyboardActions = [
   'up','left','down','right',
   'spinClockwise','spinCounterClockwise',
   'dash',
-  'nudgeClockwise', 'nudgeCounterClockwise'
 ];
 
 const paddleGamepadActions = [
@@ -163,27 +162,7 @@ const updateFunctions = {
       }
     }
   },
-  nudgedSpin: function (paddle) {
-    let spinDirection = paddle.actions.nudgeClockwise - paddle.actions.nudgeCounterClockwise;
-
-    if (Math.abs(spinDirection) > 0.2) {
-
-      let angularVelocity = spinDirection * spinVelocity * slowerSpinDampeningFactor;
-      
-      if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
-      }
   
-      paddle.spin(angularVelocity);
-
-      if(angularVelocity >= 0) {
-        paddle.targetAngle = (Math.ceil(paddle.physics.angle / EIGHTH_PI) * EIGHTH_PI);
-      } else {
-        paddle.targetAngle = (Math.floor(paddle.physics.angle / EIGHTH_PI) * EIGHTH_PI);
-      }
-    }
-  },
-
   stagedSpin: function (paddle) {
     let spinDirection = 0;
 
@@ -284,19 +263,45 @@ const updateFunctions = {
   },
   limitXY: function (paddle) {
 
-    if(paddle.hasNoclipPowerup) {
-      return;
-    }
-
     // Movement bounds - keep the paddle in its zone
     var forceModifier = 1.25 * game.physicsSamplingRatio;
 
-    if(paddle.physics.position.x > paddle.maxX && paddle.maxX) {
-      paddle.force(-maxForce * forceModifier, 0);
+    if (paddle.maxX) {
+      if (paddle.physics.position.x > paddle.maxX) {
+        if(paddle.hasNoclipPowerup) {
+          if (!paddle.inEnemyTerritory) {
+            paddle.inEnemyTerritory = true;
+            SoundManager.fireEvent('Ghost_Enters_Paddle_Enemy_Territory');
+          }
+          return;
+        }
+        else {
+          paddle.force(-maxForce * forceModifier, 0);
+        }
+      }
+      else if (paddle.inEnemyTerritory) {
+        paddle.inEnemyTerritory = false;
+        SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
+      }
     }
 
-    if(paddle.physics.position.x < paddle.minX && paddle.minX) {
-      paddle.force(maxForce * forceModifier, 0);
+    if (paddle.minX) {
+      if(paddle.physics.position.x < paddle.minX) {
+        if(paddle.hasNoclipPowerup) {
+          if (!paddle.inEnemyTerritory) {
+            paddle.inEnemyTerritory = true;
+            SoundManager.fireEvent('Ghost_Enters_Paddle_Enemy_Territory');
+          }
+          return;
+        }
+        else {
+          paddle.force(maxForce * forceModifier, 0);
+        }
+      }
+      else if (paddle.inEnemyTerritory) {
+        paddle.inEnemyTerritory = false;
+        SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
+      }
     }
   },
   spinToTarget: function (paddle) {
@@ -565,7 +570,9 @@ function createPaddle(options) {
       }
 
       if(type == "noclip") {
+        console.log('NOCLIP!!');
         this.hasNoclipPowerup = true;
+        this.inEnemyTerritory = false;
         this.element.classList.add("powerup-noclip");
         game.showMessage("NOCLIP!", 1500);
         clearTimeout(this.noclipTimeout);
@@ -574,6 +581,8 @@ function createPaddle(options) {
         this.noclipTimeout = window.setTimeout(function(){
           that.element.classList.remove("powerup-noclip");
           that.hasNoclipPowerup = false;
+          SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
+
           SoundManager.playSound('Powerup_Ghost_WareOff');
         }, this.noclipDuration); 
       }
@@ -700,8 +709,6 @@ function createPaddle(options) {
         // Spin the paddle 90 degrees
         updateFunctions.stagedSpin,
 
-        updateFunctions.nudgedSpin,
-
         // Make sure the paddle stays in bounds
         updateFunctions.limitXY,
 
@@ -718,7 +725,6 @@ function createPaddle(options) {
         updateFunctions.expandPowerup,
         updateFunctions.spinToTarget,
         updateFunctions.stagedSpin,
-        updateFunctions.nudgedSpin,
         updateFunctions.analogSpin,
         updateFunctions.moveXY,
         updateFunctions.limitXY,
