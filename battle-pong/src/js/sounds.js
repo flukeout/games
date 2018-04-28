@@ -10,7 +10,7 @@ const superHardShotIntensityInjection = 15;
 
 const temporaryLowPassSettings = {
   startFrequency: 500,
-  endFrequency: 20000,
+  endFrequency: 10000,
   attack: 0,
   sustain: 1.666,
   release: 1.666,
@@ -537,9 +537,11 @@ let loops = {
 };
 
 let soundEvents = {
-  'Ghost_Paddle_Enemy_Territory': () => {
-    SoundManager.temporaryLowPass();
-    // uh oh!...
+  'Ghost_Enters_Paddle_Enemy_Territory': () => {
+    SoundManager.startLowPass(500, .1, 10000);
+  },
+  'Ghost_Leaves_Paddle_Enemy_Territory': () => {
+    SoundManager.stopLowPass(10000, .1);
   },
   'Super_Hard_Shot': () => {
     SoundManager.playRandomSoundFromBank("super-hard-shot");
@@ -715,26 +717,31 @@ function temporaryLowPass() {
   document.dispatchEvent(new CustomEvent('lowpassstarted', {detail: null}));
 }
 
-function startLowPass(attack) {
+function startLowPass(frequency, attack, startFrequency) {
+  attack = attack || 0;
+  frequency = frequency || 0;
+  startFrequency = startFrequency || globalBiquadFilter.frequency;
+  if (isNaN(attack)) attack = 0;
+  if (isNaN(frequency)) frequency = 0;
+  if (isNaN(startFrequency)) startFrequency = 0;
+
     // Set up the initial effect
   globalBiquadFilter.type = 'lowpass';
 
-  attack = attack || temporaryLowPassSettings.attack;
-
-  if (!Number.isFinite(attack)) attack = temporaryLowPassSettings.attack;
-
   globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
-  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.startFrequency, soundContext.currentTime + attack);
+  globalBiquadFilter.frequency.setValueAtTime(startFrequency, soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(frequency, soundContext.currentTime + attack);
 }
 
 let stopLowPassTimeout = -1;
-function stopLowPass(release) {
-  release = release || Number(temporaryLowPassSettings.release);
-
-  if (!Number.isFinite(release)) release = temporaryLowPassSettings.release;
+function stopLowPass(endFrequency, release) {
+  release = release || 0;
+  endFrequency = endFrequency || 0;
+  if (isNaN(release)) release = 0;
+  if (isNaN(endFrequency)) endFrequency = 0;
 
   globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
-  globalBiquadFilter.frequency.linearRampToValueAtTime(temporaryLowPassSettings.endFrequency, soundContext.currentTime + release);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(endFrequency, soundContext.currentTime + release);
 
   if (stopLowPassTimeout > -1) {
     clearTimeout(stopLowPassTimeout);
