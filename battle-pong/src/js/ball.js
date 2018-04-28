@@ -518,11 +518,9 @@ function createBall(options){
       if (obj.label.indexOf("wall") > -1) {
         if(obj.label.indexOf("wall-right") > -1 && this.lastTouchedPaddle === 2) {
           SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
-        }
-        else if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 1) {
-          SoundManager.playSound("Ball_Bounce_Wall", { volume: percentage, pan : pan });
-        }
-        else {
+        } else if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 1) {
+          SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
+        } else {
           SoundManager.playSound("Ball_Bounce_Wall", { volume: percentage, pan : pan });
         }
       } else {
