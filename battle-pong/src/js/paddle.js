@@ -3,7 +3,6 @@ const paddleKeyboardActions = [
   'up','left','down','right',
   'spinClockwise','spinCounterClockwise',
   'dash',
-  'nudgeClockwise', 'nudgeCounterClockwise'
 ];
 
 const paddleGamepadActions = [
@@ -163,27 +162,7 @@ const updateFunctions = {
       }
     }
   },
-  nudgedSpin: function (paddle) {
-    let spinDirection = paddle.actions.nudgeClockwise - paddle.actions.nudgeCounterClockwise;
-
-    if (Math.abs(spinDirection) > 0.2) {
-
-      let angularVelocity = spinDirection * spinVelocity * slowerSpinDampeningFactor;
-      
-      if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);  
-      }
   
-      paddle.spin(angularVelocity);
-
-      if(angularVelocity >= 0) {
-        paddle.targetAngle = (Math.ceil(paddle.physics.angle / EIGHTH_PI) * EIGHTH_PI);
-      } else {
-        paddle.targetAngle = (Math.floor(paddle.physics.angle / EIGHTH_PI) * EIGHTH_PI);
-      }
-    }
-  },
-
   stagedSpin: function (paddle) {
     let spinDirection = 0;
 
@@ -700,8 +679,6 @@ function createPaddle(options) {
         // Spin the paddle 90 degrees
         updateFunctions.stagedSpin,
 
-        updateFunctions.nudgedSpin,
-
         // Make sure the paddle stays in bounds
         updateFunctions.limitXY,
 
@@ -718,7 +695,6 @@ function createPaddle(options) {
         updateFunctions.expandPowerup,
         updateFunctions.spinToTarget,
         updateFunctions.stagedSpin,
-        updateFunctions.nudgedSpin,
         updateFunctions.analogSpin,
         updateFunctions.moveXY,
         updateFunctions.limitXY,
