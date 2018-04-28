@@ -284,19 +284,45 @@ const updateFunctions = {
   },
   limitXY: function (paddle) {
 
-    if(paddle.hasNoclipPowerup) {
-      return;
-    }
-
     // Movement bounds - keep the paddle in its zone
     var forceModifier = 1.25 * game.physicsSamplingRatio;
 
-    if(paddle.physics.position.x > paddle.maxX && paddle.maxX) {
-      paddle.force(-maxForce * forceModifier, 0);
+    if (paddle.maxX) {
+      if (paddle.physics.position.x > paddle.maxX) {
+        if(paddle.hasNoclipPowerup) {
+          if (!paddle.inEnemyTerritory) {
+            paddle.inEnemyTerritory = true;
+            SoundManager.fireEvent('Ghost_Enters_Paddle_Enemy_Territory');
+          }
+          return;
+        }
+        else {
+          paddle.force(-maxForce * forceModifier, 0);
+        }
+      }
+      else if (paddle.inEnemyTerritory) {
+        paddle.inEnemyTerritory = false;
+        SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
+      }
     }
 
-    if(paddle.physics.position.x < paddle.minX && paddle.minX) {
-      paddle.force(maxForce * forceModifier, 0);
+    if (paddle.minX) {
+      if(paddle.physics.position.x < paddle.minX) {
+        if(paddle.hasNoclipPowerup) {
+          if (!paddle.inEnemyTerritory) {
+            paddle.inEnemyTerritory = true;
+            SoundManager.fireEvent('Ghost_Enters_Paddle_Enemy_Territory');
+          }
+          return;
+        }
+        else {
+          paddle.force(maxForce * forceModifier, 0);
+        }
+      }
+      else if (paddle.inEnemyTerritory) {
+        paddle.inEnemyTerritory = false;
+        SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
+      }
     }
   },
   spinToTarget: function (paddle) {
@@ -565,7 +591,9 @@ function createPaddle(options) {
       }
 
       if(type == "noclip") {
+        console.log('NOCLIP!!');
         this.hasNoclipPowerup = true;
+        this.inEnemyTerritory = false;
         this.element.classList.add("powerup-noclip");
         game.showMessage("NOCLIP!", 1500);
         clearTimeout(this.noclipTimeout);
@@ -574,6 +602,8 @@ function createPaddle(options) {
         this.noclipTimeout = window.setTimeout(function(){
           that.element.classList.remove("powerup-noclip");
           that.hasNoclipPowerup = false;
+          SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
+
           SoundManager.playSound('Powerup_Ghost_WareOff');
         }, this.noclipDuration); 
       }
