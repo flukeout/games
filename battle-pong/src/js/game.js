@@ -249,7 +249,7 @@ var game =  {
 
   run: function () {
     var g = this;
-    g.mode = 'startup';
+    // g.mode = 'startup';
     (function loop() {
 
       if(g.freezeFrames === 0) {
