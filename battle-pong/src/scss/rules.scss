@@ -392,15 +392,38 @@
         
       }
       
-      &.player-one-controls {
+      .ai-notice {
+        color: rgba(255,255,255,.4);
+        font-size: 30pt;
+      }
+
+      &[data-type="keyboard"] {
         .control-diagram {
           background-image: url(assets/images/control-keyboard-left.svg);
+          .ai-notice {
+            display: none;
+          }
         }
       }
-      
-      &.player-two-controls {
+
+      &[data-type="gamepad"] {
         .control-diagram {
           background-image: url(assets/images/control-gamepad.svg);
+          .ai-notice {
+            display: none;
+          }
+        }
+      }
+
+      &[data-type="ai"] {
+        .control-diagram {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .ai-notice {
+            display: block;
+          }
+
         }
       }
 

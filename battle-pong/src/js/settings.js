@@ -55,4 +55,4 @@ queryStringParts.forEach(function (pair) {
   if (key in window.Settings) window.Settings[key] = value;
 });
 
-console.log(Settings);
+// console.log(Settings);
