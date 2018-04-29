@@ -43,8 +43,13 @@
     animation: worldAppear 4s ease-out;
   }
   
+  .board-shadow {
+    animation: shadowAppear 2s ease-out;
+  }
+
+
   #loading {
-    display: none;  
+    display: none;
   }
 }
 
@@ -148,7 +153,7 @@
     background-position: bottom;
     transform: rotateX(20deg) rotateY(0deg);
     background-repeat: no-repeat;
-    animation: shadowAppear 2s ease-out;
+
 
     @keyframes shadowAppear {
       0% {
@@ -323,7 +328,7 @@
   position: relative;
   border: solid 20px #222;
   box-sizing: border-box;
-  animation: worldAppear 4s ease-out;
+  // animation: worldAppear 4s ease-out;
 
   @keyframes worldAppear {
     0% {
@@ -548,13 +553,11 @@
 .menu-toggle {
   position: fixed;
   bottom: 10px;
-  left: 10px;
-  width: 50px;
-  height: 50px;
+  left: 15px;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 2em;
-  opacity: .3;
+  color: white;
+  font-size: 22px;
+  opacity: .5;
   
   &:hover {
     opacity: .75;
@@ -784,6 +787,7 @@
   @keyframes goalStrobe {
     50% {
       opacity: 1;
+      transform: scaleX(1.15);
     }
   }
 

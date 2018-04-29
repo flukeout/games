@@ -18,6 +18,7 @@ body {
   perspective: 1200px;
   overflow: hidden;
   background: black;
+  user-select: none;
 }
 
 body.fade-out {
