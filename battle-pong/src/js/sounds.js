@@ -606,6 +606,7 @@ let sequenceManagers = {
 
     this.start = function () {
       if (!Settings.sounds) return;
+      if (spinLoop) return;
       spinStart = SoundManager.playSound('Powerup_Spin_Spin_Start');
       spinLoop = SoundManager.startLoop('Powerup_Spin_Spin', {start: soundContext.currentTime + spinStart.source.buffer.duration - 0.1});
     };
@@ -613,9 +614,11 @@ let sequenceManagers = {
     this.stop = function () {
       if (!Settings.sounds) return;
       if (!spinStart) return;
+      if (!spinLoop) return;
       spinStart.source.stop();
       spinLoop.gain.gain.linearRampToValueAtTime(0, soundContext.currentTime + 0.20);
       SoundManager.stopLoop('Powerup_Spin_Spin', {stop: soundContext.currentTime + 0.20});
+      spinLoop = null;
     };
   }
 };
