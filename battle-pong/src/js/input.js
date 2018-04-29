@@ -20,6 +20,16 @@ window.InputManager = function (onInputChanged) {
     onInputChanged(object);
   };
 
+  this.resetManagedObjects = function () {
+    maintainedObjects.forEach(o => {
+      o.setInputComponent(null);
+    });
+  };
+
+  this.forgetManagedObjects = function () {
+    maintainedObjects = [];
+  };
+
   this.createInputComponentFromConfigIndex = function (type, index) {
     let manager = (type === 'gamepad' ? GamepadManager : KeyboardManager);
     let createFunction = (type === 'gamepad' ? createGamepadInputComponent : createKeyboardInputComponent);
@@ -38,6 +48,7 @@ window.InputManager = function (onInputChanged) {
 
   function onGamepadConnected(e) {
     console.log('Gamepad Connected: ', e);
+    checkForNewGamepads();
   }
 
   function checkForNewGamepads() {
@@ -60,10 +71,13 @@ window.InputManager = function (onInputChanged) {
 
   window.addEventListener("gamepadconnected", onGamepadConnected);
   window.addEventListener("gamepaddisconnected", (e) => {
+    console.log('Gamepad Disconnected');
     // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
     maintainedObjects.forEach((object) => {
+      console.log(object.inputComponent.type);
       if (object.inputComponent.type === 'gamepad') {
         let gamepadId = e.gamepad.id + e.gamepad.index;
+        console.log(gamepadId, object.inputComponent.config.id);
         if (object.inputComponent.config.id === gamepadId) {
           object.setInputComponent(this.getComponentForNextAvailableInput());
           onInputChanged(object);
@@ -218,16 +232,7 @@ InputManager.GamepadEventManager = function () {
 
   this.connectAllGamepads = function () {
     let gamepads = GamepadManager.getGamepads();
-
-    if (configs.length) {
-      configs = [];
-    }
-
-    gamepads.forEach(gamepad => {
-      configs.push(GamepadManager.getConfigByIndex(gamepad.index));
-    });
-
-    console.log(configs);
+    configs = GamepadManager.getConfigs(true);
   };
 };
 
@@ -235,7 +240,7 @@ window.GamepadManager = (function () {
   let gamepads;
   let gamepadsInUse = [];
 
-  function Config(gamepad) {
+  function Config(gamepad, leaveUnused) {
     let inputMappingLabelType = 'standard';
 
     if (gamepad.mapping) {
@@ -277,7 +282,7 @@ window.GamepadManager = (function () {
       releaseGamepad(this);
     };
 
-    gamepadsInUse.push(this);
+    if (!leaveUnused) gamepadsInUse.push(this);
   }
 
   function isGamepadInUse(gamepad) {
@@ -299,18 +304,18 @@ window.GamepadManager = (function () {
   }
 
   function releaseGamepad(config) {
-    var index = gamepadsInUse.indexOf(config);
+    let index = gamepadsInUse.indexOf(config);
     if (index > -1) {
       gamepadsInUse.splice(index, 1);
     }
   }
 
   function getGamepads() {
-    var gamepadList = [];
+    let gamepadList = [];
 
     refreshGamepads();
 
-    for (var i = 0; i < gamepads.length; ++i) {
+    for (let i = 0; i < gamepads.length; ++i) {
       if (gamepads[i]) {
         gamepadList.push(gamepads[i]);
       }
@@ -322,6 +327,9 @@ window.GamepadManager = (function () {
   return {
     refreshGamepads: refreshGamepads,
     getGamepads: getGamepads,
+    getConfigs: function (leaveUnused) {
+      return getGamepads().map(g => { return new Config(g, leaveUnused)});
+    },
     getConfigsInUse: function () {
       return gamepadsInUse;
     },
@@ -330,7 +338,7 @@ window.GamepadManager = (function () {
     },
     getUnusedGamepad: function () {
       refreshGamepads();
-      for (var i = 0; i < gamepads.length; ++i) {
+      for (let i = 0; i < gamepads.length; ++i) {
         if (gamepads[i] && !isGamepadInUse(gamepads[i])) {
           return new Config(gamepads[i]);
         }
@@ -367,10 +375,10 @@ function createInputComponent(inputToActionMapping, options) {
 }
 
 function createGamepadInputComponent(config) {
-  console.log('%cInitializing Gamepad Input Component:', 'color: blue');
+  console.log('%cInitializing Gamepad Input Component', 'color: blue');
   console.log('  ID: ' + config.id);
   console.log('  Interpretted Type: %c' + config.type, 'background: #222; color: #bada55');
-  console.log('  Input->Action Mapping: ', config.inputToActionMapping);
+  // console.log('  Input->Action Mapping: ', config.inputToActionMapping);
 
   var component = createInputComponent(config.inputToActionMapping, {
     type: 'gamepad',
@@ -412,8 +420,8 @@ function createGamepadInputComponent(config) {
       return tempActions;
     },
     remove: function () {
-      console.log('%cDestroying Gamepad Input Component:', 'color: red');
-      console.log('  ID: ' + this.config.id);
+      console.log('%cDestroying Gamepad Input Component', 'color: red');
+      // console.log('  ID: ' + this.config.id);
       this.config.release();
     }
   });
@@ -422,9 +430,9 @@ function createGamepadInputComponent(config) {
 }
 
 function createKeyboardInputComponent(config) {
-  console.log('%cInitializing Keyboard Input Component:', 'color: blue');
-  console.log('  ID: ', config.id);
-  console.log('  Input->Action Mapping: ', config.inputToActionMapping);
+  console.log('%cInitializing Keyboard Input Component', 'color: blue');
+  // console.log('  ID: ', config.id);
+  // console.log('  Input->Action Mapping: ', config.inputToActionMapping);
 
   var component = createInputComponent(config.inputToActionMapping, {
     type: 'keyboard',
@@ -437,8 +445,8 @@ function createKeyboardInputComponent(config) {
       return tempActions;
     },
     remove: function () {
-      console.log('%cDestroying Keyboard Input Component:', 'color: red');
-      console.log('  ID: ' + this.config.id);
+      console.log('%cDestroying Keyboard Input Component', 'color: red');
+      // console.log('  ID: ' + this.config.id);
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("keyup", onKeyUp);
       this.config.release();

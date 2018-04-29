@@ -1,5 +1,18 @@
+(function () {
+
+let paddles = [];
+let bestOfEls, 
+    powerupEls,
+    toggleEls,
+    playerOptionEls;
+
+let timeoutAccumulator = 0;
+
 document.addEventListener('DOMContentLoaded', function(){
   const CREDITS_DELAY = 3000;
+
+  paddles.push(createObject({noBody: true}));
+  paddles.push(createObject({noBody: true}));
 
   initParticleEngine(".scene", 5);
   loop();
@@ -36,20 +49,30 @@ document.addEventListener('DOMContentLoaded', function(){
   selectButtonBySelector(".start-game");
 
   startCredits(CREDITS_DELAY);
+
+  inputManager = new InputManager((paddle) => {
+    updatePlayerOptions(playerOptionEls);
+  });
+
+  setupInputs();
 });
+
+function setupInputs() {
+  inputManager.resetManagedObjects();
+  inputManager.forgetManagedObjects();
+
+  if (Settings.player1Control !== 'AI') {
+    inputManager.setupInputForObject(paddles[0]);
+  }
+  if (Settings.player2Control !== 'AI') {
+    inputManager.setupInputForObject(paddles[1]);
+  }
+}
 
 function loop(){
   drawParticles();
   requestAnimationFrame(loop);
 }
-
-
-let bestOfEls, 
-    powerupEls,
-    toggleEls,
-    playerOptionEls;
-
-let timeoutAccumulator = 0;
 
 // Sets up the music & sound toggle click handlers
 function setupPlayerOptionss(els){
@@ -65,6 +88,7 @@ function setupPlayerOptionss(els){
       } else {
         saveSetting(key, "player");
       }
+      setupInputs();
       
       updatePlayerOptions(els);
       buttonGleam(el.target);
@@ -78,10 +102,24 @@ function updatePlayerOptions(els){
     var playerNum = el.getAttribute("player");
     var key = "player" + playerNum + "Control";
     var setting =window.Settings[key];
+
+    el.classList.remove('ai');
+    el.classList.remove('keyboard');
+    el.classList.remove('gamepad');
+
     if(setting === "AI") {
+      el.classList.add('ai');
       el.innerHTML = "CPU";
     } else {
-      el.innerHTML = "P" + playerNum;
+      if (paddles[playerNum - 1].inputComponent) {
+        if (paddles[playerNum - 1].inputComponent.type === 'gamepad') el.classList.add('gamepad');
+        else el.classList.add('keyboard');
+      }
+      else {
+        console.warn('Paddle ' + playerNum + ' has no input component. Can\'t perform detection.');
+      }
+      
+      el.innerHTML = "&nbsp;";
     }
   });
 }
@@ -515,3 +553,5 @@ function startCredits(timeoutDelay) {
 
   creditsContainer.classList.add('show');
 }
+
+})();
