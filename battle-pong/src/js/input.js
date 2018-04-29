@@ -52,6 +52,7 @@ window.InputManager = function (onInputChanged) {
   }
 
   function checkForNewGamepads() {
+    if (maintainedObjects.length === 0) return;
     var unusedGamepad = GamepadManager.getUnusedGamepad();
     if (unusedGamepad) {
       for (var i = 0; i < maintainedObjects.length; ++i) {
@@ -278,11 +279,16 @@ window.GamepadManager = (function () {
     this.id = gamepadID;
     this.type = inputMappingLabelType;
     this.gamepad = gamepad;
+    this.use = function () {
+      gamepadsInUse.push(this);
+    };
     this.release = function () {
       releaseGamepad(this);
     };
 
-    if (!leaveUnused) gamepadsInUse.push(this);
+    if (!leaveUnused) {
+      this.use();
+    }
   }
 
   function isGamepadInUse(gamepad) {
