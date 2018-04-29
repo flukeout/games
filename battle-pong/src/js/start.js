@@ -74,53 +74,43 @@ document.addEventListener('DOMContentLoaded', function () {
     var frameRateMonitor  = new FrameRateMonitor();
   }
 
+  // Make sure sounds & music are loaded before everything else starts
   SoundManager.init().then(() => {
     if (Settings.music) SoundManager.musicEngine.playSongChain('gameplay');
-  });
-  SoundManager.loadSettingsFromLocalStorage();
-  
-  game.init();
 
-  let leftPaddle = game.paddles[0];
-  let rightPaddle = game.paddles[1];
+    game.init();
 
-  if (Settings.player1Control === 'AI') {
-    leftPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(leftPaddle, 'left'));
-  }
-  else {
-    inputManager.setupInputForObject(leftPaddle);
-  }
+    let leftPaddle = game.paddles[0];
+    let rightPaddle = game.paddles[1];
 
-  if (Settings.player2Control === 'AI') {
-    rightPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(rightPaddle, 'right'));
-  }
-  else {
-    inputManager.setupInputForObject(rightPaddle);
-  }
+    if (Settings.player1Control === 'AI') {
+      leftPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(leftPaddle, 'left'));
+    }
+    else {
+      inputManager.setupInputForObject(leftPaddle);
+    }
 
-  let pauseManager = new PauseManager(game, inputManager);
+    if (Settings.player2Control === 'AI') {
+      rightPaddle.setInputComponent(game.aiManager.createPaddleAIInputComponent(rightPaddle, 'right'));
+    }
+    else {
+      inputManager.setupInputForObject(rightPaddle);
+    }
 
-  // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
-  game.step();
+    let pauseManager = new PauseManager(game, inputManager);
 
-  // var menu = new MenuMachine(game);
+    // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
+    game.step();
 
-  function startGame () {
+    document.body.classList.remove('loading');
+    document.body.classList.add('ready');
+
+    document.querySelector('.board-wrapper').classList.remove('hide');
     document.querySelector('.score-wrapper').classList.add('show');
     game.restart(2200);
     game.run();
-  }
-
-  if (Settings.showIntro) {
-    var introMachine = new IntroMachine();
-    introMachine.start(function () {
-      startGame();
-    });
-  }
-  else {
-    document.querySelector('.board-wrapper').classList.remove('hide');
-    startGame();
-  }
+  });
+  SoundManager.loadSettingsFromLocalStorage();
 });
 
 

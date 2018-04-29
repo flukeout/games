@@ -1,8 +1,7 @@
 const paddleKeyboardActions = [
   // Discrete on/off buttons
   'up','left','down','right',
-  'spinClockwise','spinCounterClockwise',
-  'dash',
+  'spinClockwise','spinCounterClockwise'
 ];
 
 const paddleGamepadActions = [
@@ -17,7 +16,6 @@ const frictionAir = .2;  // .01
 const maxForce = 0.016;   // .004
 const spinSpeed = .2; // .2
 const maxSpinVelocity = 2.7;
-const dashVelocityMaximum = 450;
 
 const HALF_PI = Math.PI / 2;
 const EIGHTH_PI = Math.PI / 8;
@@ -49,11 +47,6 @@ const updateFunctions = {
     if(xDelta != 0 || yDelta != 0) {
       let xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
       let yForce = Math.cos(angleRad) * -maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
-      
-      if(paddle.dashDelay > 0) {
-        yForce = yForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);
-        xForce = xForce * mapScale(paddle.dashDelay, 0, 650, .1, .3);
-      }
 
       paddle.force(xForce, yForce);
 
@@ -61,108 +54,6 @@ const updateFunctions = {
       paddle.physics.frictionAir = frictionAir / game.physicsSamplingRatio;
     }
   },
-  dashing: function (paddle) {
-    paddle.dashDelay = paddle.dashDelay - paddle.dt;
-
-    if(paddle.dashDelay < 0) {
-      paddle.dashDelay = 0;
-      paddle.element.classList.remove("dashing");
-      paddle.updateRoute = 'default';
-      // Don't bother dashing anymore
-      return;
-    }
-
-    // End of dashing paticles
-  },
-  dashStart: function (paddle) {
-    return; // NO DASHING
-
-    if(paddle.actions.dash && paddle.type == "player") {
-
-      // We want to calculate a movement angle based on
-      // the directional inputs.
-      // Directional Movement...
-      var xDelta = 0,
-          yDelta = 0,
-          hasMovement = false;
-
-      if(paddle.actions.left) {
-        xDelta--;
-        hasMovement = true;
-      }
-      if(paddle.actions.right) {
-        xDelta++;
-        hasMovement = true;
-      }
-      if(paddle.actions.up){
-        yDelta--;
-        hasMovement = true;
-      }
-      if(paddle.actions.down){
-        yDelta++;
-        hasMovement = true;
-      }
-
-      var angleRad = Math.atan2(xDelta,yDelta);
-
-      if(hasMovement == false) {
-        // Analog movement
-        xDelta = paddle.actions.moveX,
-        yDelta = paddle.actions.moveY;
-
-        // If we are close to the edge, push it to max
-        if (xDelta > .9)    xDelta =  1;
-        if (xDelta < -.9)   xDelta = -1;
-        if (yDelta > .9)    yDelta =  1;
-        if (yDelta < -.9)   yDelta = -1;
-
-        angleRad = Math.atan2(xDelta,yDelta);
-      }
-
-      // Calculuating how different the orientation of the paddle is
-      // from it's movement direction to see how hard we can dash.
-
-      // Movement
-      let angle = Math.atan2(paddle.physics.velocity.x, paddle.physics.velocity.y) * 180 / Math.PI;
-
-      angle = Math.abs(angle);
-      if(angle > 180) {
-        angle = angle % 180;
-      }
-
-      var horizontalMovementRatio = (90 - Math.abs(angle - 90)) / 90
-
-      // Orientation
-      var orientationAngle = Math.abs(paddle.physics.angle * 180 / Math.PI);
-
-      if(orientationAngle > 180) {
-        orientationAngle = orientationAngle % 180;
-      }
-
-      var horizontalOrientationRatio = (90 - Math.abs(orientationAngle - 90)) / 90
-
-      // This is how hard we can boost the dash based on the orientation and movement...
-      var slidePowerPercent = 1 - Math.abs(horizontalOrientationRatio - horizontalMovementRatio);
-
-      if(xDelta != 0 || yDelta != 0) {
-
-        SoundManager.playRandomSoundFromBank('dash');
-
-        var xForce = Math.sin(angleRad) * maxForce * game.physicsSamplingRatio;
-        var yForce = Math.cos(angleRad) * maxForce * game.physicsSamplingRatio;  // Have to reverse Y axis
-
-        paddle.dashDelay = 650;
-        
-        xForce = xForce * (10 + (10 * slidePowerPercent));
-        yForce = yForce * (10 + (10 * slidePowerPercent));
-
-        paddle.force(xForce, yForce);
-
-        paddle.updateRoute = 'dashing';
-      }
-    }
-  },
-  
   stagedSpin: function (paddle) {
     let spinDirection = 0;
 
@@ -176,10 +67,6 @@ const updateFunctions = {
       // Set the angular velocity of the paddle
       let angularVelocity = spinDirection * spinVelocity;
       
-      if(paddle.dashDelay > 0) {
-        angularVelocity = angularVelocity * mapScale(paddle.dashDelay, 0, 450, .5, 1);
-      }
-  
       paddle.spin(angularVelocity);
 
       // Sets the destination angle for the paddle for when the player stops spinning
@@ -403,7 +290,7 @@ function createPaddle(options) {
     lifeSpan : options.lifeSpan || "infinite",
 
     movementRatio: options.movementRatio || 1,
-    innerHTML : "<div class='dash-indicator'></div><div class='body'><div class='bone'></div></div>",
+    innerHTML : "<div class='body'><div class='bone'></div></div>",
 
     properties: {
       x: options.x || 0,
@@ -657,8 +544,7 @@ function createPaddle(options) {
       this.analogSpinDirection = this.player === 0 ? 1 : -1;
     },
 
-        // This gets called every frame of the game
-    dashDelay : 0,
+    // This gets called every frame of the game
     frameTicks: 0,
 
     analogSpinDirection: 1,
@@ -701,9 +587,6 @@ function createPaddle(options) {
         updateFunctions.moveXY,
         updateFunctions.moveAnalog,
 
-        // See if we're about to start a dash
-        updateFunctions.dashStart,
-
         updateFunctions.analogSpin,
 
         // Spin the paddle 90 degrees
@@ -719,17 +602,7 @@ function createPaddle(options) {
         updateFunctions.capAngularVelocity,
 
         // Check if this is a clone and remove it if necessary
-        updateFunctions.cloneCleanup,
-      ],
-      dashing: [
-        updateFunctions.expandPowerup,
-        updateFunctions.spinToTarget,
-        updateFunctions.stagedSpin,
-        updateFunctions.analogSpin,
-        updateFunctions.moveXY,
-        updateFunctions.limitXY,
-        updateFunctions.spinPowerup,
-        updateFunctions.dashing
+        updateFunctions.cloneCleanup
       ]
     },
     updateRoute: 'default'

@@ -5,7 +5,6 @@ window.Settings = {
   availablePowerUpTypes : ["mine", "clone", "grow", "spin", "magnet","noclip"],
   powerUpTypes : ["mine", "clone", "grow", "spin", "magnet","noclip"],
   brakesModeEnabled : true,
-  dashingEnabled : false,
   goalTimeoutMS : 200,
   powerupFrequency : 350,
   maxPowerupCount : 2,
