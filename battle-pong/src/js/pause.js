@@ -62,7 +62,7 @@ function PauseManager (game, inputManager) {
   }
 
   function pauseGame(){
-    if(game.mode == "betweenrounds") {
+    if(game.mode != "running") {
       return;
     }
 
