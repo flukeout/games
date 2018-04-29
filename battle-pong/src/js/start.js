@@ -102,11 +102,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
     game.step();
 
-    document.body.classList.remove('loading');
-    document.body.classList.add('ready');
+    document.querySelector("#loading").classList.add("hide-loading");
 
-    document.querySelector('.board-wrapper').classList.remove('hide');
-    document.querySelector('.score-wrapper').classList.add('show');
+    setTimeout(function(){
+      document.body.classList.remove('loading');
+      document.body.classList.add('ready');
+      document.querySelector('.board-wrapper').classList.remove('hide');
+      document.querySelector('.score-wrapper').classList.add('show');
+    }, 300);
+    
     game.restart(2200);
     game.run();
   });

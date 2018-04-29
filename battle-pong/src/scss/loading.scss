@@ -2,11 +2,102 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 60pt;
   color: rgba(255, 255, 255, 0.4);
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
+  perspective: 1200px;
+  transition: opacity .25s ease-out;
+  background: black;
+
+  &.hide-loading {
+    opacity: 0;
+  }
+
+  .scene {
+    width: 300px;
+    height: 100px;
+    position: relative;
+    transform: rotateX(30deg) scale(.7);
+    animation: fadeIn 2s ease-out;
+
+    .title {
+      position: absolute;
+      bottom: -50px;
+      width: 100%;
+      color: white;
+      text-align: center;
+      font-size: 25px;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .loading-ball {
+      position: absolute;
+      left: 0px;
+      top: calc(50% - 15px);
+      display: block;
+      height: 30px;
+      width: 30px;
+      background: white;
+      border-radius: 50%;
+      animation: ballbounce .5s linear infinite;
+      animation-direction: alternate;
+
+      @keyframes ballbounce {
+        100% {
+          transform: translateX(270px);
+        }
+      }
+    }
+
+    .paddle {
+      position: absolute;
+      width: 20px;
+      height: 100px;
+      background: white;
+
+      &.left {
+        left: -18px;
+        animation: leftPaddle 1s ease-out infinite;
+        @keyframes leftPaddle {
+          0% {
+            transform: translateX(0);
+          }
+          5% {
+            transform: translateX(-5px);
+          }
+          10% {
+            transform: translateX(0);
+          }
+        }
+      }
+
+      &.right {
+        right: -18px;
+        animation: rightPaddle 1s ease-out infinite;
+        animation-delay: .5s;
+        @keyframes rightPaddle {
+          0% {
+            transform: translateX(0);
+          }
+          5% {
+            transform: translateX(5px);
+          }
+          10% {
+            transform: translateX(0);
+          }
+        }
+      }
+    }
+  }
 }
