@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', function(){
     SoundManager.loadSettingsFromLocalStorage();
     SoundManager.musicEngine.cueSong('menu');
     if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+
+    setupInputs();
   });
 
   document.querySelector(".splash").classList.add("appear");
@@ -58,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function(){
     updatePlayerOptions(playerOptionEls);
   });
 
-  setupInputs();
 });
 
 function setupInputs() {
