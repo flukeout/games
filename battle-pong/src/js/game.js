@@ -804,7 +804,13 @@ var game =  {
     }
 
     this.moveTerrain(scoredByPlayerNum, terrainChange, scoringBall);
-    
+    // TODO - move this into playerscore or something
+    // this whole function should just be cosmetic.
+    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
+      this.roundOver(scoringBall);
+      SoundManager.musicEngine.addIntensity(50);
+    }
+
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
 
     SoundManager.playRandomSoundFromBank('score');
@@ -844,13 +850,6 @@ var game =  {
 
     // Changes the bounds of the paddles based on the terrain line...
     this.updateBounds();
-
-
-    // TODO - move this into playerscore or something
-    // this whole function should just be cosmetic.
-    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
-      this.roundOver(scoringBall);
-    }
   },
 
   removeObject: (object) => {

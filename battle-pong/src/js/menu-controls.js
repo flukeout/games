@@ -174,7 +174,9 @@ const selectButtonEl = el => {
   deselectAllButtons();
   selectedIndex = buttons.indexOf(el);
   selectedButton = el;
-  el.classList.add('input-selected');
+  if (el) {
+    el.classList.add('input-selected');
+  }
 }
 
 const selectButtonByRowCol = (row,col) => {
