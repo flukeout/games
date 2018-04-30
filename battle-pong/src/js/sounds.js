@@ -390,6 +390,15 @@ let sounds = {
     url : "sounds/Bomb_Spawn.mp3",
     volume : 1
   },
+  "Bomb_Disable" : {
+    url : "sounds/Bomb_Disable.mp3",
+    volume : 1
+  },
+
+  "Menu_Move" : {
+    url : "sounds/Menu_Move.mp3",
+    volume : 1
+  },
 
   "Powerup_Bounce_Paddle" : {
     url : "sounds/Powerup_Bounce_Paddle.mp3",
