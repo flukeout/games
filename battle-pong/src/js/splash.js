@@ -275,7 +275,7 @@ const powerupOn = {
   clone: 'Powerup_Bones_Score',
   grow: 'Powerup_Enhance_Score',
   spin: 'Powerup_Spin_Score',
-  mine: 'beep',
+  mine: 'Bomb_Spawn',
   noclip: 'Powerup_Ghost_Score',
   magnet: 'Powerup_Sticky_Score'
 };
@@ -285,7 +285,8 @@ const powerupOff = {
   grow: 'Powerup_Enhance_WareOff',
   spin: 'Powerup_Spin_Score',
   noclip: 'Powerup_Ghost_WareOff',
-  magnet: 'Powerup_Sticky_WareOff'
+  magnet: 'Powerup_Sticky_WareOff',
+  mine: 'Bomb_Disable'
 };
 
 

@@ -68,6 +68,8 @@ function moveCursor(direction) {
 
   selectButtonByDirection(selectedButton, direction);
 
+  SoundManager.playSound('Menu_Move');
+
   if (direction === 'go' && selectedButton) {
     if(selectedButton) {
       selectedButton.click();
