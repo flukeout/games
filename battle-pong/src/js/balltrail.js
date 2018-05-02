@@ -2,19 +2,23 @@ document.addEventListener('DOMContentLoaded', function () {
   startTrail()
 });
 
+let trailStarted = false;
+
 let trailCanvas,
     trailCtx,
     trailCanvasHeigth,
     trailCanvasWidth;
 
 function startTrail(){
+  
   trailCanvas = document.querySelector(".particle-canvas");
   trailCanvasWidth = 890;
   trailCanvasHeigth = 540;
   trailCanvas.width = 850;
   trailCanvas.height = 500;
   trailCtx = trailCanvas.getContext("2d");
-  window.requestAnimationFrame(drawTrail);
+  trailStarted = true;
+
 }
 
 let ballPosition = [];
@@ -23,12 +27,13 @@ let ticks = 0;
 let maxTrailLength = 30;
 let frames = 0;
 
-function drawTrail() { 
+function drawTrail() {
     frames++;
-    
+
+
     let pushing = false;
     if(game.balls[0]) {
-      // if(game.balls[0].hasTrail) {
+      if(game.balls[0].hasTrail) {
         pushing = true;
         ballPosition.push({
           x : parseFloat(game.balls[0].physics.position.x),
@@ -36,7 +41,7 @@ function drawTrail() {
           speed : parseFloat(game.balls[0].physics.speed),
           frame : parseInt(frames)
         });
-      // }
+      }
     }
 
     if(ballPosition.length > maxTrailLength) {
@@ -65,27 +70,10 @@ function drawTrail() {
       }
       
       trailCtx.lineTo(pos.x, pos.y);
-      // trailCtx.lineWidth = 30 + Math.abs(Math.sin(pos.frame/2.5)) * 30;
-      // trailCtx.lineWidth = 40 * sizeMult + ((game.balls[0].physics.speed / 10) * 30);
-      trailCtx.lineWidth = 40 * sizeMult;
+      trailCtx.lineWidth = 36 * sizeMult;
       
       trailCtx.stroke();
-      
-
-
-
-      // let pos = ballPosition[i];
-      // trailCtx.beginPath();
-      // trailCtx.fillStyle = "#fff";
-      // let sizeMult = EasingFunctions.easeInQuad(i/ballPosition.length);
-      // sizeMult = 1;
-      // trailCtx.arc(pos.x, pos.y, 25 * sizeMult, 0, 2 * Math.PI, false);
-      // trailCtx.fill();
     }
-
-
-
-  window.requestAnimationFrame(drawTrail);
 }
 
 
