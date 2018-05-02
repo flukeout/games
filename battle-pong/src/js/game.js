@@ -294,6 +294,9 @@ var game =  {
 
     this.tiltBoard()
 
+    if(trailStarted) {
+      drawTrail();
+    }
     // Iterate over all of the objects are are updating on screen
     objectsToRender.forEach((obj) => {
 

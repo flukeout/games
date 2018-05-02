@@ -98,6 +98,7 @@ function createBall(options){
     wasSpinning: false,
 
     frameTicks : 0,
+    hasTrail : false,
 
     spinSoundSequenceManager: new SoundManager.sequences.Powerup_Spin(),
 
@@ -267,10 +268,12 @@ function createBall(options){
         }
       }
 
+      this.hasTrail = false;
       // Adds trails after the ball when it's goign fast enough
-      if(this.frameTicks % 2 == 0 & this.physics.speed * game.physicsSamplingRatio > 7) {
+      if(this.physics.speed * game.physicsSamplingRatio > 7) {
         if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
-          addBallTrail(this.physics.position.x, this.physics.position.y);
+          this.hasTrail = true;
+          // addBallTrail(this.physics.position.x, this.physics.position.y);
         }
       }
 
