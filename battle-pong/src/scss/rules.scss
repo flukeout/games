@@ -1,4 +1,9 @@
 .rules-page {
+  display: none;
+  
+  &.ready {
+    display: block;
+  }
 
   .rules.transition-out {
     transition: opacity .5s ease-out;
@@ -133,20 +138,6 @@
     }
   }
 
-
-  @keyframes rulesAppear {
-    0% {
-      opacity: 0;
-      transform: scale(.9);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
   ul {
     list-style-type: none;
     margin: 0 0 30px 0;
@@ -155,11 +146,21 @@
   
   .rules-nav {
     text-align: center;
-    padding: 30px 0;
+    padding: 25px 0;
     position: relative;
     z-index: 99;
     position: absolute;
     width: 100vw;
+    animation: rules-nav-appear 1s ease-out;
+
+    @keyframes rules-nav-appear {
+      0%{ 
+        transform: translateY(-200px);
+      }
+      100%{ 
+        transform: translateY(0px);
+      }
+    }
 
     a {
       color: white;
@@ -182,8 +183,20 @@
     position: absolute;
     bottom: 0px;
     text-align: center;
-    padding-bottom: 55px;
+    padding-bottom: 40px;
     width: 100vw;
+    animation: buttons-appear 1s ease-out;
+    tranform-style: preserve-3d;
+
+    @keyframes buttons-appear {
+      0%{ 
+        transform: translateY(200px);
+      }
+      100%{ 
+        transform: translateY(0px);
+      }
+    }
+
   }
   
   .pink-button {
@@ -198,13 +211,31 @@
     box-shadow: 6px 6px 0px rgba(0,0,0,.4);
   }
   
+  .divider {
+    display: inline-block;
+    color: white;
+    height: 36px;
+    width: 4px;
+    background: rgba(255,255,255,.5);
+    margin: 0 7px;
+    position: relative;
+    top: 9px;
+  }
+  
+.buttons {
+  
+  left: -23px;
+  z-index: 99;
+}
+
+
   .button {
     color: white;
     display: inline-block;
     z-index: 6;
     text-decoration: none;
     padding: 8px 20px;
-    transform: rotateX(10deg);
+    transform: none;
     text-align: center;
     font-size: 25px;
     text-transform: uppercase;
@@ -214,11 +245,24 @@
     transition: transform .1s ease-out;
     user-select: none;
 
-    &.previous, &.next {
-      margin: 0 5px;
-      padding: 8px 10px;
+    &.next {
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 5px;
+      margin-right: 35px;
     }
 
+    &.previous {
+      margin-left: 35px;
+      padding-right: 0;
+      margin-right: 5px;
+      padding-left: 0;
+    }
+
+    &.go-back {
+      padding-right: 0;
+      padding-left: 0;
+    }
 
     &.previous.selected, &.next.selected {
       background: rgba(255,255,255,.15);
@@ -228,10 +272,25 @@
       outline: solid 6px rgba(255,255,255,.15);
     }
 
+    &.start-game {
+      font-size: 28px;
+      padding: 10px 30px;
+      marign-left: 30px;
+    }
   }
 
  .scene {
     z-index: 1;
+    animation: sceneappear 1s ease-out;
+
+    @keyframes sceneappear {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
 
     .canvas-stars {
       z-index: 1;
@@ -258,12 +317,11 @@
       top: auto;
       opacity: .4;
       transition: opacity 1.5s ease-out;
-      
+
       &.transition-out {
         opacity: 0;
       }
     }
-
 
     .stars {
       height: 100vh;
@@ -273,7 +331,6 @@
 }
 
 .rules-page .rules {
-  animation: rulesAppear .2s ease-out;
   position: relative;
   perspective: 1200px;
   width: 100vw;
@@ -286,11 +343,22 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  
+  animation: rulesAppear 1s ease-out;
+
+  @keyframes rulesAppear {
+    0% {
+      opacity: 0;
+      transform: scale(1.1);
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
   img, video {
     width: 550px;
     border: solid 15px rgba(255,255,255,.05);
-    border-radius: 5px;    
+    border-radius: 5px;
   }
   
   .rule-box {
@@ -362,7 +430,7 @@
     
     .diagram {
       width: 50%;
-      border: solid 8px rgba(255,255,255,.2);
+      border: solid 6px rgba(255,255,255,.2);
       position: relative;
       margin: 0 20px;
       padding: 55px 0 25px 0;
@@ -383,21 +451,20 @@
       }
 
       .control-diagram {
-        width: 85%;
+        width: 80%;
         margin: 0 auto;
-        height: 300px;
+        height: 265px;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        
       }
-      
+
       .ai-notice {
         color: rgba(255,255,255,.4);
         font-size: 30pt;
       }
 
-      &[data-type="keyboard"] {
+      &[data-type="keyboard-left"] {
         .control-diagram {
           background-image: url(assets/images/control-keyboard-left.svg);
           .ai-notice {
@@ -405,6 +472,16 @@
           }
         }
       }
+
+      &[data-type="keyboard-right"] {
+        .control-diagram {
+          background-image: url(assets/images/control-keyboard-right.svg);
+          .ai-notice {
+            display: none;
+          }
+        }
+      }
+
 
       &[data-type="gamepad"] {
         .control-diagram {

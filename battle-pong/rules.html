@@ -6,7 +6,6 @@
     <title></title>
     <base href="src/">
     <link rel="stylesheet" href="style.css"/>
-    <script src="js/particles.js"></script>
     <script src="js/settings.js"></script>
     <script src="js/canvas-stars.js"></script>
     <script src="js/music.js"></script>
@@ -31,9 +30,9 @@
     </div>
 
     <div class="rules-nav">
-      <a row="1" col="1" class="gamepad-button" nav="rules" href="#">RULES</a>
-      <a row="1" col="2" class="gamepad-button" nav="powerups" href="#">POWERUPS</a>
-      <a row="1" col="3" class="gamepad-button" nav="controls" href="#">CONTROLS</a>
+      <a row="1" col="1" class="gamepad-button" nav="controls" href="#">CONTROLS</a>
+      <a row="1" col="2" class="gamepad-button" nav="rules" href="#">RULES</a>
+      <a row="1" col="3" class="gamepad-button" nav="powerups" href="#">POWERUPS</a>
     </div>
 
     <div class="rules">
@@ -56,7 +55,7 @@
       </div>
 
       <div rule="rules" class="rule-box">
-        <ul>
+        <ul class="rule-list">
           <li>Score to expand your terrain</li>
           <li>You can't score on yourself</li>
           <li>Capture the whole board to win</li>
@@ -106,10 +105,11 @@
     </div>
 
     <div class="buttons">
-      <div row="3" col="1" to="splash" class="gamepad-button button nav-button go-back green-button">HOME</div>
-      <div row="3" col="2" to="game" class="gamepad-button button nav-button start-game pink-button">PLAY</div>
-      <div row="3" col="3" class="gamepad-button button previous">&larr; Previous</div>
-      <div row="3" col="4" class="gamepad-button button next">Next &rarr;</div>
+      <div row="3" col="1" to="splash" class="gamepad-button button nav-button go-back">Settings</div>
+      <div row="3" col="2" class="gamepad-button button previous">&larr; Previous</div>
+      <div class="divider"></div>
+      <div row="3" col="3" class="gamepad-button button next">Next &rarr;</div>
+      <div row="3" col="4" to="game" class="gamepad-button button nav-button start-game green-button">PLAY</div>
     </div>
     </div>
   </body>

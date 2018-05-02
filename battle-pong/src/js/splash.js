@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function(){
     paddles.push(createObject({noBody: true}));
 
     initParticleEngine(".scene", 5);
-    loop();
     
     prepTitle();
 
@@ -75,6 +74,7 @@ function setupInputs() {
 }
 
 function loop(){
+  
   drawParticles();
   requestAnimationFrame(loop);
 }
@@ -197,16 +197,17 @@ function setupStartButton(){
     SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../game.html";
+        window.location.href = "../rules.html";
       }
       else {
-        window.location.href = "game.html";
+        window.location.href = "rules.html";
       }
     }, 4000);
   })
 }
 
 function setupRulesButton(){
+  return;
   var button = document.querySelector(".rules-button");
   
   button.addEventListener("click", function(e){
