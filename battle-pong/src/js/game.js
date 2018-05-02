@@ -130,6 +130,8 @@ var game =  {
       return;
     }
 
+    console.log("ballhtpaddle");
+
     this.leftGoalEnabled = false;
     this.rightGoalEnabled = false;
 
@@ -142,7 +144,6 @@ var game =  {
     } else {
       this.leftGoalEnabled = true;
       this.goalOneEl.classList.add("on");
-      
     }
   },
 
@@ -200,9 +201,8 @@ var game =  {
     }, 3000);
   },
 
-  // Showd the screen between rounds
+  // Shows the screen between rounds
   scoreDisplay: function() {
-    console.log(this.score);
     this.mode = "betweenrounds";
     
     this.betweenRoundsEl.style.display = "flex";
@@ -212,10 +212,7 @@ var game =  {
 
     this.betweenRoundsEl.querySelector(".player-1-score").innerText = this.score.player1;
     this.betweenRoundsEl.querySelector(".player-2-score").innerText = this.score.player2;
-
     this.betweenRoundsEl.querySelector("h1").innerText = "PLAYER " + (game.score.winner.player + 1) + " WINS!"
-
-
     this.betweenRoundsEl.querySelector(".player-1-total-score").innerText = this.score.total1;
     this.betweenRoundsEl.querySelector(".player-2-total-score").innerText = this.score.total2;
 
@@ -252,7 +249,6 @@ var game =  {
 
   run: function () {
     var g = this;
-    g.mode = 'startup';
     (function loop() {
 
       if(g.freezeFrames === 0) {
@@ -648,7 +644,6 @@ var game =  {
     this.paddles[0].maxX = false;
     this.paddles[1].minX = false;
 
-    
     this.leftGoalEnabled = false;
     this.rightGoalEnabled = false;
 
@@ -659,8 +654,9 @@ var game =  {
       if(ball.physics.speed > ball.wordSpeed) {
         addFakeBall(ball.physics);
       }
-      this.removeBalls();
     }
+
+    this.removeBalls();
 
     this.mode = "roundover";
 
@@ -811,7 +807,13 @@ var game =  {
     }
 
     this.moveTerrain(scoredByPlayerNum, terrainChange, scoringBall);
-    
+    // TODO - move this into playerscore or something
+    // this whole function should just be cosmetic.
+    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
+      this.roundOver(scoringBall);
+      SoundManager.musicEngine.addIntensity(50);
+    }
+
     addTemporaryClassName(this.bodyEl, "team-" + player + "-scored-flash", 500);
 
     SoundManager.playRandomSoundFromBank('score');
@@ -851,13 +853,6 @@ var game =  {
 
     // Changes the bounds of the paddles based on the terrain line...
     this.updateBounds();
-
-
-    // TODO - move this into playerscore or something
-    // this whole function should just be cosmetic.
-    if(this.terrainLinePercent === 100 || this.terrainLinePercent === 0) {
-      this.roundOver(scoringBall);
-    }
   },
 
   removeObject: (object) => {

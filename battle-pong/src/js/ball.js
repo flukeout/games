@@ -415,7 +415,7 @@ function createBall(options){
             // Going Down
             this.spinDirection = "cw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Paddle_Dash_V1");
+              SoundManager.playSound("Powerup_Spin_Startup");
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -425,7 +425,7 @@ function createBall(options){
             // Going Up
             this.spinDirection = "ccw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Paddle_Dash_V1");
+              SoundManager.playSound("Powerup_Spin_Startup");
               Matter.Body.setVelocity(this.physics, {
                 x: totalVelocity * xRatio,
                 y: totalVelocity * yRatio
@@ -437,7 +437,7 @@ function createBall(options){
           if(yV < 0) {
             this.spinDirection = "ccw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Paddle_Dash_V1");
+              SoundManager.playSound("Powerup_Spin_Startup");
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: -totalVelocity * yRatio
@@ -446,7 +446,7 @@ function createBall(options){
           } else {
             this.spinDirection = "cw";
             if(this.prepSpin && !this.canSpin) {
-              SoundManager.playSound("Paddle_Dash_V1");
+              SoundManager.playSound("Powerup_Spin_Startup");
               Matter.Body.setVelocity(this.physics, {
                 x: -totalVelocity * xRatio,
                 y: totalVelocity * yRatio
@@ -519,9 +519,15 @@ function createBall(options){
       var pan = .8 * (-game.boardWidth/2 + this.physics.position.x) / game.boardWidth/2;
 
       if (obj.label.indexOf("wall") > -1) {
-        SoundManager.playSound("Ball_Bounce_Wall", null, { volume: percentage, pan : pan });
+        if(obj.label.indexOf("wall-right") > -1 && this.lastTouchedPaddle === 2) {
+          SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
+        } else if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 1) {
+          SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
+        } else {
+          SoundManager.playSound("Ball_Bounce_Wall", { volume: percentage, pan : pan });
+        }
       } else {
-        SoundManager.playSound("Ball_Bounce_Paddle", null, { volume: percentage, pan : pan });
+        SoundManager.playSound("Ball_Bounce_Paddle", { volume: percentage, pan : pan });
       }
 
       //asdf

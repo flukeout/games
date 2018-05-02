@@ -17,7 +17,7 @@ function makeStars(starCount){
       x: getRandom(0, canvasWidth),
       y: getRandom(0, canvasHeight),
       radius: getRandom(2,3),
-      opacity: getRandom(.1,.7),    
+      opacity: getRandom(.1,.7),
       speed: getRandom(5, 20)
     })
   }

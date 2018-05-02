@@ -6,9 +6,11 @@
 // Prevent all of these variables and constants from polluting the global scope
 (function () {
 
+const superHardShotIntensityInjection = 15;
+
 const temporaryLowPassSettings = {
   startFrequency: 500,
-  endFrequency: 20000,
+  endFrequency: 10000,
   attack: 0,
   sustain: 1.666,
   release: 1.666,
@@ -101,6 +103,18 @@ let sounds = {
     volume : 1,
     limit: 100
   },
+  "Ball_Bounce_OwnEndzone_V1" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V1.mp3",
+    volume : 1,
+  },
+  "Ball_Bounce_OwnEndzone_V2" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V2.mp3",
+    volume : 1,
+  },
+  "Ball_Bounce_OwnEndzone_V3" : {
+    url : "sounds/Ball_Bounce_OwnEndzone_V3.mp3",
+    volume : 1,
+  },
 
   "Powerup_Bones_Disapear_1" : {
     url : "sounds/Powerup_Bones_Disapear_1.mp3",
@@ -177,6 +191,11 @@ let sounds = {
   },
   "Powerup_Bones_Collision_Low_V13" : {
     url : "sounds/Powerup_Bones_Collision_Low_V13.mp3",
+    volume : 1
+  },
+
+  "Powerup_Bones_Deselect" : {
+    url : "sounds/Powerup_Bones_Deselect.mp3",
     volume : 1
   },
 
@@ -371,6 +390,15 @@ let sounds = {
     url : "sounds/Bomb_Spawn.mp3",
     volume : 1
   },
+  "Bomb_Disable" : {
+    url : "sounds/Bomb_Disable.mp3",
+    volume : 1
+  },
+
+  "Menu_Move" : {
+    url : "sounds/Menu_Move.mp3",
+    volume : 1
+  },
 
   "Powerup_Bounce_Paddle" : {
     url : "sounds/Powerup_Bounce_Paddle.mp3",
@@ -415,6 +443,16 @@ let sounds = {
     url : "sounds/Powerup_Spin_Spin_Loop.mp3",
     volume : 1
   },
+
+  "Powerup_Spin_Startup" : {
+    url : "sounds/Powerup_Spin_Startup.mp3",
+    volume : 1
+  },
+
+  'MenuMusic': {
+    url: 'music/MenuMusic1.mp3',
+    volume: 1
+  }
 
 };
 
@@ -512,6 +550,13 @@ let soundBanks = {
       "Powerup_Bones_Collision_Low_V12",
       "Powerup_Bones_Collision_Low_V13"
     ]
+  },
+  "ball-bounce-own-endzone": {
+    sounds: [
+      "Ball_Bounce_OwnEndzone_V1",
+      "Ball_Bounce_OwnEndzone_V2",
+      "Ball_Bounce_OwnEndzone_V3"
+    ]
   }
 };
 
@@ -521,17 +566,24 @@ let loops = {
   },
   'Powerup_Spin_Spin': {
     sound: 'Powerup_Spin_Spin_Loop'
+  },
+  'Menu_Music': {
+    sound: 'MenuMusic',
+    inDuration: 2,
+    outDuration: 2
   }
 };
 
 let soundEvents = {
-  'Ghost_Paddle_Enemy_Territory': () => {
-    SoundManager.temporaryLowPass();
-    // uh oh!...
+  'Ghost_Enters_Paddle_Enemy_Territory': () => {
+    SoundManager.startLowPass(500, .1, 10000);
+  },
+  'Ghost_Leaves_Paddle_Enemy_Territory': () => {
+    SoundManager.stopLowPass(10000, .1);
   },
   'Super_Hard_Shot': () => {
     SoundManager.playRandomSoundFromBank("super-hard-shot");
-    SoundManager.musicEngine.setMoodTemporarily('intense');
+    musicEngine.addIntensity(superHardShotIntensityInjection);
   },
   'Mine_Explosion': () => {
     SoundManager.playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
@@ -540,16 +592,19 @@ let soundEvents = {
   'Finish_It_Heartbeat_Start': () => {
     SoundManager.startLoop('Finish_It_Heartbeat');
     musicEngine.setMood('quiet');
+    musicEngine.temporarilyReduceGain(0.2);
   },
   'Finish_It_Heartbeat_Stop_Hit': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Hit');
     musicEngine.setMood('default');
+    musicEngine.resetGlobalGain();
   },
   'Finish_It_Heartbeat_Stop_Miss': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Miss');
     musicEngine.setMood('default');
+    musicEngine.resetGlobalGain();
   }
 };
 
@@ -560,6 +615,7 @@ let sequenceManagers = {
 
     this.start = function () {
       if (!Settings.sounds) return;
+      if (spinLoop) return;
       spinStart = SoundManager.playSound('Powerup_Spin_Spin_Start');
       spinLoop = SoundManager.startLoop('Powerup_Spin_Spin', {start: soundContext.currentTime + spinStart.source.buffer.duration - 0.1});
     };
@@ -567,9 +623,11 @@ let sequenceManagers = {
     this.stop = function () {
       if (!Settings.sounds) return;
       if (!spinStart) return;
+      if (!spinLoop) return;
       spinStart.source.stop();
       spinLoop.gain.gain.linearRampToValueAtTime(0, soundContext.currentTime + 0.20);
       SoundManager.stopLoop('Powerup_Spin_Spin', {stop: soundContext.currentTime + 0.20});
+      spinLoop = null;
     };
   }
 };
@@ -592,21 +650,25 @@ let musicEngine;
 let soundBankMemory = {};
 
 function loadSound(name){
-  var sound = sounds[name];
-  var url = sound.url;
-  var buffer = sound.buffer;
+  return new Promise((resolve, reject) => {
 
-  var request = new XMLHttpRequest();
-  request.open('GET', url, true);
-  request.responseType = 'arraybuffer';
+    var sound = sounds[name];
+    var url = sound.url;
+    var buffer = sound.buffer;
 
-  request.onload = function() {
-    soundContext.decodeAudioData(request.response, function(newBuffer) {
-      sound.buffer = newBuffer;
-    });
-  }
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
 
-  request.send();
+    request.onload = function() {
+      soundContext.decodeAudioData(request.response, function(newBuffer) {
+        sound.buffer = newBuffer;
+        resolve();
+      });
+    }
+
+    request.send();
+  });
 }
 
 function playRandomSoundFromBank(soundBankName, options) {
@@ -696,6 +758,41 @@ function temporaryLowPass() {
   document.dispatchEvent(new CustomEvent('lowpassstarted', {detail: null}));
 }
 
+function startLowPass(frequency, attack, startFrequency) {
+  attack = attack || 0;
+  frequency = frequency || 0;
+  startFrequency = startFrequency || globalBiquadFilter.frequency;
+  if (isNaN(attack)) attack = 0;
+  if (isNaN(frequency)) frequency = 0;
+  if (isNaN(startFrequency)) startFrequency = 0;
+
+    // Set up the initial effect
+  globalBiquadFilter.type = 'lowpass';
+
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.setValueAtTime(startFrequency, soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(frequency, soundContext.currentTime + attack);
+}
+
+let stopLowPassTimeout = -1;
+function stopLowPass(endFrequency, release) {
+  release = release || 0;
+  endFrequency = endFrequency || 0;
+  if (isNaN(release)) release = 0;
+  if (isNaN(endFrequency)) endFrequency = 0;
+
+  globalBiquadFilter.frequency.cancelScheduledValues(soundContext.currentTime);
+  globalBiquadFilter.frequency.linearRampToValueAtTime(endFrequency, soundContext.currentTime + release);
+
+  if (stopLowPassTimeout > -1) {
+    clearTimeout(stopLowPassTimeout);
+  }
+
+  stopLowPassTimeout = setTimeout(() => {
+    globalBiquadFilter.type = 'allpass';
+  }, release * 1000);
+}
+
 function playSound(name, options){
   if (!Settings.sounds) return;
 
@@ -727,6 +824,10 @@ function playSound(name, options){
     volume: sounds[name].volume || 1,
     pan: sounds[name].pan || 0,
     timeout: sounds[name].timeout || false
+  };
+
+  if ('volume' in options) {
+    soundOptions.volume = options.volume;
   }
 
   for(var k in options){
@@ -742,8 +843,7 @@ function playSound(name, options){
   panNode.pan.setTargetAtTime(soundOptions.pan, soundContext.currentTime, 0);
 
   var volume = soundContext.createGain();
-
-  volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0); // Should we make this a multiplier of the original?
+  volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0);
 
   // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
   if (options.excludeFromLowPassFilter) {
@@ -794,12 +894,23 @@ function startLoop(name, options) {
 
   if (loop.active) return;
 
+  let finalVolume = sounds[loop.sound].volume;
+  let startVolume = loop.inDuration ? 0 : sounds[loop.sound].volume;
+
+  options.volume = startVolume;
+
   let sound = playSound(loop.sound, options);
   sound.source.loop = true;
 
   // :)
   loop.source = sound.source;
   loop.active = true;
+  loop.gain = sound.gain;
+
+  if (loop.inDuration) {
+    // Should we make this a multiplier of the original?  
+    loop.gain.gain.linearRampToValueAtTime(finalVolume, soundContext.currentTime + loop.inDuration);
+  }
 
   document.dispatchEvent(new CustomEvent('loopstarted', {detail: name}));
 
@@ -819,10 +930,23 @@ function stopLoop(name, options) {
   }
 
   if (loop.active) {
-    loop.source.stop(options.stop || soundContext.currentTime);
+    let oldSource = loop.source;
+
+    function doStop () {
+      oldSource.stop(options.stop || soundContext.currentTime);
+      document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));      
+    }
+
     loop.source = null;
     loop.active = false;
-    document.dispatchEvent(new CustomEvent('loopstopped', {detail: name}));
+    
+    if (loop.outDuration) {
+      loop.gain.gain.linearRampToValueAtTime(0, soundContext.currentTime + loop.outDuration);
+      setTimeout(doStop, loop.outDuration * 1000);
+    }
+    else {
+      doStop();
+    }
   }
 }
 
@@ -857,6 +981,8 @@ window.SoundManager = {
   startLoop: startLoop,
   stopLoop: stopLoop,
   temporaryLowPass: temporaryLowPass,
+  startLowPass: startLowPass,
+  stopLowPass: stopLowPass,
   findSounds: findSounds,
   limitedSoundTimeouts: limitedSoundTimeouts,
   temporaryLowPassSettings: temporaryLowPassSettings,
@@ -875,11 +1001,11 @@ window.SoundManager = {
       musicEngine.globalGainNode.connect(globalBiquadFilter);
       globalBiquadFilter.connect(soundContext.destination);
 
-      for(var key in sounds) {
-        loadSound(key);
-      }
 
-      musicEngine.load().then(() => {
+      let promises = Object.keys(sounds).map(key => { return loadSound(key); });
+
+      promises.push(musicEngine.load());
+      Promise.all(promises).then(() => {
         resolve();
       });
     });

@@ -1,6 +1,28 @@
 // Animations that build the game screen
 
-.game {
+.game.loading {
+  .surface {
+    visibility: hidden;
+  }
+
+  .large-moon {
+    visibility: hidden;
+  }
+  
+  .canvas-stars {
+    visibility: hidden;
+  }
+
+  .score-satellite {
+    visibility: hidden;
+  }
+
+  .world {
+    visibility: hidden;
+  }
+}
+
+.game.ready {
   .surface {
     animation: surfaceAppear 3s ease-out;
   }
@@ -11,6 +33,23 @@
   
   .canvas-stars {
     animation: starsAppear 3s ease-out;
+  }
+
+  .score-satellite {
+    animation: satelliteAppear 2s ease-out;
+  }
+
+  .world {
+    animation: worldAppear 4s ease-out;
+  }
+  
+  .board-shadow {
+    animation: shadowAppear 2s ease-out;
+  }
+
+
+  #loading {
+    display: none;
   }
 }
 
@@ -114,7 +153,7 @@
     background-position: bottom;
     transform: rotateX(20deg) rotateY(0deg);
     background-repeat: no-repeat;
-    animation: shadowAppear 2s ease-out;
+
 
     @keyframes shadowAppear {
       0% {
@@ -150,7 +189,6 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  animation: satelliteAppear 2s ease-out;
   animation-delay: 0s;
   transition: transform 1.5s ease-in-out;
 
@@ -273,6 +311,8 @@
   z-index: 2;
 }
 
+
+
 .boom {
   z-index: 4;
 }
@@ -286,7 +326,6 @@
 }
 
 .tilt-wrapper {
-  /*opacity: 0;*/
   position: absolute;
   top: calc(50vh - 295px);
   left: calc(50vw - 445px);
@@ -300,8 +339,7 @@
   position: relative;
   border: solid 20px #222;
   box-sizing: border-box;
-  -moz-transform-style: preserve-3d;
-  animation: worldAppear 4s ease-out;
+  // animation: worldAppear 4s ease-out;
 
   @keyframes worldAppear {
     0% {
@@ -351,41 +389,6 @@
   color: $pink;
 }
 
-.goal {
-  position: absolute;
-  height: 100%;
-  top: 0;
-  width: 6px;
-  opacity: 0;
-  transition: all .3s ease-out;
-  border-radius: 5px;
-  width: 60px;
-
-  &.one.on {
-    opacity: .5;
-    transform: scaleZ(1) rotateY(-90deg);
-  }
-
-  &.one {
-    background-color: $green;
-    left: -10px;
-    transform: scaleZ(.2) rotateY(-90deg);
-    transform-origin: left;
-  }
-
-  &.two.on {
-    opacity: .6;
-    transform: scaleZ(1) rotateY(90deg);
-  }
-
-  &.two {
-    background-color: $pink;
-    right: -10px;
-    transform: scaleZ(.2) rotateY(90deg);
-    transform-origin: right;
-  }
-}
-
 
 .terrain {
   position: absolute;
@@ -397,7 +400,9 @@
   &.one {
     left: 0;
     background-color: $pink;
-    background-image: url(assets/images/board-corner-left.svg);
+    border-top: solid 3px rgba(0,0,0,.2);
+    box-sizing: border-box;
+    // background-image: url(assets/images/board-corner-left.svg);
     background-position: top left;
     background-repeat: no-repeat;
     background-size: 350px;
@@ -405,9 +410,12 @@
   }
 
   &.two {
+  border-top: solid 3px rgba(0,0,0,.2);
+  box-sizing: border-box;
+
     right: 0;
     background-color: $green;
-    background-image: url(assets/images/board-corner-right.svg);
+    // background-image: url(assets/images/board-corner-right.svg);
     background-position: top right;
     background-repeat: no-repeat;
     background-size: 350px;
@@ -556,15 +564,11 @@
 .menu-toggle {
   position: fixed;
   bottom: 10px;
-  left: 10px;
-  width: 50px;
-  height: 50px;
+  left: 15px;
   cursor: pointer;
-  background-image: url(assets/images/pause.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50%;
-  opacity: .3;
+  color: white;
+  font-size: 22px;
+  opacity: .5;
   
   &:hover {
     opacity: .75;
@@ -606,6 +610,10 @@
   perspective: 1200px;
   animation: betweenRoundAppear 1s ease-out;
   
+  .scores {
+    display: none;
+  }
+
   @keyframes betweenRoundAppear {
     0% {
       opacity: 0;
@@ -733,7 +741,7 @@
     
     h1 {
       font-size: 50px;
-      margin: 0 0 20px 0;
+      margin: 0 0 30px 0;
     }
     
     .scores {
@@ -743,7 +751,7 @@
 
   .stats {
     font-size: 20px;
-    margin: 30px auto 30px auto;
+    margin: 10px auto 10px auto;
     color: rgba(255,255,255,1);
     border: solid 1px rgba(255,255,255,1);
     opacity: .5;
@@ -766,6 +774,73 @@
   
   .settings {
     font-size: 20px;
+
+  }
+}
+
+.goal {
+  position: absolute;
+  height: 100%;
+  width: 10px;
+  box-sizing: border-box;
+  transition: opacity .15s ease-out;
+  z-index: 3;
+  opacity: 0;
+
+  .bar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation:  goalStrobe .5s ease-in-out infinite; 
+    opacity: .6;
   }
 
+  @keyframes goalStrobe {
+    50% {
+      opacity: 1;
+      transform: scaleX(1.15);
+    }
+  }
+
+  &.on {
+    opacity: 1;
+    animation: goalAppear .2s ease-out;
+  }
+
+  @keyframes goalAppear {
+    0% {
+      transform: scaleY(.65);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+
+  &.one {
+    left: 0;
+    transform-origin: left;
+  }
+
+  &.one .bar {
+    left: 0;
+    background: #ff73f5;
+    background-position: left;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform-origin: left;
+  }
+
+ &.two {
+    right: 0;
+    transform-origin: right;
+  }
+
+  &.two .bar {
+    background-color: #5fffba;
+    right: 0;
+    background-position: right;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform-origin: right;
+  }
 }

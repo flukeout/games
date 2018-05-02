@@ -1,4 +1,13 @@
 function PauseManager (game, inputManager) {
+  let preTitles = [
+    'Watch out for',
+    'You can rely on',
+    'Space is no limit for',
+    'There\'s always time for',
+    'Make way for',
+    'Real soldiers are forged by',
+    'Hopes and dreams rely on'
+  ];
   
   let displayingRules = false;
 
@@ -53,9 +62,11 @@ function PauseManager (game, inputManager) {
   }
 
   function pauseGame(){
-    if(game.mode == "betweenrounds") {
+    if(game.mode != "running") {
       return;
     }
+
+    document.querySelector('#pause-pre-title').textContent = preTitles[Math.floor(preTitles.length * Math.random())] + '...';
 
     document.querySelector(".pause-screen").classList.add("visible");
     game.pause();
@@ -73,7 +84,7 @@ function PauseManager (game, inputManager) {
     }
   
     setTimeout(function(){
-        window.location.href = url;
+      window.location.href = url;
     }, 1000);
   }
 

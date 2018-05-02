@@ -1,31 +1,53 @@
+(function () {
+
+let paddles = [];
+let bestOfEls, 
+    powerupEls,
+    toggleEls,
+    playerOptionEls;
+
+let timeoutAccumulator = 0;
+
 document.addEventListener('DOMContentLoaded', function(){
   const CREDITS_DELAY = 3000;
+  SoundManager.init().then(() => {
+    initParticleEngine(".scene", 5);
+    loop();
+    
+    prepTitle();
 
-  initParticleEngine(".scene", 5);
-  loop();
-  
-  prepTitle();
+    paddles.push(createObject({noBody: true}));
+    paddles.push(createObject({noBody: true}));
 
-  bestOfEls = document.querySelectorAll(".best-of .option");
-  setupBestOf();
+    initParticleEngine(".scene", 5);
+    loop();
+    
+    prepTitle();
 
-  powerupEls = document.querySelectorAll(".powerups .powerup");
-  setupPowerups(powerupEls);
+    bestOfEls = document.querySelectorAll(".best-of .option");
+    setupBestOf();
 
-  toggleEls = document.querySelectorAll(".option-toggle");
-  setupToggles(toggleEls);
+    powerupEls = document.querySelectorAll(".powerups .powerup");
+    setupPowerups(powerupEls);
 
-  playerOptionEls = document.querySelectorAll(".player-options .player-option");
-  setupPlayerOptionss(playerOptionEls);
+    toggleEls = document.querySelectorAll(".option-toggle");
+    setupToggles(toggleEls);
 
-  setupStartButton();
-  setupRulesButton();
+    playerOptionEls = document.querySelectorAll(".player-options .player-option");
+    setupPlayerOptionss(playerOptionEls);
 
-  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
-  startStars(50, window.innerWidth, window.innerHeight);
+    setupStartButton();
+    setupRulesButton();
 
-  SoundManager.init();
-  SoundManager.loadSettingsFromLocalStorage();
+    starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
+    startStars(50, window.innerWidth, window.innerHeight);
+
+    SoundManager.loadSettingsFromLocalStorage();
+    SoundManager.musicEngine.cueSong('menu');
+    if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+
+    setupInputs();
+  });
 
   document.querySelector(".splash").classList.add("appear");
 
@@ -33,20 +55,29 @@ document.addEventListener('DOMContentLoaded', function(){
   selectButtonBySelector(".start-game");
 
   startCredits(CREDITS_DELAY);
+
+  inputManager = new InputManager((paddle) => {
+    updatePlayerOptions(playerOptionEls);
+  });
+
 });
+
+function setupInputs() {
+  inputManager.resetManagedObjects();
+  inputManager.forgetManagedObjects();
+
+  if (Settings.player1Control !== 'AI') {
+    inputManager.setupInputForObject(paddles[0]);
+  }
+  if (Settings.player2Control !== 'AI') {
+    inputManager.setupInputForObject(paddles[1]);
+  }
+}
 
 function loop(){
   drawParticles();
   requestAnimationFrame(loop);
 }
-
-
-let bestOfEls, 
-    powerupEls,
-    toggleEls,
-    playerOptionEls;
-
-let timeoutAccumulator = 0;
 
 // Sets up the music & sound toggle click handlers
 function setupPlayerOptionss(els){
@@ -62,6 +93,7 @@ function setupPlayerOptionss(els){
       } else {
         saveSetting(key, "player");
       }
+      setupInputs();
       
       updatePlayerOptions(els);
       buttonGleam(el.target);
@@ -75,10 +107,24 @@ function updatePlayerOptions(els){
     var playerNum = el.getAttribute("player");
     var key = "player" + playerNum + "Control";
     var setting =window.Settings[key];
+
+    el.classList.remove('ai');
+    el.classList.remove('keyboard');
+    el.classList.remove('gamepad');
+
     if(setting === "AI") {
+      el.classList.add('ai');
       el.innerHTML = "CPU";
     } else {
-      el.innerHTML = "P" + playerNum;
+      if (paddles[playerNum - 1].inputComponent) {
+        if (paddles[playerNum - 1].inputComponent.type === 'gamepad') el.classList.add('gamepad');
+        else el.classList.add('keyboard');
+      }
+      else {
+        console.warn('Paddle ' + playerNum + ' has no input component. Can\'t perform detection.');
+      }
+      
+      el.innerHTML = "&nbsp;";
     }
   });
 }
@@ -147,6 +193,8 @@ function setupStartButton(){
     buttonGleam(button);
 
     e.preventDefault();
+
+    SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../game.html";
@@ -166,6 +214,7 @@ function setupRulesButton(){
     fadeOutScene();
     buttonGleam(e.target);
     SoundManager.playSound("ui");
+    SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
@@ -195,6 +244,15 @@ function setupToggles(els){
       }
       updateToggles(els);
       SoundManager.playSound("ui");
+
+      if (toggleType === 'music') {
+        if (Settings[toggleType]) {
+          SoundManager.musicEngine.fadeIn(2, {loop: true});
+        }
+        else {
+          SoundManager.musicEngine.stop();
+        }
+      }
     });
   });
   updateToggles(els);
@@ -217,16 +275,18 @@ const powerupOn = {
   clone: 'Powerup_Bones_Score',
   grow: 'Powerup_Enhance_Score',
   spin: 'Powerup_Spin_Score',
-  mine: 'beep',
+  mine: 'Bomb_Spawn',
   noclip: 'Powerup_Ghost_Score',
   magnet: 'Powerup_Sticky_Score'
 };
 
 const powerupOff = {
+  clone: 'Powerup_Bones_Deselect',
   grow: 'Powerup_Enhance_WareOff',
-  spin: 'Powerup_Spin_WareOff',
+  spin: 'Powerup_Spin_Score',
   noclip: 'Powerup_Ghost_WareOff',
-  magnet: 'Powerup_Sticky_WareOff'
+  magnet: 'Powerup_Sticky_WareOff',
+  mine: 'Bomb_Disable'
 };
 
 
@@ -411,7 +471,11 @@ function startCredits(timeoutDelay) {
     'Tailor',
     'Expert',
     'Professor',
-    'Researcher'
+    'Researcher',
+    'Manager',
+    'Painter',
+    'Franchising',
+    'Manufacturing'
   ];
 
   let names = [
@@ -495,3 +559,5 @@ function startCredits(timeoutDelay) {
 
   creditsContainer.classList.add('show');
 }
+
+})();

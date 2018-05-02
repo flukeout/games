@@ -90,7 +90,7 @@ function createObject(options){
         props = getElementProperties(this.element);
       } else {
 
-        props = options.properties;
+        props = options.properties || {};
 
         this.element = document.createElement("div");
 
@@ -104,8 +104,10 @@ function createObject(options){
         this.element.classList.add(options.className);
         // this.element.classList.add(this.selector);
         this.element.innerHTML = options.innerHTML || "";
-        document.querySelector(".world").appendChild(this.element);
 
+        if (!options.noBody) {        
+          document.querySelector(".world").appendChild(this.element);
+        }
 
         this.element.style.height = props.height + "px";
         this.element.style.width = props.width + "px";
@@ -119,7 +121,9 @@ function createObject(options){
       this.width = props.width;
 
       // Create the physics simulation
-      this.physics = createPhysicsForElement(this.element, this.physicsOptions);
+      if (!options.noBody) {
+        this.physics = createPhysicsForElement(this.element, this.physicsOptions);
+      }
 
       // console.log(this.physics.id);
       this.id = this.physics.id;
@@ -131,10 +135,12 @@ function createObject(options){
         this.actions[actions[i]] = 0;
       }
 
-      // Add it to the World
-      World.add(engine.world, [this.physics]);
+      if (!options.noBody) {
+        // Add it to the World
+        World.add(engine.world, [this.physics]);
 
-      objectsToRender.push(this);
+        objectsToRender.push(this);
+      }
     }
   }
 

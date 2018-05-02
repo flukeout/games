@@ -68,6 +68,8 @@ function moveCursor(direction) {
 
   selectButtonByDirection(selectedButton, direction);
 
+  SoundManager.playSound('Menu_Move');
+
   if (direction === 'go' && selectedButton) {
     if(selectedButton) {
       selectedButton.click();
@@ -174,7 +176,9 @@ const selectButtonEl = el => {
   deselectAllButtons();
   selectedIndex = buttons.indexOf(el);
   selectedButton = el;
-  el.classList.add('input-selected');
+  if (el) {
+    el.classList.add('input-selected');
+  }
 }
 
 const selectButtonByRowCol = (row,col) => {

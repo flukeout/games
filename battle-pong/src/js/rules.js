@@ -3,58 +3,92 @@ const rulenames = [];
 let ruleNavEls;
 
 document.addEventListener('DOMContentLoaded', function () {
+  SoundManager.init().then(() => {
 
-  setupNavButtons();
+    setupNavButtons();
 
-  ruleNavEls = document.querySelectorAll(".rules-nav a");
-  ruleNavEls.forEach(function(el){
-    let type = el.getAttribute("nav");
-    rulenames.push(type);
+    ruleNavEls = document.querySelectorAll(".rules-nav a");
+    ruleNavEls.forEach(function(el){
+      let type = el.getAttribute("nav");
+      rulenames.push(type);
 
-    el.addEventListener("click",function(e){
-      let type = this.getAttribute("nav");
-      showRule(type);
+      el.addEventListener("click",function(e){
+        let type = this.getAttribute("nav");
+        showRule(type);
+        SoundManager.playSound("ui");
+        addTemporaryClassName(e.target, "poke", 250);
+        e.preventDefault();
+      })
+    });
+
+    ruleEls = document.querySelectorAll(".rule-box");
+
+    document.querySelector(".button.previous").addEventListener("click",function(){
+      previousRule();
       SoundManager.playSound("ui");
-      addTemporaryClassName(e.target, "poke", 250);
-      e.preventDefault();
+      addTemporaryClassName(this, "poke", 250);
     })
+    
+    document.querySelector(".button.next").addEventListener("click",function(){
+      addTemporaryClassName(this, "poke", 250);
+      SoundManager.playSound("ui");
+      nextRule();
+    })
+
+    numRules = ruleEls.length;
+
+    powerupEls = document.querySelectorAll(".powerup-row .icon");
+
+    powerupEls.forEach(function(el){
+      let type = el.getAttribute("type");
+      powerupnames.push(type);
+      el.addEventListener("click", function(el){
+        let type = this.getAttribute("type");
+        showPowerup(type);
+        SoundManager.playSound("ui");
+      });
+    })
+
+    showPowerup(powerupnames[0]);
+    currentRule = rulenames[0];
+    if (window.location.hash) {
+      let prospectiveRule = window.location.hash.substr(1);
+      if (rulenames.indexOf(prospectiveRule) > -1) {
+        currentRule = prospectiveRule;
+      }
+    }
+    showRule(currentRule);
+
+    // nextStep();
+    setupInputButtons();
+    selectButtonByIndex(12);
+
+    SoundManager.loadSettingsFromLocalStorage();
+    SoundManager.musicEngine.cueSong('menu');
+    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
   });
 
-  ruleEls = document.querySelectorAll(".rule-box");
+  let leftPaddle = createObject({noBody: true});
+  let rightPaddle = createObject({noBody: true});
 
-  document.querySelector(".button.previous").addEventListener("click",function(){
-    previousRule();
-    SoundManager.playSound("ui");
-    addTemporaryClassName(this, "poke", 250);
-  })
-  
-  document.querySelector(".button.next").addEventListener("click",function(){
-    addTemporaryClassName(this, "poke", 250);
-    SoundManager.playSound("ui");
-    nextRule();
-  })
+  var inputManager = new InputManager((paddle) => {
+    let selector = (paddle === leftPaddle ? '.player-one-controls' : '.player-two-controls')
+    document.querySelector(selector).setAttribute('data-type', paddle.inputComponent.type);
+  });
 
-  numRules = ruleEls.length;
+  if (Settings.player1Control === 'AI') {
+    document.querySelector('.player-one-controls').setAttribute('data-type', 'ai');
+  }
+  else {
+    inputManager.setupInputForObject(leftPaddle);
+  }
 
-  powerupEls = document.querySelectorAll(".powerup-row .icon");
-
-  powerupEls.forEach(function(el){
-    let type = el.getAttribute("type");
-    powerupnames.push(type);
-    el.addEventListener("click", function(el){
-      let type = this.getAttribute("type");
-      showPowerup(type);
-      SoundManager.playSound("ui");
-    });
-  })
-
-  showPowerup(powerupnames[0]);
-  currentRule = rulenames[0];
-  showRule(currentRule);
-
-  nextStep();
-  setupInputButtons();
-  selectButtonByIndex(12);
+  if (Settings.player2Control === 'AI') {
+    document.querySelector('.player-two-controls').setAttribute('data-type', 'ai');
+  }
+  else {
+    inputManager.setupInputForObject(rightPaddle);
+  }
 });
 
 
@@ -222,39 +256,13 @@ let stepList = [
 
 let currentStepNumber = 0;
 
-const nextStep = () => {
-  currentStep = stepList[currentStepNumber];
-
-  document.querySelector(".controls").classList.add(currentStep.step);
-
-  currentStepNumber++;
-
-  if(currentStepNumber >= stepList.length) {
-    currentStepNumber = 0;
-  }
-
-  setTimeout(function(){
-    if(currentStep) {
-     document.querySelector(".controls").classList.remove(currentStep.step);
-   }
-  }, currentStep.duration);
-
-  setTimeout(function(){
-    nextStep();
-  }, currentStep.duration + currentStep.breakAfter);
-};
-
 
 document.addEventListener('DOMContentLoaded', function(){
-
   initParticleEngine(".scene", 5);
   loop();
 
   starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
-
-  SoundManager.init();
-  SoundManager.loadSettingsFromLocalStorage();
 });
 
 function loop(){
@@ -262,33 +270,28 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-
 let timeoutAccumulator = 0;
 
 function timeoutClass(selector, className, timeout){
-  
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
-  
   setTimeout(function(){
-    console.log(selector);
     document.querySelector(selector).classList.add(className);
   }, timeoutAccumulator)
 }
 
-
 function fadeOutScene(){
-    timeoutClass(".rules-nav", "transition-out", 100)
-    timeoutClass(".rules", "transition-out", 100)
-    timeoutClass(".buttons", "transition-out", 100)
-    timeoutClass(".sky", "transition-out", 200);
-    timeoutClass(".canvas-stars", "transition-out", 200);
+  timeoutClass(".rules-nav", "transition-out", 100);
+  timeoutClass(".rules", "transition-out", 100);
+  timeoutClass(".buttons", "transition-out", 100);
+  timeoutClass(".sky", "transition-out", 200);
+  timeoutClass(".canvas-stars", "transition-out", 200);
 }
-
 
 function setupNavButtons(){
   var buttons = document.querySelectorAll(".nav-button");
   buttons.forEach(function(el){
     el.addEventListener("click", function(e){
+      buttonGleam(e.target);
       SoundManager.playSound("ui");
       let navTo = this.getAttribute("to");
       addTemporaryClassName(this, "poke", 250);
@@ -308,8 +311,10 @@ function goBack(){
     url = "../" + url;
   }
 
+  SoundManager.musicEngine.fadeOut(2);
+
   setTimeout(function(){
-      window.location.href = url;
+    window.location.href = url;
   }, 2500);
 }
 
@@ -321,8 +326,10 @@ function startGame(){
     url = "../" + url;
   }
 
+  SoundManager.musicEngine.fadeOut(2);
+
   setTimeout(function(){
-      window.location.href = url;
+    window.location.href = url;
   }, 2500);
 }
 

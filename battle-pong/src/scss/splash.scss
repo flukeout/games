@@ -368,6 +368,26 @@
       display: inline-block;
       padding: 6px 12px 7px 12px;
       cursor: pointer;
+
+      &.gamepad {
+        background-image: url('assets/images/gamepad.svg?f=292');
+        background-size: 55%;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      &.keyboard {
+        background-image: url('assets/images/keyboard.svg?f=292');
+        background-size: 55%;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      &.ai {
+
+      }
+    }
+
+    .gamepad, .keyboard {
+      width: 50px;
     }
 
     .player-one {
