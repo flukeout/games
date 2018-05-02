@@ -1,9 +1,16 @@
 const rulenames = [];
 
 let ruleNavEls;
+document.onreadystatechange = function () {
+  if (document.readyState === "complete") {
+    gitErDone();
+  }
+}
 
-document.addEventListener('DOMContentLoaded', function () {
+function gitErDone() {
+
   SoundManager.init().then(() => {
+    document.querySelector(".rules-page").classList.add("ready");
 
     setupNavButtons();
 
@@ -50,7 +57,9 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     showPowerup(powerupnames[0]);
+    
     currentRule = rulenames[0];
+    
     if (window.location.hash) {
       let prospectiveRule = window.location.hash.substr(1);
       if (rulenames.indexOf(prospectiveRule) > -1) {
@@ -59,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     showRule(currentRule);
 
-    // nextStep();
     setupInputButtons();
     selectButtonByIndex(12);
 
@@ -73,7 +81,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var inputManager = new InputManager((paddle) => {
     let selector = (paddle === leftPaddle ? '.player-one-controls' : '.player-two-controls')
-    document.querySelector(selector).setAttribute('data-type', paddle.inputComponent.type);
+    let displayType = paddle.inputComponent.type;
+    if(paddle.inputComponent.type === "keyboard") {
+      displayType = paddle.inputComponent.inputToActionMapping.KeyA ? "keyboard-left" : "keyboard-right";
+    }
+    document.querySelector(selector).setAttribute('data-type', displayType);
   });
 
   if (Settings.player1Control === 'AI') {
@@ -89,8 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
   else {
     inputManager.setupInputForObject(rightPaddle);
   }
-});
-
+}
 
 const showPowerup = type => {
   currentPowerup = type;
@@ -291,12 +302,14 @@ function setupNavButtons(){
   var buttons = document.querySelectorAll(".nav-button");
   buttons.forEach(function(el){
     el.addEventListener("click", function(e){
-      buttonGleam(e.target);
+      
       SoundManager.playSound("ui");
       let navTo = this.getAttribute("to");
       addTemporaryClassName(this, "poke", 250);
       if(navTo === "game") {
+        buttonGleam(e.target);
         startGame();
+
       } else if(navTo === "splash"){
         goBack();
       }
