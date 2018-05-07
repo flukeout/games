@@ -19,16 +19,6 @@
 
         let musicEngine = SoundManager.musicEngine;
 
-        let outputModal = document.querySelector('#output-modal');
-        outputModal.querySelector('button').onclick = (e) => {
-          outputModal.classList.remove('show');
-        };
-
-        function showOutputModal(output) {
-          outputModal.querySelector('textarea').value = output;
-          outputModal.classList.add('show');
-        }
-
         function startSoundEngineMonitor() {
           document.addEventListener('keydown', (e) => {
             let keyCode = String.fromCharCode(e.keyCode);
@@ -60,10 +50,6 @@
               lowPassStatus: 'off'
             },
             methods: {
-              playWithDucking: (e) => {
-                let name = e.srcElement.getAttribute('data-name');
-                SoundManager.playRandomSoundFromBank(name, {musicDuckingProfile: name});
-              },
               playSound: (e) => {
                 SoundManager.playSound(e.srcElement.getAttribute('data-name'));
               },
@@ -113,9 +99,6 @@
               volumeChanged: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
               },
-              spitItOut: () => {
-                showOutputModal(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
-              },
               fireEvent: (clickEvent) => {
                 var name = clickEvent.srcElement.getAttribute('data-name');
                 SoundManager.fireEvent(name);
@@ -131,6 +114,20 @@
               saveSettingsToLocalStorage: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
                 soundVue.$forceUpdate();
+
+                fetch('/save', {
+                  body: JSON.stringify({
+                    sound: SoundManager.getSettingsForOutput(),
+                    music: musicEngine.getSettingsForOutput()
+                  }),
+                  headers: {
+                    'content-type': 'application/json'
+                  },
+                  cache: 'no-cache',
+                  method: 'PUT'
+                }).then(res => {
+                  console.log(res);
+                });
               },
               loadSettingsFromLocalStorage: (e) => {
                 SoundManager.loadSettingsFromLocalStorage();
@@ -140,6 +137,18 @@
               clearSettingsFromLocalStorage: (e) => {
                 SoundManager.clearSettingsFromLocalStorage();
                 soundVue.$forceUpdate();
+              },
+              loadSettingsFromServer: () => {
+                fetch('/load', {
+                  cache: 'no-cache',
+                  method: 'GET'
+                }).then(res => {
+                  res.json().then(json => {
+                    SoundManager.loadSettingsFromJSON(json);
+                    soundVue.$forceUpdate();
+                    musicVue.$forceUpdate();
+                  });
+                });
               },
               startSequence: (e) => {
                 var name = e.srcElement.getAttribute('data-name');
@@ -271,12 +280,6 @@
                 musicEngine.setGlobalGain(musicVue.globalGain);
                 SoundManager.saveSettingsToLocalStorage();
               },
-              spitItOut: () => {
-                showOutputModal(JSON.stringify(musicEngine.getSettingsForOutput(), true, 2));
-              },
-              duckingProfileChanged: (e) => {
-                SoundManager.saveSettingsToLocalStorage();
-              },
               addIntensity: (e) => {
                 musicEngine.addIntensity(document.querySelector('section.intensity input').value);
               },
@@ -319,18 +322,18 @@
           });
 
           document.addEventListener('duckingstarted', (e) => {
-            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
-            item.classList.add('on');
+            let display = document.querySelector('#ducking-profile');
+            display.textContent = JSON.stringify(e.detail);
           });
 
           document.addEventListener('duckinginterrupted', (e) => {
-            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
-            item.classList.remove('on');
+            let display = document.querySelector('#ducking-profile');
+            display.textContent = '';
           });
 
           document.addEventListener('duckingstopped', (e) => {
-            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
-            item.classList.remove('on');
+            let display = document.querySelector('#ducking-profile');
+            display.textContent = '';
           });
 
           setInterval(() => {
@@ -360,22 +363,23 @@
         top: .25em;
         left: .5%;
         background: white;
-        width: 49%;
+        width: 69%;
         padding: .5em;
         border: 5px dashed black;
         box-sizing: border-box;
-        height: 100%;
+        height: calc(100vh - 5px);
       }
       
       #music-engine {
         position: fixed;
         top: .25em;
-        left: 50.5%;
+        left: 70.5%;
         background: white;
-        width: 49%;
+        width: 29%;
         padding: .5em;
         border: 5px dashed black;
         box-sizing: border-box;
+        height: calc(100vh - 5px);
       }
 
       h1, h2 {
@@ -440,34 +444,6 @@
       input[type="number"] {
         width: 50px;
       }
-
-      #output-modal {
-        background: rgba(0, 0, 0, 0.4);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-        display: none;
-      }
-
-      #output-modal.show {
-        display: flex;
-      }
-
-      #output-modal textarea {
-        width: 600px;
-        height: 500px;
-      }
-
-      #output-modal button {
-        width: 150px;
-        height: 50px;
-        margin-top: .5em;
-      }
     </style>
   </head>
   <body>
@@ -475,7 +451,7 @@
       <div class="sticky">
         <h1>Sound Engine</h1>
         <div>Storage: <span>{{SoundManager.localStorageStatus}}</span></div>
-        <div><button v-on:click="saveSettingsToLocalStorage">Save</button><button v-on:click="loadSettingsFromLocalStorage">Load</button><button v-on:click="clearSettingsFromLocalStorage">Clear</button><button v-on:click="spitItOut">Spit it out</button></div>
+        <div><button v-on:click="saveSettingsToLocalStorage">Save</button><button v-on:click="loadSettingsFromLocalStorage">Load</button><button v-on:click="clearSettingsFromLocalStorage">Clear</button><button v-on:click="loadSettingsFromServer">Load from Server</button></div>
       </div>
       <div class="scrollable">
         <section>
@@ -522,7 +498,8 @@
           <table>
             <tr><th>Name</th><th>Fire</th></tr>
             <tr v-for="(profile, name) in events">
-              <td>{{name}}</td><td><button :data-name="name" v-on:click="fireEvent">Fire</button></td>
+              <td>{{name}}</td>
+              <td><button :data-name="name" v-on:click="fireEvent">Fire</button></td>
             </tr>
           </table>
         </section>
@@ -543,9 +520,25 @@
         <section>
           <h2>Banks</h2>
           <table id="banks-table">
-            <tr><th>Name</th><th>Play</th><th>Duck Music</th><th>Limit</th><th>Key</th></tr>
+            <tr>
+              <th>Name</th>
+              <th>Play</th>
+              <th>Limit</th>
+              <th>Duck Gain</th>
+              <th>Duck Attack</th>
+              <th>Duck Sustain</th>
+              <th>Duck Release</th>
+              <th>Key</th>
+            </tr>
             <tr v-for="(profile, name) in banks" :data-name="name">
-              <td :data-bank="name">{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playWithDucking">Duck</button></td><td><input class="limit" type="number" v-model.number="profile.limit"></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
+              <td :data-bank="name">{{name}}</td>
+              <td><button :data-name="name" v-on:click="playBank">Play</button></td>
+              <td><input class="limit" type="number" v-model.number="profile.limit"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.gain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.attack"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.sustain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.release"></td>
+              <td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
@@ -553,9 +546,27 @@
         <section>
           <h2>Sounds</h2>
           <table id="sounds-table">
-            <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limit</th><th>Key</th></tr>
+            <tr>
+              <th>Name</th>
+              <th>Volume</th>
+              <th>Play</th>
+              <th>Limit</th>
+              <th>Duck Gain</th>
+              <th>Duck Attack</th>
+              <th>Duck Sustain</th>
+              <th>Duck Release</th>
+              <th>Key</th>
+            </tr>
             <tr v-for="(profile, name) in sounds" :data-name="name">
-              <td :data-sound="name">{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><input class="limit" type="number" v-model.number="profile.limit"></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
+              <td :data-sound="name">{{name}}</td>
+              <td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td>
+              <td><button :data-name="name" v-on:click="playSound">Play</button></td>
+              <td><input class="limit" type="number" v-model.number="profile.limit"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.gain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.attack"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.sustain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.release"></td>
+              <td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
@@ -565,9 +576,6 @@
       <div class="sticky">
         <h1>Music Engine</h1>
         <section>
-          <div>Storage: <button v-on:click="spitItOut">Spit it out</button></div>
-        </section>
-        <section>
           <h2>State</h2>
           <div class="status">Status: {{musicEngine.status}}</div>
           <div>
@@ -576,6 +584,9 @@
             <button class="start" v-on:click="fadeIn" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Fade In</button>
             <button class="start" v-on:click="stop" :disabled="musicEngine.status != 'playing'">Stop</button>
             <button class="start" v-on:click="fadeOut" :disabled="musicEngine.status != 'playing'">Fade Out</button>
+          </div>
+          <div>
+            Ducking: <span id="ducking-profile"></span>
           </div>
         </section>
       </div>
@@ -619,26 +630,7 @@
             {{mood}} <button :value="mood" v-on:click="setMood">Set</button><button :value="mood" v-on:click="setMoodTemporarily">Temporary</button>
           </div>
         </section>
-        <section>
-          <h2>Ducking</h2>
-          <div>Current Ducking Profile: <span>{{musicEngine.currentDuckingProfile}}</span></div>
-          <div>Ducking Gain: <span>{{ducking}}</span></div>
-          <table id="ducking-table">
-            <tr><th>Name</th><th>Attack</th><th>Sustain</th><th>Release</th></tr>
-            <tr v-for="(profile, name) in SoundManager.musicEngine.getDuckingProfiles()">
-              <td :data-profile="name">{{name}}</td>
-              <td><input type="number" v-model.number="profile.attack" @change="duckingProfileChanged"></td>
-              <td><input type="number" v-model.number="profile.sustain" @change="duckingProfileChanged"></td>
-              <td><input type="number" v-model.number="profile.release" @change="duckingProfileChanged"></td>
-              <td><button :data-name="name" v-on:click="duck">Duck</button></td>
-            </tr>
-          </table>
-        </section>
       </div>
-    </div>
-    <div id="output-modal">
-      <textarea></textarea>
-      <button>K...</button>
     </div>
   </body>
 </html>

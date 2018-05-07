@@ -20,7 +20,8 @@ const temporaryLowPassSettings = {
 let sounds = {
   "ui" : {
     url : "sounds/ui.wav",
-    volume : .25
+    volume : .25,
+    ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
   },
   "round-start" : {
     url : "sounds/round-start.mp3",
@@ -29,21 +30,6 @@ let sounds = {
   "beep" : {
     url : "sounds/beep.mp3",
     volume : .15
-  },
-  "woosh" : {
-    url : "sounds/woosh.wav",
-    volume : .35
-  },
-  "bonus" : {
-    url : "sounds/bonus.wav",
-    volume : .03
-  },
-  "coin" : {
-    url : "sounds/coin.mp3",
-  },
-  "boom" : {
-    url : "sounds/boom.wav",
-    volume : .3
   },
 
   "Power_Shot_V1" : {
@@ -499,7 +485,8 @@ let soundBanks = {
       "Power_Shot_V2",
       "Power_Shot_V3",
       "Power_Shot_V4"
-    ]
+    ],
+    ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
   },
   "swish": {
     sounds: [
@@ -634,10 +621,16 @@ let sequenceManagers = {
 
 for (let sound in sounds) {
   sounds[sound].limit = sounds[sound].limit || 0;
+  sounds[sound].ducking = sounds[sound].ducking || {
+    gain: 1, attack: 0, sustain: 0, release: 0
+  };
 }
 
 for (let sound in soundBanks) {
   soundBanks[sound].limit = soundBanks[sound].limit || 0;
+  soundBanks[sound].ducking = soundBanks[sound].ducking || {
+    gain: 1, attack: 0, sustain: 0, release: 0
+  };
 }
 
 let limitedSoundTimeouts = {};
@@ -672,6 +665,9 @@ function loadSound(name){
 }
 
 function playRandomSoundFromBank(soundBankName, options) {
+  // Setup options in case it's not already initialized
+  options = options || {};
+
   // Reference to the bank definition, containing references to sounds that can be played
   let soundBank = soundBanks[soundBankName];
   
@@ -718,6 +714,11 @@ function playRandomSoundFromBank(soundBankName, options) {
 
     // Push this soundName onto the end of the memory array, (again, in FIFO fashion)
     soundBankMemory[soundBankName].push(soundName);
+
+    // If the bank has a ducking profile, we need to send it into playSound
+    if (soundBank.ducking) {
+      options.ducking = soundBank.ducking;
+    }
 
     // PLAY THE SOUND!!
     playSound(soundName, options);
@@ -796,7 +797,7 @@ function stopLowPass(endFrequency, release) {
 function playSound(name, options){
   if (!Settings.sounds) return;
 
-  var sound = sounds[name];
+  let sound = sounds[name];
 
   if (!sound) {
     console.warn('No sound with name ' + name);
@@ -814,13 +815,13 @@ function playSound(name, options){
     document.dispatchEvent(new CustomEvent('limitedsoundstarted', {detail: name}));
   }
 
-  var buffer = sound.buffer;
+  let buffer = sound.buffer;
 
   options = options || {};
 
   if(!buffer){ return; }
 
-  var soundOptions = {
+  let soundOptions = {
     volume: sounds[name].volume || 1,
     pan: sounds[name].pan || 0,
     timeout: sounds[name].timeout || false
@@ -830,19 +831,19 @@ function playSound(name, options){
     soundOptions.volume = options.volume;
   }
 
-  for(var k in options){
+  for(let k in options){
     if(soundOptions[k]) {
       soundOptions[k] = options[k];
     }
   }
 
-  var source = soundContext.createBufferSource();
+  let source = soundContext.createBufferSource();
   source.buffer = buffer;
 
-  var panNode = soundContext.createStereoPanner();
+  let panNode = soundContext.createStereoPanner();
   panNode.pan.setTargetAtTime(soundOptions.pan, soundContext.currentTime, 0);
 
-  var volume = soundContext.createGain();
+  let volume = soundContext.createGain();
   volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0);
 
   // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
@@ -856,8 +857,11 @@ function playSound(name, options){
   volume.connect(panNode);
   source.connect(volume);
 
-  if (musicEngine && options.musicDuckingProfile) {
-    musicEngine.duck(options.musicDuckingProfile);
+  let duckingProfile = options.ducking || sound.ducking;
+
+  // Use a ducking profile if it exists, but only if it's not basically null.
+  if (duckingProfile && (duckingProfile.sustain > 0 || duckingProfile.attack > 0 || duckingProfile.release > 0)) {
+    musicEngine.duck(duckingProfile);
   }
 
   source.start(options.start || 0);
@@ -1027,9 +1031,7 @@ window.SoundManager = {
 
     return output;
   },
-  loadSettingsFromLocalStorage: function () {
-    let storedSettings = localStorage.getItem('sounds');
-
+  loadSettingsFromJSON: function (json) {
     function useParsedSettings(realSettings, parsedSettings) {
       // Using this to preserve object linking, because it makes things like vuejs more responsive!
       function doIt(src, dest) {
@@ -1049,15 +1051,11 @@ window.SoundManager = {
     }
 
     try {
-      if (storedSettings) {
-        let parsedSettings = JSON.parse(storedSettings);
-
-        useParsedSettings(sounds, parsedSettings.sounds);
-        useParsedSettings(soundBanks, parsedSettings.banks);
-        useParsedSettings(temporaryLowPassSettings, parsedSettings.temporaryLowPass);
-
-        musicEngine.loadSettingsFromLocalStorage();
-
+      if (json) {
+        useParsedSettings(sounds, json.sound.sounds);
+        useParsedSettings(soundBanks, json.sound.banks);
+        useParsedSettings(temporaryLowPassSettings, json.sound.temporaryLowPass);
+        musicEngine.loadSettingsFromJSON(json.music);
         SoundManager.localStorageStatus = 'Loaded';
       }
     }
@@ -1066,14 +1064,24 @@ window.SoundManager = {
       console.error(e);
     }
   },
+  loadSettingsFromLocalStorage: function () {
+    let json = {
+      sound: JSON.parse(localStorage.getItem('sounds')),
+      music: JSON.parse(localStorage.getItem('music'))
+    };
+
+    if (json.sound && json.music) {
+      SoundManager.loadSettingsFromJSON(json);
+    }
+  },
   saveSettingsToLocalStorage: function () {
     localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
-    musicEngine.saveSettingsToLocalStorage();
+    localStorage.setItem('music', JSON.stringify(musicEngine.getSettingsForOutput()));
     SoundManager.localStorageStatus = 'Saved @ ' + (new Date()).toUTCString();
   },
   clearSettingsFromLocalStorage: function () {
     localStorage.removeItem('sounds');
-    musicEngine.clearSettingsFromLocalStorage();
+    localStorage.removeItem('music');
     SoundManager.localStorageStatus = 'Empty';
   },
   fireEvent: function (name, options) {
