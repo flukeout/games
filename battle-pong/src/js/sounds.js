@@ -20,7 +20,8 @@ const temporaryLowPassSettings = {
 let sounds = {
   "ui" : {
     url : "sounds/ui.wav",
-    volume : .25
+    volume : .25,
+    ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
   },
   "round-start" : {
     url : "sounds/round-start.mp3",
@@ -499,7 +500,8 @@ let soundBanks = {
       "Power_Shot_V2",
       "Power_Shot_V3",
       "Power_Shot_V4"
-    ]
+    ],
+    ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
   },
   "swish": {
     sounds: [
@@ -672,6 +674,9 @@ function loadSound(name){
 }
 
 function playRandomSoundFromBank(soundBankName, options) {
+  // Setup options in case it's not already initialized
+  options = options || {};
+
   // Reference to the bank definition, containing references to sounds that can be played
   let soundBank = soundBanks[soundBankName];
   
@@ -718,6 +723,11 @@ function playRandomSoundFromBank(soundBankName, options) {
 
     // Push this soundName onto the end of the memory array, (again, in FIFO fashion)
     soundBankMemory[soundBankName].push(soundName);
+
+    // If the bank has a ducking profile, we need to send it into playSound
+    if (soundBank.ducking) {
+      options.ducking = soundBank.ducking;
+    }
 
     // PLAY THE SOUND!!
     playSound(soundName, options);
@@ -796,7 +806,7 @@ function stopLowPass(endFrequency, release) {
 function playSound(name, options){
   if (!Settings.sounds) return;
 
-  var sound = sounds[name];
+  let sound = sounds[name];
 
   if (!sound) {
     console.warn('No sound with name ' + name);
@@ -814,13 +824,13 @@ function playSound(name, options){
     document.dispatchEvent(new CustomEvent('limitedsoundstarted', {detail: name}));
   }
 
-  var buffer = sound.buffer;
+  let buffer = sound.buffer;
 
   options = options || {};
 
   if(!buffer){ return; }
 
-  var soundOptions = {
+  let soundOptions = {
     volume: sounds[name].volume || 1,
     pan: sounds[name].pan || 0,
     timeout: sounds[name].timeout || false
@@ -830,19 +840,19 @@ function playSound(name, options){
     soundOptions.volume = options.volume;
   }
 
-  for(var k in options){
+  for(let k in options){
     if(soundOptions[k]) {
       soundOptions[k] = options[k];
     }
   }
 
-  var source = soundContext.createBufferSource();
+  let source = soundContext.createBufferSource();
   source.buffer = buffer;
 
-  var panNode = soundContext.createStereoPanner();
+  let panNode = soundContext.createStereoPanner();
   panNode.pan.setTargetAtTime(soundOptions.pan, soundContext.currentTime, 0);
 
-  var volume = soundContext.createGain();
+  let volume = soundContext.createGain();
   volume.gain.setTargetAtTime(soundOptions.volume, soundContext.currentTime, 0);
 
   // Some sounds shouldn't be affected by the low pass filter, like bomb explosions
@@ -856,8 +866,10 @@ function playSound(name, options){
   volume.connect(panNode);
   source.connect(volume);
 
-  if (musicEngine && options.musicDuckingProfile) {
-    musicEngine.duck(options.musicDuckingProfile);
+  let duckingProfile = options.ducking || sound.ducking;
+
+  if (duckingProfile) {
+    musicEngine.duck(duckingProfile);
   }
 
   source.start(options.start || 0);

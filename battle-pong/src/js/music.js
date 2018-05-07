@@ -112,17 +112,6 @@
     level4: 20
   };
 
-  let duckingProfiles = {
-    'test':                 {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    },
-    'dash':                 {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
-    'score':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
-    'super-hard-shot':      {   gain: 0.7,    attack: 0.003,  sustain: 0.1, release: 1.3  },
-    'swish':                {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
-    'mine-collision':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
-    'mine-explosion':       {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    },
-    'bones-collide':        {   gain: 0.1,    attack: 0.1,    sustain: 0,   release: 2    }
-  };
-
   window.Music = function (audioContext) {
     let currentSong = null;
     let preparedSongs = {};
@@ -139,13 +128,12 @@
     this.duckingNode = duckingNode;
     this.globalGainNode = globalGainNode;
 
-    this.getDuckingProfiles = () => { return duckingProfiles; };
     this.getMoods = function () { return currentSong.getMoods(); };
     this.temporarilyReduceGain = function (percentage) { return currentSong.temporarilyReduceGain(percentage); };
     this.resetGlobalGain = function () { return currentSong.resetGlobalGain(); };
     this.setGlobalGain = function (value, ramp) { return currentSong.setGlobalGain(value, ramp); };
     this.getGlobalGain = () => { return currentSong.getGlobalGain(); };
-    this.duck = function (profileName) { return currentSong.duck(profileName); };
+    this.duck = function (duckingProfile) { return currentSong.duck(duckingProfile); };
     this.transitionToMood = function (mood) { return currentSong.transitionToMood(mood); };
     this.setMood = function (mood) { return currentSong.setMood(mood); };
     this.setMoodTemporarily = function (mood) { return currentSong.setMoodTemporarily(mood); };
@@ -266,7 +254,6 @@
 
     this.getSettingsForOutput = function () {
       return {
-        duckingProfiles: duckingProfiles,
         globalGainValue: globalGainNode.gain.value
       };
     };
@@ -277,7 +264,6 @@
       console.log('loading...?', storedSettings);
       if (storedSettings) {
         let parsedSettings = JSON.parse(storedSettings);
-        duckingProfiles = parsedSettings.duckingProfiles;
         globalGainNode.gain.setValueAtTime(parsedSettings.globalGainValue, audioContext.currentTime);
         console.log(parsedSettings.globalGainValue);
       }
@@ -381,10 +367,6 @@
       songGainNode.gain.setValueAtTime(1, audioContext.currentTime);
     };
 
-    this.getDuckingProfiles = () => {
-      return duckingProfiles;
-    };
-
     this.getMoods = function () {
       let allMoods = [];
       
@@ -416,29 +398,24 @@
 
     this.getGlobalGain = () => { return globalGainNode.gain.value; };
 
-    this.duck = function (profileName) {
-      let profile = duckingProfiles[profileName];
-
+    this.duck = function (profile) {
       if (!profile) return;
 
       if (duckingTimeout > -1) {
         clearTimeout(duckingTimeout);
-        document.dispatchEvent(new CustomEvent('duckinginterrupted', {detail: this.currentDuckingProfile + ''}));
+        document.dispatchEvent(new CustomEvent('duckinginterrupted'));
       }
 
-      document.dispatchEvent(new CustomEvent('duckingstarted', {detail: profileName}));
+      document.dispatchEvent(new CustomEvent('duckingstarted', {detail: profile}));
 
       duckingNode.gain.cancelScheduledValues(audioContext.currentTime);
       duckingNode.gain.linearRampToValueAtTime(profile.gain, audioContext.currentTime + profile.attack);
       duckingNode.gain.linearRampToValueAtTime(profile.gain, audioContext.currentTime + profile.attack + profile.sustain);
       duckingNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + profile.attack + profile.sustain + profile.release);
 
-      this.currentDuckingProfile = profileName;
-
       duckingTimeout = setTimeout(() => {
         duckingTimeout = -1;
-        this.currentDuckingProfile = null;
-        document.dispatchEvent(new CustomEvent('duckingstopped', {detail: profileName}));
+        document.dispatchEvent(new CustomEvent('duckingstopped'));
       }, (profile.attack + profile.sustain + profile.release) * 1000);
     };
 

@@ -60,10 +60,6 @@
               lowPassStatus: 'off'
             },
             methods: {
-              playWithDucking: (e) => {
-                let name = e.srcElement.getAttribute('data-name');
-                SoundManager.playRandomSoundFromBank(name, {musicDuckingProfile: name});
-              },
               playSound: (e) => {
                 SoundManager.playSound(e.srcElement.getAttribute('data-name'));
               },
@@ -274,9 +270,6 @@
               spitItOut: () => {
                 showOutputModal(JSON.stringify(musicEngine.getSettingsForOutput(), true, 2));
               },
-              duckingProfileChanged: (e) => {
-                SoundManager.saveSettingsToLocalStorage();
-              },
               addIntensity: (e) => {
                 musicEngine.addIntensity(document.querySelector('section.intensity input').value);
               },
@@ -319,18 +312,18 @@
           });
 
           document.addEventListener('duckingstarted', (e) => {
-            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
-            item.classList.add('on');
+            let display = document.querySelector('#ducking-profile');
+            display.textContent = JSON.stringify(e.detail);
           });
 
           document.addEventListener('duckinginterrupted', (e) => {
-            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
-            item.classList.remove('on');
+            let display = document.querySelector('#ducking-profile');
+            display.textContent = '';
           });
 
           document.addEventListener('duckingstopped', (e) => {
-            let item = document.querySelector('#ducking-table [data-profile="' + e.detail + '"]');
-            item.classList.remove('on');
+            let display = document.querySelector('#ducking-profile');
+            display.textContent = '';
           });
 
           setInterval(() => {
@@ -544,9 +537,9 @@
         <section>
           <h2>Banks</h2>
           <table id="banks-table">
-            <tr><th>Name</th><th>Play</th><th>Duck Music</th><th>Limit</th><th>Key</th></tr>
+            <tr><th>Name</th><th>Play</th><th>Limit</th><th>Key</th></tr>
             <tr v-for="(profile, name) in banks" :data-name="name">
-              <td :data-bank="name">{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><button :data-name="name" v-on:click="playWithDucking">Duck</button></td><td><input class="limit" type="number" v-model.number="profile.limit"></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
+              <td :data-bank="name">{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><input class="limit" type="number" v-model.number="profile.limit"></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
             </tr>
           </table>
         </section>
@@ -577,6 +570,9 @@
             <button class="start" v-on:click="fadeIn" :disabled="musicEngine.status != 'ready' && musicEngine.status != 'stopped'">Fade In</button>
             <button class="start" v-on:click="stop" :disabled="musicEngine.status != 'playing'">Stop</button>
             <button class="start" v-on:click="fadeOut" :disabled="musicEngine.status != 'playing'">Fade Out</button>
+          </div>
+          <div>
+            Ducking: <span id="ducking-profile"></span>
           </div>
         </section>
       </div>
@@ -619,21 +615,6 @@
           <div v-for="mood in moods">
             {{mood}} <button :value="mood" v-on:click="setMood">Set</button><button :value="mood" v-on:click="setMoodTemporarily">Temporary</button>
           </div>
-        </section>
-        <section>
-          <h2>Ducking</h2>
-          <div>Current Ducking Profile: <span>{{musicEngine.currentDuckingProfile}}</span></div>
-          <div>Ducking Gain: <span>{{ducking}}</span></div>
-          <table id="ducking-table">
-            <tr><th>Name</th><th>Attack</th><th>Sustain</th><th>Release</th></tr>
-            <tr v-for="(profile, name) in SoundManager.musicEngine.getDuckingProfiles()">
-              <td :data-profile="name">{{name}}</td>
-              <td><input type="number" v-model.number="profile.attack" @change="duckingProfileChanged"></td>
-              <td><input type="number" v-model.number="profile.sustain" @change="duckingProfileChanged"></td>
-              <td><input type="number" v-model.number="profile.release" @change="duckingProfileChanged"></td>
-              <td><button :data-name="name" v-on:click="duck">Duck</button></td>
-            </tr>
-          </table>
         </section>
       </div>
     </div>
