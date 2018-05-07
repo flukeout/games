@@ -31,21 +31,6 @@ let sounds = {
     url : "sounds/beep.mp3",
     volume : .15
   },
-  "woosh" : {
-    url : "sounds/woosh.wav",
-    volume : .35
-  },
-  "bonus" : {
-    url : "sounds/bonus.wav",
-    volume : .03
-  },
-  "coin" : {
-    url : "sounds/coin.mp3",
-  },
-  "boom" : {
-    url : "sounds/boom.wav",
-    volume : .3
-  },
 
   "Power_Shot_V1" : {
     url : "sounds/Power_Shot_V1.mp3",
@@ -636,10 +621,16 @@ let sequenceManagers = {
 
 for (let sound in sounds) {
   sounds[sound].limit = sounds[sound].limit || 0;
+  sounds[sound].ducking = sounds[sound].ducking || {
+    gain: 1, attack: 0, sustain: 0, release: 0
+  };
 }
 
 for (let sound in soundBanks) {
   soundBanks[sound].limit = soundBanks[sound].limit || 0;
+  soundBanks[sound].ducking = soundBanks[sound].ducking || {
+    gain: 1, attack: 0, sustain: 0, release: 0
+  };
 }
 
 let limitedSoundTimeouts = {};
@@ -868,7 +859,8 @@ function playSound(name, options){
 
   let duckingProfile = options.ducking || sound.ducking;
 
-  if (duckingProfile) {
+  // Use a ducking profile if it exists, but only if it's not basically null.
+  if (duckingProfile && (duckingProfile.sustain > 0 || duckingProfile.attack > 0 || duckingProfile.release > 0)) {
     musicEngine.duck(duckingProfile);
   }
 

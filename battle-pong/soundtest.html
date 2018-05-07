@@ -353,23 +353,23 @@
         top: .25em;
         left: .5%;
         background: white;
-        width: 49%;
+        width: 69%;
         padding: .5em;
         border: 5px dashed black;
         box-sizing: border-box;
-        height: 100%;
+        height: calc(100vh - 5px);
       }
       
       #music-engine {
         position: fixed;
         top: .25em;
-        left: 50.5%;
+        left: 70.5%;
         background: white;
-        width: 49%;
+        width: 29%;
         padding: .5em;
         border: 5px dashed black;
         box-sizing: border-box;
-        height: 100%;
+        height: calc(100vh - 5px);
       }
 
       h1, h2 {
@@ -516,7 +516,8 @@
           <table>
             <tr><th>Name</th><th>Fire</th></tr>
             <tr v-for="(profile, name) in events">
-              <td>{{name}}</td><td><button :data-name="name" v-on:click="fireEvent">Fire</button></td>
+              <td>{{name}}</td>
+              <td><button :data-name="name" v-on:click="fireEvent">Fire</button></td>
             </tr>
           </table>
         </section>
@@ -537,9 +538,25 @@
         <section>
           <h2>Banks</h2>
           <table id="banks-table">
-            <tr><th>Name</th><th>Play</th><th>Limit</th><th>Key</th></tr>
+            <tr>
+              <th>Name</th>
+              <th>Play</th>
+              <th>Limit</th>
+              <th>Key</th>
+              <th>Duck Gain</th>
+              <th>Duck Attack</th>
+              <th>Duck Sustain</th>
+              <th>Duck Release</th>
+            </tr>
             <tr v-for="(profile, name) in banks" :data-name="name">
-              <td :data-bank="name">{{name}}</td><td><button :data-name="name" v-on:click="playBank">Play</button></td><td><input class="limit" type="number" v-model.number="profile.limit"></td><td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
+              <td :data-bank="name">{{name}}</td>
+              <td><button :data-name="name" v-on:click="playBank">Play</button></td>
+              <td><input class="limit" type="number" v-model.number="profile.limit"></td>
+              <td><button :data-name="name" v-on:click="bindKeyToBank">{{bankKeys[name]}}</button></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.gain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.attack"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.sustain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.release"></td>
             </tr>
           </table>
         </section>
@@ -547,9 +564,27 @@
         <section>
           <h2>Sounds</h2>
           <table id="sounds-table">
-            <tr><th>Name</th><th>Volume</th><th>Play</th><th>Limit</th><th>Key</th></tr>
+            <tr>
+              <th>Name</th>
+              <th>Volume</th>
+              <th>Play</th>
+              <th>Limit</th>
+              <th>Key</th>
+              <th>Duck Gain</th>
+              <th>Duck Attack</th>
+              <th>Duck Sustain</th>
+              <th>Duck Release</th>
+            </tr>
             <tr v-for="(profile, name) in sounds" :data-name="name">
-              <td :data-sound="name">{{name}}</td><td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td><td><button :data-name="name" v-on:click="playSound">Play</button></td><td><input class="limit" type="number" v-model.number="profile.limit"></td><td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
+              <td :data-sound="name">{{name}}</td>
+              <td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td>
+              <td><button :data-name="name" v-on:click="playSound">Play</button></td>
+              <td><input class="limit" type="number" v-model.number="profile.limit"></td>
+              <td><button :data-name="name" v-on:click="bindKeyToSound">{{soundKeys[name]}}</button></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.gain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.attack"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.sustain"></td>
+              <td><input class="limit" type="number" v-model.number="profile.ducking.release"></td>
             </tr>
           </table>
         </section>
