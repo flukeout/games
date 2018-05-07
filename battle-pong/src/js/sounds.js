@@ -1032,7 +1032,6 @@ window.SoundManager = {
     return output;
   },
   loadSettingsFromJSON: function (json) {
-    console.log('SJON', json);
     function useParsedSettings(realSettings, parsedSettings) {
       // Using this to preserve object linking, because it makes things like vuejs more responsive!
       function doIt(src, dest) {
