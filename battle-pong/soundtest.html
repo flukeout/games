@@ -19,16 +19,6 @@
 
         let musicEngine = SoundManager.musicEngine;
 
-        let outputModal = document.querySelector('#output-modal');
-        outputModal.querySelector('button').onclick = (e) => {
-          outputModal.classList.remove('show');
-        };
-
-        function showOutputModal(output) {
-          outputModal.querySelector('textarea').value = output;
-          outputModal.classList.add('show');
-        }
-
         function startSoundEngineMonitor() {
           document.addEventListener('keydown', (e) => {
             let keyCode = String.fromCharCode(e.keyCode);
@@ -109,9 +99,6 @@
               volumeChanged: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
               },
-              spitItOut: () => {
-                showOutputModal(JSON.stringify(SoundManager.getSettingsForOutput(), true, 2));
-              },
               fireEvent: (clickEvent) => {
                 var name = clickEvent.srcElement.getAttribute('data-name');
                 SoundManager.fireEvent(name);
@@ -127,6 +114,20 @@
               saveSettingsToLocalStorage: (e) => {
                 SoundManager.saveSettingsToLocalStorage();
                 soundVue.$forceUpdate();
+
+                fetch('/save', {
+                  body: JSON.stringify({
+                    sound: SoundManager.getSettingsForOutput(),
+                    music: musicEngine.getSettingsForOutput()
+                  }),
+                  headers: {
+                    'content-type': 'application/json'
+                  },
+                  cache: 'no-cache',
+                  method: 'PUT'
+                }).then(res => {
+                  console.log(res);
+                });
               },
               loadSettingsFromLocalStorage: (e) => {
                 SoundManager.loadSettingsFromLocalStorage();
@@ -136,6 +137,18 @@
               clearSettingsFromLocalStorage: (e) => {
                 SoundManager.clearSettingsFromLocalStorage();
                 soundVue.$forceUpdate();
+              },
+              loadSettingsFromServer: () => {
+                fetch('/load', {
+                  cache: 'no-cache',
+                  method: 'GET'
+                }).then(res => {
+                  res.json().then(json => {
+                    SoundManager.loadSettingsFromJSON(json);
+                    soundVue.$forceUpdate();
+                    musicVue.$forceUpdate();
+                  });
+                });
               },
               startSequence: (e) => {
                 var name = e.srcElement.getAttribute('data-name');
@@ -266,9 +279,6 @@
               globalGainChanged: (e) => {
                 musicEngine.setGlobalGain(musicVue.globalGain);
                 SoundManager.saveSettingsToLocalStorage();
-              },
-              spitItOut: () => {
-                showOutputModal(JSON.stringify(musicEngine.getSettingsForOutput(), true, 2));
               },
               addIntensity: (e) => {
                 musicEngine.addIntensity(document.querySelector('section.intensity input').value);
@@ -434,34 +444,6 @@
       input[type="number"] {
         width: 50px;
       }
-
-      #output-modal {
-        background: rgba(0, 0, 0, 0.4);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-        display: none;
-      }
-
-      #output-modal.show {
-        display: flex;
-      }
-
-      #output-modal textarea {
-        width: 600px;
-        height: 500px;
-      }
-
-      #output-modal button {
-        width: 150px;
-        height: 50px;
-        margin-top: .5em;
-      }
     </style>
   </head>
   <body>
@@ -469,7 +451,7 @@
       <div class="sticky">
         <h1>Sound Engine</h1>
         <div>Storage: <span>{{SoundManager.localStorageStatus}}</span></div>
-        <div><button v-on:click="saveSettingsToLocalStorage">Save</button><button v-on:click="loadSettingsFromLocalStorage">Load</button><button v-on:click="clearSettingsFromLocalStorage">Clear</button><button v-on:click="spitItOut">Spit it out</button></div>
+        <div><button v-on:click="saveSettingsToLocalStorage">Save</button><button v-on:click="loadSettingsFromLocalStorage">Load</button><button v-on:click="clearSettingsFromLocalStorage">Clear</button><button v-on:click="loadSettingsFromServer">Load from Server</button></div>
       </div>
       <div class="scrollable">
         <section>
@@ -594,9 +576,6 @@
       <div class="sticky">
         <h1>Music Engine</h1>
         <section>
-          <div>Storage: <button v-on:click="spitItOut">Spit it out</button></div>
-        </section>
-        <section>
           <h2>State</h2>
           <div class="status">Status: {{musicEngine.status}}</div>
           <div>
@@ -652,10 +631,6 @@
           </div>
         </section>
       </div>
-    </div>
-    <div id="output-modal">
-      <textarea></textarea>
-      <button>K...</button>
     </div>
   </body>
 </html>

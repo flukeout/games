@@ -1031,9 +1031,8 @@ window.SoundManager = {
 
     return output;
   },
-  loadSettingsFromLocalStorage: function () {
-    let storedSettings = localStorage.getItem('sounds');
-
+  loadSettingsFromJSON: function (json) {
+    console.log('SJON', json);
     function useParsedSettings(realSettings, parsedSettings) {
       // Using this to preserve object linking, because it makes things like vuejs more responsive!
       function doIt(src, dest) {
@@ -1053,15 +1052,11 @@ window.SoundManager = {
     }
 
     try {
-      if (storedSettings) {
-        let parsedSettings = JSON.parse(storedSettings);
-
-        useParsedSettings(sounds, parsedSettings.sounds);
-        useParsedSettings(soundBanks, parsedSettings.banks);
-        useParsedSettings(temporaryLowPassSettings, parsedSettings.temporaryLowPass);
-
-        musicEngine.loadSettingsFromLocalStorage();
-
+      if (json) {
+        useParsedSettings(sounds, json.sound.sounds);
+        useParsedSettings(soundBanks, json.sound.banks);
+        useParsedSettings(temporaryLowPassSettings, json.sound.temporaryLowPass);
+        musicEngine.loadSettingsFromJSON(json.music);
         SoundManager.localStorageStatus = 'Loaded';
       }
     }
@@ -1070,14 +1065,24 @@ window.SoundManager = {
       console.error(e);
     }
   },
+  loadSettingsFromLocalStorage: function () {
+    let json = {
+      sound: JSON.parse(localStorage.getItem('sounds')),
+      music: JSON.parse(localStorage.getItem('music'))
+    };
+
+    if (json.sound && json.music) {
+      SoundManager.loadSettingsFromJSON(json);
+    }
+  },
   saveSettingsToLocalStorage: function () {
     localStorage.setItem('sounds', JSON.stringify(SoundManager.getSettingsForOutput()));
-    musicEngine.saveSettingsToLocalStorage();
+    localStorage.setItem('music', JSON.stringify(musicEngine.getSettingsForOutput()));
     SoundManager.localStorageStatus = 'Saved @ ' + (new Date()).toUTCString();
   },
   clearSettingsFromLocalStorage: function () {
     localStorage.removeItem('sounds');
-    musicEngine.clearSettingsFromLocalStorage();
+    localStorage.removeItem('music');
     SoundManager.localStorageStatus = 'Empty';
   },
   fireEvent: function (name, options) {

@@ -258,23 +258,10 @@
       };
     };
 
-    this.loadSettingsFromLocalStorage = function () {
-      let storedSettings = localStorage.getItem('music');
-      
-      console.log('loading...?', storedSettings);
-      if (storedSettings) {
-        let parsedSettings = JSON.parse(storedSettings);
-        globalGainNode.gain.setValueAtTime(parsedSettings.globalGainValue, audioContext.currentTime);
-        console.log(parsedSettings.globalGainValue);
+    this.loadSettingsFromJSON = function (json) {
+      if (json) {
+        globalGainNode.gain.setValueAtTime(json.globalGainValue, audioContext.currentTime);
       }
-    };
-
-    this.saveSettingsToLocalStorage = function () {
-      localStorage.setItem('music', JSON.stringify(this.getSettingsForOutput()));
-    };
-
-    this.clearSettingsFromLocalStorage = function () {
-      localStorage.removeItem('music');
     };
 
     this.getSongs = () => { return songs; };
