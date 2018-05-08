@@ -268,10 +268,10 @@
                 musicEngine.fadeOut(2);
               },
               setMood: (e) => {
-                musicEngine.setMood(e.srcElement.value);
+                musicEngine.lockMood(e.srcElement.value);
               },
-              setMoodTemporarily: (e) => {
-                musicEngine.setMoodTemporarily(e.srcElement.value);
+              unlockMood: (e) => {
+                musicEngine.unlockMood(e.srcElement.value);
               },
               duck: (e) => {
                 musicEngine.duck(e.srcElement.getAttribute('data-name'));
@@ -625,9 +625,10 @@
         </section>
         <section>
           <h2>Moods</h2>
+          <div><button v-on:click="unlockMood">Unlock mood</button></div>
           <div>Current Mood: <span :data-mood-active="moodActive">{{currentMood}}</span></div>
           <div v-for="mood in moods">
-            {{mood}} <button :value="mood" v-on:click="setMood">Set</button><button :value="mood" v-on:click="setMoodTemporarily">Temporary</button>
+            {{mood}} <button :value="mood" v-on:click="setMood">Set</button>
           </div>
         </section>
       </div>

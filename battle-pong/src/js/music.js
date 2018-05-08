@@ -34,15 +34,15 @@
       layers: {
         one: {
           file: 'music/GamplayMusic1_Intro_Layer1.mp3',
-          moods: { default: 1 }
+          moods: { default: 1, pause: 1 }
         },
         two: {
           file: 'music/GamplayMusic1_Intro_Layer2.mp3',
-          moods: { default: 1 }
+          moods: { default: 1, pause: 0 }
         },
         three: {
           file: 'music/GamplayMusic1_Intro_Layer3.mp3',
-          moods: { default: 1 }
+          moods: { default: 1, pause: 0 }
         }
       }
     },
@@ -135,8 +135,9 @@
     this.getGlobalGain = () => { return currentSong.getGlobalGain(); };
     this.duck = function (duckingProfile) { return currentSong.duck(duckingProfile); };
     this.transitionToMood = function (mood) { return currentSong.transitionToMood(mood); };
+    this.lockMood = function (mood) { return currentSong.lockMood(mood); };
+    this.unlockMood = function (mood) { return currentSong.unlockMood(mood); };
     this.setMood = function (mood) { return currentSong.setMood(mood); };
-    this.setMoodTemporarily = function (mood) { return currentSong.setMoodTemporarily(mood); };
     this.transitionLayerMood = function (layerName, mood, oldMood) { return currentSong.transitionLayerMood(layerName, mood, oldMood) };
     this.setLayerMood = function (layerName, mood) { return currentSong.setLayerMood(layerName, mood); };
     this.setLayerMoodTemporarily = function (layerName, mood, time) { return currentSong.setLayerMoodTemporarily(layerName, mood, time); };
@@ -274,6 +275,11 @@
     let intensity = 0;
     let layerDefinitions = songDefinition.layers;
     let loopListeners = [];
+    let loop = false;
+    let loopingInterval = null;
+    let moodInterval = null;
+    let duckingTimeout = -1;
+    let currentMood = 'default';
 
     audioContext = audioContext || new AudioContext();
 
@@ -281,15 +287,10 @@
     
     this.temporaryMoodDurations = temporaryMoodDurations;
     this.currentDuckingProfile = null;
-
     this.duckingNode = duckingNode;
     this.globalGainNode = globalGainNode;
-
     this.currentIntensity = intensity;
     
-    let duckingTimeout = -1;
-    let currentMood = 'default';
-
     songGainNode.connect(duckingNode);
     songGainNode.gain.setTargetAtTime(1, audioContext.currentTime, 0);
 
@@ -427,18 +428,27 @@
       }
     };
 
+    let lockedMood = null;
+    this.lockMood = function (mood) {
+      lockedMood = currentMood;
+      this.setMood(mood);
+      this.stopMoodInterval();
+    };
+
+    this.unlockMood = function () {
+      if (lockedMood) {
+        this.setMood(lockedMood);
+        this.startMoodInterval();
+        lockedMood = null;        
+      }
+    };
+
     this.setMood = function (mood) {
       currentMood = mood;
       for (let layerName in layers) {
         this.setLayerMood(layerName, mood);
       }
     }
-
-    this.setMoodTemporarily = function (mood) {
-      for (let layerName in layers) {
-        this.setLayerMoodTemporarily(layerName, mood, temporaryMoodDurations[mood]);
-      }
-    };
 
     this.transitionLayerMood = function (layerName, mood, oldMood) {
       let layer = layers[layerName];
@@ -447,7 +457,12 @@
         return;
       }
 
-      let moodValue = layerDefinitions[layerName].moods[mood] || layerDefinitions[layerName].moods.default;
+      let moodValue = layerDefinitions[layerName].moods.default;
+
+      if (mood in layerDefinitions[layerName].moods) {
+        moodValue = layerDefinitions[layerName].moods[mood];
+      }
+
       // If this layer doesn't have a value set for this mood, assuming it's meant to keep playing the way it already is
       if (isNaN(Number(moodValue))) {
         return;
@@ -470,7 +485,13 @@
         return;
       }
 
-      let moodValue = layerDefinitions[layerName].moods[mood] || layerDefinitions[layerName].moods.default;
+
+      let moodValue = layerDefinitions[layerName].moods.default;
+
+      if (mood in layerDefinitions[layerName].moods) {
+        moodValue = layerDefinitions[layerName].moods[mood];
+      }
+
       // If this layer doesn't have a value set for this mood, assuming it's meant to keep playing the way it already is
       if (isNaN(Number(moodValue))) {
         return;
@@ -521,8 +542,6 @@
       }
     };
 
-    let maintenanceInterval = 0;
-
     function getLowestIntensityMood () {
       let moodWithLowestThreshold = 'default';
       let lowestThreshold = -1;
@@ -548,12 +567,14 @@
       let endedLayers = 0;
       let numLayers = Object.keys(layers).length;
 
+      loop = options.loop;
+
       options = options || {};
 
       for (let layer in layers) {
         layers[layer].start();
 
-        if (!options.loop) {
+        if (!loop) {
           layers[layer].source.addEventListener('ended', (e) => {
             ++endedLayers;
             if (endedLayers === numLayers) {
@@ -563,13 +584,17 @@
         }
       }
 
+      this.startLoopingInterval();
+      this.startMoodInterval();
+    };
+
+    this.startLoopingInterval = function () {
       lastLoopTime = audioContext.currentTime;
 
-      maintenanceInterval = setInterval(() => {
-
-        // Looping login
+      loopingInterval = setInterval(() => {
+        // Looping logic
         if (audioContext.currentTime - lastLoopTime > songDefinition.loopDuration - 1) {
-          if (options.loop) {
+          if (loop) {
             for (let layerName in layers) {
               let layer = layers[layerName];
               layer.getLoopSwappingReady();
@@ -585,7 +610,18 @@
             loopListeners.forEach(l => l());
           }, remainingTime * 1000);
         }
+      }, 50);
+    };
 
+    this.stopLoopingInterval = function () {
+      if (loopingInterval > 0) {
+        clearInterval(loopingInterval);
+        loopingInterval = null;
+      }
+    };
+
+    this.startMoodInterval = function () {
+      moodInterval = setInterval(() => {
         // Intensity logic
         intensity -= intensity * intensityReductionFactor;
         this.currentIntensity = intensity;
@@ -606,12 +642,20 @@
       }, 50);
     };
 
+    this.stopMoodInterval = function () {
+      if (moodInterval > 0) {
+        clearInterval(moodInterval);
+        moodInterval = null;
+      }
+    };
+
     this.stop = function () {
       for (let layer in layers) {
         layers[layer].stop();
       }
 
-      clearInterval(maintenanceInterval);
+      this.stopMoodInterval();
+      this.stopLoopingInterval();
 
       songGainNode.gain.cancelScheduledValues(audioContext.currentTime);
     };
