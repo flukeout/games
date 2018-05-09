@@ -285,7 +285,7 @@ const powerupOn = {
 const powerupOff = {
   clone: 'Powerup_Bones_Deselect',
   grow: 'Powerup_Enhance_WareOff',
-  spin: 'Powerup_Spin_Score',
+  spin: 'Powerup_Spin_WareOff',
   noclip: 'Powerup_Ghost_WareOff',
   magnet: 'Powerup_Sticky_WareOff',
   mine: 'Bomb_Disable'

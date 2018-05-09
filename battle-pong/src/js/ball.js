@@ -540,23 +540,21 @@ function createBall(options){
           SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
         } else if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 1) {
           SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
-        } else {
-          SoundManager.playSound("Ball_Bounce_Wall", { volume: percentage, pan : pan });
         }
-      } else {
+      }
+
+      if (obj.label.indexOf("paddle") > -1) {
         SoundManager.playSound("Ball_Bounce_Paddle", { volume: percentage, pan : pan });
       }
 
-      //asdf
       if (obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
-          if(this.canSpin) {
-            SoundManager.playRandomSoundFromBank("spin-wall-bounce");  
-          }
+        if(this.canSpin) {
+          SoundManager.playRandomSoundFromBank("spin-wall-bounce");
+        } else {
+          SoundManager.playSound("Ball_Bounce_Wall", { volume: percentage, pan : pan });
+        }
       }
     },
-
-
-
 
     prepToSpin: function(){
       this.canSpin = false;
