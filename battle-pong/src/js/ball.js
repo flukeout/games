@@ -525,15 +525,16 @@ function createBall(options){
       }
 
       // Percentage of the volume sound
-      var percentage = this.physics.speed / 20;
+      var percentage = this.physics.speed / 10;
 
       if(percentage > 1) {
         percentage = 1;
-      } else if (percentage < .5) {
-        percentage = .5;
+      } else if (percentage < .3) {
+        percentage = .3;
       }
 
-      var pan = .8 * (-game.boardWidth/2 + this.physics.position.x) / game.boardWidth/2;
+      
+      let pan = mapScale(this.physics.position.x, 0, game.boardWidth, -.8, .8);
 
       if (obj.label.indexOf("wall") > -1) {
         if(obj.label.indexOf("wall-right") > -1 && this.lastTouchedPaddle === 2) {

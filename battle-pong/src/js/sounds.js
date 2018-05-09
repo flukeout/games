@@ -822,19 +822,19 @@ function playSound(name, options){
   if(!buffer){ return; }
 
   let soundOptions = {
-    volume: sounds[name].volume || 1,
-    pan: sounds[name].pan || 0,
-    timeout: sounds[name].timeout || false
+    volume: sound.volume || 1,
+    pan: sound.pan || 0,
+    timeout: sound.timeout || false
   };
 
+  console.log("original", sound.volume);
+
   if ('volume' in options) {
-    soundOptions.volume = options.volume;
+    soundOptions.volume = options.volume * soundOptions.volume;
   }
 
-  for(let k in options){
-    if(soundOptions[k]) {
-      soundOptions[k] = options[k];
-    }
+  if ('pan' in options) {
+    soundOptions.pan = options.pan;
   }
 
   let source = soundContext.createBufferSource();
