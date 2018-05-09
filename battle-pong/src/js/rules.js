@@ -65,8 +65,11 @@ window.addEventListener('load', () => {
     selectButtonByIndex(12);
 
     SoundManager.loadSettingsFromLocalStorage();
-    SoundManager.musicEngine.cueSong('menu');
-    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+    
+    if (Settings.music) {
+      SoundManager.musicEngine.cueSong('menu');
+      SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+    }
 
     document.querySelector("#loading").classList.add("hide-loading");
   });
