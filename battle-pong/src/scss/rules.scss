@@ -1,8 +1,12 @@
 .rules-page {
-  display: none;
+  .content {
+    display: none;
+  } 
   
   &.ready {
-    display: block;
+    .content {
+      display: block;
+    }
   }
 
   .rules.transition-out {

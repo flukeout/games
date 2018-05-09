@@ -5,19 +5,28 @@
   transform-style: preserve-3d;
   perspective: 1000px;
   
-  display: none;
-  
   &.appear {
-    display: block;
-    animation: splashAppear 1s ease-out;
-  }
-  
-  @keyframes splashAppear {
-    0% {
-      opacity: 0;
+    #content {
+      display: block;
+      animation: splashAppear 1s ease-out;
     }
-    100% {
-      opacity: 1;
+  }
+
+  #content {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    display: none;
+  
+    @keyframes splashAppear {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
     }
   }
 
