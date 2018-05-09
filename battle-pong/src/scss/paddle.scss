@@ -10,6 +10,7 @@
   width: 20px;
   height: 100px;
   transform-style: preserve-3d;
+  z-index: 1000;
 
   .body {
     position: absolute;

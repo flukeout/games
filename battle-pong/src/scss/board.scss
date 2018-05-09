@@ -771,17 +771,16 @@
     box-shadow: 0 -5px 0 rgba(0,0,0,.3);
     margin-bottom: 4px;
   }
-  
+
   .settings {
     font-size: 20px;
-
   }
 }
 
 .goal {
   position: absolute;
   height: 100%;
-  width: 10px;
+  width: 8px;
   box-sizing: border-box;
   transition: opacity .15s ease-out;
   z-index: 3;
@@ -823,11 +822,12 @@
 
   &.one .bar {
     left: 0;
-    background: #ff73f5;
-    background-position: left;
-    background-size: contain;
-    background-repeat: no-repeat;
-    transform-origin: left;
+    background-color: #5fffba;
+    background-color: $green;
+    // background-position: left;
+    // background-size: contain;
+    // background-repeat: no-repeat;
+    // transform-origin: left;
   }
 
  &.two {
@@ -836,11 +836,12 @@
   }
 
   &.two .bar {
-    background-color: #5fffba;
+    background-color: #ff73f5;
+    background-color: $pink;
     right: 0;
-    background-position: right;
-    background-size: contain;
-    background-repeat: no-repeat;
-    transform-origin: right;
+    // background-position: right;
+    // background-size: contain;
+    // background-repeat: no-repeat;
+    // transform-origin: right;
   }
 }

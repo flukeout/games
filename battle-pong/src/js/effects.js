@@ -576,3 +576,27 @@ function buttonGleam(element) {
     gleam.remove();
   }
 }
+
+function addChangeAnim(element){
+  let options = {
+    duration: 300,
+    easing: "ease-in-out"
+  }
+
+  let keyframes = [
+    {
+      transform: "scale(.6)",
+      offet: 0
+    },
+    {
+      transform: "scale(1.1)",
+      offset: .3
+    },
+    {
+      transform: "scale(1)",
+      offset: 1
+    }
+  ]
+  
+  let thisAnim = element.animate(keyframes, options);
+}
