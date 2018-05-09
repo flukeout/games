@@ -1,14 +1,7 @@
 const rulenames = [];
 
 let ruleNavEls;
-document.onreadystatechange = function () {
-  if (document.readyState === "complete") {
-    gitErDone();
-  }
-}
-
-function gitErDone() {
-
+window.addEventListener('load', () => {
   SoundManager.init().then(() => {
     document.querySelector(".rules-page").classList.add("ready");
 
@@ -72,8 +65,13 @@ function gitErDone() {
     selectButtonByIndex(12);
 
     SoundManager.loadSettingsFromLocalStorage();
-    SoundManager.musicEngine.cueSong('menu');
-    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+    
+    if (Settings.music) {
+      SoundManager.musicEngine.cueSong('menu');
+      SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+    }
+
+    document.querySelector("#loading").classList.add("hide-loading");
   });
 
   let leftPaddle = createObject({noBody: true});
@@ -101,7 +99,7 @@ function gitErDone() {
   else {
     inputManager.setupInputForObject(rightPaddle);
   }
-}
+});
 
 const showPowerup = type => {
   currentPowerup = type;

@@ -128,24 +128,24 @@
     this.duckingNode = duckingNode;
     this.globalGainNode = globalGainNode;
 
-    this.getMoods = function () { return currentSong.getMoods(); };
-    this.temporarilyReduceGain = function (percentage) { return currentSong.temporarilyReduceGain(percentage); };
-    this.resetGlobalGain = function () { return currentSong.resetGlobalGain(); };
-    this.setGlobalGain = function (value, ramp) { return currentSong.setGlobalGain(value, ramp); };
-    this.getGlobalGain = () => { return currentSong.getGlobalGain(); };
-    this.duck = function (duckingProfile) { return currentSong.duck(duckingProfile); };
-    this.transitionToMood = function (mood) { return currentSong.transitionToMood(mood); };
-    this.lockMood = function (mood) { return currentSong.lockMood(mood); };
-    this.unlockMood = function (mood) { return currentSong.unlockMood(mood); };
-    this.setMood = function (mood) { return currentSong.setMood(mood); };
-    this.transitionLayerMood = function (layerName, mood, oldMood) { return currentSong.transitionLayerMood(layerName, mood, oldMood) };
-    this.setLayerMood = function (layerName, mood) { return currentSong.setLayerMood(layerName, mood); };
-    this.setLayerMoodTemporarily = function (layerName, mood, time) { return currentSong.setLayerMoodTemporarily(layerName, mood, time); };
-    this.setLevels = function (levels) { return currentSong.setLevels(levels); };
-    this.getLayerDefinitions = () => { return currentSong.getLayerDefinitions(); };
-    this.getLayers = () => { return currentSong.getLayers(); };
-    this.getContext = () => { return currentSong.getContext(); };
-    this.addIntensity = (newIntensity) => { return currentSong.addIntensity(newIntensity); };
+    this.getMoods = function () { if (currentSong) return currentSong.getMoods(); };
+    this.temporarilyReduceGain = function (percentage) { if (currentSong) return currentSong.temporarilyReduceGain(percentage); };
+    this.resetGlobalGain = function () { if (currentSong) return currentSong.resetGlobalGain(); };
+    this.setGlobalGain = function (value, ramp) { if (currentSong) return currentSong.setGlobalGain(value, ramp); };
+    this.getGlobalGain = () => { if (currentSong) return currentSong.getGlobalGain(); };
+    this.duck = function (duckingProfile) { if (currentSong) return currentSong.duck(duckingProfile); };
+    this.transitionToMood = function (mood) { if (currentSong) return currentSong.transitionToMood(mood); };
+    this.lockMood = function (mood) { if (currentSong) return currentSong.lockMood(mood); };
+    this.unlockMood = function (mood) { if (currentSong) return currentSong.unlockMood(mood); };
+    this.setMood = function (mood) { if (currentSong) return currentSong.setMood(mood); };
+    this.transitionLayerMood = function (layerName, mood, oldMood) { if (currentSong) return currentSong.transitionLayerMood(layerName, mood, oldMood) };
+    this.setLayerMood = function (layerName, mood) { if (currentSong) return currentSong.setLayerMood(layerName, mood); };
+    this.setLayerMoodTemporarily = function (layerName, mood, time) { if (currentSong) return currentSong.setLayerMoodTemporarily(layerName, mood, time); };
+    this.setLevels = function (levels) { if (currentSong) return currentSong.setLevels(levels); };
+    this.getLayerDefinitions = () => { if (currentSong) return currentSong.getLayerDefinitions(); };
+    this.getLayers = () => { if (currentSong) return currentSong.getLayers(); };
+    this.getContext = () => { if (currentSong) return currentSong.getContext(); };
+    this.addIntensity = (newIntensity) => { if (currentSong) return currentSong.addIntensity(newIntensity); };
 
     this.status = 'loading';
 

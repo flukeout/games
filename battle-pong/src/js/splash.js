@@ -1,4 +1,5 @@
 (function () {
+const CREDITS_DELAY = 3000;
 
 let paddles = [];
 let bestOfEls, 
@@ -8,9 +9,19 @@ let bestOfEls,
 
 let timeoutAccumulator = 0;
 
-document.addEventListener('DOMContentLoaded', function(){
-  const CREDITS_DELAY = 3000;
+window.addEventListener('load', function(){
   SoundManager.init().then(() => {
+    document.querySelector(".splash").classList.add("appear");
+
+    setupInputButtons();
+    selectButtonBySelector(".start-game");
+
+    startCredits(CREDITS_DELAY);
+
+    inputManager = new InputManager((paddle) => {
+      updatePlayerOptions(playerOptionEls);
+    });
+
     initParticleEngine(".scene", 5);
     loop();
     
@@ -46,19 +57,9 @@ document.addEventListener('DOMContentLoaded', function(){
     if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
 
     setupInputs();
+  
+    document.querySelector("#loading").classList.add("hide-loading");
   });
-
-  document.querySelector(".splash").classList.add("appear");
-
-  setupInputButtons();
-  selectButtonBySelector(".start-game");
-
-  startCredits(CREDITS_DELAY);
-
-  inputManager = new InputManager((paddle) => {
-    updatePlayerOptions(playerOptionEls);
-  });
-
 });
 
 function setupInputs() {
@@ -461,6 +462,8 @@ function startCredits(timeoutDelay) {
     'Production',
     'Appreciation',
     'Accounting',
+    'Intake',
+    'Organization'
   ];
 
   let bonusSecondWords = [
@@ -479,7 +482,7 @@ function startCredits(timeoutDelay) {
     'Manufacturing'
   ];
 
-  let names = [
+  let realPeople = [
     'Bobby Richter',
     'Luke Pacholski'
   ];
@@ -501,7 +504,7 @@ function startCredits(timeoutDelay) {
       let fakeCredits = [];
 
       for (let i = 0, r = Math.round(5 + Math.random() * 10); i < r; ++i) {
-        let credit = names[Math.floor(Math.random() * names.length)];
+        let credit = realPeople[Math.floor(Math.random() * realPeople.length)];
 
 
         let firstWord = fistWords[Math.floor(Math.random() * fistWords.length)];
