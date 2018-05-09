@@ -4,7 +4,14 @@ function createBall(options){
 
   return createObject({
     ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
-    innerHTML : "<div class='spinny'></div><div class='shadow'></div><div class='body'></div>",
+    innerHTML : `
+      <div class='spinny'></div>
+      <div class='shadow'></div>
+      <div class='body'>
+        <div class='influence'></div>
+      </div>
+      
+      `,
     className: "ball",
     classNames : ["ball"],
 
@@ -369,6 +376,18 @@ function createBall(options){
       this.wordInProgress = false;
     },
 
+    setPaddleInfluence(paddleNum){
+      if(paddleNum != this.lastTouchedPaddle && game.mode === "running"){
+        addChangeAnim(this.element.querySelector(".shadow"));
+        this.element.classList.remove("influence-1");
+        this.element.classList.remove("influence-2");
+        this.element.classList.add("influence-" + paddleNum);
+      }
+      
+      this.lastTouchedPaddle = paddleNum;
+    },
+
+
     hit : function(obj){
 
       if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
@@ -406,8 +425,6 @@ function createBall(options){
 
         let xRatio = .65;
         let yRatio = .45;
-
-        
 
         if(this.lastTouchedPaddle === 1) {
           // If the right-side player touched it, it goes to the left
@@ -469,16 +486,16 @@ function createBall(options){
       if(obj.label.indexOf("paddle") > -1) {
         
         if(obj.label.indexOf("one") > -1) {
-          this.lastTouchedPaddle = 1;
+          this.setPaddleInfluence(1);
         }
 
         if(obj.label.indexOf("two") > -1) {
-          this.lastTouchedPaddle = 2;
+          this.setPaddleInfluence(2);
         }
 
         game.ballHitPaddle(this.lastTouchedPaddle);
 
-        if(game.paddles[this.lastTouchedPaddle - 1].hasSpinPowerup === true) {
+        if (game.paddles[this.lastTouchedPaddle - 1].hasSpinPowerup === true) {
           this.prepToSpin();
         } else {
           this.endSpin();

@@ -12,10 +12,91 @@
   width: 30px;
   height: 30px;
   border-radius: 15px; /* must have radius! */
-  z-index: 9999999;
+  z-index: 999;
   transform-style: preserve-3d;
   visibility: hidden;
+  
+  .shadow {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    left: -20px;
+    top: -20px;
+    opacity: 1;
+    border-radius: 50%;
+    opacity: 1;
+  }
+  
+  &.influence-change {
+    .shadow {
+      animation: influenceChange .3s ease-out;
+    }
+  }
 
+  @keyframes influenceChange {
+    0% {
+      transform: .6;
+    }
+    60% {
+      opacity: 1.2;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .influence {
+    position: absolute;
+    box-sizing: border-box;
+    left: 6px;
+    top: 6px;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    opacity: .75;
+    animation: influenceStrobe .5s ease-in-out infinite;
+  }
+  
+  @keyframes influenceStrobe {
+    50% {
+      opacity: .5;
+    }
+  }
+
+
+  @keyframes shadowPump {
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+
+  .shadow {
+    animation: shadowPump .5s ease-in-out infinite;
+  }
+  
+
+  &.influence-1 {
+    .influence {
+      background: $pink;
+    }
+    .shadow {
+      // background: lighten($pink, 20%);
+      background: radial-gradient(rgba(229,112,216,.8) 0%, rgba(229,112,216,0) 70%);
+    }
+  }
+
+  &.influence-2  {
+    .influence {
+      background: $green;
+    }
+
+    .shadow {
+      // background: lighten($green, 20%);
+      background: radial-gradient(rgba(89, 226,167,.8) 0%, rgba(89, 226,167,0) 70%);
+    }
+  }
+ 
   &.show {
     visibility: visible;
   }
