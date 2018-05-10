@@ -73,10 +73,7 @@ var game =  {
 
     SoundManager.musicEngine.addBeatCallback(() => {
       if (this.balls.length > 0) {
-        this.balls.forEach(ball => {
-          ball.classList.add('excite');
-          setTimeout(() => { ball.classList.remove('excite'); }, 50);
-        });
+        this.balls.forEach(ball => ball.excite());
       }
     });
 
@@ -417,8 +414,6 @@ var game =  {
     let ball = createBall();
     this.balls.push(ball);
 
-    ball.style.transitionDuration = SoundManager.musicEngine.currentSong.songDefinition.bps + 's';
-
     Matter.Body.set(ball.physics, {
       position: { 
         x : this.boardWidth / 2, 
@@ -429,6 +424,9 @@ var game =  {
     var chance = Math.floor(getRandom(0,2));
     var launchForce = (chance === 0 ? -1 : 1) * .02 * this.physicsSamplingRatio;
     ball.launch(0, launchForce);
+
+    // Has to come after ball launch because ball doesn't have a body yet
+    ball.setBPS(SoundManager.musicEngine.currentSong.songDefinition.bps);
 
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(ball);

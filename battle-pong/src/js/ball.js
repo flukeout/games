@@ -132,6 +132,14 @@ function createBall(options){
         this.hasTargetSpeed = false;
     },
 
+    setBPS: function (bps) {
+      this.bps = bps;
+    },
+
+    excite: function () {
+      this.bodyEl.classList.add('excite');
+      setTimeout(() => { this.bodyEl.classList.remove('excite'); }, 50);
+    },
 
     run : function(delta) {
       
@@ -139,6 +147,7 @@ function createBall(options){
       // would be nice to have an init to do this in.
       if(!this.bodyEl) {
         this.bodyEl = this.element.querySelector(".body");
+        this.bodyEl.style.transitionDuration = this.bps + 's';
       }
 
       if(!this.spinnyEl){
