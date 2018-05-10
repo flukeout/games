@@ -71,6 +71,14 @@ var game =  {
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
 
+    SoundManager.musicEngine.addBeatCallback(() => {
+      if (this.balls.length > 0) {
+        this.balls.forEach(ball => {
+          ball.classList.add('excite');
+          setTimeout(() => { ball.classList.remove('excite'); }, 50);
+        });
+      }
+    });
 
     var that = this;
     // Event listener for ball hitting an Endzone
@@ -408,6 +416,8 @@ var game =  {
 
     let ball = createBall();
     this.balls.push(ball);
+
+    ball.style.transitionDuration = SoundManager.musicEngine.currentSong.songDefinition.bps + 's';
 
     Matter.Body.set(ball.physics, {
       position: { 
