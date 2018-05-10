@@ -25,6 +25,7 @@
     opacity: 1;
     border-radius: 50%;
     opacity: 1;
+    box-sizing: border-box;
   }
   
   &.influence-change {
@@ -55,6 +56,7 @@
     height: 18px;
     opacity: .75;
     animation: influenceStrobe .5s ease-in-out infinite;
+    display: none;
   }
   
   @keyframes influenceStrobe {
@@ -72,7 +74,9 @@
 
 
   .shadow {
-    animation: shadowPump .5s ease-in-out infinite;
+    // animation: shadowPump .5s ease-in-out infinite;
+    display: none;
+    opacity: 1;
   }
   
 
@@ -82,7 +86,11 @@
     }
     .shadow {
       // background: lighten($pink, 20%);
-      background: radial-gradient(rgba(229,112,216,.8) 0%, rgba(229,112,216,0) 70%);
+      background: radial-gradient(rgba(229,112,216,1) 0%, rgba(229,112,216,0) 70%);
+      // border: solid 5px lighten($pink, 20%);
+      // opacity: .6;
+      // background: lighten($pink, 5%);
+      
     }
   }
 
@@ -92,8 +100,10 @@
     }
 
     .shadow {
+     // border: solid 5px $green;
       // background: lighten($green, 20%);
-      background: radial-gradient(rgba(89, 226,167,.8) 0%, rgba(89, 226,167,0) 70%);
+        background: lighten($green, 5%);
+      // background: radial-gradient(rgba(89, 226,167,.8) 0%, rgba(89, 226,167,0) 70%);
     }
   }
  
