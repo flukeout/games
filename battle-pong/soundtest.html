@@ -161,6 +161,9 @@
                   activeSequences[name].stop();
                   delete activeSequences[name];
                 }
+              },
+              resumeAudioContext: () => {
+                SoundManager.resumeAudioContext();
               }
             }
           });
@@ -473,7 +476,13 @@
       <div class="sticky">
         <h1>Sound Engine</h1>
         <div>Storage: <span>{{SoundManager.localStorageStatus}}</span></div>
-        <div><button v-on:click="saveSettingsToLocalStorage">Save</button><button v-on:click="loadSettingsFromLocalStorage">Load</button><button v-on:click="clearSettingsFromLocalStorage">Clear</button><button v-on:click="loadSettingsFromServer">Load from Server</button></div>
+        <div>
+          <button v-on:click="saveSettingsToLocalStorage">Save</button>
+          <button v-on:click="loadSettingsFromLocalStorage">Load</button>
+          <button v-on:click="clearSettingsFromLocalStorage">Clear</button>
+          <button v-on:click="loadSettingsFromServer">Load from Server</button>
+          <button v-on:click="resumeAudioContext">CLICK ME TO FIX SOUND IF IT IS MUTED</button>
+        </div>
       </div>
       <div class="scrollable">
         <section>
