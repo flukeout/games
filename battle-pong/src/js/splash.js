@@ -79,11 +79,11 @@ window.addEventListener('load', function(){
     readyScreen.classList.add('show');
 
     readyScreen.querySelector('.ok').addEventListener('click', () => {
+      SoundManager.resumeAudioContext();
       readyScreen.classList.remove('show');
       startStory(() => {
         document.querySelector(".splash").classList.add("appear");
         SoundManager.musicEngine.cueSong('menu');
-        SoundManager.resumeAudioContext();
         if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
         startCredits(CREDITS_DELAY);        
       });
