@@ -77,11 +77,8 @@
 
       const directionMultiplier = (playerSide === 'left' ? 1 : -1);
       const idealDistanceFromBall = -10 * directionMultiplier;
-
       const ySafeDistanceFromRest = 15;
       const attackDistanceX = 25;
-      const attackDistanceY = 100;
-      const fallbackDistance = 5;
       const otherPlayerSide = (playerSide === 'left' ? 'right' : 'left');
       const upAttackAction = (playerSide === 'left' ? 'spinClockwise' : 'spinCounterClockwise');
       const downAttackAction = (playerSide === 'left' ? 'spinCounterClockwise' : 'spinClockwise');
@@ -96,10 +93,14 @@
         (paddleBody.vertices[1].x - paddleBody.vertices[2].x) * (paddleBody.vertices[1].x - paddleBody.vertices[2].x) + 
         (paddleBody.vertices[1].y - paddleBody.vertices[2].y) * (paddleBody.vertices[1].y - paddleBody.vertices[2].y));
 
-      // TODO: add a "stupidity" factor
+      let stupidityProbability = Settings['aiStupidity' + (playerSide === 'left' ? 1 : 2)];
 
       let actionManager = new ActionManager();
       let currentState = 'getCloseToBall';
+
+      function sampleStupidity () {
+        return Math.random() <= stupidityProbability;
+      }
 
       function setupLeftPaddleStuff () {
         abilities.straightenUp = () => {
@@ -179,6 +180,8 @@
 
       const abilities = {
         swingAtBall: () => {
+          if (sampleStupidity()) return;
+
           // Calculate the distance from each of the longer sides of the paddle to the ball. This is done by extrapolating the
           // line generated from the two vertices that make up each side of the paddle. Careful: if the distance reported is small
           // it could be because the ball is actually in range, or because the ball is close to the *extrapolated* line.
@@ -230,6 +233,8 @@
         },
 
         getCloseToBall: actions => {
+          if (sampleStupidity()) return;
+
           abilities.pursueBallY();
           abilities.pursueBallX();
 
@@ -270,7 +275,7 @@
           states[currentState](actions);
           actionManager.update(actions);
 
-          debugOutput.textContent = currentState;
+          // debugOutput.textContent = currentState;
 
           return actions;
         },
