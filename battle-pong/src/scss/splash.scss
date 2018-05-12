@@ -12,6 +12,33 @@
     }
   }
 
+  #ready {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.4);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    perspective: 1200px;
+    transition: opacity .5s ease-out, visibility .5s ease-out;
+    background: black;
+    flex-direction: column;
+    visibility: hidden;
+    opacity: 0;
+
+    div {
+      width: 600px;
+    }
+
+    &.show {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
   #content {
     position: absolute;
     width: 100vw;

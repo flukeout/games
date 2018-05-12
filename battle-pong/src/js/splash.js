@@ -10,13 +10,23 @@ let bestOfEls,
 let timeoutAccumulator = 0;
 
 window.addEventListener('load', function(){
+  let readyScreen = document.querySelector('#ready');
+
   SoundManager.init().then(() => {
-    document.querySelector(".splash").classList.add("appear");
+    document.querySelector("#loading").classList.add("hide-loading");
+    readyScreen.classList.add('show');
+
+    readyScreen.querySelector('.ok').addEventListener('click', () => {
+      readyScreen.classList.remove('show');
+      document.querySelector(".splash").classList.add("appear");
+      SoundManager.musicEngine.cueSong('menu');
+      SoundManager.resumeAudioContext();
+      if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+      startCredits(CREDITS_DELAY);
+    });
 
     setupInputButtons();
     selectButtonBySelector(".start-game");
-
-    startCredits(CREDITS_DELAY);
 
     inputManager = new InputManager((paddle) => {
       updatePlayerOptions(playerOptionEls);
@@ -53,12 +63,8 @@ window.addEventListener('load', function(){
     startStars(50, window.innerWidth, window.innerHeight);
 
     SoundManager.loadSettingsFromLocalStorage();
-    SoundManager.musicEngine.cueSong('menu');
-    if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
 
     setupInputs();
-  
-    document.querySelector("#loading").classList.add("hide-loading");
   });
 });
 

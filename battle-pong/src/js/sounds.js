@@ -1091,6 +1091,10 @@ window.SoundManager = {
     else {
       console.warn('No sound event named ', name);
     }
+  },
+  resumeAudioContext: function () {
+    // Because of https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    soundContext.resume();
   }
 };
 
