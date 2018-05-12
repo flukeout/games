@@ -287,24 +287,34 @@
                 musicEngine.stop();
                 musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+                beatElement.style.transitionDuration = musicEngine.currentSong.songDefinition.bps + 's';
               },
               playSongLooped(e) {
                 musicEngine.stop();
                 musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
                 musicEngine.start({loop: true});
+                beatElement.style.transitionDuration = musicEngine.currentSong.songDefinition.bps + 's';
               },
               fadeInSongLooped(e) {
                 musicEngine.stop();
                 musicEngine.cueSong(e.srcElement.getAttribute('data-song-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
                 musicEngine.fadeIn(2, {loop: true});
+                beatElement.style.transitionDuration = musicEngine.currentSong.songDefinition.bps + 's';
               },
               playSongChain(e) {
                 musicEngine.playSongChain(e.srcElement.getAttribute('data-song-chain-name'));
                 musicVue.layerDefinitions = musicEngine.getLayerDefinitions();
+                beatElement.style.transitionDuration = musicEngine.currentSong.songDefinition.bps + 's';
               }
             }
+          });
+
+          let beatElement = document.querySelector('#beat');
+          musicEngine.addBeatCallback(() => {
+            beatElement.classList.add('excite');
+            setTimeout(() => {beatElement.classList.remove('excite')}, 50);
           });
 
           musicEngine.addSongChainListener(() => {
@@ -443,6 +453,18 @@
       input[type="text"],
       input[type="number"] {
         width: 50px;
+      }
+
+      #beat {
+        width: 30px;
+        height: 30px;
+        background: rgba(0, 255, 0, 0);
+        transition: background .15s ease-out;
+      }
+
+      #beat.excite {
+        background: rgba(0, 255, 0, 1);
+        transition: none;
       }
     </style>
   </head>
@@ -588,6 +610,7 @@
           <div>
             Ducking: <span id="ducking-profile"></span>
           </div>
+          <div id="beat"></div>
         </section>
       </div>
       <div class="scrollable">

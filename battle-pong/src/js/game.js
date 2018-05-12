@@ -71,6 +71,11 @@ var game =  {
     this.boardWidth = this.worldEl.clientWidth;
     this.boardHeight = this.worldEl.clientHeight;
 
+    SoundManager.musicEngine.addBeatCallback(() => {
+      if (this.balls.length > 0) {
+        this.balls.forEach(ball => ball.excite());
+      }
+    });
 
     var that = this;
     // Event listener for ball hitting an Endzone
@@ -419,6 +424,9 @@ var game =  {
     var chance = Math.floor(getRandom(0,2));
     var launchForce = (chance === 0 ? -1 : 1) * .02 * this.physicsSamplingRatio;
     ball.launch(0, launchForce);
+
+    // Has to come after ball launch because ball doesn't have a body yet
+    ball.setBPS(SoundManager.musicEngine.currentSong.songDefinition.bps);
 
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(ball);
