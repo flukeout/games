@@ -1,6 +1,55 @@
 (function () {
+  const actionEnvelopes = {
+    left: {
+      active: 10
+    },
+    right: {
+      active: 10
+    },
+    down: {
+      active: 10
+    },
+    up: {
+      active: 10
+    },
+    spinCounterClockwise: {
+      active: 50
+    },
+    spinClockwise: {
+      active: 50
+    }
+  };
 
   const halfPI = Math.PI / 2;
+
+  function ActionManager () {
+    let activeActions = {};
+
+    this.update = function (actions) {
+      let currentTime = Date.now();
+
+      Object.keys(activeActions).forEach(k => {
+        if (actionEnvelopes[k] && currentTime - activeActions[k].lastFire > actionEnvelopes[k].active) {
+          delete activeActions[k];
+        }
+        else {
+          actions[k] = 1;
+        }
+      });
+    };
+
+    this.check = function (action) {
+      return action in activeActions;
+    };
+
+    this.fire = function (action) {
+      let currentTime = Date.now();
+
+      activeActions[action] = activeActions[action] || {
+        lastFire: currentTime
+      };
+    };
+  }
 
   function getDistanceFromPointToLine(point, linePoint1, linePoint2) {
     // From https://bobobobo.wordpress.com/2008/01/07/solving-linear-equations-ax-by-c-0/
@@ -47,6 +96,9 @@
 
       // TODO: add a "stupidity" factor
 
+      let lastAttackTime = 0;
+      let actionManager = new ActionManager();
+
       const states = {
 
         // While the game isn't really doing anything, there's no real input to respond to, so just chill
@@ -71,8 +123,8 @@
 
             // Right yourself again
             if (fixedBodyAngle === halfPI) {
-              if (actions.up) actions[upAttackAction] = 1;
-              if (actions.down) actions[downAttackAction] = 1;
+              if (actionManager.check('up')) actionManager.fire(upAttackAction);
+              if (actionManager.check('down')) actionManager.fire(downAttackAction);
             }
           }
           else {
@@ -84,8 +136,8 @@
           let idealPosition = {x: ballBody.position.x + idealDistanceFromBall, y: ballBody.position.y};
 
           // Try to track the ball's y position as closely as possible
-          if (paddleBody.position.y > idealPosition.y) actions.down = 1;
-          if (paddleBody.position.y > idealPosition.y) actions.up = 1;
+          if (paddleBody.position.y > idealPosition.y) actionManager.fire('down');
+          if (paddleBody.position.y > idealPosition.y) actionManager.fire('up');
 
           // Find out how far away the paddle is from the ideal position behind the ball
           // Multiply by directionMultiplier to accommodate left/right player
@@ -94,7 +146,7 @@
           // If the distance is more than we need,...
           if (xDistanceFromIdeal > 0) {
             // Head toward the ball by telling the paddle to move in whichever direction is appropriate (playerSide)
-            actions[playerSide] = 1;
+            actionManager.fire(playerSide);
           }
           else {
             currentState = 'attackBall';
@@ -102,8 +154,8 @@
         },
         attackBall: actions => {
           // Try to track the ball's y position as closely as possible
-          if (paddleBody.position.y < ballBody.position.y) actions.down = 1;
-          if (paddleBody.position.y > ballBody.position.y) actions.up = 1;
+          if (paddleBody.position.y < ballBody.position.y) actionManager.fire('down');
+          if (paddleBody.position.y > ballBody.position.y) actionManager.fire('up');
 
           // See which side of the paddle the ball is on
           let xSideOfBall = paddleBody.position.x < ballBody.position.x ? 1 : -1;
@@ -128,8 +180,8 @@
 
             // TODO: pick a direction by buffering or something. If the ball is in the middle of the paddle,
             // it just freaks out by twitching back and forth instead of actually hitting in the ball.
-            if (actions.up) actions[upAttackAction] = 1;
-            if (actions.down) actions[downAttackAction] = 1;            
+            if (actionManager.check('up')) actionManager.fire(upAttackAction);
+            if (actionManager.check('down')) actionManager.fire(downAttackAction);
           }
           else {
             // If we're on the attack side of the ball...
@@ -140,8 +192,8 @@
               let fixedBodyAngle = Math.abs(paddle.targetAngle % Math.PI);
 
               if (fixedBodyAngle === halfPI) {
-                if (actions.up) actions[upAttackAction] = 1;
-                if (actions.down) actions[downAttackAction] = 1;
+                if (actionManager.check('up')) actionManager.fire(upAttackAction);
+                if (actionManager.check('down')) actionManager.fire(downAttackAction);
               }
             }
             else {
@@ -167,6 +219,7 @@
           }
 
           states[currentState](actions);
+          actionManager.update(actions);
 
           // debugOutput.textContent = currentState;
 
