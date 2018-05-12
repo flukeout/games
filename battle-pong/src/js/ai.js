@@ -22,7 +22,7 @@
 
   const halfPI = Math.PI / 2;
 
-  const runningModes = ['running'];
+  const runningModes = ['running', 'finish'];
 
   function ActionManager () {
     let activeActions = {};
@@ -34,9 +34,7 @@
         if (actionEnvelopes[k] && currentTime - activeActions[k].lastFire > actionEnvelopes[k].active) {
           delete activeActions[k];
         }
-        else {
-          actions[k] = 1;
-        }
+        actions[k] = 1;
       });
     };
 
@@ -75,16 +73,18 @@
     let ballBody = null;
 
     this.createPaddleAIInputComponent = function (paddle, playerSide) {
-      const debugOutput = document.querySelector('#aidebug');
+      const debugOutput = document.querySelector('#aidebug .' + playerSide);
 
       const directionMultiplier = (playerSide === 'left' ? 1 : -1);
       const idealDistanceFromBall = -10 * directionMultiplier;
-      const attackDistance = 25;
+
+      const ySafeDistanceFromRest = 15;
+      const attackDistanceX = 25;
+      const attackDistanceY = 100;
       const fallbackDistance = 5;
       const otherPlayerSide = (playerSide === 'left' ? 'right' : 'left');
       const upAttackAction = (playerSide === 'left' ? 'spinClockwise' : 'spinCounterClockwise');
       const downAttackAction = (playerSide === 'left' ? 'spinCounterClockwise' : 'spinClockwise');
-      const ySafeDistanceFromRest = 15;
 
       const restingXPosition = (playerSide === 'left' ? game.boardWidth / 4 : game.boardWidth * 3 / 4);
 
@@ -98,70 +98,87 @@
 
       // TODO: add a "stupidity" factor
 
-      let lastAttackTime = 0;
       let actionManager = new ActionManager();
+      let currentState = 'getCloseToBall';
 
-      const states = {
-
-        // While the game isn't really doing anything, there's no real input to respond to, so just chill
-        waitForGameToResume: actions => {
-          let xPosition = paddleBody.position.x;
-          let yPosition = paddleBody.position.y;
+      function setupLeftPaddleStuff () {
+        abilities.straightenUp = () => {
           let fixedBodyAngle = Math.abs(paddle.targetAngle % Math.PI);
 
-          if (restingGameModes.indexOf(game.mode) > -1) {
+          if (Math.abs(fixedBodyAngle - halfPI) < 0.001) {
+            actionManager.fire('spinClockwise');
+          }
+        };
+
+        abilities.moveToTerrainCenter = () => {
+          let xPosition = paddleBody.position.x;
+          let yPosition = paddleBody.position.y;
+          
+          // Head back to the vertical center
+          if (yPosition < game.boardHeight / 2 - ySafeDistanceFromRest) actionManager.fire('down');
+          if (yPosition > game.boardHeight / 2 + ySafeDistanceFromRest) actionManager.fire('up');;
+
+          let diff = Math.abs(xPosition - restingXPosition);
+
+          // Head back to the horizontal center
+          if (xPosition > restingXPosition && diff > 50) {
+            actionManager.fire('left');
+          }
+          else if (xPosition < restingXPosition && diff > 50) {
+            actionManager.fire('right');
+          }
+        };
+
+        states.getReadyForNextRound = actions => {
+          if (game.mode === 'roundover') {
+            abilities.moveToTerrainCenter();
+            abilities.straightenUp();
+          }
+          else {
+            currentState = 'getCloseToBall';
+          }
+        };
+      }
+
+      function setupRightPaddleStuff () {
+        abilities.straightenUp = () => {
+          let fixedBodyAngle = Math.abs(paddle.targetAngle % Math.PI);
+
+          if (Math.abs(fixedBodyAngle - halfPI) < 0.001) {
+            actionManager.fire('spinCounterClockwise');
+          }
+        };
+
+        states.getReadyForNextRound = actions => {
+          let xPosition = paddleBody.position.x;
+          let yPosition = paddleBody.position.y;
+
+          if (game.mode === 'roundover') {
 
             // Head back to the vertical center
-            if (yPosition < game.boardHeight / 2 - ySafeDistanceFromRest) actions.down = 1;
-            if (yPosition > game.boardHeight / 2 + ySafeDistanceFromRest) actions.up = 1;
+            if (yPosition < game.boardHeight / 2 - ySafeDistanceFromRest) actionManager.fire('down');
+            if (yPosition > game.boardHeight / 2 + ySafeDistanceFromRest) actionManager.fire('up');
+
+            let diff = Math.abs(xPosition - restingXPosition);
 
             // Head back to the horizontal center
-            if (playerSide === 'left' && xPosition > restingXPosition) {
-              actions.left = 1;
+            if (xPosition < restingXPosition && diff > 50) {
+              actionManager.fire('right');
             }
-            else if (playerSide === 'right' && xPosition < restingXPosition) {
-              actions.right = 1;
+            else if (xPosition > restingXPosition && diff > 50) {
+              actionManager.fire('left');
             }
 
-            // Right yourself again
-            if (fixedBodyAngle === halfPI) {
-              if (actionManager.check('up')) actionManager.fire(upAttackAction);
-              if (actionManager.check('down')) actionManager.fire(downAttackAction);
-            }
+            abilities.straightenUp();
           }
           else {
-            currentState = 'getBehindBall';
+            currentState = 'getCloseToBall';
           }
-        },
-        getBehindBall: actions => {
-          // The ideal position behind the ball is just far enough away to attack!
-          let idealPosition = {x: ballBody.position.x + idealDistanceFromBall, y: ballBody.position.y};
+        };
+      }
 
-          // Try to track the ball's y position as closely as possible
-          if (paddleBody.position.y > idealPosition.y) actionManager.fire('down');
-          if (paddleBody.position.y > idealPosition.y) actionManager.fire('up');
-
-          // Find out how far away the paddle is from the ideal position behind the ball
-          // Multiply by directionMultiplier to accommodate left/right player
-          let xDistanceFromIdeal = (paddleBody.position.x - idealPosition.x) * directionMultiplier;
-
-          // If the distance is more than we need,...
-          if (xDistanceFromIdeal > 0) {
-            // Head toward the ball by telling the paddle to move in whichever direction is appropriate (playerSide)
-            actionManager.fire(playerSide);
-          }
-          else {
-            currentState = 'attackBall';
-          }        
-        },
-        attackBall: actions => {
-          // Try to track the ball's y position as closely as possible
-          if (paddleBody.position.y < ballBody.position.y) actionManager.fire('down');
-          if (paddleBody.position.y > ballBody.position.y) actionManager.fire('up');
-
-          // See which side of the paddle the ball is on
-          let xSideOfBall = paddleBody.position.x < ballBody.position.x ? 1 : -1;
-
+      const abilities = {
+        swingAtBall: () => {
           // Calculate the distance from each of the longer sides of the paddle to the ball. This is done by extrapolating the
           // line generated from the two vertices that make up each side of the paddle. Careful: if the distance reported is small
           // it could be because the ball is actually in range, or because the ball is close to the *extrapolated* line.
@@ -172,42 +189,69 @@
           // Pick the shortest one
           let shortestDistanceToBall = Math.min(side1Distance, side2Distance);
 
+          // If the ball is close to one of the sides, attack!
+          if (shortestDistanceToBall < attackDistanceX) {
+
+            // TODO: better choose a paddle side to swing from
+            if (actionManager.check('up')) actionManager.fire(upAttackAction);
+            if (actionManager.check('down')) actionManager.fire(downAttackAction);
+          }
+        },
+        pursueBallX: () => {
+          let idealPositionX = ballBody.position.x + idealDistanceFromBall;
+
+          // Find out how far away the paddle is from the ideal position behind the ball
+          // Multiply by directionMultiplier to accommodate left/right player
+          let xDistanceFromIdeal = (paddleBody.position.x - idealPositionX) * directionMultiplier;
+
+          // If the distance is more than we need,...
+          if (xDistanceFromIdeal > 0) {
+            // Head toward the ball by telling the paddle to move in whichever direction is appropriate (playerSide)
+            actionManager.fire(playerSide);
+          }
+          else {
+            actionManager.fire(otherPlayerSide); 
+          }
+        },
+        pursueBallY: () => {
+          // Try to track the ball's y position as closely as possible
+          if (paddleBody.position.y < ballBody.position.y) actionManager.fire('down');
+          if (paddleBody.position.y > ballBody.position.y) actionManager.fire('up');
+        }
+      };
+
+      const states = {
+
+        // While the game isn't really doing anything, there's no real input to respond to, so just chill
+        waitForGameToResume: actions => {
+          if (runningModes.indexOf(game.mode) > -1) {
+            currentState = 'getCloseToBall';
+          }
+        },
+
+        getCloseToBall: actions => {
+          abilities.pursueBallY();
+          abilities.pursueBallX();
+
           // See what the distance from the center of paddle to the center of ball is
           let averageDistanceToBall = Math.sqrt(
             (paddleBody.position.x - ballBody.position.x) * (paddleBody.position.x - ballBody.position.x) + 
             (paddleBody.position.y - ballBody.position.y) * (paddleBody.position.y - ballBody.position.y));
 
-          // If the paddle is within 2 attackDistances in general, and the ball is close to one of the sides, attack!
-          if (averageDistanceToBall < paddleWidth && shortestDistanceToBall < attackDistance) {
-
-            // TODO: pick a direction by buffering or something. If the ball is in the middle of the paddle,
-            // it just freaks out by twitching back and forth instead of actually hitting in the ball.
-            if (actionManager.check('up')) actionManager.fire(upAttackAction);
-            if (actionManager.check('down')) actionManager.fire(downAttackAction);
+          // If the paddle is within 2 attackDistances in general, it might be worth swinging it...
+          if (averageDistanceToBall < paddleWidth) {
+            abilities.swingAtBall();
           }
           else {
-            // If we're on the attack side of the ball...
-            if (xSideOfBall === directionMultiplier) {
-              actions[otherPlayerSide] = 1;
-
-              // If we are sideways, be less sideways!
-              let fixedBodyAngle = Math.abs(paddle.targetAngle % Math.PI);
-
-              if (fixedBodyAngle === halfPI) {
-                if (actionManager.check('up')) actionManager.fire(upAttackAction);
-                if (actionManager.check('down')) actionManager.fire(downAttackAction);
-              }
-            }
-            else {
-
-              // TODO: use fallbackDistance so that it doesn't happen immediately
-              currentState = 'getBehindBall';
-            }
+            abilities.straightenUp();
           }
         }
       };
 
-      let currentState = 'getBehindBall';
+      if (playerSide === 'left')
+        setupLeftPaddleStuff();
+      else
+        setupRightPaddleStuff();
 
       return {
         actions: {},
@@ -216,14 +260,17 @@
 
           if (!ballBody) return actions;
 
-          if (runningModes.indexOf(game.mode) === -1) {
+          if (game.mode === 'roundover') {
+            currentState = 'getReadyForNextRound';
+          }
+          else if (runningModes.indexOf(game.mode) === -1) {
             currentState = 'waitForGameToResume';
           }
 
           states[currentState](actions);
           actionManager.update(actions);
 
-          // debugOutput.textContent = currentState;
+          debugOutput.textContent = currentState;
 
           return actions;
         },
