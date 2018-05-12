@@ -135,8 +135,6 @@ var game =  {
       return;
     }
 
-    console.log("ballhtpaddle");
-
     this.leftGoalEnabled = false;
     this.rightGoalEnabled = false;
 

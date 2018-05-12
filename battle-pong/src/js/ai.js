@@ -22,6 +22,8 @@
 
   const halfPI = Math.PI / 2;
 
+  const runningModes = ['running'];
+
   function ActionManager () {
     let activeActions = {};
 
@@ -214,7 +216,7 @@
 
           if (!ballBody) return actions;
 
-          if (game.mode === 'roundover') {
+          if (runningModes.indexOf(game.mode) === -1) {
             currentState = 'waitForGameToResume';
           }
 
