@@ -43,8 +43,8 @@
 
           var y = getRandom(50, game.boardHeight - 50);
 
-          this.addPowerup(x, y);
-          activePowerups.push(this);
+          let newPowerup = this.addPowerup(x, y);
+          if (newPowerup) activePowerups.push(newPowerup);
         }
       }
     }
@@ -60,6 +60,8 @@
       powerUp.element.classList.add(type);
 
       SoundManager.playSound(powerupSpawnNames[type] || powerupSpawnNames.default);
+
+      return powerUp;
     };
 
     this.createPowerup = (x, y, type) => {
@@ -261,6 +263,7 @@
           makeParticle(options);
           makeCracks(this.physics.position.x, this.physics.position.y);
 
+          this.destroyed = true;
           game.removeObject(this);
           activePowerups.splice(activePowerups.indexOf(this), 1);
         },
@@ -312,6 +315,7 @@
 
             powerupScored(this.physics.position.x, this.physics.position.y, this.type);
 
+            this.destroyed = true;
             game.removeObject(this);
             activePowerups.splice(activePowerups.indexOf(this), 1);
             SoundManager.playSound(powerUpScoreSoundNames[this.type] || "coin");

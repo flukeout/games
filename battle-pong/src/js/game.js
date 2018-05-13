@@ -135,8 +135,6 @@ var game =  {
       return;
     }
 
-    console.log("ballhtpaddle");
-
     this.leftGoalEnabled = false;
     this.rightGoalEnabled = false;
 
@@ -190,6 +188,7 @@ var game =  {
 
   // When the loser dies during the FINISH IT phase
   loserDied: function(){
+    this.mode = "off";
     this.removeBalls();
     SoundManager.fireEvent('Finish_It_Heartbeat_Stop_Hit');
     
@@ -590,7 +589,7 @@ var game =  {
 
     var that = this;
     
-    setTimeout(() => { this.mode = "finish"; }, 50);
+    // setTimeout(() => {  }, 50);
 
     this.bodyEl.classList.add("winner-screen");
 
@@ -641,6 +640,7 @@ var game =  {
       SoundManager.fireEvent('Finish_It_Heartbeat_Start');
       
       this.aiManager.setBall(ball);
+      this.mode = "finish";
     }, 2000);
 
   },
