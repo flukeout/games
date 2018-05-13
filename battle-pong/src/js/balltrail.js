@@ -20,8 +20,6 @@ function startTrail(){
 }
 
 let ballPosition = [];
-let lastPos = {};
-let ticks = 0;
 let maxTrailLength = 20;
 let maxDisplayRatio = 1;
 let frames = 0;
@@ -36,7 +34,8 @@ function drawTrail() {
     let ball = game.balls[0];
     let touchedAnything = false;
     let pushing = false;
-    
+
+
     if(ball) {
       touchedAnything = ball.lastTouchedPaddle === 1 || ball.lastTouchedPaddle === 2 ? true : false;
       maxDisplayRatio = mapScale(ball.physics.speed, 2, 10, 0, 1);
@@ -72,7 +71,6 @@ function drawTrail() {
       ballPosition.shift();
     }
 
-
     if(pushing == false && ballPosition.length > 0) {
       ballPosition.shift(); 
     }
@@ -82,8 +80,6 @@ function drawTrail() {
     let displaySteps = parseInt(ballPosition.length * maxDisplayRatio);
 
     let maxDisplaySteps = parseInt(maxDisplayRatio * ballPosition.length);
-    let j = 1;
-
 
     if(ball) {
       if(ball.isSpinning) {
@@ -91,16 +87,14 @@ function drawTrail() {
       }
     }
 
-
     if(actualDisplaySteps < maxDisplaySteps) {
       actualDisplaySteps++;
     } else if (actualDisplaySteps > maxDisplaySteps) {
       actualDisplaySteps--;
     }
 
-
+    let j = 1;
     for(var i = (ballPosition.length - actualDisplaySteps) + 1; i < ballPosition.length; i++) {
-
       // Gets drawn from end tip to ball.
 
       let pos = ballPosition[i];
@@ -110,8 +104,7 @@ function drawTrail() {
       trailCtx.beginPath();
       trailCtx.strokeStyle = pos.color;
       trailCtx.moveTo(prevPos.x, prevPos.y);
-      
-      // let progress = i / (ballPosition.length - 1);
+
       let progress = j / actualDisplaySteps;
       j++;
       let sizeMult = EasingFunctions.easeOutQuart(progress);
@@ -124,7 +117,7 @@ function drawTrail() {
       }
     }
 
-    // Glowy outline duder
+    // Glowy outline for slow ball
     if(ball && touchedAnything){
       if(ball.physics.speed < cutoffSpeed) {
         let sinMult = Math.sin(frames/6);
