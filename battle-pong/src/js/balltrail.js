@@ -45,10 +45,13 @@ function drawTrail() {
 
       if(ball.lastTouchedPaddle === 1) {
         lastColor = "#c15db5";
+        lastColor = "#dd58d3";
+
       }
       
       if(ball.lastTouchedPaddle === 2) {
         lastColor = "#4dc18f";
+        lastColor = "#58e8a6";
       }
 
       if(ball.isSpinning) {
