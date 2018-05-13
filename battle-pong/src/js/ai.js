@@ -250,7 +250,7 @@
 
           lastTargetChange = currentTime;
         },
-        swingAtBall: () => {
+        swingAtTarget: () => {
           if (sampleStupidity()) return;
 
           // Calculate the distance from each of the longer sides of the paddle to the ball. This is done by extrapolating the
@@ -266,12 +266,28 @@
           // If the ball is close to one of the sides, attack!
           if (shortestDistanceToBall < attackDistanceX) {
 
+            // This is a complicated way of preventing a paddle from just walking a powerup into its own goal
+            if (playerSide === 'left' 
+              && targetObject.type                          // if the target is a powerup
+              && targetObject.type !== 'mine'               // and it's not a mine (because that should still be panicky)
+              && targetPosition.x < paddleBody.position.x   // and it's behind you
+              && Math.random() < 0.75) {                    // and randomness
+              return;                                       // don't swing
+            }
+            else if (playerSide === 'right'
+              && targetObject.type
+              && targetObject.type !== 'mine'
+              && targetPosition.x > paddleBody.position.x
+              && Math.random() < 0.5) {
+              return;
+            }
+
             // TODO: better choose a paddle side to swing from
             if (actionManager.check('up')) actionManager.fire(upAttackAction);
             if (actionManager.check('down')) actionManager.fire(downAttackAction);
           }
         },
-        pursueBallX: () => {
+        pursueTargetX: () => {
           let idealPositionX = targetPosition.x + idealDistanceFromBall;
 
           // Find out how far away the paddle is from the ideal position behind the ball
@@ -290,7 +306,7 @@
             }
           }
         },
-        pursueBallY: () => {
+        pursueTargetY: () => {
           // Try to track the ball's y position as closely as possible
           if (paddleBody.position.y < targetPosition.y) actionManager.fire('down');
           if (paddleBody.position.y > targetPosition.y) actionManager.fire('up');
@@ -310,17 +326,17 @@
           if (sampleStupidity()) return;
           abilities.recognizeTargets();
 
-          abilities.pursueBallY();
-          abilities.pursueBallX();
+          abilities.pursueTargetY();
+          abilities.pursueTargetX();
 
           // See what the distance from the center of paddle to the center of ball is
           let averageDistanceToBall = Math.sqrt(
-            (paddleBody.position.x - target.x) * (paddleBody.position.x - target.x) + 
-            (paddleBody.position.y - target.y) * (paddleBody.position.y - target.y));
+            (paddleBody.position.x - targetPosition.x) * (paddleBody.position.x - targetPosition.x) + 
+            (paddleBody.position.y - targetPosition.y) * (paddleBody.position.y - targetPosition.y));
 
           // If the paddle is within 2 attackDistances in general, it might be worth swinging it...
           if (averageDistanceToBall < paddleWidth) {
-            abilities.swingAtBall();
+            abilities.swingAtTarget();
           }
           else {
             abilities.straightenUp();
@@ -339,7 +355,7 @@
         update: function () {
           let actions = {};
 
-          if (!target) return actions;
+          if (!targetObject) return actions;
           if (!ballBody) return actions;
 
           if (game.mode === 'roundover') {
