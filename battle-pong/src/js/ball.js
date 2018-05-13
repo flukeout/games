@@ -106,6 +106,7 @@ function createBall(options){
 
     frameTicks : 0,
     hasTrail : false,
+    isSpinning: false,
 
     spinSoundSequenceManager: new SoundManager.sequences.Powerup_Spin(),
 
@@ -284,12 +285,13 @@ function createBall(options){
         }
       }
 
-      this.hasTrail = false;
+      this.hasTrail = true;
+      this.isSpinning = false;
       // Adds trails after the ball when it's goign fast enough
       if(this.physics.speed * game.physicsSamplingRatio > 7) {
         if(Math.abs(this.rotationVelocity / game.physicsSamplingRatio) > 0 || rotating){
-          this.hasTrail = true;
-          // addBallTrail(this.physics.position.x, this.physics.position.y);
+          // this.hasTrail = true;
+          this.isSpinning = true;
         }
       }
 
@@ -392,7 +394,6 @@ function createBall(options){
         this.element.classList.remove("influence-2");
         this.element.classList.add("influence-" + paddleNum);
       }
-      
       this.lastTouchedPaddle = paddleNum;
     },
 

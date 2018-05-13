@@ -274,6 +274,7 @@
   top: 0;
   left: 0;
   opacity: .35;
+  opacity: .8;
 }
 
 
@@ -319,6 +320,8 @@
 
 .speedLetter {
   z-index: 3;
+  vertical-align: top;
+  line-height: 28px;
 }
 
 .paddle {

@@ -10,7 +10,6 @@ let trailCanvas,
     trailCanvasWidth;
 
 function startTrail(){
-  
   trailCanvas = document.querySelector(".particle-canvas");
   trailCanvasWidth = 890;
   trailCanvasHeigth = 540;
@@ -18,28 +17,52 @@ function startTrail(){
   trailCanvas.height = 500;
   trailCtx = trailCanvas.getContext("2d");
   trailStarted = true;
-
 }
 
 let ballPosition = [];
-let lastPos = {};
-let ticks = 0;
-let maxTrailLength = 30;
+let maxTrailLength = 20;
+let maxDisplayRatio = 1;
 let frames = 0;
+let lastColor = false;
+let cutoffSpeed = 4;
+let displaySteps;
+let desiredDisplaySteps;
+let actualDisplaySteps = 0;
 
 function drawTrail() {
     frames++;
-
-
+    let ball = game.balls[0];
+    let touchedAnything = false;
     let pushing = false;
-    if(game.balls[0]) {
-      if(game.balls[0].hasTrail) {
+
+
+    if(ball) {
+      touchedAnything = ball.lastTouchedPaddle === 1 || ball.lastTouchedPaddle === 2 ? true : false;
+      maxDisplayRatio = mapScale(ball.physics.speed, 2, 10, 0, 1);
+    }
+
+    if(ball && touchedAnything) {
+
+      if(ball.lastTouchedPaddle === 1) {
+        lastColor = "#c15db5";
+      }
+      
+      if(ball.lastTouchedPaddle === 2) {
+        lastColor = "#4dc18f";
+      }
+
+      if(ball.isSpinning) {
+        lastColor = "#39f6ff"
+      }
+
+      if(ball.hasTrail) {
         pushing = true;
         ballPosition.push({
           x : parseFloat(game.balls[0].physics.position.x),
           y : parseFloat(game.balls[0].physics.position.y),
           speed : parseFloat(game.balls[0].physics.speed),
-          frame : parseInt(frames)
+          frame : parseInt(frames),
+          color : lastColor
         });
       }
     }
@@ -49,30 +72,61 @@ function drawTrail() {
     }
 
     if(pushing == false && ballPosition.length > 0) {
-     ballPosition.shift(); 
+      ballPosition.shift(); 
     }
     
     trailCtx.clearRect(0, 0, trailCanvasWidth, trailCanvasHeigth); // Clear canvas
 
-    for(var i = 1; i < ballPosition.length; i++) {
+    let displaySteps = parseInt(ballPosition.length * maxDisplayRatio);
+
+    let maxDisplaySteps = parseInt(maxDisplayRatio * ballPosition.length);
+
+    if(ball) {
+      if(ball.isSpinning) {
+        maxDisplaySteps = 20;
+      }
+    }
+
+    if(actualDisplaySteps < maxDisplaySteps) {
+      actualDisplaySteps++;
+    } else if (actualDisplaySteps > maxDisplaySteps) {
+      actualDisplaySteps--;
+    }
+
+    let j = 1;
+    for(var i = (ballPosition.length - actualDisplaySteps) + 1; i < ballPosition.length; i++) {
+      // Gets drawn from end tip to ball.
 
       let pos = ballPosition[i];
       let prevPos = ballPosition[i-1];
 
       trailCtx.lineJoin = trailCtx.lineCap = 'round';
       trailCtx.beginPath();
-      trailCtx.strokeStyle = "#39f6ff"
-      
+      trailCtx.strokeStyle = pos.color;
       trailCtx.moveTo(prevPos.x, prevPos.y);
-      let sizeMult = 1;
-      if(i < (ballPosition.length / 2)) {
-        sizeMult = EasingFunctions.easeOutQuad((ballPosition.length - i)/ (ballPosition.length/2));
-      }
-      
+
+      let progress = j / actualDisplaySteps;
+      j++;
+      let sizeMult = EasingFunctions.easeOutQuart(progress);
+
       trailCtx.lineTo(pos.x, pos.y);
       trailCtx.lineWidth = 36 * sizeMult;
-      
-      trailCtx.stroke();
+
+      if(lastColor) {
+        trailCtx.stroke();
+      }
+    }
+
+    // Glowy outline for slow ball
+    if(ball && touchedAnything){
+      if(ball.physics.speed < cutoffSpeed) {
+        let sinMult = Math.sin(frames/6);
+        let radius = 30 + (sinMult * 4);
+        trailCtx.beginPath();
+        trailCtx.arc(ball.physics.position.x, ball.physics.position.y, radius, 0, 2 * Math.PI, false);
+        trailCtx.fillStyle = lastColor;
+        trailCtx.fill();
+      }
     }
 }
 
