@@ -43,8 +43,8 @@
 
           var y = getRandom(50, game.boardHeight - 50);
 
-          this.addPowerup(x, y);
-          activePowerups.push(this);
+          let newPowerup = this.addPowerup(x, y);
+          if (newPowerup) activePowerups.push(newPowerup);
         }
       }
     }
@@ -60,6 +60,8 @@
       powerUp.element.classList.add(type);
 
       SoundManager.playSound(powerupSpawnNames[type] || powerupSpawnNames.default);
+
+      return powerUp;
     };
 
     this.createPowerup = (x, y, type) => {
