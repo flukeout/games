@@ -30,6 +30,7 @@
       }
     },
     gameplayIntro: {
+      bps: 1/(110/60),
       loopDuration: 34.9090909090,
       layers: {
         one: {
@@ -47,6 +48,7 @@
       }
     },
     gameplay: {
+      bps: 1/(110/60),
       loopDuration: 69.81818181,
       layers: {
         one: {
@@ -116,6 +118,7 @@
     let currentSong = null;
     let preparedSongs = {};
     let songChainListeners = [];
+    let beatCallbacks = [];
 
     let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
@@ -228,14 +231,28 @@
       playNextSong();
     };
 
+    function onSongBeat () {
+      beatCallbacks.forEach(bc => bc());
+    }
+
+    this.addBeatCallback = function (callback) {
+      beatCallbacks.push(callback);
+    };
+
+    this.removeBeatCallbacks = function () {
+      beatCallbacks = [];
+    };
+
     this.start = function (options) {
       this.status = 'playing';
+      currentSong.setBeatCallback(onSongBeat);
       return currentSong.start(options);
     };
 
     this.stop = function () {
       this.status = 'stopped';
       currentSong.resetSongGainNode();
+      currentSong.setBeatCallback(null);
       return currentSong.stop();
     };
 
@@ -280,6 +297,10 @@
     let moodInterval = null;
     let duckingTimeout = -1;
     let currentMood = 'default';
+    let beatCallback = null;
+    let beatInterval = -1;
+    let beating = false;
+    let startTime = 0;
 
     audioContext = audioContext || new AudioContext();
 
@@ -291,6 +312,8 @@
     this.globalGainNode = globalGainNode;
     this.currentIntensity = intensity;
     
+    this.songDefinition = songDefinition;
+
     songGainNode.connect(duckingNode);
     songGainNode.gain.setTargetAtTime(1, audioContext.currentTime, 0);
 
@@ -584,8 +607,28 @@
         }
       }
 
+      startTime = audioContext.currentTime;
+      beating = false;
+
+      beatInterval = setInterval(() => {
+        let songTime = audioContext.currentTime - startTime;
+        let beatBinary = Math.round(songTime % songDefinition.bps);
+
+        if (beatBinary === 1) {
+          beating = true;
+        }
+        else if (beating === true) {
+          beating = false;
+          beatCallback && beatCallback();
+        }
+      }, 10);
+
       this.startLoopingInterval();
       this.startMoodInterval();
+    };
+
+    this.setBeatCallback = function (callback) {
+      beatCallback = callback;
     };
 
     this.startLoopingInterval = function () {
