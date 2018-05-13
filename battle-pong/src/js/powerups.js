@@ -263,6 +263,7 @@
           makeParticle(options);
           makeCracks(this.physics.position.x, this.physics.position.y);
 
+          this.destroyed = true;
           game.removeObject(this);
           activePowerups.splice(activePowerups.indexOf(this), 1);
         },
@@ -314,6 +315,7 @@
 
             powerupScored(this.physics.position.x, this.physics.position.y, this.type);
 
+            this.destroyed = true;
             game.removeObject(this);
             activePowerups.splice(activePowerups.indexOf(this), 1);
             SoundManager.playSound(powerUpScoreSoundNames[this.type] || "coin");

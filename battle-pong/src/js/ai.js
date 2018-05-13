@@ -107,13 +107,15 @@
       let actionManager = new ActionManager();
       let currentState = 'getCloseToBall';
 
-      let target = null;
+      let targetObject = null;
+      let targetPosition = null;
       let lastTargetChange = 0;
 
       let attackDistanceX = 25;
 
       function setTarget(object) {
-        target = object.physics.position;
+        targetObject = object;
+        targetPosition = object.physics.position;
         attackDistanceX = Math.sqrt(object.physics.area) - 2;
       }
 
@@ -201,52 +203,52 @@
         recognizeTargets: () => {
           let currentTime = Date.now();
 
-          if (Math.random() < targetResetProbability) return;
-
-          if (currentTime - lastTargetChange > targetChangeDelay) {
-            let targets = [];
-            let total = 0;
-
-            function addPossibleTarget(object, probability) {
-              total += probability;
-              targets.push({object: object, a: total - probability, b: total});
-            }
-
-            game.powerupManager.activePowerups.forEach(p => {
-              if (playerSide === 'left') {
-                if (p.physics.position.x < (game.boardWidth * game.terrainLinePercent/100)) {
-                  if (p.type === 'mine')
-                    addPossibleTarget(p, targetProbabilityWeights.mine);
-                  else
-                    addPossibleTarget(p, targetProbabilityWeights.powerup);
-                }
-              }
-              else {
-                if (p.physics.position.x > (game.boardWidth * game.terrainLinePercent/100)) {
-                  if (p.type === 'mine')
-                    addPossibleTarget(p, targetProbabilityWeights.mine);
-                  else
-                    addPossibleTarget(p, targetProbabilityWeights.powerup);
-                }
-              }
-            });
-
-            game.balls.forEach(b => {
-              addPossibleTarget(b, targetProbabilityWeights.ball);
-            });
-
-            let n = Math.random() * total;
-
-            for (let i = 0; i < targets.length; ++i) {
-              if (n >= targets[i].a && n <= targets[i].b) {
-                setTarget(targets[i].object);
-                break;
-              }
-            }
-
-
-            lastTargetChange = currentTime;
+          if (targetObject.destroyed !== true) {
+            if (Math.random() < targetResetProbability || currentTime - lastTargetChange < targetChangeDelay) return;
           }
+
+          let targets = [];
+          let total = 0;
+
+          function addPossibleTarget(object, probability) {
+            total += probability;
+            targets.push({object: object, a: total - probability, b: total});
+          }
+
+          game.powerupManager.activePowerups.forEach(p => {
+            if (playerSide === 'left') {
+              if (p.physics.position.x < (game.boardWidth * game.terrainLinePercent/100)) {
+                if (p.type === 'mine')
+                  addPossibleTarget(p, targetProbabilityWeights.mine);
+                else
+                  addPossibleTarget(p, targetProbabilityWeights.powerup);
+              }
+            }
+            else {
+              if (p.physics.position.x > (game.boardWidth * game.terrainLinePercent/100)) {
+                if (p.type === 'mine')
+                  addPossibleTarget(p, targetProbabilityWeights.mine);
+                else
+                  addPossibleTarget(p, targetProbabilityWeights.powerup);
+              }
+            }
+          });
+
+          game.balls.forEach(b => {
+            addPossibleTarget(b, targetProbabilityWeights.ball);
+          });
+
+          let n = Math.random() * total;
+
+          for (let i = 0; i < targets.length; ++i) {
+            if (n >= targets[i].a && n <= targets[i].b) {
+              setTarget(targets[i].object);
+              break;
+            }
+          }
+
+
+          lastTargetChange = currentTime;
         },
         swingAtBall: () => {
           if (sampleStupidity()) return;
@@ -255,8 +257,8 @@
           // line generated from the two vertices that make up each side of the paddle. Careful: if the distance reported is small
           // it could be because the ball is actually in range, or because the ball is close to the *extrapolated* line.
           // Use averageDistanceToBall to fix this, by making sure the vector to the ball is reasonably small first.
-          let side1Distance = getDistanceFromPointToLine(target, paddleBody.vertices[1], paddleBody.vertices[2]);
-          let side2Distance = getDistanceFromPointToLine(target, paddleBody.vertices[0], paddleBody.vertices[3]);
+          let side1Distance = getDistanceFromPointToLine(targetPosition, paddleBody.vertices[1], paddleBody.vertices[2]);
+          let side2Distance = getDistanceFromPointToLine(targetPosition, paddleBody.vertices[0], paddleBody.vertices[3]);
 
           // Pick the shortest one
           let shortestDistanceToBall = Math.min(side1Distance, side2Distance);
@@ -270,7 +272,7 @@
           }
         },
         pursueBallX: () => {
-          let idealPositionX = target.x + idealDistanceFromBall;
+          let idealPositionX = targetPosition.x + idealDistanceFromBall;
 
           // Find out how far away the paddle is from the ideal position behind the ball
           // Multiply by directionMultiplier to accommodate left/right player
@@ -290,8 +292,8 @@
         },
         pursueBallY: () => {
           // Try to track the ball's y position as closely as possible
-          if (paddleBody.position.y < target.y) actionManager.fire('down');
-          if (paddleBody.position.y > target.y) actionManager.fire('up');
+          if (paddleBody.position.y < targetPosition.y) actionManager.fire('down');
+          if (paddleBody.position.y > targetPosition.y) actionManager.fire('up');
         }
       };
 
