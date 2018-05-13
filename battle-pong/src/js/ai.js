@@ -211,12 +211,12 @@
           let xDistanceFromTerrainLine = Math.abs(paddleBody.position.x - (game.boardWidth * game.terrainLinePercent/100));
 
           // If the distance is more than we need,...
-          if (xDistanceFromIdeal > 0 && paddle.mode !== 'ghost') {
+          if (xDistanceFromIdeal > 0) {
             // Head toward the ball by telling the paddle to move in whichever direction is appropriate (playerSide)
             actionManager.fire(playerSide);
           }
           else {
-            if (xDistanceFromTerrainLine > safeDistanceFromTerrainLine) {
+            if (xDistanceFromTerrainLine > safeDistanceFromTerrainLine || paddle.mode !== 'ghost') {
               actionManager.fire(otherPlayerSide);
             }
           }
