@@ -1,4 +1,6 @@
 (function () {
+  const safeDistanceFromTerrainLine = 10;
+
   const actionEnvelopes = {
     left: {
       active: 10
@@ -206,14 +208,17 @@
           // Find out how far away the paddle is from the ideal position behind the ball
           // Multiply by directionMultiplier to accommodate left/right player
           let xDistanceFromIdeal = (paddleBody.position.x - idealPositionX) * directionMultiplier;
+          let xDistanceFromTerrainLine = Math.abs(paddleBody.position.x - (game.boardWidth * game.terrainLinePercent/100));
 
           // If the distance is more than we need,...
-          if (xDistanceFromIdeal > 0) {
+          if (xDistanceFromIdeal > 0 && paddle.mode !== 'ghost') {
             // Head toward the ball by telling the paddle to move in whichever direction is appropriate (playerSide)
             actionManager.fire(playerSide);
           }
           else {
-            actionManager.fire(otherPlayerSide); 
+            if (xDistanceFromTerrainLine > safeDistanceFromTerrainLine) {
+              actionManager.fire(otherPlayerSide);
+            }
           }
         },
         pursueBallY: () => {
