@@ -138,8 +138,10 @@ function createBall(options){
     },
 
     excite: function () {
-      this.bodyEl.classList.add('excite');
-      setTimeout(() => { this.bodyEl.classList.remove('excite'); }, 50);
+      if (this.bodyEl) {
+        this.bodyEl.classList.add('excite');
+        setTimeout(() => { this.bodyEl.classList.remove('excite'); }, 50);
+      }
     },
 
     run : function(delta) {
