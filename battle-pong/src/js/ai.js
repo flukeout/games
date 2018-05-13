@@ -88,7 +88,6 @@
       const directionMultiplier = (playerSide === 'left' ? 1 : -1);
       const idealDistanceFromBall = -10 * directionMultiplier;
       const ySafeDistanceFromRest = 15;
-      const attackDistanceX = 25;
       const otherPlayerSide = (playerSide === 'left' ? 'right' : 'left');
       const upAttackAction = (playerSide === 'left' ? 'spinClockwise' : 'spinCounterClockwise');
       const downAttackAction = (playerSide === 'left' ? 'spinCounterClockwise' : 'spinClockwise');
@@ -111,8 +110,11 @@
       let target = null;
       let lastTargetChange = 0;
 
+      let attackDistanceX = 25;
+
       function setTarget(object) {
         target = object.physics.position;
+        attackDistanceX = Math.sqrt(object.physics.area) - 2;
       }
 
       function sampleStupidity () {
@@ -212,7 +214,6 @@
 
             game.powerupManager.activePowerups.forEach(p => {
               if (playerSide === 'left') {
-                console.log(p.physics.position.x, (game.boardWidth * game.terrainLinePercent/100))
                 if (p.physics.position.x < (game.boardWidth * game.terrainLinePercent/100)) {
                   if (p.type === 'mine')
                     addPossibleTarget(p, targetProbabilityWeights.mine);
@@ -221,7 +222,6 @@
                 }
               }
               else {
-                console.log(p.physics.position.x, (game.boardWidth * game.terrainLinePercent/100))
                 if (p.physics.position.x > (game.boardWidth * game.terrainLinePercent/100)) {
                   if (p.type === 'mine')
                     addPossibleTarget(p, targetProbabilityWeights.mine);
@@ -239,8 +239,6 @@
 
             for (let i = 0; i < targets.length; ++i) {
               if (n >= targets[i].a && n <= targets[i].b) {
-                console.log('new target', targets[i]);
-
                 setTarget(targets[i].object);
                 break;
               }
