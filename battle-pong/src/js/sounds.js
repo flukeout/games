@@ -21,7 +21,7 @@ let sounds = {
   "ui" : {
     url : "sounds/ui.wav",
     volume : .25,
-    ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
+    // ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
   },
   "round-start" : {
     url : "sounds/round-start.mp3",
@@ -486,7 +486,7 @@ let soundBanks = {
       "Power_Shot_V3",
       "Power_Shot_V4"
     ],
-    ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
+    // ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
   },
   "swish": {
     sounds: [
@@ -1091,6 +1091,10 @@ window.SoundManager = {
     else {
       console.warn('No sound event named ', name);
     }
+  },
+  resumeAudioContext: function () {
+    // Because of https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+    soundContext.resume();
   }
 };
 
