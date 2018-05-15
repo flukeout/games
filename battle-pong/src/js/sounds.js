@@ -992,7 +992,9 @@ window.SoundManager = {
   temporaryLowPassSettings: temporaryLowPassSettings,
   localStorageStatus: 'Empty',
   sequences: sequenceManagers,
-  init: function () {
+  init: function (options) {
+    options = options || {};
+    
     return new Promise((resolve, reject) => {
       soundContext = new AudioContext();
       musicEngine = new Music(soundContext);
@@ -1010,9 +1012,14 @@ window.SoundManager = {
 
       promises.push(musicEngine.load());
       Promise.all(promises).then(() => {
-        SoundManager.loadSettingsIntelligently().then(() => {
+        if (options.preventAutoLoadingOfSettings) {
           resolve();
-        });
+        }
+        else {
+          SoundManager.loadSettingsIntelligently().then(() => {
+            resolve();
+          });
+        }
       });
     });
   },

@@ -10,7 +10,7 @@
         let musicVue;
         let soundVue;
 
-        SoundManager.init().then(() => {
+        SoundManager.init({preventAutoLoadingOfSettings: true}).then(() => {
           SoundManager.musicEngine.cueSong('gameplay');
           startSoundEngineMonitor();
           startMusicEngineMonitor();
@@ -139,15 +139,9 @@
                 soundVue.$forceUpdate();
               },
               loadSettingsFromServer: () => {
-                fetch('/load', {
-                  cache: 'no-cache',
-                  method: 'GET'
-                }).then(res => {
-                  res.json().then(json => {
-                    SoundManager.loadSettingsFromJSON(json);
-                    soundVue.$forceUpdate();
-                    musicVue.$forceUpdate();
-                  });
+                SoundManager.loadSoundSettingsFile().then(() => {
+                  soundVue.$forceUpdate();
+                  musicVue.$forceUpdate();
                 });
               },
               startSequence: (e) => {
@@ -477,9 +471,9 @@
         <h1>Sound Engine</h1>
         <div>Storage: <span>{{SoundManager.localStorageStatus}}</span></div>
         <div>
-          <button v-on:click="saveSettingsToLocalStorage">Save</button>
-          <button v-on:click="loadSettingsFromLocalStorage">Load</button>
-          <button v-on:click="clearSettingsFromLocalStorage">Clear</button>
+          <button v-on:click="saveSettingsToLocalStorage">Save in Browser</button>
+          <button v-on:click="loadSettingsFromLocalStorage">Load in Browser</button>
+          <button v-on:click="clearSettingsFromLocalStorage">Clear Browser</button>
           <button v-on:click="loadSettingsFromServer">Load from Server</button>
           <button v-on:click="resumeAudioContext">CLICK ME TO FIX SOUND IF IT IS MUTED</button>
         </div>
