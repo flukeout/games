@@ -64,8 +64,6 @@ window.addEventListener('load', () => {
     setupInputButtons();
     selectButtonByIndex(12);
 
-    SoundManager.loadSettingsFromLocalStorage();
-    
     if (Settings.music) {
       SoundManager.musicEngine.cueSong('menu');
       SoundManager.musicEngine.fadeIn( 2, {loop: true} );
