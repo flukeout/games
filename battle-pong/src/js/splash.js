@@ -126,8 +126,6 @@ window.addEventListener('load', function(){
     starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
     startStars(50, window.innerWidth, window.innerHeight);
 
-    SoundManager.loadSettingsFromLocalStorage();
-
     setupInputs();
   });
 });

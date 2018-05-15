@@ -992,7 +992,9 @@ window.SoundManager = {
   temporaryLowPassSettings: temporaryLowPassSettings,
   localStorageStatus: 'Empty',
   sequences: sequenceManagers,
-  init: function () {
+  init: function (options) {
+    options = options || {};
+    
     return new Promise((resolve, reject) => {
       soundContext = new AudioContext();
       musicEngine = new Music(soundContext);
@@ -1010,7 +1012,14 @@ window.SoundManager = {
 
       promises.push(musicEngine.load());
       Promise.all(promises).then(() => {
-        resolve();
+        if (options.preventAutoLoadingOfSettings) {
+          resolve();
+        }
+        else {
+          SoundManager.loadSettingsIntelligently().then(() => {
+            resolve();
+          });
+        }
       });
     });
   },
@@ -1030,6 +1039,48 @@ window.SoundManager = {
     }
 
     return output;
+  },
+  loadSettingsIntelligently: function () {
+    return new Promise((yay, nay) => {
+      if (localStorage.getItem('sounds')) {
+        console.log('Found sound settings in Local Storage');
+        SoundManager.loadSettingsFromLocalStorage();
+        yay();
+      }
+      else {
+        console.log('No sound settings in Local Storage. Loading from file.');
+        SoundManager.loadSoundSettingsFile()
+          .then(yay)
+          .catch((err) => {
+            console.error(err);
+            console.log('No sound settings found anywhere. Using defaults.');
+            yay();
+          });
+      }
+    });
+  },
+  loadSoundSettingsFile: function () {
+    return new Promise((yay, nay) => {
+      fetch('/sound-settings.json', {
+        cache: 'no-cache',
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      }).then(res => {
+        if (res.ok) {
+          res.json().then(json => {
+            SoundManager.loadSettingsFromJSON(json);
+            yay();
+          });
+        }
+        else {
+          nay();
+        }
+      }).catch((err) => {
+        nay(err);
+      });
+    });
   },
   loadSettingsFromJSON: function (json) {
     function useParsedSettings(realSettings, parsedSettings) {

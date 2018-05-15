@@ -114,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
     game.restart(2200);
     game.run();
   });
-  SoundManager.loadSettingsFromLocalStorage();
 });
 
 
