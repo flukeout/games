@@ -3,6 +3,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
+const port = process.argv[2] || 8080;
+
 app.use(express.static('.'));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,4 +22,6 @@ app.get('/load', (req, res) => {
   });
 });
 
-app.listen(3010, () => {});
+app.listen(port, () => {
+  console.log('server listening on port', port);
+});
