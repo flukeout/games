@@ -129,6 +129,7 @@
                 SoundManager.loadSettingsFromLocalStorage();
                 soundVue.$forceUpdate();
                 musicVue.$forceUpdate();
+                musicVue.globalGain = SoundManager.musicEngine.getGlobalGain();
               },
               clearSettingsFromLocalStorage: (e) => {
                 SoundManager.clearSettingsFromLocalStorage();
@@ -138,6 +139,7 @@
                 SoundManager.loadSoundSettingsFile().then(() => {
                   soundVue.$forceUpdate();
                   musicVue.$forceUpdate();
+                  musicVue.globalGain = SoundManager.musicEngine.getGlobalGain();
                 });
               },
               startSequence: (e) => {
