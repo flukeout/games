@@ -574,7 +574,7 @@ let soundEvents = {
   },
   'Mine_Explosion': () => {
     SoundManager.playRandomSoundFromBank("mine-explosion", {excludeFromLowPassFilter: true});
-    SoundManager.temporaryLowPass();
+    // SoundManager.temporaryLowPass();
   },
   'Finish_It_Heartbeat_Start': () => {
     SoundManager.startLoop('Finish_It_Heartbeat');
