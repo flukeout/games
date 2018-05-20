@@ -56,9 +56,6 @@
               playBank: (e) => {
                 SoundManager.playRandomSoundFromBank(e.srcElement.getAttribute('data-name'));
               },
-              limitedSoundTimeoutChanged: () => {
-                SoundManager.saveSettingsToLocalStorage();
-              },
               bindKeyToSound: (clickEvent) => {
                 var name = clickEvent.srcElement.getAttribute('data-name');
 
@@ -96,9 +93,6 @@
               clearStorage: () => {
                 SoundManager.clearSettingsFromLocalStorage();
               },
-              volumeChanged: (e) => {
-                SoundManager.saveSettingsToLocalStorage();
-              },
               fireEvent: (clickEvent) => {
                 var name = clickEvent.srcElement.getAttribute('data-name');
                 SoundManager.fireEvent(name);
@@ -115,11 +109,13 @@
                 SoundManager.saveSettingsToLocalStorage();
                 soundVue.$forceUpdate();
 
+                const payload = {
+                  sound: SoundManager.getSettingsForOutput(),
+                  music: musicEngine.getSettingsForOutput()
+                };
+
                 fetch('/save', {
-                  body: JSON.stringify({
-                    sound: SoundManager.getSettingsForOutput(),
-                    music: musicEngine.getSettingsForOutput()
-                  }),
+                  body: JSON.stringify(payload),
                   headers: {
                     'content-type': 'application/json'
                   },
@@ -275,7 +271,6 @@
               },
               globalGainChanged: (e) => {
                 musicEngine.setGlobalGain(musicVue.globalGain);
-                SoundManager.saveSettingsToLocalStorage();
               },
               addIntensity: (e) => {
                 musicEngine.addIntensity(document.querySelector('section.intensity input').value);
@@ -471,8 +466,8 @@
         <h1>Sound Engine</h1>
         <div>Storage: <span>{{SoundManager.localStorageStatus}}</span></div>
         <div>
-          <button v-on:click="saveSettingsToLocalStorage">Save in Browser</button>
-          <button v-on:click="loadSettingsFromLocalStorage">Load in Browser</button>
+          <button v-on:click="saveSettingsToLocalStorage">Save</button>
+          <button v-on:click="loadSettingsFromLocalStorage">Load from Browser</button>
           <button v-on:click="clearSettingsFromLocalStorage">Clear Browser</button>
           <button v-on:click="loadSettingsFromServer">Load from Server</button>
           <button v-on:click="resumeAudioContext">CLICK ME TO FIX SOUND IF IT IS MUTED</button>
@@ -584,7 +579,7 @@
             </tr>
             <tr v-for="(profile, name) in sounds" :data-name="name">
               <td :data-sound="name">{{name}}</td>
-              <td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume" @change="volumeChanged"></td>
+              <td><input type="range" min="0" max="1" step="0.01" v-model="profile.volume"></td>
               <td><button :data-name="name" v-on:click="playSound">Play</button></td>
               <td><input class="limit" type="number" v-model.number="profile.limit"></td>
               <td><input class="limit" type="number" v-model.number="profile.ducking.gain"></td>
