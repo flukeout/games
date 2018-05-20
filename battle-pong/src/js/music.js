@@ -1,6 +1,6 @@
 (function () {
   const intensityReductionFactor = .01;
-  const moodTransitionFactor = 0.95;
+  const moodIntervalAttackTime = 0.95;
   const temporaryLevelDelayRecoveryTimeInSeconds = 1.5;
   const defaultGlobalGainValue = .3;
   
@@ -137,13 +137,10 @@
     this.setGlobalGain = function (value, ramp) { if (currentSong) return currentSong.setGlobalGain(value, ramp); };
     this.getGlobalGain = () => { if (currentSong) return currentSong.getGlobalGain(); };
     this.duck = function (duckingProfile) { if (currentSong) return currentSong.duck(duckingProfile); };
-    this.transitionToMood = function (mood) { if (currentSong) return currentSong.transitionToMood(mood); };
-    this.lockMood = function (mood) { if (currentSong) return currentSong.lockMood(mood); };
+    this.lockMood = function (mood, attackTime) { if (currentSong) return currentSong.lockMood(mood, attackTime); };
     this.unlockMood = function (mood) { if (currentSong) return currentSong.unlockMood(mood); };
-    this.setMood = function (mood) { if (currentSong) return currentSong.setMood(mood); };
-    this.transitionLayerMood = function (layerName, mood, oldMood) { if (currentSong) return currentSong.transitionLayerMood(layerName, mood, oldMood) };
+    this.setMood = function (mood, attackTime) { if (currentSong) return currentSong.setMood(mood, attackTime); };
     this.setLayerMood = function (layerName, mood) { if (currentSong) return currentSong.setLayerMood(layerName, mood); };
-    this.setLayerMoodTemporarily = function (layerName, mood, time) { if (currentSong) return currentSong.setLayerMoodTemporarily(layerName, mood, time); };
     this.setLevels = function (levels) { if (currentSong) return currentSong.setLevels(levels); };
     this.getLayerDefinitions = () => { if (currentSong) return currentSong.getLayerDefinitions(); };
     this.getLayers = () => { if (currentSong) return currentSong.getLayers(); };
@@ -443,18 +440,10 @@
       });
     };
 
-    this.transitionToMood = function (mood) {
-      let oldMood = currentMood;
-      currentMood = mood;
-      for (let layerName in layers) {
-        this.transitionLayerMood(layerName, mood, oldMood);
-      }
-    };
-
     let lockedMood = null;
-    this.lockMood = function (mood) {
+    this.lockMood = function (mood, attackTime) {
       lockedMood = currentMood;
-      this.setMood(mood);
+      this.setMood(mood, attackTime);
       this.stopMoodInterval();
     };
 
@@ -466,48 +455,21 @@
       }
     };
 
-    this.setMood = function (mood) {
+    this.setMood = function (mood, attackTime) {
       currentMood = mood;
       for (let layerName in layers) {
-        this.setLayerMood(layerName, mood);
+        this.setLayerMood(layerName, mood, attackTime);
       }
-    }
-
-    this.transitionLayerMood = function (layerName, mood, oldMood) {
-      let layer = layers[layerName];
-      if (!layer) {
-        console.warn('No music layer named ', layerName);
-        return;
-      }
-
-      let moodValue = layerDefinitions[layerName].moods.default;
-
-      if (mood in layerDefinitions[layerName].moods) {
-        moodValue = layerDefinitions[layerName].moods[mood];
-      }
-
-      // If this layer doesn't have a value set for this mood, assuming it's meant to keep playing the way it already is
-      if (isNaN(Number(moodValue))) {
-        return;
-      }
-
-      // layer.gain.gain.linearRampToValueAtTime(defaultGainValue, audioContext.currentTime + temporaryLevelDelayRecoveryTimeInSeconds);
-
-      if (!layers[layerName].gain) return;
-
-      layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
-      layer.gain.gain.setTargetAtTime(moodValue, audioContext.currentTime, moodTransitionFactor);
-
-      document.dispatchEvent(new CustomEvent('musicmoodstart', {detail: mood}));
     };
 
-    this.setLayerMood = function (layerName, mood) {
+    this.setLayerMood = function (layerName, mood, attackTime) {
       let layer = layers[layerName];
       if (!layer) {
         console.warn('No music layer named ', layerName);
         return;
       }
 
+      attackTime = attackTime || 0;
 
       let moodValue = layerDefinitions[layerName].moods.default;
 
@@ -523,37 +485,7 @@
       if (!layers[layerName].gain) return;
 
       layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
-      layer.gain.gain.setTargetAtTime(moodValue, audioContext.currentTime, 0);
-
-      document.dispatchEvent(new CustomEvent('musicmoodstart', {detail: mood}));
-    };
-
-    this.setLayerMoodTemporarily = function (layerName, mood, time) {
-      let layer = layers[layerName];
-      if (!layer) {
-        console.warn('No music layer named ', layerName);
-        return;
-      }
-
-      let moodValue = layerDefinitions[layerName].moods[mood] || layerDefinitions[layerName].moods.default;
-      // If this layer doesn't have a value set for this mood, assuming it's meant to keep playing the way it already is
-      if (isNaN(Number(moodValue))) {
-        return;
-      }
-
-      if (layer.temporaryLevelDelay) {
-        clearTimeout(layer.temporaryLevelDelay);
-        layer.gain.gain.cancelScheduledValues(audioContext.currentTime);
-      }
-
-      layer.gain.gain.setTargetAtTime(moodValue, audioContext.currentTime, 0);
-
-      layer.temporaryLevelDelay = setTimeout(() => {
-        let defaultGainValue = layerDefinitions[layerName].moods.default;
-        layer.gain.gain.linearRampToValueAtTime(defaultGainValue, audioContext.currentTime + temporaryLevelDelayRecoveryTimeInSeconds);
-        layer.temporaryLevelDelay = null;
-        document.dispatchEvent(new CustomEvent('musicmoodstop', {detail: mood}));
-      }, time);
+      layer.gain.gain.linearRampToValueAtTime(moodValue, audioContext.currentTime + attackTime);
 
       document.dispatchEvent(new CustomEvent('musicmoodstart', {detail: mood}));
     };
@@ -680,7 +612,7 @@
 
         let suggestedMood = getLowestIntensityMood();
         if (currentMood !== suggestedMood) {
-          this.transitionToMood(suggestedMood);
+          this.setMood(suggestedMood, moodIntervalAttackTime);
         }
       }, 50);
     };
@@ -729,7 +661,7 @@
       intensity += Number(newIntensity);
       let suggestedMood = getLowestIntensityMood();
       if (currentMood !== suggestedMood) {
-        this.setMood(suggestedMood);
+        this.setMood(suggestedMood, moodIntervalAttackTime);
       }
     };
 
@@ -737,7 +669,7 @@
       intensity = Number(newIntensity);
       let suggestedMood = getLowestIntensityMood();
       if (currentMood !== suggestedMood) {
-        this.setMood(suggestedMood);
+        this.setMood(suggestedMood, moodIntervalAttackTime);
       }
     };
   };
