@@ -71,7 +71,7 @@ function startStory(finishedCallback) {
   });
 }
 
-window.addEventListener('load', function(){
+document.addEventListener('DOMContentLoaded', function () {
   let readyScreen = document.querySelector('#ready');
 
   SoundManager.init().then(() => {
@@ -96,16 +96,14 @@ window.addEventListener('load', function(){
       updatePlayerOptions(playerOptionEls);
     });
 
-    initParticleEngine(".scene", 5);
+    initParticleEngine("#content .scene", 5);
     loop();
-    
+
     prepTitle();
 
     paddles.push(createObject({noBody: true}));
     paddles.push(createObject({noBody: true}));
 
-    initParticleEngine(".scene", 5);
-    
     prepTitle();
 
     bestOfEls = document.querySelectorAll(".best-of .option");
@@ -143,7 +141,6 @@ function setupInputs() {
 }
 
 function loop(){
-  
   drawParticles();
   requestAnimationFrame(loop);
 }
@@ -206,8 +203,6 @@ function saveSetting(setting, value){
 }
 
 
-
-
 function timeoutClass(selector, className, timeout){
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
   setTimeout(function(){
@@ -226,7 +221,6 @@ function fadeOutScene(){
   timeoutClass(".sky", "transition-out", 200);
   timeoutClass(".canvas-stars", "transition-out", 200);
 }
-
 
 
 function setupStartButton(){

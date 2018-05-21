@@ -1,8 +1,8 @@
 var particles = [];         // Holds all particle objects
 var blankParticles = [];    // Holdes reference to pre-appended particle elements
 
-function initParticleEngine(selector, maxParticlecount) {
-  var maxParticleCount = maxParticleCount || 50; 
+function initParticleEngine(selector, maxParticleCount) {
+  var maxParticleCount = maxParticleCount || 50;
 
   for(var i = 0; i < maxParticleCount; i++){
 
@@ -22,7 +22,7 @@ function initParticleEngine(selector, maxParticlecount) {
 // Makes a particle
 
 function makeParticle(options){
-
+  console.log('makeparticle', options);
   var particle = {
     x :     options.x || 0,
     xV :    options.xV || 0,
