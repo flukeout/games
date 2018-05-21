@@ -934,7 +934,7 @@ function addWalls(options){
   var world = options.world;
   var sides = options.sides;
 
-  var thickness = 100;
+  var thickness = 300;
 
   for(var i = 0; i < sides.length; i++) {
     var side = sides[i];
