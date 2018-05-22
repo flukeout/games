@@ -300,16 +300,41 @@ function createPaddle(options) {
       classNames : options.classNames || []
     },
 
+    // Strips all powerups from paddle
+    // Used for the gameover state on the losing paddle
+    stripPowerups : function(){
+      this.element.classList.remove("powerup-spin");
+      game.lostPowerup(this.player, "spin");
+      this.spinPowerupRemaining = 0;
+      this.hasSpinPowerup = false;
+      
+      this.element.classList.remove("powerup-magnet");
+      this.hasMagnetPowerup = false;
+
+      this.element.classList.remove("powerup-noclip");
+      this.hasNoclipPowerup = false;
+      SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
+      SoundManager.playSound('Powerup_Ghost_WareOff');
+
+      this.targetHeight = this.baseHeight;
+    },
+
+    setMode : function(mode){
+
+      if(mode === "ghost") {
+        this.stripPowerups();
+        this.mode = "ghost";
+      }
+    },
+
     reset: function(){
+      this.stripPowerups();
+
       this.element.classList.remove("dead");
       this.element.classList.remove("loser");
       this.element.classList.remove("shaking");
-      this.element.classList.remove("powerup-spin");
+
       this.mode = "normal";
-      this.targetHeight = this.baseHeight;
-      this.hasSpinPowerup = false;
-      game.lostPowerup(this.player, "spin");
-      this.spinPowerupRemaining = 0;
     },
 
     physicsOptions : {
@@ -457,7 +482,7 @@ function createPaddle(options) {
       }
 
       if(type == "noclip") {
-        console.log('NOCLIP!!');
+      
         this.hasNoclipPowerup = true;
         this.inEnemyTerritory = false;
         this.element.classList.add("powerup-noclip");
