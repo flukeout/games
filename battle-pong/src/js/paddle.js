@@ -329,11 +329,9 @@ function createPaddle(options) {
 
     reset: function(){
       this.stripPowerups();
-
       this.element.classList.remove("dead");
       this.element.classList.remove("loser");
       this.element.classList.remove("shaking");
-
       this.mode = "normal";
     },
 
@@ -414,7 +412,17 @@ function createPaddle(options) {
           timeout: 1000,
         });
         game.loserDied(); // TODO - emit an event instead?
+        
+        this.resetPosition();
       }
+    },
+
+    resetPosition: function() {
+        console.log("resetPosition")
+        Matter.Body.setPosition(this.physics, {
+          x : this.properties.x + (this.properties.width / 2),
+          y : this.properties.y + (this.properties.height / 2)
+        });
     },
 
     // When we have to grow or shrink a paddle after getting a powerup

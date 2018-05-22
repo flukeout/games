@@ -22,7 +22,6 @@ function initParticleEngine(selector, maxParticleCount) {
 // Makes a particle
 
 function makeParticle(options){
-  console.log('makeparticle', options);
   var particle = {
     x :     options.x || 0,
     xV :    options.xV || 0,
