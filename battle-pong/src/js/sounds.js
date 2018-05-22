@@ -563,10 +563,10 @@ let loops = {
 
 let soundEvents = {
   'Ghost_Enters_Paddle_Enemy_Territory': () => {
-    SoundManager.startLowPass(500, .1, 10000);
+    // SoundManager.startLowPass(500, .1, 10000);
   },
   'Ghost_Leaves_Paddle_Enemy_Territory': () => {
-    SoundManager.stopLowPass(10000, .1);
+    // SoundManager.stopLowPass(10000, .1);
   },
   'Super_Hard_Shot': () => {
     SoundManager.playRandomSoundFromBank("super-hard-shot");
