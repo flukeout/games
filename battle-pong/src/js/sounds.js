@@ -563,7 +563,7 @@ let loops = {
 
 let soundEvents = {
   'Ghost_Enters_Paddle_Enemy_Territory': () => {
-    // SoundManager.startLowPass(500, .1, 10000);
+    // SoundManager.startLowPass(500, 10, .1, 10000);
   },
   'Ghost_Leaves_Paddle_Enemy_Territory': () => {
     // SoundManager.stopLowPass(10000, .1);
@@ -578,20 +578,23 @@ let soundEvents = {
   },
   'Finish_It_Heartbeat_Start': () => {
     SoundManager.startLoop('Finish_It_Heartbeat');
-    musicEngine.setMood('quiet');
-    musicEngine.temporarilyReduceGain(0.2);
+    SoundManager.startLowPass(temporaryLowPassSettings.startFrequency, temporaryLowPassSettings.Q, .1, temporaryLowPassSettings.endFrequency);
+    // musicEngine.setMood('quiet');
+    // musicEngine.temporarilyReduceGain(0.2);
   },
   'Finish_It_Heartbeat_Stop_Hit': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Hit');
-    musicEngine.setMood('default');
-    musicEngine.resetGlobalGain();
+    SoundManager.stopLowPass(temporaryLowPassSettings.endFrequency, .1);
+    // musicEngine.setMood('default');
+    // musicEngine.resetGlobalGain();
   },
   'Finish_It_Heartbeat_Stop_Miss': () => {
     SoundManager.stopLoop('Finish_It_Heartbeat');
     SoundManager.playSound('Finish_It_Miss');
-    musicEngine.setMood('default');
-    musicEngine.resetGlobalGain();
+    SoundManager.stopLowPass(temporaryLowPassSettings.endFrequency, .1);
+    // musicEngine.setMood('default');
+    // musicEngine.resetGlobalGain();
   }
 };
 
@@ -759,7 +762,7 @@ function temporaryLowPass() {
   document.dispatchEvent(new CustomEvent('lowpassstarted', {detail: null}));
 }
 
-function startLowPass(frequency, attack, startFrequency) {
+function startLowPass(frequency, Q, attack, startFrequency) {
   attack = attack || 0;
   frequency = frequency || 0;
   startFrequency = startFrequency || globalBiquadFilter.frequency;
