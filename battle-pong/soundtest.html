@@ -466,6 +466,11 @@
         background: rgba(0, 255, 0, 1);
         transition: none;
       }
+
+      .music-layers [data-layer] {
+        overflow-wrap: unset;
+        white-space: nowrap;
+      }
     </style>
   </head>
   <body>
@@ -641,7 +646,7 @@
         <section class="music-layers">
           <h2>Layers</h2>
           <div v-for="(layer, name) in layerDefinitions">
-            <div :data-layer="name"><b>{{name}}</b>: {{layer.file}} [<span class="gain-value">0</span>]</div>
+            <div :data-layer="name"><b>{{name}}</b>: <span class="layer-file">{{layer.file}}</span> [<span class="gain-value">0</span>]</div>
           </div>
         </section>
         <section class="intensity">

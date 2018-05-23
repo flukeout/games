@@ -353,6 +353,10 @@ var game =  {
       removalList = [];
     }
 
+    if (game.balls[0]) {
+      console.log(game.balls[0].physics.speed);
+      SoundManager.musicEngine.targetIntensity = game.balls[0].physics.speed;
+    }
   },
 
   // Tils the board based on where the balls are

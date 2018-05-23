@@ -1,5 +1,6 @@
 (function () {
   const intensityReductionFactor = .75;
+  const intensityBoostReductionFactor = .1;
   const moodIntervalAttackTime = 0.95;
   const temporaryLevelDelayRecoveryTimeInSeconds = 1.5;
   const defaultGlobalGainValue = .3;
@@ -304,6 +305,7 @@
     let layers = {};
     let lastLoopTime = 0;
     let intensity = 0;
+    let boostIntensity = 0;
     let layerDefinitions = songDefinition.layers;
     let loopListeners = [];
     let loop = false;
@@ -615,10 +617,10 @@
 
     this.startMoodInterval = function () {
       moodInterval = setInterval(() => {
-        // Intensity logic
         intensity -= (intensity - this.targetIntensity) * intensityReductionFactor;
+        boostIntensity *= boostIntensity * intensityBoostReductionFactor;
 
-        this.currentIntensity = intensity;
+        this.currentIntensity = intensity + boostIntensity;
 
         let moodWithLowestThreshold;
         let lowestThreshold = -1;
