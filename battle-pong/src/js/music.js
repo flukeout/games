@@ -138,7 +138,7 @@
     this.getGlobalGain = () => { if (currentSong) return currentSong.getGlobalGain(); };
     this.duck = function (duckingProfile) { if (currentSong) return currentSong.duck(duckingProfile); };
     this.lockMood = function (mood, attackTime) { if (currentSong) return currentSong.lockMood(mood, attackTime); };
-    this.unlockMood = function (mood) { if (currentSong) return currentSong.unlockMood(mood); };
+    this.unlockMood = function (mood, releaseTime) { if (currentSong) return currentSong.unlockMood(mood, releaseTime); };
     this.setMood = function (mood, attackTime) { if (currentSong) return currentSong.setMood(mood, attackTime); };
     this.setLayerMood = function (layerName, mood) { if (currentSong) return currentSong.setLayerMood(layerName, mood); };
     this.setLevels = function (levels) { if (currentSong) return currentSong.setLevels(levels); };
@@ -447,9 +447,9 @@
       this.stopMoodInterval();
     };
 
-    this.unlockMood = function () {
+    this.unlockMood = function (releaseTime) {
       if (lockedMood) {
-        this.setMood(lockedMood);
+        this.setMood(lockedMood, releaseTime);
         this.startMoodInterval();
         lockedMood = null;        
       }

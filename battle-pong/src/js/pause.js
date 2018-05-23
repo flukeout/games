@@ -60,7 +60,7 @@ function PauseManager (game, inputManager) {
     game.resume();
     deselectAllButtons();
 
-    SoundManager.musicEngine.unlockMood();
+    SoundManager.fireEvent('Resume_Game');
   }
 
   function pauseGame(){
@@ -75,7 +75,7 @@ function PauseManager (game, inputManager) {
     displayingRules = true;
     selectButtonByIndex(2);
 
-    SoundManager.musicEngine.lockMood('pause');
+    SoundManager.fireEvent('Pause_Game');
   }
 
   function navigate(destination){

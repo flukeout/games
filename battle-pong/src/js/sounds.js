@@ -595,6 +595,12 @@ let soundEvents = {
     SoundManager.stopLowPass(temporaryLowPassSettings.endFrequency, .1);
     // musicEngine.setMood('default');
     // musicEngine.resetGlobalGain();
+  },
+  'Pause_Game': () => {
+    SoundManager.musicEngine.lockMood('pause', 0.4);
+  },
+  'Resume_Game': () => {
+    SoundManager.musicEngine.unlockMood(0.4);
   }
 };
 
