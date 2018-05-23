@@ -401,6 +401,7 @@ function createBall(options){
 
 
     hit : function(obj){
+      let paddleBounceSoundPlayed = false;
 
       if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
         if(this.physics.speed > this.goingFastSpeedThreshold) {
@@ -522,6 +523,7 @@ function createBall(options){
           if(!isSpinning) {
             this.setTargetSpeed(0);
             SoundManager.playRandomSoundFromBank("sticky-hit");
+            paddleBounceSoundPlayed = true;
           } else {
             this.removeTargetSpeed();
           }
@@ -555,7 +557,7 @@ function createBall(options){
         }
       }
 
-      if (obj.label.indexOf("paddle") > -1) {
+      if (obj.label.indexOf("paddle") > -1 && !paddleBounceSoundPlayed) {
         SoundManager.playSound("Ball_Bounce_Paddle", { volume: percentage, pan : pan });
       }
 
