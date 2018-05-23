@@ -353,8 +353,8 @@ var game =  {
       removalList = [];
     }
 
+    // Use the ball speed to drive music intensity
     if (game.balls[0]) {
-      console.log(game.balls[0].physics.speed);
       SoundManager.musicEngine.targetIntensity = game.balls[0].physics.speed;
     }
   },
