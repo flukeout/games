@@ -311,10 +311,14 @@ function createPaddle(options) {
       this.element.classList.remove("powerup-magnet");
       this.hasMagnetPowerup = false;
 
+      if (this.hasNoclipPowerup) {
+        SoundManager.playSound('Powerup_Ghost_WareOff');
+      }
+
       this.element.classList.remove("powerup-noclip");
       this.hasNoclipPowerup = false;
+
       SoundManager.fireEvent('Ghost_Leaves_Paddle_Enemy_Territory');
-      SoundManager.playSound('Powerup_Ghost_WareOff');
 
       this.targetHeight = this.baseHeight;
     },
