@@ -401,6 +401,7 @@ function createBall(options){
 
 
     hit : function(obj){
+      let paddleBounceSoundPlayed = false;
 
       if(obj.label.indexOf("wall-right") > -1 || obj.label.indexOf("wall-left") > -1) {
         if(this.physics.speed > this.goingFastSpeedThreshold) {
@@ -513,6 +514,10 @@ function createBall(options){
           this.endSpin();
         }
 
+        if (this.checkSpeed()) {
+          paddleBounceSoundPlayed = true;
+        }
+
         // Sticky powerup test
         if(game.paddles[this.lastTouchedPaddle - 1].hasMagnetPowerup === true) {
           var p = game.paddles[this.lastTouchedPaddle - 1];
@@ -522,12 +527,12 @@ function createBall(options){
           if(!isSpinning) {
             this.setTargetSpeed(0);
             SoundManager.playRandomSoundFromBank("sticky-hit");
+            paddleBounceSoundPlayed = true;
           } else {
             this.removeTargetSpeed();
           }
         }
 
-        this.checkSpeed();
         this.applyBrakes = false;
         this.goalsWhileFast = 0;
       }
@@ -547,23 +552,24 @@ function createBall(options){
 
       var pan = .8 * (-game.boardWidth/2 + this.physics.position.x) / game.boardWidth/2;
 
-      if (obj.label.indexOf("wall") > -1) {
-        if(obj.label.indexOf("wall-right") > -1 && this.lastTouchedPaddle === 2) {
-          SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
-        } else if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 1) {
-          SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
+      if (!paddleBounceSoundPlayed) {
+        if (obj.label.indexOf("wall") > -1) {
+          if(obj.label.indexOf("wall-right") > -1 && this.lastTouchedPaddle === 2) {
+            SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
+          }
+          else if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 1) {
+            SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
+          }
+          else if (obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
+            if(this.canSpin) {
+              SoundManager.playRandomSoundFromBank("spin-wall-bounce");
+            } else {
+              SoundManager.playSound("Ball_Bounce_Wall", { volume: percentage, pan : pan });
+            }
+          }
         }
-      }
-
-      if (obj.label.indexOf("paddle") > -1) {
-        SoundManager.playSound("Ball_Bounce_Paddle", { volume: percentage, pan : pan });
-      }
-
-      if (obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
-        if(this.canSpin) {
-          SoundManager.playRandomSoundFromBank("spin-wall-bounce");
-        } else {
-          SoundManager.playSound("Ball_Bounce_Wall", { volume: percentage, pan : pan });
+        else if (obj.label.indexOf("paddle") > -1 && !paddleBounceSoundPlayed) {
+          SoundManager.playSound("Ball_Bounce_Paddle", { volume: percentage, pan : pan });
         }
       }
     },
@@ -613,6 +619,8 @@ function createBall(options){
           fireGun(this.physics.position.x, this.physics.position.y, degAngle, this.lastTouchedPaddle);
           game.freezeFrames = 20;
           this.changeVelocityRatio(this.hardHitVelocityIncreaseRatio);
+
+          return true;
         }
       }
     },
