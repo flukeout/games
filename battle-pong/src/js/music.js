@@ -1,5 +1,7 @@
 (function () {
-  const intensityReductionFactor = .01;
+  const intensityChangeDelay = 1000;
+  const intensityReductionFactor = .75;
+  const intensityBoostReductionFactor = .01;
   const moodIntervalAttackTime = 0.95;
   const temporaryLevelDelayRecoveryTimeInSeconds = 1.5;
   const defaultGlobalGainValue = .3;
@@ -131,6 +133,7 @@
     this.duckingNode = duckingNode;
     this.globalGainNode = globalGainNode;
 
+    // TODO: clean this up. It's a really bad way of handling this situation.
     this.getMoods = function () { if (currentSong) return currentSong.getMoods(); };
     this.temporarilyReduceGain = function (percentage) { if (currentSong) return currentSong.temporarilyReduceGain(percentage); };
     this.resetGlobalGain = function () { if (currentSong) return currentSong.resetGlobalGain(); };
@@ -146,6 +149,22 @@
     this.getLayers = () => { if (currentSong) return currentSong.getLayers(); };
     this.getContext = () => { if (currentSong) return currentSong.getContext(); };
     this.addIntensity = (newIntensity) => { if (currentSong) return currentSong.addIntensity(newIntensity); };
+
+    Object.defineProperties(this, {
+      currentIntensity: {
+        get: () => {
+          if (currentSong) return currentSong.currentIntensity;
+        }
+      },
+      targetIntensity: {
+        get: () => {
+          if (currentSong) return currentSong.targetIntensity;
+        },
+        set: (targetIntensity) => {
+          if (currentSong) currentSong.targetIntensity = targetIntensity;
+        }
+      }
+    });
 
     this.status = 'loading';
 
@@ -220,7 +239,7 @@
         if (!nextSong.loop) {
           currentSong.addLoopListener(playNextSong);
         }
-        currentSong.setIntensity(oldIntensity);
+        currentSong.setIntensity(oldIntensity, true);
         this.start({ loop: nextSong.loop });
         songChainListeners.forEach(l => l());
       };
@@ -287,6 +306,8 @@
     let layers = {};
     let lastLoopTime = 0;
     let intensity = 0;
+    let boostIntensity = 0;
+    let baseIntensity = 0;
     let layerDefinitions = songDefinition.layers;
     let loopListeners = [];
     let loop = false;
@@ -308,6 +329,18 @@
     this.duckingNode = duckingNode;
     this.globalGainNode = globalGainNode;
     this.currentIntensity = intensity;
+
+    let targetIntensity = intensity;
+
+    Object.defineProperty(this, 'targetIntensity', {
+      get: () => {
+        return targetIntensity;
+      },
+      set: (newTargetIntensity) => {
+        targetIntensity = newTargetIntensity;
+        lastIntensityChangeTime = Date.now();
+      }
+    });
     
     this.songDefinition = songDefinition;
 
@@ -595,10 +628,21 @@
       }
     };
 
+    let lastIntensityChangeTime;
     this.startMoodInterval = function () {
+      lastIntensityChangeTime = Date.now();
+
       moodInterval = setInterval(() => {
-        // Intensity logic
-        intensity -= intensity * intensityReductionFactor;
+        let currentTime = Date.now();
+
+        // TODO: use different delays if it's going up vs. down
+        if (currentTime - lastIntensityChangeTime > intensityChangeDelay) {
+          baseIntensity -= (baseIntensity - this.targetIntensity) * intensityReductionFactor;
+        }
+
+        boostIntensity -= boostIntensity * intensityBoostReductionFactor;
+
+        intensity = baseIntensity + boostIntensity;
         this.currentIntensity = intensity;
 
         let moodWithLowestThreshold;
@@ -658,15 +702,20 @@
     this.getIntensity = () => { return intensity; };
 
     this.addIntensity = (newIntensity) => {
-      intensity += Number(newIntensity);
+      boostIntensity += Number(newIntensity);
       let suggestedMood = getLowestIntensityMood();
       if (currentMood !== suggestedMood) {
         this.setMood(suggestedMood, moodIntervalAttackTime);
       }
     };
 
-    this.setIntensity = newIntensity => {
-      intensity = Number(newIntensity);
+    this.setIntensity = (newIntensity, immediately) => {
+      newIntensity = Number(newIntensity);
+
+      this.targetIntensity = newIntensity;
+
+      if (immediately) baseIntensity = newIntensity;
+
       let suggestedMood = getLowestIntensityMood();
       if (currentMood !== suggestedMood) {
         this.setMood(suggestedMood, moodIntervalAttackTime);

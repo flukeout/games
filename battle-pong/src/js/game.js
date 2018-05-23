@@ -345,6 +345,10 @@ var game =  {
       removalList = [];
     }
 
+    // Use the ball speed to drive music intensity
+    if (game.balls[0]) {
+      SoundManager.musicEngine.targetIntensity = game.balls[0].physics.speed;
+    }
   },
 
   // Tils the board based on where the balls are
