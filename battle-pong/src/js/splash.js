@@ -48,7 +48,7 @@ function startStory(finishedCallback) {
         let letter = currentLine[index++];
 
         if (letter) {
-          SoundManager.playSound('Menu_Move', {volume: .25});
+          SoundManager.playRandomSoundFromBank('type');
           typer.textContent += letter;
         }
         else {

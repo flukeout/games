@@ -18,10 +18,18 @@ const temporaryLowPassSettings = {
 };
 
 let sounds = {
+  "Text_Type_1" : {
+    url : "sounds/Text_Type.mp3",
+    volume : 1,
+  },
+  "Text_Type_2" : {
+    url : "sounds/Text_Type_2.mp3",
+    volume : 1,
+  },
+
   "ui" : {
     url : "sounds/ui.wav",
     volume : .25,
-    // ducking: {   gain: 0.2,    attack: 1.0,    sustain: 1,   release: 1    }
   },
   "round-start" : {
     url : "sounds/round-start.mp3",
@@ -543,6 +551,12 @@ let soundBanks = {
       "Ball_Bounce_OwnEndzone_V1",
       "Ball_Bounce_OwnEndzone_V2",
       "Ball_Bounce_OwnEndzone_V3"
+    ]
+  },
+  "type": {
+    sounds: [
+      "Text_Type_1",
+      "Text_Type_2"
     ]
   }
 };
