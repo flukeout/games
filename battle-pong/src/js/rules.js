@@ -15,7 +15,7 @@ window.addEventListener('load', () => {
       el.addEventListener("click",function(e){
         let type = this.getAttribute("nav");
         showRule(type);
-        SoundManager.playSound("ui");
+        SoundManager.playSound("Menu_Select");
         addTemporaryClassName(e.target, "poke", 250);
         e.preventDefault();
       })
@@ -25,13 +25,13 @@ window.addEventListener('load', () => {
 
     document.querySelector(".button.previous").addEventListener("click",function(){
       previousRule();
-      SoundManager.playSound("ui");
+      SoundManager.playSound("Menu_Select");
       addTemporaryClassName(this, "poke", 250);
     })
     
     document.querySelector(".button.next").addEventListener("click",function(){
       addTemporaryClassName(this, "poke", 250);
-      SoundManager.playSound("ui");
+      SoundManager.playSound("Menu_Select");
       nextRule();
     })
 
@@ -45,7 +45,7 @@ window.addEventListener('load', () => {
       el.addEventListener("click", function(el){
         let type = this.getAttribute("type");
         showPowerup(type);
-        SoundManager.playSound("ui");
+        SoundManager.playSound("Menu_Select");
       });
     })
 
@@ -299,7 +299,7 @@ function setupNavButtons(){
   buttons.forEach(function(el){
     el.addEventListener("click", function(e){
       
-      SoundManager.playSound("ui");
+      SoundManager.playSound("Menu_Select");
       let navTo = this.getAttribute("to");
       addTemporaryClassName(this, "poke", 250);
       if(navTo === "game") {

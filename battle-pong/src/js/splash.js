@@ -48,7 +48,7 @@ function startStory(finishedCallback) {
         let letter = currentLine[index++];
 
         if (letter) {
-          SoundManager.playSound('Menu_Move', {volume: .25});
+          SoundManager.playRandomSoundFromBank('type');
           typer.textContent += letter;
         }
         else {
@@ -151,7 +151,7 @@ function setupPlayerOptionss(els){
     el.addEventListener("click",function(el){
       var playerNum = this.getAttribute("player");
       addTemporaryClassName(this, "poke", 250); 
-      SoundManager.playSound("ui");
+      SoundManager.playSound("Menu_Select");
       var key = "player" + playerNum + "Control";
       var currentSetting = window.Settings[key];
       if(currentSetting === "player") {
@@ -248,7 +248,7 @@ function setupStartButton(){
 
     makeParticle(options);
 
-    SoundManager.playSound("Power_Shot_V1");
+    SoundManager.playSound("Menu_Start&Blastoff");
     button.style.opacity = 0;
 
     fadeOutScene();
@@ -277,7 +277,7 @@ function setupRulesButton(){
     addTemporaryClassName(e.target, "poke", 250);
     fadeOutScene();
     buttonGleam(e.target);
-    SoundManager.playSound("ui");
+    SoundManager.playSound("Menu_Select");
     SoundManager.musicEngine.fadeOut(2);
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
@@ -307,7 +307,7 @@ function setupToggles(els){
         buttonGleam(this);
       }
       updateToggles(els);
-      SoundManager.playSound("ui");
+      SoundManager.playSound("Menu_Select");
 
       if (toggleType === 'music') {
         if (Settings[toggleType]) {
@@ -363,10 +363,10 @@ function setupPowerups(els){
 
       if(isEnabled){
         powerupToggle(powerupType, "disable");
-        let soundName = powerupOff[powerupType] || "ui";
+        let soundName = powerupOff[powerupType] || "Menu_Select";
         SoundManager.playSound(soundName);
       } else {
-        let soundName = powerupOn[powerupType] || "ui";
+        let soundName = powerupOn[powerupType] || "Menu_Select";
         SoundManager.playSound(soundName);
         powerupToggle(powerupType, "enable");
       }
@@ -415,7 +415,7 @@ function setupBestOf(){
       var value = parseInt(this.getAttribute("data-value"));
       saveSetting("playTo", value);
       updateBestOf();
-      SoundManager.playSound("ui");
+      SoundManager.playSound("Menu_Select");
     });
   });
   updateBestOf();
