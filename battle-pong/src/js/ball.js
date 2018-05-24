@@ -10,6 +10,7 @@ function createBall(options){
       <div class='body'>
         <div class='influence'></div>
       </div>
+      <div class='excitement'></div>
       
       `,
     className: "ball",
@@ -138,10 +139,14 @@ function createBall(options){
     },
 
     excite: function () {
-      // if (this.bodyEl) {
-      //   this.bodyEl.classList.add('excite');
-      //   setTimeout(() => { this.bodyEl.classList.remove('excite'); }, 50);
-      // }
+      if (!this.element) return;
+
+      let excitementElement = this.element.querySelector('.excitement');
+
+      if (excitementElement) {
+        excitementElement.classList.add('excite');
+        setTimeout(() => { excitementElement.classList.remove('excite'); }, 250);
+      }
     },
 
     run : function(delta) {
