@@ -27,10 +27,6 @@ let sounds = {
     volume : 1,
   },
 
-  "ui" : {
-    url : "sounds/ui.wav",
-    volume : .25,
-  },
   "round-start" : {
     url : "sounds/round-start.mp3",
     volume : .25
@@ -392,6 +388,14 @@ let sounds = {
   "Menu_Move" : {
     url : "sounds/Menu_Move.mp3",
     volume : 1
+  },
+  "Menu_Select" : {
+    url : "sounds/Menu_Select.mp3",
+    volume : 1
+  },
+  "Menu_Start&Blastoff": {
+    url: "sounds/Menu_Start&Blastoff.mp3",
+    volume: 1
   },
 
   "Powerup_Bounce_Paddle" : {

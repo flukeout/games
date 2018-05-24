@@ -23,32 +23,32 @@ function PauseManager (game, inputManager) {
 
   document.querySelector(".menu-toggle").addEventListener("click",function(){
     displayingRules ? resumeGame() : pauseGame();
-    SoundManager.playSound("ui");
+    SoundManager.playSound("Menu_Select");
   });
 
   document.querySelector(".button.restart").addEventListener("click",function(e){
     game.rematch();
     addTemporaryClassName(e.target, "poke", 250);
     buttonGleam(e.target);
-    SoundManager.playSound("ui");
+    SoundManager.playSound("Menu_Select");
   });
 
   document.querySelector(".button.settings").addEventListener("click",function(){
     navigate("index");
-    SoundManager.playSound("ui");
+    SoundManager.playSound("Menu_Select");
   });
 
   document.querySelectorAll("[nav]").forEach(function(el){
     el.addEventListener("click",function(e){
       addTemporaryClassName(e.target, "poke", 250);
-      SoundManager.playSound("ui");
+      SoundManager.playSound("Menu_Select");
       buttonGleam(e.target);
       navigate(this.getAttribute("nav"));
     });
   });
 
   document.querySelector(".resume").addEventListener("click", function(el){
-    SoundManager.playSound("ui");
+    SoundManager.playSound("Menu_Select");
     addTemporaryClassName(el.target, "poke", 250);
     buttonGleam(el.target);
     resumeGame();
