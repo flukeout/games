@@ -1,6 +1,9 @@
 (function () {
   const powerUpTypes = Settings.powerUpTypes;
-  const mineSpeedVolumeMultiplier = 0.5;
+  const mineSpeedVolumeWindow = [0.35, 0.75];
+
+  // The maximum tolerable speed difference between objects to adjust volume for mine collissions.
+  const mineSpeedComparisonMaximum = 7;
   
   const powerUpScoreSoundNames = {
     clone: 'Powerup_Bones_Score',
@@ -288,8 +291,15 @@
 
           else if(obj.label.indexOf("paddle") > -1 || obj.label.indexOf("ball") > -1 ){
             if(this.type == "mine") {
-              let ds = Math.abs(this.physics.speed - obj.speed);
-              let volume = Math.min(1, Math.log(1 + ds * mineSpeedVolumeMultiplier));
+              // See if these objects are traveling at super different speeds.
+              // If they are, it means one of them is going way faster, and ds will be large. If not, it will be small.
+              // Keep ds between 0 and 1 by limiting it to a top speed.
+              let ds = Math.min(mineSpeedComparisonMaximum, Math.abs(this.physics.speed - obj.speed)) / mineSpeedComparisonMaximum;
+
+              // Keep volume within the window specified by mineSpeedVolumeWindow              
+              let volume = ((mineSpeedVolumeWindow[1] - mineSpeedVolumeWindow[0]) * ds) + mineSpeedVolumeWindow[0];
+
+              console.log(ds, volume);
               
               // TODO: take angular velocity into account because paddles can hit with higher speed by spinning
               SoundManager.playRandomSoundFromBank("mine-collision", {volume: volume});
