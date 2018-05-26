@@ -314,7 +314,7 @@ function setupNavButtons(){
 }
 
 function goBack(){
-  let url = "index.html";
+  let url = "splash.html";
   fadeOutScene();
   if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
     url = "../" + url;
