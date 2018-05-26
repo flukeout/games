@@ -9,53 +9,96 @@ let bestOfEls,
 
 let timeoutAccumulator = 0;
 
+let story = [
+  '22,018 Galactic Era',
+  'Long since humanity\'s ascent to hyper-cybernetics, Earth\'s descendants have achieved their optimal form.',
+  'Scattered throughout the galaxy, rival factions of the once proud and unified Photospheric Orbital Nova Group compete for resources.',
+  'The two most powerful, Purpolium and Greebesque have negotiating for control of supermassive black hole at the galactic center.',
+  'Inevitably conflict arises, and the two factions agree to settle the confrontation through modern diplomatic means.',
+  'As they summon their most elite warriors from the corners of the Milky Way, the entire galaxy awaits in anticipation of organized warfare on a scale never before seen...'
+];
+
+function startStory(finishedCallback) {
+  let storyScreen = document.querySelector('#story');
+  let typer = storyScreen.querySelector('.typer');
+  let skipButton = storyScreen.querySelector('.skip');
+  let typingInterval;
+  let typingNextTimeout;
+
+  function finished() {
+    console.log("---FINISHED---");
+    storyScreen.classList.remove('show');
+    finishedCallback();
+  }
+
+  storyScreen.classList.add('show');
+
+  function typeNext() {
+    typer.textContent = '';
+
+    let currentLine = story.shift();
+
+    if (currentLine) {
+      let index = 0;
+      typingInterval = setInterval(() => {
+        let letter = currentLine[index++];
+
+        if (letter) {
+          SoundManager.playRandomSoundFromBank('type');
+          typer.textContent += letter;
+        }
+        else {
+          clearInterval(typingInterval);
+          typingNextTimeout = setTimeout(typeNext, 2000);
+        }
+      }, 25);
+    }
+    else {
+      finished();
+    }
+  }
+
+  typeNext();
+
+  skipButton.addEventListener('click', (e) => {
+    clearTimeout(typingNextTimeout);
+    clearInterval(typingInterval);
+    finished();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+  let readyScreen = document.querySelector('#ready');
 
   SoundManager.init().then(() => {
+
     document.querySelector("#loading").classList.add("hide-loading");
+    readyScreen.classList.add('show');
 
-    SoundManager.resumeAudioContext();
-    document.querySelector(".splash").classList.add("appear");
-    SoundManager.musicEngine.cueSong('menu');
-    if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
-    startCredits(CREDITS_DELAY);
-
-    setupInputButtons();
-    selectButtonBySelector(".start-game");
-
-    inputManager = new InputManager((paddle) => {
-      updatePlayerOptions(playerOptionEls);
+    readyScreen.querySelector('.ok').addEventListener('click', () => {
+      SoundManager.resumeAudioContext();
+      readyScreen.classList.remove('show');
+      
+      setTimeout(function(){
+        startStory(() => {
+          setTimeout(function(){
+            if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+              window.location.href = "../splash.html";
+            } else {
+              window.location.href = "splash.html";
+            }
+          }, 1000);
+        });
+      }, 750)
+    
     });
 
-    initParticleEngine("#content .scene", 5);
     loop();
-
-    prepTitle();
-
-    paddles.push(createObject({noBody: true}));
-    paddles.push(createObject({noBody: true}));
-
-    prepTitle();
-
-    bestOfEls = document.querySelectorAll(".best-of .option");
-    setupBestOf();
-
-    powerupEls = document.querySelectorAll(".powerups .powerup");
-    setupPowerups(powerupEls);
-
-    toggleEls = document.querySelectorAll(".option-toggle");
-    setupToggles(toggleEls);
-
-    playerOptionEls = document.querySelectorAll(".player-options .player-option");
-    setupPlayerOptionss(playerOptionEls);
-
-    setupStartButton();
-    setupRulesButton();
 
     starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
     startStars(50, window.innerWidth, window.innerHeight);
 
-    setupInputs();
+    // setupInputs();
   });
 });
 
