@@ -703,10 +703,9 @@ var game =  {
 
     this.powerupManager.activePowerups.forEach(p => {
       if(p.type === "mine"){
-        p.lifeSpan = 0;
+        p.lifeSpan = getRandom(0,50);
       }
     });
-
 
   },
 
