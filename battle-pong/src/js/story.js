@@ -71,6 +71,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   SoundManager.init().then(() => {
 
+    let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
+    if(isChrome) {
+      document.querySelector(".chrome-disclaimer").classList.add("is-chrome");
+    } else {
+      document.querySelector(".chrome-disclaimer").classList.add("not-chrome");
+    }
+
     document.querySelector("#loading").classList.add("hide-loading");
     readyScreen.classList.add('show');
 
