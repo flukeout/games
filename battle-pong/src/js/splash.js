@@ -230,7 +230,6 @@ function setupToggles(els){
       var toggle = this.parentNode;
       var toggleType = toggle.getAttribute("data-type");
       var settingEnabled = window.Settings[toggleType];
-      addTemporaryClassName(this, "pokoe", 250);
       if(settingEnabled) {
         saveSetting(toggleType, false);
       } else {
@@ -387,16 +386,6 @@ function prepTitle(){
 
 // Variables for the particle loop
 var starsHeight;
-
-// This shouldn't be in here, we should just import it from effects.js
-function addTemporaryClassName(element, className, durationMS){
-  element.classList.remove(className);
-  element.style.width = element.clientWidth;
-  element.classList.add(className);
-  setTimeout(function(){
-    element.classList.remove(className);
-  }, durationMS || 1000);
-}
 
 function startCredits(timeoutDelay) {
   let creditsContainer = document.querySelector('.credits');
