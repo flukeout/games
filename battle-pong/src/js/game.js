@@ -418,7 +418,7 @@ var game =  {
     var chance = Math.floor(getRandom(0,2));
     var launchForce = (chance === 0 ? -1 : 1) * .02 * this.physicsSamplingRatio;
 
-    launchForce = 0; // DEBUG
+    // launchForce = 0; // DEBUG
     ball.launch(0, launchForce);
 
     // Has to come after ball launch because ball doesn't have a body yet
@@ -793,7 +793,7 @@ var game =  {
     var xForceRatio = xForce / 15;
 
     var terrainChange = this.minTerrainChange + (xForceRatio * 15);
-    terrainChange = 50; // DEBUG
+    // terrainChange = 50; // DEBUG
 
     // Add a message near the impact that indicates
     // the force of the hit (in percentage points)
