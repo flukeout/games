@@ -422,7 +422,7 @@ var game =  {
     ball.launch(0, launchForce);
 
     // Has to come after ball launch because ball doesn't have a body yet
-    ball.setBPS(SoundManager.musicEngine.currentSong.songDefinition.bps);
+    ball.setBPS(SoundManager.musicEngine.bps);
 
     SoundManager.playSound('Ball_Spawn');
     this.aiManager.setBall(ball);

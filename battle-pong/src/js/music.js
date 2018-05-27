@@ -163,6 +163,12 @@
         set: (targetIntensity) => {
           if (currentSong) currentSong.targetIntensity = targetIntensity;
         }
+      },
+      bps: {
+        get: () => {
+          if (currentSong) return currentSong.songDefinition.bps;
+          return 0;
+        }
       }
     });
 
