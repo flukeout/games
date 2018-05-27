@@ -26,7 +26,6 @@ function startStory(finishedCallback) {
   let typingNextTimeout;
 
   function finished() {
-    console.log("---FINISHED---");
     storyScreen.classList.remove('show');
     finishedCallback();
   }
