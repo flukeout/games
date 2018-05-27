@@ -2,16 +2,13 @@ function createBall(options){
 
   var options = options || {};
 
+
   return createObject({
     ignoreRotation: true, // This means when we update the DOM x,y we don't also rotate this.
     innerHTML : `
       <div class='spinny'></div>
       <div class='shadow'></div>
-      <div class='body'>
-        <div class='influence'></div>
-      </div>
-      <div class='excitement'></div>
-      
+      <div class='body'></div>
       `,
     className: "ball",
     classNames : ["ball"],
@@ -139,14 +136,7 @@ function createBall(options){
     },
 
     excite: function () {
-      if (!this.element) return;
-
-      let excitementElement = this.element.querySelector('.excitement');
-
-      if (excitementElement) {
-        excitementElement.classList.add('excite');
-        setTimeout(() => { excitementElement.classList.remove('excite'); }, 250);
-      }
+      glowRadius = 35;
     },
 
     run : function(delta) {

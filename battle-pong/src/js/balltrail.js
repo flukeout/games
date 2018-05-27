@@ -28,13 +28,14 @@ let cutoffSpeed = 4;
 let displaySteps;
 let desiredDisplaySteps;
 let actualDisplaySteps = 0;
+let glowRadius = 0;
 
 function drawTrail() {
+
     frames++;
     let ball = game.balls[0];
     let touchedAnything = false;
     let pushing = false;
-
 
     if(ball) {
       touchedAnything = ball.lastTouchedPaddle === 1 || ball.lastTouchedPaddle === 2 ? true : false;
@@ -120,10 +121,9 @@ function drawTrail() {
     // Glowy outline for slow ball
     if(ball && touchedAnything){
       if(ball.physics.speed < cutoffSpeed) {
-        let sinMult = Math.sin(frames/6);
-        let radius = 30 + (sinMult * 4);
+        glowRadius = glowRadius - .35;
         trailCtx.beginPath();
-        trailCtx.arc(ball.physics.position.x, ball.physics.position.y, radius, 0, 2 * Math.PI, false);
+        trailCtx.arc(ball.physics.position.x, ball.physics.position.y, glowRadius, 0, 2 * Math.PI, false);
         trailCtx.fillStyle = lastColor;
         trailCtx.fill();
       }
