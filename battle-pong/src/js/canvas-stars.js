@@ -3,12 +3,26 @@ let stars = [];
 
 function startStars(starCount, width, height){
   canvas = document.querySelector(".canvas-stars canvas");
-  canvasWidth = canvas.width = width;
-  canvasHeight = canvas.height = height;
-  
+
+  resizeStarsCanvas();
+
   ctx = canvas.getContext("2d");
   makeStars(starCount);
+  
+  window.addEventListener("resize", () => {
+    resizeStarsCanvas();
+  });
+  
   window.requestAnimationFrame(drawStars);
+}
+
+function resizeStarsCanvas(){
+  canvasWidth = canvas.width = window.innerWidth;
+  canvasHeight = canvas.height = window.innerHeight;
+  
+  stars.forEach(function(star){
+    star.y = getRandom(0, canvasHeight);
+  });
 }
 
 function makeStars(starCount){
