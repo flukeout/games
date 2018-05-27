@@ -34,7 +34,7 @@ function PauseManager (game, inputManager) {
   });
 
   document.querySelector(".button.settings").addEventListener("click",function(){
-    navigate("index");
+    navigate("splash");
     SoundManager.playSound("Menu_Select");
   });
 
