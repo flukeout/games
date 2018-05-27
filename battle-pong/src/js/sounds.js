@@ -445,13 +445,7 @@ let sounds = {
   "Powerup_Spin_Startup" : {
     url : "sounds/Powerup_Spin_Startup.mp3",
     volume : 1
-  },
-
-  'MenuMusic': {
-    url: 'music/MenuMusic1.mp3',
-    volume: 1
   }
-
 };
 
 let soundBanks = {
@@ -571,11 +565,6 @@ let loops = {
   },
   'Powerup_Spin_Spin': {
     sound: 'Powerup_Spin_Spin_Loop'
-  },
-  'Menu_Music': {
-    sound: 'MenuMusic',
-    inDuration: 2,
-    outDuration: 2
   }
 };
 
