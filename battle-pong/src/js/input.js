@@ -149,11 +149,13 @@ InputManager.GamepadEventManager = function () {
     GamepadManager.refreshGamepads();
 
     let buttonsDownThisTime = {};
-    
+
     configs.forEach(gamepadConfig => {
       buttonsToCheck.forEach(button => {
-        if (gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons[button]].pressed) {
-          buttonsDownThisTime[button] = true;
+        if(gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons[button]]){
+          if (gamepadConfig.gamepad.buttons[gamepadConfig.inverseInputLabelMapping.buttons[button]].pressed) {
+            buttonsDownThisTime[button] = true;
+          }
         }
       });
     });
@@ -242,12 +244,12 @@ window.GamepadManager = (function () {
   let gamepadsInUse = [];
 
   function Config(gamepad, leaveUnused) {
+
     let inputMappingLabelType = 'standard';
 
     if (gamepad.mapping) {
       inputMappingLabelType = gamepad.mapping;
-    }
-    else if (gamepad.id.toLowerCase().indexOf('xbox') > -1) {
+    } else if (gamepad.id.toLowerCase().indexOf('xbox') > -1) {
       inputMappingLabelType = 'xbox';
     }
 
@@ -381,6 +383,7 @@ function createInputComponent(inputToActionMapping, options) {
 }
 
 function createGamepadInputComponent(config) {
+  
   console.log('%cInitializing Gamepad Input Component', 'color: blue');
   console.log('  ID: ' + config.id);
   console.log('  Interpretted Type: %c' + config.type, 'background: #222; color: #bada55');
