@@ -28,7 +28,7 @@ let cutoffSpeed = 4;
 let displaySteps;
 let desiredDisplaySteps;
 let actualDisplaySteps = 0;
-let glowRadius = 0;
+let glowRadius = 35;
 
 function drawTrail() {
 
@@ -122,6 +122,15 @@ function drawTrail() {
     if(ball && touchedAnything){
       if(ball.physics.speed < cutoffSpeed) {
         glowRadius = glowRadius - .35;
+
+        if(!Settings.music && glowRadius < 24){
+          glowRadius = 35;
+        }
+
+        if(glowRadius <= 0) {
+          glowRadius = 0;
+        }
+
         trailCtx.beginPath();
         trailCtx.arc(ball.physics.position.x, ball.physics.position.y, glowRadius, 0, 2 * Math.PI, false);
         trailCtx.fillStyle = lastColor;
