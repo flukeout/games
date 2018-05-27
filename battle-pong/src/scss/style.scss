@@ -3,6 +3,11 @@
   src: url(fonts/Lato-Black.ttf);
 }
 
+@font-face {
+  font-family: LatoRegular;
+  src: url(fonts/Lato-Regular.ttf);
+}
+
 $pink: #ac4d9d; 
 $green: #3faa7f;
 
@@ -24,15 +29,6 @@ body {
 body.fade-out {
   transition: opacity 1s ease-out;
   opacity: 0;
-}
-
-.world canvas {
-  // position: absolute;
-  // top: 0;
-  // left: 0;
-  // opacity: .3;
-  // pointer-events: none;
-  // z-index: 99999999;
 }
 
 .world .board-canvas {
@@ -62,6 +58,7 @@ body.fade-out {
 @import 'rules';
 @import 'buttons';
 @import 'loading';
+@import 'story';
 
 #fps {
   position: fixed;

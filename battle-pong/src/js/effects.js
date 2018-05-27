@@ -218,11 +218,15 @@ function shakeScreen(){
 // we'll have to do the width trick.
 // TODO - fix the timeout
 
-function addTemporaryClassName(element, className, durationMS){
+function addTemporaryClassName(element, className, durationMS) {
   element.classList.remove(className);
-  element.style.width = element.clientWidth;
-  element.classList.add(className);
 
+  // Putting in this method instead of the width trick which was
+  // causing some problems i think.
+  setTimeout(function(){
+    element.classList.add(className);
+  }, 1);
+  
   setTimeout(function(){
     element.classList.remove(className);
   }, durationMS || 1000);

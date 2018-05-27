@@ -324,7 +324,6 @@ function createPaddle(options) {
     },
 
     setMode : function(mode){
-
       if(mode === "ghost") {
         this.stripPowerups();
         this.mode = "ghost";
@@ -462,6 +461,10 @@ function createPaddle(options) {
 
     // When we get a powerup
     powerup(type){
+
+      if(this.mode != "normal") {
+        return;
+      }
 
       if(type == "grow") {
         this.targetHeight = this.height * 1.5;

@@ -91,7 +91,6 @@ var game =  {
         return;
       }
 
-
       this.playerScored(scoringPlayer, e.detail.ball);
     });
 
@@ -433,10 +432,11 @@ var game =  {
   // Removes all balls from the game
   removeBalls: function(){
     var that = this;
-    this.balls = this.balls.filter(ball => {
+    this.balls.forEach(ball => {
       ball.destroy();
       removalList.push(ball);
     });
+    this.balls = [];
   },
 
 
@@ -700,6 +700,13 @@ var game =  {
         that.restart()
       },this.timeBetweenRoundsMS);
     }
+
+    this.powerupManager.activePowerups.forEach(p => {
+      if(p.type === "mine"){
+        p.lifeSpan = 0;
+      }
+    });
+
 
   },
 
