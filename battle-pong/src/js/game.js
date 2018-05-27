@@ -91,7 +91,6 @@ var game =  {
         return;
       }
 
-
       this.playerScored(scoringPlayer, e.detail.ball);
     });
 
@@ -700,6 +699,13 @@ var game =  {
         that.restart()
       },this.timeBetweenRoundsMS);
     }
+
+    this.powerupManager.activePowerups.forEach(p => {
+      if(p.type === "mine"){
+        p.lifeSpan = 0;
+      }
+    });
+
 
   },
 
