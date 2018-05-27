@@ -180,6 +180,7 @@ function setupStartButton(){
     makeParticle(options);
 
     SoundManager.playSound("Menu_Start&Blastoff");
+    SoundManager.playSound("Power_Shot_V1");
     button.style.opacity = 0;
 
     fadeOutScene();
