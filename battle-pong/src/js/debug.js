@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', e => {
       // Fake the ball physics here
       game.playerScored(player, {
         position: {
-          x: game.ball.physics.position.x,
-          y: game.ball.physics.position.y
+          x: game.balls[0].physics.position.x,
+          y: game.balls[0].physics.position.y
         },
         velocity: {
           x: -100,

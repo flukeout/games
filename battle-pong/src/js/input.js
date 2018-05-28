@@ -222,8 +222,36 @@ InputManager.GamepadEventManager = function () {
     }
   };
 
+  this.addButtonListener = function (button, state, callbackFunction) {
+    if (state === 'up') {
+      this.onGamepadButtonUp(button, callbackFunction);
+    }
+    else if (state === 'down') {
+      this.onGamepadButtonDown(button, callbackFunction);
+    }
+    else {
+      throw new Error('You can\'t do that.');
+    }
+  };
+
+  this.removeButtonListener = function (button, state, callbackFunction) {
+    if (Array.isArray(button)) {
+      button.forEach(b => this.removeButtonListener(b, state, callbackFunction));
+    }
+    else {
+      if (buttonCallbacks[state][button]) {
+        buttonCallbacks[state][button] = buttonCallbacks[state][button].filter(cb => {
+          return cb !== callbackFunction;
+        });
+        resetButtonsToCheck();
+      }
+    }
+  };
+
   this.start = function () {
     gamepadCheckLoop();
+
+    this.connectAllGamepads();
 
     window.addEventListener("gamepadconnected", e => {
       this.connectAllGamepads();

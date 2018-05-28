@@ -15,36 +15,37 @@ const setupInputButtons = (rulesManager) => {
 
   let gamepadManager = new InputManager.GamepadEventManager();
 
-  gamepadManager.onGamepadButtonDown('dPadLeft', function () {
-    moveCursor('left');
-  });
+  let buttonListeners = {
+    left: () => { moveCursor('left'); },
+    right: () => { moveCursor('right'); },
+    down: () => { moveCursor('down'); },
+    up: () => { moveCursor('up'); },
+    start: () => {
+      if (!rulesManager) {
+        moveCursor('go');
+      }
+    },
+    go: () => { moveCursor('go'); }
+  };
 
-  gamepadManager.onGamepadButtonDown('dPadRight', function () {
-    moveCursor('right');
-  });
+  function addEventListeners () {
+    gamepadManager.addButtonListener('dPadLeft', 'down', buttonListeners.left);
+    gamepadManager.addButtonListener('dPadRight', 'down', buttonListeners.right);
+    gamepadManager.addButtonListener('dPadDown', 'down', buttonListeners.down);
+    gamepadManager.addButtonListener('dPadUp', 'down', buttonListeners.up);
+    gamepadManager.addButtonListener(['start', 'home'], 'down', buttonListeners.start);
+    gamepadManager.addButtonListener(['actionUp', 'actionDown', 'actionLeft', 'actionRight'], 'down', buttonListeners.go);
+  }
 
-  gamepadManager.onGamepadButtonDown('dPadDown', function () {
-    moveCursor('down');
-  });
+  function removeEventListeners() {
+    gamepadManager.removeButtonListener('dPadLeft', 'down', buttonListeners.left);
+    gamepadManager.removeButtonListener('dPadRight', 'down', buttonListeners.right);
+    gamepadManager.removeButtonListener('dPadDown', 'down', buttonListeners.down);
+    gamepadManager.removeButtonListener('dPadUp', 'down', buttonListeners.up);
+    gamepadManager.removeButtonListener(['start', 'home'], 'down', buttonListeners.start);
+    gamepadManager.removeButtonListener(['actionUp', 'actionDown', 'actionLeft', 'actionRight'], 'down', buttonListeners.go);
+  }
 
-  gamepadManager.onGamepadButtonDown('dPadUp', function () {
-    moveCursor('up');
-  });
-
-  gamepadManager.onGamepadButtonDown(['start', 'home'], function () {
-    if (rulesManager) {
-      rulesManager.toggleRules();
-    }
-    else {
-      moveCursor('go');
-    }
-  });
-
-  gamepadManager.onGamepadButtonDown(['actionUp', 'actionDown', 'actionLeft', 'actionRight'], function () {
-    moveCursor('go');
-  });
-
-  gamepadManager.connectAllGamepads();
   gamepadManager.start();
 
    window.addEventListener("keydown", function(e){
@@ -58,10 +59,21 @@ const setupInputButtons = (rulesManager) => {
 
     map[e.key] && moveCursor(map[e.key]);
   });
+
+  return {
+    clearSelectedButton: () => {
+      selectedButton = null;
+    },
+    disconnect: () => {
+      removeEventListeners();
+    },
+    connect: () => {
+      addEventListeners();
+    }
+  };
 }
 
 function moveCursor(direction) {
-
   if(!selectedButton) {
     return;
   }

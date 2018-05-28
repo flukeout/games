@@ -1,6 +1,9 @@
 const rulenames = [];
 
 let ruleNavEls;
+
+let menuControls;
+
 window.addEventListener('load', () => {
   SoundManager.init().then(() => {
     document.querySelector(".rules-page").classList.add("ready");
@@ -61,7 +64,9 @@ window.addEventListener('load', () => {
     }
     showRule(currentRule);
 
-    setupInputButtons();
+    menuControls = setupInputButtons();
+    menuControls.connect();
+
     selectButtonByIndex(12);
 
     if (Settings.music) {
@@ -321,6 +326,8 @@ function goBack(){
   }
 
   SoundManager.musicEngine.fadeOut(2);
+  
+  menuControls.disconnect();
 
   setTimeout(function(){
     window.location.href = url;
@@ -336,6 +343,8 @@ function startGame(){
   }
 
   SoundManager.musicEngine.fadeOut(2);
+  
+  menuControls.disconnect();
 
   setTimeout(function(){
     window.location.href = url;

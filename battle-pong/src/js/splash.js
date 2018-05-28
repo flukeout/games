@@ -9,6 +9,8 @@ let bestOfEls,
 
 let timeoutAccumulator = 0;
 
+let menuControls;
+
 document.addEventListener('DOMContentLoaded', function () {
 
   SoundManager.init().then(() => {
@@ -20,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
     startCredits(CREDITS_DELAY);
 
-    setupInputButtons();
+    menuControls = setupInputButtons();
+    menuControls.connect();
+
     selectButtonBySelector(".start-game");
 
     inputManager = new InputManager((paddle) => {
@@ -190,6 +194,9 @@ function setupStartButton(){
     e.preventDefault();
 
     SoundManager.musicEngine.fadeOut(2);
+    
+    menuControls.disconnect();
+
     setTimeout(function(){
       if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
         window.location.href = "../rules.html";
@@ -206,6 +213,8 @@ function setupRulesButton(){
   var button = document.querySelector(".rules-button");
   
   button.addEventListener("click", function(e){
+    menuControls.disconnect();
+
     addTemporaryClassName(e.target, "poke", 250);
     fadeOutScene();
     buttonGleam(e.target);

@@ -1,4 +1,11 @@
 function PauseManager (game, inputManager) {
+  let menuControls;
+
+  let gamepadEventManager = new InputManager.GamepadEventManager();
+
+  gamepadEventManager.addButtonListener(['start', 'home'], 'down', toggleRules);
+  gamepadEventManager.start();
+
   let preTitles = [
     'Watch out for',
     'You can rely on',
@@ -17,7 +24,7 @@ function PauseManager (game, inputManager) {
     }
   });
 
-  this.toggleRules = function () {
+  function toggleRules () {
     displayingRules ? resumeGame() : pauseGame();
   };
 
@@ -27,6 +34,7 @@ function PauseManager (game, inputManager) {
   });
 
   document.querySelector(".button.restart").addEventListener("click",function(e){
+    menuControls.clearSelectedButton();
     game.rematch();
     addTemporaryClassName(e.target, "poke", 250);
     buttonGleam(e.target);
@@ -55,6 +63,7 @@ function PauseManager (game, inputManager) {
   });
 
   function resumeGame(){
+    menuControls.disconnect();
     document.querySelector(".pause-screen").classList.remove("visible");
     displayingRules = false;
     game.resume();
@@ -76,6 +85,8 @@ function PauseManager (game, inputManager) {
     selectButtonByIndex(2);
 
     SoundManager.fireEvent('Pause_Game');
+
+    menuControls.connect();
   }
 
   function navigate(destination){
@@ -96,5 +107,5 @@ function PauseManager (game, inputManager) {
     document.querySelector("body").classList.add("fade-out");
   }
 
-  setupInputButtons(this);
+  menuControls = setupInputButtons(this);
 }

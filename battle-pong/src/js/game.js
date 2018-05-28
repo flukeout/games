@@ -478,7 +478,6 @@ var game =  {
 
   // Restarts a round
   restart : function(initialDelay){
-
     if(this.mode == "pregame") {
       return;
     }
