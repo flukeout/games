@@ -78,7 +78,9 @@ document.addEventListener('DOMContentLoaded', function () {
   SoundManager.init().then(() => {
     if (Settings.music) SoundManager.musicEngine.playSongChain('gameplay');
 
-    game.init();
+    let menuControls = setupInputButtons(true);
+
+    game.init(menuControls);
 
     let leftPaddle = game.paddles[0];
     let rightPaddle = game.paddles[1];
@@ -97,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
       inputManager.setupInputForObject(rightPaddle);
     }
 
-    let pauseManager = new PauseManager(game, inputManager);
+    let pauseManager = new PauseManager(game, inputManager, menuControls);
 
     // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
     game.step();

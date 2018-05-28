@@ -144,6 +144,8 @@ InputManager.GamepadEventManager = function () {
   let buttonsDown = {};
   let buttonsToCheck = [];
 
+  let pauseFlag = false;
+
   function gamepadCheckLoop() {
     // Make sure gamepads are refreshed. If they aren't, we don't really know if this frame is aligned with gamepad inputs
     GamepadManager.refreshGamepads();
@@ -181,7 +183,7 @@ InputManager.GamepadEventManager = function () {
       }
     });
 
-    requestAnimationFrame(gamepadCheckLoop);
+    if (!pauseFlag) requestAnimationFrame(gamepadCheckLoop);
   }
 
   function resetButtonsToCheck() {
@@ -259,6 +261,15 @@ InputManager.GamepadEventManager = function () {
     window.addEventListener("gamepaddisconnected", e => {
       this.connectAllGamepads();
     });
+  };
+
+  this.pause = function () {
+    pauseFlag = true;
+  };
+
+  this.resume = function () {
+    pauseFlag = false;
+    gamepadCheckLoop();
   };
 
   this.connectAllGamepads = function () {

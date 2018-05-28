@@ -1,6 +1,4 @@
-function PauseManager (game, inputManager) {
-  let menuControls;
-
+function PauseManager (game, inputManager, menuControls) {
   let gamepadEventManager = new InputManager.GamepadEventManager();
 
   gamepadEventManager.addButtonListener(['start', 'home'], 'down', toggleRules);
@@ -90,6 +88,8 @@ function PauseManager (game, inputManager) {
   }
 
   function navigate(destination){
+    menuControls.disconnect();
+
     let url = destination + ".html";
     
     fadeOutScene();
@@ -106,6 +106,4 @@ function PauseManager (game, inputManager) {
   function fadeOutScene(){
     document.querySelector("body").classList.add("fade-out");
   }
-
-  menuControls = setupInputButtons(this);
 }

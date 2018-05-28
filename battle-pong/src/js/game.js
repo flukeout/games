@@ -50,7 +50,9 @@ var game =  {
 
   aiManager: null,
 
-  init: function(){
+  init: function(menuControls){
+    this.menuControls = menuControls;
+
     this.worldEl = document.querySelector(".world");
     this.tiltEl = document.querySelector(".tilt-wrapper");
     this.bodyEl = document.querySelector("body");
@@ -211,12 +213,16 @@ var game =  {
     this.betweenRoundsEl.querySelector(".player-1-total-score").innerText = this.score.total1;
     this.betweenRoundsEl.querySelector(".player-2-total-score").innerText = this.score.total2;
 
+    // Go ahead and capture gamepad stuff from menus again
+    this.menuControls.connect();
   },
 
   // When teh rematch button is pressed between rounds
   // Clears off the between rounds screen...
   rematch: function(){
-    
+    // Stop capturing gamepad stuff for menus
+    this.menuControls.disconnect();
+
     // reset scores...    
     this.score.player1 = 0;
     this.score.player2 = 0;

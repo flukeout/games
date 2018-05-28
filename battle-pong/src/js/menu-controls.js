@@ -2,7 +2,7 @@ let buttons;
 let selectedButton;
 let selectedIndex;
 
-const setupInputButtons = (rulesManager) => {
+const setupInputButtons = (ignoreStartButton) => {
   
   buttons = Array.prototype.slice.call(document.querySelectorAll('.gamepad-button'));
   buttons.forEach(button => {
@@ -21,34 +21,26 @@ const setupInputButtons = (rulesManager) => {
     down: () => { moveCursor('down'); },
     up: () => { moveCursor('up'); },
     start: () => {
-      if (!rulesManager) {
+      if (!ignoreStartButton) {
         moveCursor('go');
       }
     },
     go: () => { moveCursor('go'); }
   };
 
-  function addEventListeners () {
-    gamepadManager.addButtonListener('dPadLeft', 'down', buttonListeners.left);
-    gamepadManager.addButtonListener('dPadRight', 'down', buttonListeners.right);
-    gamepadManager.addButtonListener('dPadDown', 'down', buttonListeners.down);
-    gamepadManager.addButtonListener('dPadUp', 'down', buttonListeners.up);
-    gamepadManager.addButtonListener(['start', 'home'], 'down', buttonListeners.start);
-    gamepadManager.addButtonListener(['actionUp', 'actionDown', 'actionLeft', 'actionRight'], 'down', buttonListeners.go);
-  }
-
-  function removeEventListeners() {
-    gamepadManager.removeButtonListener('dPadLeft', 'down', buttonListeners.left);
-    gamepadManager.removeButtonListener('dPadRight', 'down', buttonListeners.right);
-    gamepadManager.removeButtonListener('dPadDown', 'down', buttonListeners.down);
-    gamepadManager.removeButtonListener('dPadUp', 'down', buttonListeners.up);
-    gamepadManager.removeButtonListener(['start', 'home'], 'down', buttonListeners.start);
-    gamepadManager.removeButtonListener(['actionUp', 'actionDown', 'actionLeft', 'actionRight'], 'down', buttonListeners.go);
-  }
+  gamepadManager.addButtonListener('dPadLeft', 'down', buttonListeners.left);
+  gamepadManager.addButtonListener('dPadRight', 'down', buttonListeners.right);
+  gamepadManager.addButtonListener('dPadDown', 'down', buttonListeners.down);
+  gamepadManager.addButtonListener('dPadUp', 'down', buttonListeners.up);
+  gamepadManager.addButtonListener(['start', 'home'], 'down', buttonListeners.start);
+  gamepadManager.addButtonListener(['actionUp', 'actionDown', 'actionLeft', 'actionRight'], 'down', buttonListeners.go);
 
   gamepadManager.start();
 
-   window.addEventListener("keydown", function(e){
+  // Pause right away to prevent this from interfering with anything else
+  gamepadManager.pause();
+
+  window.addEventListener("keydown", function(e){
     let map = {
       ArrowRight: 'right',
       ArrowLeft: 'left',
@@ -65,10 +57,10 @@ const setupInputButtons = (rulesManager) => {
       selectedButton = null;
     },
     disconnect: () => {
-      removeEventListeners();
+      gamepadManager.pause();
     },
     connect: () => {
-      addEventListeners();
+      gamepadManager.resume();
     }
   };
 }
