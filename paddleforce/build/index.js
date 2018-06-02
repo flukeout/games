@@ -11,9 +11,11 @@ const isDevelopment = process.env.DEBUG;
 let mainWindow
 
 function createMainWindow() {
+  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
+
   const window = new BrowserWindow({
-    width: 1280,
-    height: 960,
+    width: width,
+    height: height,
   })
 
   if (isDevelopment) {
@@ -44,8 +46,7 @@ function createMainWindow() {
 
   window.webContents.on('new-window', handleRedirect);
 
-  // This is bad.
-  // window.webPreferences.webSecurity = false;
+  window.setBackgroundColor('#000');
 
   return window;
 }
