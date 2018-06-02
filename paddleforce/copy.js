@@ -16,7 +16,6 @@ fs.mkdir(destPath, err => {
     'game.html',
     'rules.html',
     'splash.html',
-    'sound-settings.json',
     'style.css',
     'assets',
     'fonts',

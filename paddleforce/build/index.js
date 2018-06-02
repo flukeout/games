@@ -34,14 +34,18 @@ function createMainWindow() {
   })
 
   function handleRedirect(e, url) {
+    console.log('handleRedirect');
     if(url != window.webContents.getURL()) {
+      console.log(url);
       e.preventDefault();
       electron.shell.openExternal(url);
     }
   };
 
-  window.webContents.on('will-navigate', handleRedirect);
   window.webContents.on('new-window', handleRedirect);
+
+  // This is bad.
+  // window.webPreferences.webSecurity = false;
 
   return window;
 }
