@@ -1,4 +1,4 @@
-var gamepadInputLabels = {
+const gamepadInputLabels = {
   standard: {
     buttons: {
       0: "actionDown",
@@ -55,7 +55,7 @@ var gamepadInputLabels = {
   }
 };
 
-let inverseGamepadInputLabels = {};
+const inverseGamepadInputLabels = {};
 for (let gamepadType in gamepadInputLabels) {
   let labels = gamepadInputLabels[gamepadType];
   let inverseLabels = inverseGamepadInputLabels[gamepadType] = {buttons: {}, axes: {}};
@@ -71,7 +71,7 @@ for (let gamepadType in gamepadInputLabels) {
   }
 }
 
-var keyboardInputLabelToActionMappings = [
+const keyboardInputLabelToActionMappings = [
   {
     "KeyW":       "up",
     "KeyS":       "down",
@@ -94,7 +94,7 @@ var keyboardInputLabelToActionMappings = [
   }
 ];
 
-var gamepadInputLabelToActionMapping = {
+const gamepadInputLabelToActionMapping = {
   "dPadUp": "up",
   "dPadDown": "down",
   "dPadLeft": "left",

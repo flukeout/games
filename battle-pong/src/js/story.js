@@ -78,6 +78,16 @@ document.addEventListener('DOMContentLoaded', function () {
       document.querySelector(".chrome-disclaimer").classList.add("not-chrome");
     }
 
+    // A cute way of detecting Electron
+    if (window.process) {
+      Array.prototype.forEach.call(document.querySelectorAll('.in-browser'), (e) => {
+        e.setAttribute('hidden', true);
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('.in-electron'), (e) => {
+        e.removeAttribute('hidden');
+      });
+    }
+
     document.querySelector("#loading").classList.add("hide-loading");
     readyScreen.classList.add('show');
 

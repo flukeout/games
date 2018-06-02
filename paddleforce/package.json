@@ -1,7 +1,7 @@
 {
-  "name": "DEATHSTROID",
+  "name": "paddleforce",
   "version": "1.0.0",
-  "description": "DEATHSTROID",
+  "description": "Paddle Force",
   "author": "Bobby Richter <iambobbyrichter@gmail.com> & Luke Pacholski <luke.pacholski@gmail.com>",
   "main": "./app/index.js",
   "scripts": {
@@ -14,9 +14,12 @@
     "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -mwl",
     "copy": "node copy.js"
   },
-  "homepage": "http://deathstroid.com",
+  "homepage": "http://flobotron.itch.io/paddle-force",
   "build": {
-    "appId": "com.DEATHSTROID.app",
+    "appId": "com.paddleforce.app",
+    "files": [
+      "app/**/*"
+    ],
     "mac": {
       "target": [
         "dmg"
@@ -26,19 +29,19 @@
     "dmg": {
       "contents": [
         {
-          "x": 390,
-          "y": 220
+          "x": 140,
+          "y": 285
         },
         {
-          "x": 645,
-          "y": 220,
+          "x": 580,
+          "y": 285,
           "type": "link",
           "path": "/Applications"
         }
       ],
       "window": {
         "width": 720,
-        "height": 402
+        "height": 500
       }
     },
     "linux": {
