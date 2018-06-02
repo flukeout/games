@@ -1076,8 +1076,10 @@ window.SoundManager = {
     });
   },
   loadSoundSettingsFile: function () {
+    let baseUrl = window.location.href.substr(0,window.location.href.lastIndexOf('/')+1);
+
     return new Promise((yay, nay) => {
-      fetch('/sound-settings.json', {
+      fetch(baseUrl + '/sound-settings.json', {
         cache: 'no-cache',
         method: 'GET',
         headers: {

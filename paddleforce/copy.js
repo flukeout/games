@@ -7,11 +7,16 @@ const destPath = path.resolve('./app/');
 
 fs.mkdir(destPath, err => {
   let filesToCopy = [
-    'deathstroid.min.js',
-    'splash.min.js',
     'matter.min.js',
-    'splash.html',
+    'game.min.js',
+    'rules.min.js',
+    'story.min.js',
+    'splash.min.js',
     'index.html',
+    'game.html',
+    'rules.html',
+    'splash.html',
+    'sound-settings.json',
     'style.css',
     'assets',
     'fonts',
