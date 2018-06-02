@@ -6,7 +6,11 @@ const uglify     = require('gulp-uglify-es');
 const sourcemaps = require('gulp-sourcemaps');
 const concat     = require('gulp-concat');
 const rename     = require("gulp-rename");
-const babel      = require("gulp-babel");
+const header     = require('gulp-header');
+
+const JS_HEADER = '/* Copyright 2018 Luke Pacholski & Bobby Richter */\n';
+const CSS_HEADER = '/* Copyright 2018 Luke Pacholski & Bobby Richter */\n';
+const HTML_HEADER = '<!-- Copyright 2018 Luke Pacholski & Bobby Richter -->\n';
 
 const jsFiles = {
   game: [
@@ -84,6 +88,7 @@ gulp.task('html', () => {
       .pipe(replace(/<base href=".+">/g, ''))
       .pipe(replace(/<script src="js\/.+"><\/script>.*/g,''))
       .pipe(replace(/<!-- insert minified source here -->/g,'<script src="matter.min.js"></script><script src="' + htmlFile.js + '.min.js"></script>'))
+      .pipe(header(HTML_HEADER))
       .pipe(plumber())
       .pipe(gulp.dest('./build/'))
   });
@@ -96,6 +101,7 @@ gulp.task('css', () => {
       outputStyle: 'compressed'
     }))
     .pipe(gulp.dest('./src/'))
+    .pipe(header(CSS_HEADER))
     .pipe(gulp.dest('./build/'))
 });
 
@@ -105,11 +111,9 @@ function compileJS(files, destinationFilename) {
     .pipe(sourcemaps.init())
     .pipe(concat(destinationFilename))
     // .pipe(gulp.dest('./build/')) // save .js
-    // .pipe(babel({
-    //   presets: ['env']
-    // }))
     .pipe(uglify.default({
     }))
+    .pipe(header(JS_HEADER))
     .pipe(rename({
       extname: '.min.js'
     }))

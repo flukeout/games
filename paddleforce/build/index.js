@@ -33,7 +33,17 @@ function createMainWindow() {
     })
   })
 
-  return window
+  function handleRedirect(e, url) {
+    if(url != window.webContents.getURL()) {
+      e.preventDefault();
+      electron.shell.openExternal(url);
+    }
+  };
+
+  window.webContents.on('will-navigate', handleRedirect);
+  window.webContents.on('new-window', handleRedirect);
+
+  return window;
 }
 
 // quit application when all windows are closed
