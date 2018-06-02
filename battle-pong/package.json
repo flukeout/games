@@ -18,6 +18,7 @@
     "gulp": "3.9.1",
     "gulp-concat": "2.6.1",
     "gulp-header": "2.0.5",
+    "gulp-insert": "0.5.0",
     "gulp-minify": "2.1.0",
     "gulp-plumber": "1.2.0",
     "gulp-rename": "1.2.3",
@@ -25,7 +26,8 @@
     "gulp-sass": "4.0.1",
     "gulp-sourcemaps": "2.6.4",
     "gulp-uglify": "3.0.0",
-    "gulp-uglify-es": "1.0.4"
+    "gulp-uglify-es": "1.0.4",
+    "gulp-zip": "4.1.0"
   },
   "scripts": {
     "dist": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --projectDir=build",

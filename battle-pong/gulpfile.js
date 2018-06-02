@@ -7,6 +7,8 @@ const sourcemaps = require('gulp-sourcemaps');
 const concat     = require('gulp-concat');
 const rename     = require("gulp-rename");
 const header     = require('gulp-header');
+const zip        = require('gulp-zip');
+const insert     = require('gulp-insert');
 
 const JS_HEADER = '/* Copyright 2018 Luke Pacholski & Bobby Richter */\n';
 const CSS_HEADER = '/* Copyright 2018 Luke Pacholski & Bobby Richter */\n';
@@ -14,6 +16,7 @@ const HTML_HEADER = '<!-- Copyright 2018 Luke Pacholski & Bobby Richter -->\n';
 
 const jsFiles = {
   game: [
+    'sound-settings.js',
     'input-mappings.js',
     'settings.js',
     'debug.js',
@@ -40,6 +43,7 @@ const jsFiles = {
     'balltrail.js'
   ].map(file => { return './src/js/' + file }),
   splash: [
+    'sound-settings.js',
     'effects.js',
     'particles.js',
     'settings.js',
@@ -54,6 +58,7 @@ const jsFiles = {
     'splash.js'
   ].map(file => { return './src/js/' + file }),
   rules: [
+    'sound-settings.js',
     'settings.js',
     'canvas-stars.js',
     'music.js',
@@ -67,6 +72,7 @@ const jsFiles = {
     'rules.js'
   ].map(file => { return './src/js/' + file }),
   story: [
+    'sound-settings.js',
     'effects.js',
     'particles.js',
     'settings.js',
@@ -121,7 +127,27 @@ function compileJS(files, destinationFilename) {
     .pipe(gulp.dest('./build/')) // save .min.js
 }
 
-gulp.task('js', () => {
+gulp.task('sound-settings', (cb) => {
+  gulp.src('./sound-settings.json')
+    .pipe(plumber())
+    .pipe(insert.prepend('window.__soundSettings='))
+    .pipe(insert.append(';'))
+    .pipe(rename({
+      extname: '.js'
+    }))
+    .pipe(gulp.dest('./src/js/'))
+    .on('end', function() {
+      cb();
+    });
+});
+
+gulp.task('js', ['sound-settings'], () => {
+  jsFiles.game.forEach(f => {
+    if (!require('fs').existsSync(f)) {
+      throw new Error('THIS FILE DOESN\'T EXIST AND CAN\'T BE INCLUDED IN DIST BUILD: ' + f);
+    }
+  })
+
   compileJS(jsFiles.game, 'game.js');
   compileJS(jsFiles.splash, 'splash.js');
   compileJS(jsFiles.story, 'story.js');
@@ -147,31 +173,27 @@ gulp.task('assets', () => {
     .pipe(gulp.dest('./build/music/'));
 });
 
-gulp.task('sound-settings', () => {
-  gulp.src('./sound-settings.json')
-    .pipe(plumber())
-    .pipe(gulp.dest('./build/'));
-});
-
-gulp.task('build', ['css', 'html', 'js', 'assets', 'sound-settings'], () => {
-
+gulp.task('build', ['sound-settings', 'css', 'html', 'js', 'assets'], () => {
+  gulp.src('build/**/*')
+      .pipe(zip('paddleforce.zip'))
+      .pipe(gulp.dest('dist'));
 });
 
 gulp.task('watch', [
   'css',
-  'html',
-  'js',
-  'assets',
-  'sound-settings',
+  // 'html',
+  // 'js',
+  // 'assets',
+  // 'sound-settings',
   ], () => {
-  gulp.watch('sound-settings.json', ['sound-settings']);
+  // gulp.watch('sound-settings.json', ['sound-settings']);
   gulp.watch('src/scss/**/*', ['css']);
-  gulp.watch('index.html', ['html']);
-  gulp.watch('splash.html', ['html']);
-  gulp.watch('story.html', ['html']);
-  gulp.watch('rules.html', ['html']);
-  gulp.watch('src/js/**/*.js', ['js']);
-  gulp.watch(['src/assets/**/*', 'src/fonts/**/', 'src/sounds/**/', 'src/music/**/'], ['assets'])
+  // gulp.watch('index.html', ['html']);
+  // gulp.watch('splash.html', ['html']);
+  // gulp.watch('story.html', ['html']);
+  // gulp.watch('rules.html', ['html']);
+  // gulp.watch('src/js/**/*.js', ['js']);
+  // gulp.watch(['src/assets/**/*', 'src/fonts/**/', 'src/sounds/**/', 'src/music/**/'], ['assets'])
 });
 
 gulp.task('default', ['watch']);

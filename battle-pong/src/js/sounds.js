@@ -1058,7 +1058,12 @@ window.SoundManager = {
   },
   loadSettingsIntelligently: function () {
     return new Promise((yay, nay) => {
-      if (localStorage.getItem('sounds')) {
+      if (window.__soundSettings) {
+        console.log('Found sound precompiled sound settings.')
+        SoundManager.loadSettingsFromJSON(window.__soundSettings);
+        yay();
+      }
+      else if (localStorage.getItem('sounds')) {
         console.log('Found sound settings in Local Storage');
         SoundManager.loadSettingsFromLocalStorage();
         yay();
