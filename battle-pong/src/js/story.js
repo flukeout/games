@@ -69,7 +69,7 @@ function startStory(finishedCallback) {
 document.addEventListener('DOMContentLoaded', function () {
   let readyScreen = document.querySelector('#ready');
 
-  SoundManager.init().then(() => {
+  SoundManager.init({dontWorryAboutWebAudioAutoplayPolicy: true}).then(() => {
 
     let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
     if(isChrome) {

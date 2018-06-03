@@ -1013,9 +1013,12 @@ window.SoundManager = {
     
     return new Promise((resolve, reject) => {
       soundContext = new AudioContext();
-      if (soundContext.state === 'suspended') {
-        reject();
-        return;
+
+      if (!options.dontWorryAboutWebAudioAutoplayPolicy) {
+        if (soundContext.state === 'suspended') {
+          reject();
+          return;
+        }
       }
 
       musicEngine = new Music(soundContext);
@@ -1027,7 +1030,6 @@ window.SoundManager = {
 
       musicEngine.globalGainNode.connect(globalBiquadFilter);
       globalBiquadFilter.connect(soundContext.destination);
-
 
       let promises = Object.keys(sounds).map(key => { return loadSound(key); });
 
@@ -1173,7 +1175,7 @@ window.SoundManager = {
   },
   resumeAudioContext: function () {
     // Because of https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
-    soundContext.resume();
+    return soundContext.resume();
   }
 };
 
