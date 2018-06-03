@@ -1,21 +1,29 @@
 .story {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 
+  .copyright {
     position: absolute;
-    width: 100vw;
-    height: 100vh;
-    transform-style: preserve-3d;
-    perspective: 1000px;
+    bottom: 20px;
+    font-size: 15px;
+    color: white;
+    font-family: "LatoRegular";
+    text-align: center;
+    opacity: .5;
+    width: 100%;
+  }
 
- 
+  #loading {
+    z-index: 100;
 
-    #loading {
-      z-index: 100;
-
-      .text {
-        text-align: center;
-        margin-top: 40px;
-      }
+    .text {
+      text-align: center;
+      margin-top: 40px;
     }
+  }
 
   .canvas-stars {
     position: absolute;
