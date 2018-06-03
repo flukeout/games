@@ -1,7 +1,7 @@
 {
-  "name": "paddleforce",
+  "name": "PADDLE-FORCE",
   "version": "1.0.0",
-  "description": "Paddle Force",
+  "description": "PADDLE FORCE",
   "author": "Bobby Richter <iambobbyrichter@gmail.com> & Luke Pacholski <luke.pacholski@gmail.com>",
   "main": "./app/index.js",
   "scripts": {
@@ -17,6 +17,8 @@
   "homepage": "http://flobotron.itch.io/paddle-force",
   "build": {
     "appId": "com.paddleforce.app",
+    "productName": "PADDLE FORCE",
+    "copyright": "2018 Bobby Richter, Devon Bird, Luke Pacholski",
     "files": [
       "app/**/*"
     ],
@@ -27,14 +29,15 @@
       "icon": "build/icon.png"
     },
     "dmg": {
+      "title": "PADDLE FORCE",
       "contents": [
         {
-          "x": 140,
-          "y": 285
+          "x": 170,
+          "y": 335
         },
         {
-          "x": 580,
-          "y": 285,
+          "x": 550,
+          "y": 335,
           "type": "link",
           "path": "/Applications"
         }
