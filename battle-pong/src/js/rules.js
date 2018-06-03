@@ -75,6 +75,10 @@ window.addEventListener('load', () => {
     }
 
     document.querySelector("#loading").classList.add("hide-loading");
+  }).catch(() => {
+    // We need to go back to index.html to capture a user gesture because Chrome has an autoplay policy...
+    // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio for more
+    window.location.href = "../index.html";
   });
 
   let leftPaddle = createObject({noBody: true});

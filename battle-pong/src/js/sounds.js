@@ -1013,6 +1013,11 @@ window.SoundManager = {
     
     return new Promise((resolve, reject) => {
       soundContext = new AudioContext();
+      if (soundContext.state === 'suspended') {
+        reject();
+        return;
+      }
+
       musicEngine = new Music(soundContext);
 
       globalBiquadFilter = soundContext.createBiquadFilter();
