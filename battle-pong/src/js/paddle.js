@@ -597,7 +597,7 @@ function createPaddle(options) {
       this.frameTicks++;
 
       // Ghosts are just there to be scared and die. They can't move.
-      if(this.mode != "ghost") {
+      if(this.mode != "ghost" && game.mode != "betweenrounds") {
         this.updateActionsFromInputComponents();
       } else {
         // Set all actions to false because ghosts can't move.
