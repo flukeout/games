@@ -27,6 +27,7 @@ function startStory(finishedCallback) {
 
   function finished() {
     storyScreen.classList.remove('show');
+    fadeOutScene();
     finishedCallback();
   }
 
@@ -105,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           }, 1000);
         });
-      }, 750)
+      }, 750);
     
     });
 
@@ -202,13 +203,14 @@ function timeoutClass(selector, className, timeout){
 
 
 function fadeOutScene(){
-  timeoutClass(".content", "transition-out", 100)
-  timeoutClass(".paddle-guy", "transition-out", 250);
-  timeoutClass(".surface", "transition-out", 200);
-  timeoutClass(".overlay", "transition-out");
-  timeoutClass(".credits", "transition-out");
-  timeoutClass(".large-moon", "transition-out", 200);
-  timeoutClass(".sky", "transition-out", 200);
+  console.log('fadeoutscene');
+  // timeoutClass(".content", "transition-out", 100)
+  // timeoutClass(".paddle-guy", "transition-out", 250);
+  // timeoutClass(".surface", "transition-out", 200);
+  // timeoutClass(".overlay", "transition-out");
+  // timeoutClass(".credits", "transition-out");
+  // timeoutClass(".large-moon", "transition-out", 200);
+  // timeoutClass(".sky", "transition-out", 200);
   timeoutClass(".canvas-stars", "transition-out", 200);
 }
 

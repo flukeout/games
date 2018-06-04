@@ -125,9 +125,23 @@ document.addEventListener('DOMContentLoaded', function () {
 // Sizes the width of the board to fill up the available
 // space in the window.
 function resizeBoard(){
+  
+  let boardHeight = 540;
+  let boardWidth = 1200;
+  let boardAspect = boardWidth / boardHeight;
+
   var windowWidth = window.innerWidth;
-  var boardWidth = 1200;
-  var ratio =  windowWidth / boardWidth;
+  let windowHeight = window.innerHeight - 150;
+
+  let windowAspect = windowWidth / windowHeight;
+  let ratio;
+
+  if(boardAspect > windowAspect) {
+    ratio = windowWidth / boardWidth;
+  } else {
+    ratio = windowHeight / boardHeight;
+  }
+
   document.querySelector(".board-wrapper").style.transform = "scale(" + ratio + ")";
   document.querySelector(".board-shadow-wrapper").style.transform = "scale(" + ratio + ")";
 
