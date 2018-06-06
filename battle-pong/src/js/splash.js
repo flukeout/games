@@ -171,8 +171,8 @@ function setupStartButton(){
     var buttonPosition = button.getBoundingClientRect();
 
     var options = {
-      x : buttonPosition.x,
-      y : buttonPosition.y,
+      x : buttonPosition.x || buttonPosition.left,
+      y : buttonPosition.y || buttonPosition.top,
       zR : getRandom(-8,8),
       xRv : getRandom(12,20),
       yV : 7,
