@@ -18,6 +18,9 @@ function createMainWindow() {
     height: height,
   })
 
+  window.maximize();
+  window.setFullScreen(true);
+
   if (isDevelopment) {
     window.webContents.openDevTools()
   }
