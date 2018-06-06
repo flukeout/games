@@ -550,10 +550,10 @@ function createBall(options){
       if (!paddleBounceSoundPlayed) {
         if (obj.label.indexOf("wall") > -1) {
           if(obj.label.indexOf("wall-right") > -1 && this.lastTouchedPaddle === 2) {
-            SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: 1.5, pan : pan });
+            SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
           }
           else if(obj.label.indexOf("wall-left") > -1 && this.lastTouchedPaddle === 1) {
-            SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: 1.5, pan : pan });
+            SoundManager.playRandomSoundFromBank("ball-bounce-own-endzone", { volume: percentage, pan : pan });
           }
           else if (obj.label.indexOf("wall-top") > -1 || obj.label.indexOf("wall-bottom") > -1) {
             if(this.canSpin) {
