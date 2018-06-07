@@ -19,6 +19,12 @@
   #loading {
     z-index: 100;
 
+    flex-direction: column;
+
+    .percent {
+      margin-top: 1em;
+    }
+
     .text {
       text-align: center;
       margin-top: 40px;
