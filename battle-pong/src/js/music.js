@@ -237,15 +237,23 @@
       let playNextSong = () => {
         let nextSong = songChain.shift();
         let oldIntensity = 0;
+        let oldMood = 'default';
+
         if (currentSong) {
           currentSong.clearLoopListeners();
           oldIntensity = currentSong.getIntensity();
+          oldMood = currentSong.getMood();
         }
+
         this.cueSong(nextSong.name);
+
         if (!nextSong.loop) {
           currentSong.addLoopListener(playNextSong);
         }
+
+        currentSong.setMood(oldMood, 0);
         currentSong.setIntensity(oldIntensity, true);
+
         this.start({ loop: nextSong.loop });
         songChainListeners.forEach(l => l());
       };
@@ -337,14 +345,14 @@
     this.currentIntensity = intensity;
 
     let targetIntensity = intensity;
+    let nextTargetIntensity = targetIntensity;
 
     Object.defineProperty(this, 'targetIntensity', {
       get: () => {
         return targetIntensity;
       },
       set: (newTargetIntensity) => {
-        targetIntensity = newTargetIntensity;
-        lastIntensityChangeTime = Date.now();
+        nextTargetIntensity = newTargetIntensity;
       }
     });
     
@@ -643,9 +651,11 @@
 
         // TODO: use different delays if it's going up vs. down
         if (currentTime - lastIntensityChangeTime > intensityChangeDelay) {
-          baseIntensity -= (baseIntensity - this.targetIntensity) * intensityReductionFactor;
+          lastIntensityChangeTime = Date.now();
+          targetIntensity = nextTargetIntensity;
         }
 
+        baseIntensity -= (baseIntensity - targetIntensity) * intensityReductionFactor;
         boostIntensity -= boostIntensity * intensityBoostReductionFactor;
 
         intensity = baseIntensity + boostIntensity;
@@ -665,6 +675,16 @@
           this.setMood(suggestedMood, moodIntervalAttackTime);
         }
       }, 50);
+    };
+
+    this.getIntensities = function () {
+      console.log('intensityChangeDelay: ', intensityChangeDelay);
+      console.log('lastIntensityChangeTime: ', lastIntensityChangeTime);
+      console.log('time delta: ', Date.now() - lastIntensityChangeTime);
+      console.log('Base: ', baseIntensity);
+      console.log('Boost: ', boostIntensity);
+      console.log('Target: ', this.targetIntensity);
+      console.log('Total: ', this.currentIntensity);
     };
 
     this.stopMoodInterval = function () {
@@ -705,6 +725,7 @@
     this.getLayers = () => { return layers; };
     this.getContext = () => { return audioContext; };
 
+    this.getMood = () => { return currentMood; };
     this.getIntensity = () => { return intensity; };
 
     this.addIntensity = (newIntensity) => {
