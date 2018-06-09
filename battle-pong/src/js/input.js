@@ -14,6 +14,17 @@ window.InputManager = function (onInputChanged) {
     gamepadInputLabelToActionMapping = savedInputLabelToActionMappings.gamepad;
   }
 
+  this.refreshGamepadComponentsInMaintainedObjects = function (skipObject) {
+    maintainedObjects.forEach(object => {
+      if (skipObject !== object) {
+        if (object.inputComponent.type === 'gamepad') {
+          object.setInputComponent(null);
+          object.setInputComponent(this.getComponentForNextAvailableInput());
+        }
+      }
+    });
+  };
+
   this.setupInputForObject = function (object) {
     object.setInputComponent(this.getComponentForNextAvailableInput());
     maintainedObjects.push(object);
@@ -74,18 +85,18 @@ window.InputManager = function (onInputChanged) {
   window.addEventListener("gamepaddisconnected", (e) => {
     console.log('Gamepad Disconnected');
     // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
-    maintainedObjects.forEach((object) => {
-      console.log(object.inputComponent.type);
+    for (let objectIndex in maintainedObjects) {
+      let object = maintainedObjects[objectIndex];
       if (object.inputComponent.type === 'gamepad') {
         let gamepadId = e.gamepad.id + e.gamepad.index;
-        console.log(gamepadId, object.inputComponent.config.id);
         if (object.inputComponent.config.id === gamepadId) {
           object.setInputComponent(this.getComponentForNextAvailableInput());
           onInputChanged(object);
+          this.refreshGamepadComponentsInMaintainedObjects(object);
           return;
         }
       }
-    });
+    }
   });
 };
 
