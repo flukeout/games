@@ -37,3 +37,11 @@ Follow the instructions at https://www.electron.build/multi-platform-build to in
 
 You can use `yarn dev` to run Electron without compiling. But, make sure you run `yarn copy` first to bring changes over.
 
+### Bug stomping
+
+If you find that your electron version is too old, it may be that it's improperly cached. Try destroying these local folders and building again:
+* `~/Library/Caches/electron-builder`
+* `~/.electron`
+* `~/.electron-builder`
+* `~/.cache/electron`
+* `~/.cache/electron-builder`
