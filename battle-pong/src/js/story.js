@@ -67,9 +67,8 @@ function startStory(finishedCallback) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function initSound(){
   let readyScreen = document.querySelector('#ready');
-
   SoundManager.init({
     dontWorryAboutWebAudioAutoplayPolicy: true,
     progress: function (total, loaded) {
@@ -98,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     readyScreen.classList.add('show');
 
     readyScreen.querySelector('.ok').addEventListener('click', () => {
-      SoundManager.resumeAudioContext();
+    
       readyScreen.classList.remove('show');
       
       setTimeout(function(){
@@ -121,6 +120,12 @@ document.addEventListener('DOMContentLoaded', function () {
     startStars(50, window.innerWidth, window.innerHeight);
 
     // setupInputs();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  SoundManager.resumeSound().then(() => {
+    initSound();
   });
 });
 

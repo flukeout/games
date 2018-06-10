@@ -665,6 +665,8 @@ function loadSound(name){
     var url = sound.url;
     var buffer = sound.buffer;
 
+
+
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
@@ -1008,11 +1010,25 @@ window.SoundManager = {
   temporaryLowPassSettings: temporaryLowPassSettings,
   localStorageStatus: 'Empty',
   sequences: sequenceManagers,
+  resumeSound : function(options) {
+
+    return new Promise((resolve, reject) => {
+      soundContext = new AudioContext();
+      if (soundContext.state === 'suspended') {
+        soundContext.resume().then(function(){
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
+
+  },
+
   init: function (options) {
     options = options || {};
     
     return new Promise((resolve, reject) => {
-      soundContext = new AudioContext();
 
       if (!options.dontWorryAboutWebAudioAutoplayPolicy) {
         if (soundContext.state === 'suspended') {
@@ -1121,9 +1137,11 @@ window.SoundManager = {
           });
         }
         else {
+          console.log("naa");
           nay();
         }
       }).catch((err) => {
+        console.log("reject");
         nay(err);
       });
     });

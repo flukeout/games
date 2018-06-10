@@ -11,12 +11,14 @@ let timeoutAccumulator = 0;
 
 let menuControls;
 
-document.addEventListener('DOMContentLoaded', function () {
 
+function initSound(){
   SoundManager.init().then(() => {
+
     document.querySelector("#loading").classList.add("hide-loading");
 
     SoundManager.resumeAudioContext();
+    console.log(SoundManager);
     document.querySelector(".splash").classList.add("appear");
     SoundManager.musicEngine.cueSong('menu');
     if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
@@ -69,6 +71,12 @@ document.addEventListener('DOMContentLoaded', function () {
       window.location.href = "index.html";
     }
   });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  SoundManager.resumeSound().then(() => {
+    initSound();
+  })
 });
 
 function setupInputs() {

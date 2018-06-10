@@ -45,6 +45,20 @@ document.addEventListener('DOMContentLoaded', function () {
     game.paddles[i].init();
   }
 
+
+
+  if (Settings.showFrameRate) {
+    var frameRateMonitor  = new FrameRateMonitor();
+  }
+
+  SoundManager.resumeSound().then(() => {
+    initSound();
+  });
+
+ 
+});
+
+function initSound(){
   var inputManager = new InputManager((paddle) => {
     var playerNumber = game.paddles.indexOf(paddle);
     var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
@@ -70,11 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
   });
 
-  if (Settings.showFrameRate) {
-    var frameRateMonitor  = new FrameRateMonitor();
-  }
-
-  // Make sure sounds & music are loaded before everything else starts
+   // Make sure sounds & music are loaded before everything else starts
   SoundManager.init().then(() => {
     if (Settings.music) SoundManager.musicEngine.playSongChain('gameplay');
 
@@ -115,16 +125,17 @@ document.addEventListener('DOMContentLoaded', function () {
     
     game.restart(2200);
     game.run();
-  }).catch(() => {
+  }).catch((e) => {
+    console.log("caught???", e);
     // We need to go back to index.html to capture a user gesture because Chrome has an autoplay policy...
     // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio for more
     if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-      window.location.href = "../index.html";
+      // window.location.href = "../index.html";
     } else {
-      window.location.href = "index.html";
+      // window.location.href = "index.html";
     }
   });
-});
+}
 
 // Sizes the width of the board to fill up the available
 // space in the window.
