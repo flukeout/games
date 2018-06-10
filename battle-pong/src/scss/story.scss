@@ -107,7 +107,13 @@
         }
       }
 
-      img {
+      .emoji-wrapper {
+        img {
+          width: 70px;
+        }
+      }
+
+      .is-chrome, .not-chrome {
         height: 70px;
         display: none;
       }
