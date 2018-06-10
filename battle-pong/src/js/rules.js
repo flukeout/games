@@ -4,8 +4,8 @@ let ruleNavEls;
 
 let menuControls;
 
-window.addEventListener('load', () => {
-  SoundManager.init().then(() => {
+function initSound(){
+   SoundManager.init().then(() => {
     document.querySelector(".rules-page").classList.add("ready");
 
     setupNavButtons();
@@ -83,6 +83,13 @@ window.addEventListener('load', () => {
     } else {
       window.location.href = "index.html";
     }
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+ 
+  SoundManager.resumeSound().then(() => {
+    initSound();
   });
 
   let leftPaddle = createObject({noBody: true});
