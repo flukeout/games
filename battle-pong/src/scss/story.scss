@@ -9,7 +9,6 @@
     display: none;
   }
 
-
   &.is-chrome .is-chrome {
     display: block;
   }
@@ -17,7 +16,10 @@
   &.not-chrome .not-chrome {
     display: block;
   }
-
+  
+  [hidden] {
+    display: none !important;
+  }
 
   .copyright {
     position: absolute;
