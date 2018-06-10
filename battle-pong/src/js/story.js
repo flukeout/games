@@ -79,9 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
     if(isChrome) {
-      document.querySelector(".chrome-disclaimer").classList.add("is-chrome");
+      document.querySelector(".story").classList.add("is-chrome");
     } else {
-      document.querySelector(".chrome-disclaimer").classList.add("not-chrome");
+      document.querySelector(".story").classList.add("not-chrome");
     }
 
     // A cute way of detecting Electron

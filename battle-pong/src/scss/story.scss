@@ -5,6 +5,20 @@
   transform-style: preserve-3d;
   perspective: 1000px;
 
+  .is-chrome, .not-chrome {
+    display: none;
+  }
+
+
+  &.is-chrome .is-chrome {
+    display: block;
+  }
+  
+  &.not-chrome .not-chrome {
+    display: block;
+  }
+
+
   .copyright {
     position: absolute;
     bottom: 20px;
@@ -82,17 +96,16 @@
       color: white;
       font-family: Lato;
 
-      &.is-chrome .is-chrome {
-        display: inline;
-      }
-      
-      &.not-chrome .not-chrome {
-        display: inline;
-      }
 
       .chrome-logo-wrapper {
         position: relative;
-        margin: 0 auto;
+        margin: 0 auto 15px auto;
+        text-align: center;
+        
+        img {
+          margin: 0 auto;
+          height: 70px;
+        }
         
         .checkmark {
           position: absolute;
@@ -113,13 +126,12 @@
         }
       }
 
-      .is-chrome, .not-chrome {
-        height: 70px;
-        display: none;
-      }
-
       .text {
         margin: 15px 0 10px 0;
+      }
+      
+      p {
+        margin-top: 15px;
       }
     }
 
