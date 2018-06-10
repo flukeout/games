@@ -188,35 +188,42 @@
       this.status = 'ready';
     };
 
-    this.load = function () {
+    this.getNumberOfAssetsToLoad = function () {
+      return files.length;
+    };
+
+    this.load = function (options) {
+      options = options || {};
+
       return new Promise(async (resolve, reject) => {
         let buffers = {};
-        let requests = {};
+        let bufferPromises = [];
 
-        files.forEach(file => {
-          requests[file] = new Promise((requestResolve, requestReject) => {
+        let loaded = 0;
+        Promise.all(files.map(file => {
+          return new Promise((requestResolve, requestReject) => {
             let request = new XMLHttpRequest();
             request.open('GET', file, true);
             request.responseType = 'arraybuffer';
-            request.onload = () => audioContext.decodeAudioData(request.response, buffer => requestResolve(buffer));
+            request.onload = () => audioContext.decodeAudioData(request.response, buffer => {
+              buffers[file] = buffer;
+              ++loaded;
+              options.progress && options.progress(files.length, loaded);
+              requestResolve(buffer);
+            });
             request.send();
           });
-        });
+        })).then(() => {
+          let songPromises = [];
+          for (let songName in songs) {
+            preparedSongs[songName] = new Song(songName, audioContext, buffers, songs[songName], globalGainNode, duckingNode);
+            songPromises.push(preparedSongs[songName].load());
+          }
 
-        // TODO: make these load asynchronously
-        for (let file in requests) {
-          buffers[file] = await requests[file];
-        }
-
-        let songPromises = [];
-        for (let songName in songs) {
-          preparedSongs[songName] = new Song(songName, audioContext, buffers, songs[songName], globalGainNode, duckingNode);
-          songPromises.push(preparedSongs[songName].load());
-        }
-
-        Promise.all(songPromises).then(() => {
-          this.status = 'ready';
-          resolve();
+          Promise.all(songPromises).then(() => {
+            this.status = 'ready';
+            resolve();
+          });
         });
       });
     };

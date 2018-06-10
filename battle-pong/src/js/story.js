@@ -70,7 +70,12 @@ function startStory(finishedCallback) {
 document.addEventListener('DOMContentLoaded', function () {
   let readyScreen = document.querySelector('#ready');
 
-  SoundManager.init({dontWorryAboutWebAudioAutoplayPolicy: true}).then(() => {
+  SoundManager.init({
+    dontWorryAboutWebAudioAutoplayPolicy: true,
+    progress: function (total, loaded) {
+      document.querySelector('#loading .percent').textContent = Math.floor(loaded/total*100) + '%';
+    }
+  }).then(() => {
 
     let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
     if(isChrome) {

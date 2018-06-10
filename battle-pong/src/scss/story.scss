@@ -19,6 +19,12 @@
   #loading {
     z-index: 100;
 
+    flex-direction: column;
+
+    .percent {
+      margin-top: 1em;
+    }
+
     .text {
       text-align: center;
       margin-top: 40px;
@@ -101,7 +107,13 @@
         }
       }
 
-      img {
+      .emoji-wrapper {
+        img {
+          width: 70px;
+        }
+      }
+
+      .is-chrome, .not-chrome {
         height: 70px;
         display: none;
       }

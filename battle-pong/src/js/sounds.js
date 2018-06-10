@@ -1031,9 +1031,25 @@ window.SoundManager = {
       musicEngine.globalGainNode.connect(globalBiquadFilter);
       globalBiquadFilter.connect(soundContext.destination);
 
-      let promises = Object.keys(sounds).map(key => { return loadSound(key); });
+      let soundKeys = Object.keys(sounds);
+      let assetsToLoad = soundKeys.length + musicEngine.getNumberOfAssetsToLoad();
+      let soundsLoaded = 0;
 
-      promises.push(musicEngine.load());
+      let promises = soundKeys.map(key => {
+        return new Promise((yay, nay) => {
+          loadSound(key).then(() => {
+            ++soundsLoaded;
+            options.progress && options.progress(assetsToLoad, soundsLoaded);
+            yay();
+          });
+        });
+      });
+
+      promises.push(musicEngine.load({
+        progress: (musicAssetsToLoad, musicAssetsLoaded) => {
+          options.progress && options.progress(assetsToLoad, soundsLoaded + musicAssetsLoaded);
+        }
+      }));
       Promise.all(promises).then(() => {
         if (options.preventAutoLoadingOfSettings) {
           resolve();
