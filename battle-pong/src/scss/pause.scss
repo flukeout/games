@@ -81,13 +81,30 @@
       background-repeat: no-repeat;
       margin: 30px 15px 0 15px;
       opacity: .5;
+      
+
+      &:after {
+        position: absolute;
+        width: 100%;
+        content: "CPU";
+        font-size: 45px;
+        line-height: 45px;
+        color: white;
+        left: 0;
+      }
 
       &[data-type="keyboard"] {
         background-image: url('assets/images/keyboard.svg');
+        &:after {
+          display: none;
+        }
       }
 
       &[data-type="gamepad"] {
         background-image: url('assets/images/gamepad.svg');
+        &:after {
+          display: none;
+        }
       }
 
       .help {
