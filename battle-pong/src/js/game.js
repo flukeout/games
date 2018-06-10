@@ -74,6 +74,7 @@ var game =  {
     this.boardHeight = this.worldEl.clientHeight;
 
     SoundManager.musicEngine.addBeatCallback(() => {
+      starsRadiusModifier = maxStarsRadiusModifier;
       if (this.balls.length > 0) {
         this.balls.forEach(ball => ball.excite());
       }

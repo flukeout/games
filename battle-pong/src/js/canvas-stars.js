@@ -1,7 +1,11 @@
 let canvas, ctx, canvasHeight, canvasWidth;
 let stars = [];
+let starsRadiusModifier = 0;
+let maxStarsRadiusModifier = 1;
+
 
 function startStars(starCount, width, height){
+
   canvas = document.querySelector(".canvas-stars canvas");
 
   resizeStarsCanvas();
@@ -31,13 +35,17 @@ function makeStars(starCount){
       x: getRandom(0, canvasWidth),
       y: getRandom(0, canvasHeight),
       radius: getRandom(2,3),
-      opacity: getRandom(.1,.7),
+      opacity: getRandom(.1,.5),
       speed: getRandom(5, 20)
     })
   }
 }
 
 function drawStars() { 
+  starsRadiusModifier = starsRadiusModifier * .9;
+  if(starsRadiusModifier < 0) {
+    starsRadiusModifier = 0;
+  }
   ctx.globalCompositeOperation = 'destination-over';
   ctx.clearRect(0, 0, canvasWidth, canvasHeight); // clear canvas
 
@@ -51,8 +59,8 @@ function drawStars() {
   for(var i = 0; i < stars.length; i++) {
     let star = stars[i];
     ctx.beginPath();
-    ctx.fillStyle = "rgba(255, 255, 255, "+star.opacity+")";
-    ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI, false);
+    ctx.fillStyle = "rgba(255, 255, 255, "+ (star.opacity + (starsRadiusModifier * .15)) +")";
+    ctx.arc(star.x, star.y, star.radius + (starsRadiusModifier * star.radius), 0, 2 * Math.PI, false);
     ctx.fill();
 
     // Move the star, and reset if it goes too far
