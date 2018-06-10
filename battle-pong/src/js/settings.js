@@ -16,7 +16,7 @@ window.Settings = {
   sounds: true,
   music: true, 
   player1Control : "player", // or "AI"
-  player2Control : "player", // or "AI"
+  player2Control : "AI", // or "AI"
   aiStupidity1: 0.2,
   aiStupidity2: 0.2
 };
