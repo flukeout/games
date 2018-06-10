@@ -1016,13 +1016,9 @@ window.SoundManager = {
       soundContext = new AudioContext();
       if (soundContext.state === 'suspended') {
         soundContext.resume().then(function(){
-          console.log("resolved");
           resolve();
-
         });
       } else {
-        console.log(soundContext);
-        console.log("resolved11");
         resolve();
       }
     });
@@ -1036,7 +1032,6 @@ window.SoundManager = {
 
       if (!options.dontWorryAboutWebAudioAutoplayPolicy) {
         if (soundContext.state === 'suspended') {
-          console.log("uuuuu");
           reject();
           return;
         }
