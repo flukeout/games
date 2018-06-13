@@ -13,7 +13,7 @@ let story = [
   '22,018 Galactic Era',
   'Long since humanity\'s ascent to hyper-cybernetics, Earth\'s descendants have achieved their optimal form.',
   'Scattered throughout the galaxy, rival factions of the once proud and unified Photospheric Orbital Nova Group compete for resources.',
-  'The two most powerful, Purpolium and Greebesque have negotiating for control of supermassive black hole at the galactic center.',
+  'The two most powerful, Purpolium and Greebesque have been negotiating for control of the supermassive black hole at the galactic center.',
   'Inevitably conflict arises, and the two factions agree to settle the confrontation through modern diplomatic means.',
   'As they summon their most elite warriors from the corners of the Milky Way, the entire galaxy awaits in anticipation of organized warfare on a scale never before seen...'
 ];
