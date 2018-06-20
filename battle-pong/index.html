@@ -19,6 +19,7 @@
     <script src="js/components.js"></script>
     <script src="js/splash.js"></script>
     <script src="js/story.js"></script>
+    <script src="js/rules.js"></script>
     <script src="js/main.js"></script>
     <!-- insert minified source here -->
   </head>
@@ -103,79 +104,79 @@
         </div>
         <div class="content-wrapper">
           <div class="content">
-          <div class="game-title">
-            <div class="actual-title">PADDLE FORCE</div>
-            <div class="sub-title">Mobile Paddle Rocket Warriors</div>
-          </div>
-
-          <div class="game-settings">
-            
-            <div class="option-group best-of" data-bestof>
-              <span row="1" col="1" data-value="2" class="gleamer gamepad-button option value">BEST OF 3</span>
-              <span row="1" col="2" data-value="3" class="gleamer gamepad-button option value">BEST OF 5</span>
-              <span row="1" col="3" data-value="4" class="gleamer gamepad-button option value">BEST OF 7</span>
+            <div class="game-title">
+              <div class="actual-title">PADDLE FORCE</div>
+              <div class="sub-title">Mobile Paddle Rocket Warriors</div>
             </div>
 
-            <div class="powerups">
-              <div row="2" col="1" class="gamepad-button powerup option" data-powerup="grow">
-                <div class="icon"></div>
-                <span class="name">GROW</span>
+            <div class="game-settings">
+              
+              <div class="option-group best-of" data-bestof>
+                <span row="1" col="1" data-value="2" class="gleamer gamepad-button option value">BEST OF 3</span>
+                <span row="1" col="2" data-value="3" class="gleamer gamepad-button option value">BEST OF 5</span>
+                <span row="1" col="3" data-value="4" class="gleamer gamepad-button option value">BEST OF 7</span>
               </div>
-              <div row="2" col="2" class="gamepad-button powerup option" data-powerup="noclip">
-                <div class="icon"></div>
-                <span class="name">NOCLIP</span>
+
+              <div class="powerups">
+                <div row="2" col="1" class="gamepad-button powerup option" data-powerup="grow">
+                  <div class="icon"></div>
+                  <span class="name">GROW</span>
+                </div>
+                <div row="2" col="2" class="gamepad-button powerup option" data-powerup="noclip">
+                  <div class="icon"></div>
+                  <span class="name">NOCLIP</span>
+                </div>
+                <div row="2" col="3" class="gamepad-button powerup option" data-powerup="spin">
+                  <div class="icon"></div>
+                  <span class="name">SPIN</span>
+                </div>
+                <div row="2" col="4" class="gamepad-button powerup option" data-powerup="clone">
+                  <div class="icon"></div>
+                  <span class="name">BONES</span>
+                </div>
+                <div row="2" col="5" class="gamepad-button powerup option" data-powerup="magnet">
+                  <div class="icon"></div>
+                  <span class="name">STICKY</span>
+                </div>
+                <div row="2" col="6" class="gamepad-button powerup option" data-powerup="mine">
+                  <div class="icon"></div>
+                  <span class="name">MINES</span>
+                </div>
               </div>
-              <div row="2" col="3" class="gamepad-button powerup option" data-powerup="spin">
-                <div class="icon"></div>
-                <span class="name">SPIN</span>
+
+              <div class="sound-options">
+                <div class="option option-toggle" data-type="sounds">
+                  <span row="3" col="1" class="gleamer gamepad-button value">
+                    SOUND
+                    <span class="icon"></span>
+                  </span>
+                </div>
+                <div class="option option-toggle" data-type="music">
+                  <span row="3" col="2" class="gleamer gamepad-button value">
+                    MUSIC
+                    <span class="icon"></span>
+                  </span>
+                </div>
               </div>
-              <div row="2" col="4" class="gamepad-button powerup option" data-powerup="clone">
-                <div class="icon"></div>
-                <span class="name">BONES</span>
+
+              <div class="player-options">
+                <div row="4" col="1" class="gleamer gamepad-button player-one player-option" player="1">
+                  <span class="label">P1</span>
+                </div>
+                <div class="vs">VS</div>
+                <div row="4" col="2" class="gleamer gamepad-button player-two player-option" player="2">
+                  <span class="label">CPU</span>
+                </div>
               </div>
-              <div row="2" col="5" class="gamepad-button powerup option" data-powerup="magnet">
-                <div class="icon"></div>
-                <span class="name">STICKY</span>
-              </div>
-              <div row="2" col="6" class="gamepad-button powerup option" data-powerup="mine">
-                <div class="icon"></div>
-                <span class="name">MINES</span>
-              </div>
+
             </div>
 
-            <div class="sound-options">
-              <div class="option option-toggle" data-type="sounds">
-                <span row="3" col="1" class="gleamer gamepad-button value">
-                  SOUND
-                  <span class="icon"></span>
-                </span>
-              </div>
-              <div class="option option-toggle" data-type="music">
-                <span row="3" col="2" class="gleamer gamepad-button value">
-                  MUSIC
-                  <span class="icon"></span>
-                </span>
-              </div>
+            <div class="buttons">
+              <div row="5" col="1" class="gleamer gamepad-button button start-game">START!</div> <br/>
+              <!-- <div row="6" col="1" class="gleamer gamepad-button button rules-button">GUIDE</div> -->
             </div>
-
-            <div class="player-options">
-              <div row="4" col="1" class="gleamer gamepad-button player-one player-option" player="1">
-                <span class="label">P1</span>
-              </div>
-              <div class="vs">VS</div>
-              <div row="4" col="2" class="gleamer gamepad-button player-two player-option" player="2">
-                <span class="label">CPU</span>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="buttons">
-            <div row="5" col="1" class="gleamer gamepad-button button start-game">START!</div> <br/>
-            <!-- <div row="6" col="1" class="gleamer gamepad-button button rules-button">GUIDE</div> -->
           </div>
         </div>
-        
         <div class="credits">
           <div class="credit">
             <a href="">Flobotron</a> Presents
@@ -193,6 +194,106 @@
           <div class="credit">
             Physics and Emojis courtesy of <a target="_blank" href="https://github.com/liabru/matter-js">Matter.js</a> and <a target="_blank" href="https://github.com/googlei18n/noto-emoji">Noto Emoji</a>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="rules screen">
+
+      <div class="content">
+        <div class="scene">
+          <div class="sky"></div>
+          <div class="canvas-stars">
+            <canvas />
+          </div>
+        </div>
+
+        <div class="rules-nav">
+          <a row="1" col="1" class="gamepad-button" nav="controls" href="#">CONTROLS</a>
+          <a row="1" col="2" class="gamepad-button" nav="rules" href="#">RULES</a>
+          <a row="1" col="3" class="gamepad-button" nav="powerups" href="#">POWERUPS</a>
+        </div>
+
+        <div class="rules">
+          <div rule="controls" class="rule-box">
+
+            <div class="player-control-diagrams">
+              <div class="player-one-controls diagram">
+                <h2>P1</h2>
+                <div class="control-diagram">
+                  <div class="ai-notice">
+                    <strong>CPU</strong>
+                    <p>To add a human player, return to Settings</p>
+                  </div>
+                </div>
+              </div>
+              <div class="player-two-controls diagram">
+                <h2>P2</h2>
+                <div class="control-diagram">
+                  <div class="ai-notice">
+                    <strong>CPU</strong>
+                    <p>To add a human player, return to Settings</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div rule="rules" class="rule-box">
+            <ul class="rule-list">
+              <li>Score to expand your terrain</li>
+              <li>You can't score on yourself</li>
+              <li>Capture the whole board to win</li>
+            </ul>
+            <video autoplay loop>
+              <source src="assets/videos/rule-movement.mp4" type="video/mp4">
+            </video>
+          </div>
+
+          <div rule="powerups" class="rule-box">
+            <div class="powerups">
+              
+              <div class="powerup-row">
+                <div row="2" col="1" type="grow"    class="gamepad-button icon grow"></div>
+                <div row="2" col="2" type="spin"    class="gamepad-button icon spin"></div>
+                <div row="2" col="3" type="bones"   class="gamepad-button icon clone"></div>
+                <div row="2" col="4" type="sticky"  class="gamepad-button icon magnet"></div>
+                <div row="2" col="5" type="ghost"   class="gamepad-button icon noclip"></div>
+                <div row="2" col="6" type="mine"    class="gamepad-button icon mine"></div>
+              </div>
+
+              <div class="powerup-explanation">
+                <strong class="powerup-name">STAR</strong> - 
+                <span class="powerup-effect">Grows your paddle!</span>
+              </div>
+
+              <video class="grow" loop>
+                <source src="assets/videos/grow.mp4" type="video/mp4">
+              </video>
+              <video class="spin" loop>
+                <source src="assets/videos/spin.mp4" type="video/mp4">
+              </video>
+              <video class="bones" loop>
+                <source src="assets/videos/bones.mp4" type="video/mp4">
+              </video>
+              <video class="sticky" loop>
+                <source src="assets/videos/sticky.mp4" type="video/mp4">
+              </video>
+              <video class="ghost" loop>
+                <source src="assets/videos/ghost.mp4" type="video/mp4">
+              </video>
+              <video class="mine" loop>
+                <source src="assets/videos/mine.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <div row="3" col="1" to="splash" class="gamepad-button button nav-button go-back">Settings</div>
+          <div row="3" col="2" class="gamepad-button button previous">&larr; Previous</div>
+          <div class="divider"></div>
+          <div row="3" col="3" class="gamepad-button button next">Next &rarr;</div>
+          <div row="3" col="4" to="game" class="gamepad-button button nav-button start-game green-button">PLAY</div>
         </div>
       </div>
     </div>

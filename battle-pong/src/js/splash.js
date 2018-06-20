@@ -194,12 +194,7 @@ function setupStartButton(){
     menuControls.disconnect();
 
     setTimeout(function(){
-      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../rules.html";
-      }
-      else {
-        window.location.href = "rules.html";
-      }
+      initRules();
     }, 4000);
   })
 }

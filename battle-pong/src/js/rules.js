@@ -4,94 +4,9 @@ let ruleNavEls;
 
 let menuControls;
 
-function initSound(){
-   SoundManager.init().then(() => {
-    document.querySelector(".rules-page").classList.add("ready");
-
-    setupNavButtons();
-
-    ruleNavEls = document.querySelectorAll(".rules-nav a");
-    ruleNavEls.forEach(function(el){
-      let type = el.getAttribute("nav");
-      rulenames.push(type);
-
-      el.addEventListener("click",function(e){
-        let type = this.getAttribute("nav");
-        showRule(type);
-        SoundManager.playSound("Menu_Select");
-        addTemporaryClassName(e.target, "poke", 250);
-        e.preventDefault();
-      })
-    });
-
-    ruleEls = document.querySelectorAll(".rule-box");
-
-    document.querySelector(".button.previous").addEventListener("click",function(){
-      previousRule();
-      SoundManager.playSound("Menu_Select");
-      addTemporaryClassName(this, "poke", 250);
-    })
-    
-    document.querySelector(".button.next").addEventListener("click",function(){
-      addTemporaryClassName(this, "poke", 250);
-      SoundManager.playSound("Menu_Select");
-      nextRule();
-    })
-
-    numRules = ruleEls.length;
-
-    powerupEls = document.querySelectorAll(".powerup-row .icon");
-
-    powerupEls.forEach(function(el){
-      let type = el.getAttribute("type");
-      powerupnames.push(type);
-      el.addEventListener("click", function(el){
-        let type = this.getAttribute("type");
-        showPowerup(type);
-        SoundManager.playSound("Menu_Select");
-      });
-    })
-
-    showPowerup(powerupnames[0]);
-    
-    currentRule = rulenames[0];
-    
-    if (window.location.hash) {
-      let prospectiveRule = window.location.hash.substr(1);
-      if (rulenames.indexOf(prospectiveRule) > -1) {
-        currentRule = prospectiveRule;
-      }
-    }
-    showRule(currentRule);
-
-    menuControls = setupInputButtons();
-    menuControls.connect();
-
-    selectButtonByIndex(12);
-
-    if (Settings.music) {
-      SoundManager.musicEngine.cueSong('menu');
-      SoundManager.musicEngine.fadeIn( 2, {loop: true} );
-    }
-
-    document.querySelector("#loading").classList.add("hide-loading");
-  }).catch(() => {
-    // We need to go back to index.html to capture a user gesture because Chrome has an autoplay policy...
-    // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio for more
-    if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-      window.location.href = "../index.html";
-    } else {
-      window.location.href = "index.html";
-    }
-  });
-}
-
-window.addEventListener('DOMContentLoaded', () => {
+window.initRules = function () {
+  switchScreen('rules');
  
-  SoundManager.resumeSound().then(() => {
-    initSound();
-  });
-
   let leftPaddle = createObject({noBody: true});
   let rightPaddle = createObject({noBody: true});
 
@@ -117,7 +32,80 @@ window.addEventListener('DOMContentLoaded', () => {
   else {
     inputManager.setupInputForObject(rightPaddle);
   }
-});
+
+  document.querySelector(".screen.rules").classList.add("ready");
+
+  setupNavButtons();
+
+  ruleNavEls = document.querySelectorAll(".rules-nav a");
+  ruleNavEls.forEach(function(el){
+    let type = el.getAttribute("nav");
+    rulenames.push(type);
+
+    el.addEventListener("click",function(e){
+      let type = this.getAttribute("nav");
+      showRule(type);
+      SoundManager.playSound("Menu_Select");
+      addTemporaryClassName(e.target, "poke", 250);
+      e.preventDefault();
+    })
+  });
+
+  ruleEls = document.querySelectorAll(".rule-box");
+
+  document.querySelector(".button.previous").addEventListener("click",function(){
+    previousRule();
+    SoundManager.playSound("Menu_Select");
+    addTemporaryClassName(this, "poke", 250);
+  })
+  
+  document.querySelector(".button.next").addEventListener("click",function(){
+    addTemporaryClassName(this, "poke", 250);
+    SoundManager.playSound("Menu_Select");
+    nextRule();
+  })
+
+  numRules = ruleEls.length;
+
+  powerupEls = document.querySelectorAll(".powerup-row .icon");
+
+  powerupEls.forEach(function(el){
+    let type = el.getAttribute("type");
+    powerupnames.push(type);
+    el.addEventListener("click", function(el){
+      let type = this.getAttribute("type");
+      showPowerup(type);
+      SoundManager.playSound("Menu_Select");
+    });
+  })
+
+  showPowerup(powerupnames[0]);
+  
+  currentRule = rulenames[0];
+  
+  if (window.location.hash) {
+    let prospectiveRule = window.location.hash.substr(1);
+    if (rulenames.indexOf(prospectiveRule) > -1) {
+      currentRule = prospectiveRule;
+    }
+  }
+  showRule(currentRule);
+
+  menuControls = setupInputButtons();
+  menuControls.connect();
+
+  selectButtonByIndex(12);
+
+  if (Settings.music) {
+    SoundManager.musicEngine.cueSong('menu');
+    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+  }
+
+  initParticleEngine(".scene", 5);
+  loop();
+
+  startStars('.screen.rules', 50, window.innerWidth, window.innerHeight);
+};
 
 const showPowerup = type => {
   currentPowerup = type;
@@ -284,13 +272,6 @@ let stepList = [
 let currentStepNumber = 0;
 
 
-document.addEventListener('DOMContentLoaded', function(){
-  initParticleEngine(".scene", 5);
-  loop();
-
-  startStars(50, window.innerWidth, window.innerHeight);
-});
-
 function loop(){
   drawParticles();
   requestAnimationFrame(loop);
@@ -333,11 +314,7 @@ function setupNavButtons(){
 }
 
 function goBack(){
-  let url = "splash.html";
-  fadeOutScene();
-  if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-    url = "../" + url;
-  }
+  initSplash();
 
   SoundManager.musicEngine.fadeOut(2);
   
