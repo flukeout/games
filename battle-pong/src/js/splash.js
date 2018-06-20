@@ -54,8 +54,7 @@ function initSplash(){
   setupStartButton();
   setupRulesButton();
 
-  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
-  startStars(50, window.innerWidth, window.innerHeight);
+  startStars('.screen.splash', 50, window.innerWidth, window.innerHeight);
 
   setupInputs();
 }
@@ -390,9 +389,6 @@ function prepTitle(){
     titleEl.append(letterEl);
   }
 }
-
-// Variables for the particle loop
-var starsHeight;
 
 function startCredits(timeoutDelay) {
   let creditsContainer = document.querySelector('.credits');

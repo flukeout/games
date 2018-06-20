@@ -1,5 +1,20 @@
 .screen.splash {
 
+  > .content {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: all .5s ease-out;
+    text-align: center;
+
+    &.transition-out {
+      opacity: 0;
+      transform: scale(.95);
+    }
+  }
+
   .canvas-stars {
     position: absolute;
     top: 0;
@@ -24,7 +39,7 @@
   perspective: 1000px;
   
   &.appear {
-    .content {
+    > .content {
       display: block;
       animation: splashAppear 1s ease-out;
     }
@@ -54,25 +69,6 @@
     &.show {
       opacity: 1;
       visibility: visible;
-    }
-  }
-
-  .content {  
-    margin: 0 auto;
-    padding-bottom: 90px;
-    position: relative;
-    z-index: 5;
-    perspective: 1200px;
-    transition: all .5s ease-out;
-    text-align: center;
-
-    @keyframes splashAppear {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
     }
   }
 
@@ -306,16 +302,24 @@
     display: flex;
     z-index: 5;
     align-items: center;
-    
-  }
+   
+    .content {  
+      margin: 0 auto;
+      padding-bottom: 90px;
+      position: relative;
+      z-index: 5;
+      perspective: 1200px;
+      transition: all .5s ease-out;
+      text-align: center;
 
-  .content {
-    transition: all .5s ease-out;
-    text-align: center;
-
-    &.transition-out {
-      opacity: 0;
-      transform: scale(.95);
+      @keyframes splashAppear {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
     }
   }
   

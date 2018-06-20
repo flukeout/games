@@ -4,9 +4,9 @@ let starsRadiusModifier = 0;
 let maxStarsRadiusModifier = 1;
 
 
-function startStars(starCount, width, height){
+function startStars(parentSelector, starCount, width, height){
 
-  canvas = document.querySelector(".canvas-stars canvas");
+  canvas = document.querySelector(parentSelector + " .canvas-stars canvas");
 
   resizeStarsCanvas();
 

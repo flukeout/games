@@ -108,8 +108,7 @@ function initStory(){
 
   loop();
 
-  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
-  startStars(50, window.innerWidth, window.innerHeight);
+  startStars('.screen.story', 50, window.innerWidth, window.innerHeight);
 }
 
 function setupInputs() {
@@ -438,9 +437,6 @@ function prepTitle(){
     titleEl.append(letterEl);
   }
 }
-
-// Variables for the particle loop
-var starsHeight;
 
 // This shouldn't be in here, we should just import it from effects.js
 function addTemporaryClassName(element, className, durationMS){

@@ -288,7 +288,6 @@ document.addEventListener('DOMContentLoaded', function(){
   initParticleEngine(".scene", 5);
   loop();
 
-  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
   startStars(50, window.innerWidth, window.innerHeight);
 });
 
@@ -369,9 +368,6 @@ function startGame(){
 
 // Separates the letters in the title into individual elements
 // to be animated.
-
-// Variables for the particle loop
-var starsHeight;
 
 // This shouldn't be in here, we should just import it from effects.js
 function addTemporaryClassName(element, className, durationMS){
