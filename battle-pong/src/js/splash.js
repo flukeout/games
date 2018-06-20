@@ -141,7 +141,6 @@ function timeoutClass(selector, className, timeout){
   },timeoutAccumulator)
 }
 
-
 function fadeOutScene(){
   timeoutClass(".content", "transition-out", 100)
   timeoutClass(".paddle-guy", "transition-out", 250);
@@ -198,30 +197,6 @@ function setupStartButton(){
     }, 4000);
   })
 }
-
-function setupRulesButton(){
-  return;
-  var button = document.querySelector(".rules-button");
-  
-  button.addEventListener("click", function(e){
-    menuControls.disconnect();
-
-    addTemporaryClassName(e.target, "poke", 250);
-    fadeOutScene();
-    buttonGleam(e.target);
-    SoundManager.playSound("Menu_Select");
-    SoundManager.musicEngine.fadeOut(2);
-    setTimeout(function(){
-      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../rules.html";
-      }
-      else {
-        window.location.href = "rules.html";
-      }
-    }, 4000);
-  })
-}
-
 
 // Sets up the music & sound toggle click handlers
 function setupToggles(els){
@@ -364,7 +339,6 @@ function updateBestOf(){
 // Separates the letters in the title into individual elements
 // to be animated.
 function prepTitle(){
-  // return;
   var titleEl = document.querySelector(".game-title .actual-title")
   var titleString = titleEl.innerText;
   titleEl.innerText = "";

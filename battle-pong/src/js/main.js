@@ -21,9 +21,10 @@
 	  SoundManager.init({
 	    dontWorryAboutWebAudioAutoplayPolicy: true,
 	    progress: function (total, loaded) {
-	      storyScreen.querySelector('.loading .percent').textContent = Math.floor(loaded/total*100) + '%';
+	      storyScreen.querySelector('.loading-modal .percent').textContent = Math.floor(loaded/total*100) + '%';
 	    }
 	  }).then(() => {
+      document.querySelector(".screen.story .loading-modal").classList.add('hide-loading');
 	  	initStory();
 	  });
 	});

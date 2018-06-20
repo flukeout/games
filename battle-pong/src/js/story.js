@@ -89,7 +89,6 @@ function initStory(){
     });
   }
 
-  document.querySelector(".screen.story .loading-modal").classList.add('hide-loading');
   readyScreen.classList.add('show');
 
   readyScreen.querySelector('.ok').addEventListener('click', () => {
