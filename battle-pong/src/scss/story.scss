@@ -1,4 +1,4 @@
-.story {
+.screen.story {
   position: absolute;
   width: 100vw;
   height: 100vh;
@@ -32,7 +32,7 @@
     width: 100%;
   }
 
-  #loading {
+  .loading-modal {
     z-index: 100;
 
     flex-direction: column;
@@ -75,7 +75,7 @@
   }
 
 
-  #ready {
+  .ready {
     z-index:101;
     display: flex;
     justify-content: center;
@@ -160,7 +160,7 @@
     }
   }
 
-  #story {
+  .story-content {
     z-index: 200;
     display: flex;
     justify-content: center;

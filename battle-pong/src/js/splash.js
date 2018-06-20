@@ -11,73 +11,54 @@ let timeoutAccumulator = 0;
 
 let menuControls;
 
+function initSplash(){
+  switchScreen('splash');
 
-function initSound(){
-  SoundManager.init().then(() => {
+  document.querySelector(".screen.splash").classList.add("appear");
 
-    document.querySelector("#loading").classList.add("hide-loading");
+  SoundManager.musicEngine.cueSong('menu');
+  if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+  startCredits(CREDITS_DELAY);
 
-    SoundManager.resumeAudioContext();
-    console.log(SoundManager);
-    document.querySelector(".splash").classList.add("appear");
-    SoundManager.musicEngine.cueSong('menu');
-    if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
-    startCredits(CREDITS_DELAY);
+  menuControls = setupInputButtons();
+  menuControls.connect();
 
-    menuControls = setupInputButtons();
-    menuControls.connect();
+  selectButtonBySelector(".start-game");
 
-    selectButtonBySelector(".start-game");
-
-    inputManager = new InputManager((paddle) => {
-      updatePlayerOptions(playerOptionEls);
-    });
-
-    initParticleEngine("#content .scene", 5);
-    loop();
-
-    prepTitle();
-
-    paddles.push(createObject({noBody: true}));
-    paddles.push(createObject({noBody: true}));
-
-    prepTitle();
-
-    bestOfEls = document.querySelectorAll(".best-of .option");
-    setupBestOf();
-
-    powerupEls = document.querySelectorAll(".powerups .powerup");
-    setupPowerups(powerupEls);
-
-    toggleEls = document.querySelectorAll(".option-toggle");
-    setupToggles(toggleEls);
-
-    playerOptionEls = document.querySelectorAll(".player-options .player-option");
-    setupPlayerOptionss(playerOptionEls);
-
-    setupStartButton();
-    setupRulesButton();
-
-    starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
-    startStars(50, window.innerWidth, window.innerHeight);
-
-    setupInputs();
-  }).catch(() => {
-    // We need to go back to index.html to capture a user gesture because Chrome has an autoplay policy...
-    // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio for more
-    if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-      window.location.href = "../index.html";
-    } else {
-      window.location.href = "index.html";
-    }
+  inputManager = new InputManager((paddle) => {
+    updatePlayerOptions(playerOptionEls);
   });
-}
 
-document.addEventListener('DOMContentLoaded', function () {
-  SoundManager.resumeSound().then(() => {
-    initSound();
-  })
-});
+  initParticleEngine(".screen.splash .content .scene", 5);
+  loop();
+
+  prepTitle();
+
+  paddles.push(createObject({noBody: true}));
+  paddles.push(createObject({noBody: true}));
+
+  prepTitle();
+
+  bestOfEls = document.querySelectorAll(".best-of .option");
+  setupBestOf();
+
+  powerupEls = document.querySelectorAll(".powerups .powerup");
+  setupPowerups(powerupEls);
+
+  toggleEls = document.querySelectorAll(".option-toggle");
+  setupToggles(toggleEls);
+
+  playerOptionEls = document.querySelectorAll(".player-options .player-option");
+  setupPlayerOptionss(playerOptionEls);
+
+  setupStartButton();
+  setupRulesButton();
+
+  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
+  startStars(50, window.innerWidth, window.innerHeight);
+
+  setupInputs();
+}
 
 function setupInputs() {
   inputManager.resetManagedObjects();
@@ -571,5 +552,7 @@ function startCredits(timeoutDelay) {
 
   creditsContainer.classList.add('show');
 }
+
+window.initSplash = initSplash;
 
 })();

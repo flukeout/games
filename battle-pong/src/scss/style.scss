@@ -19,6 +19,14 @@ html, body {
   margin: 0;
 }
 
+.screen {
+  display: none;
+
+  &.show {
+    display: block;
+  }
+}
+
 body {
   perspective: 1200px;
   overflow: hidden;

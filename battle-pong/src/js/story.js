@@ -19,7 +19,7 @@ let story = [
 ];
 
 function startStory(finishedCallback) {
-  let storyScreen = document.querySelector('#story');
+  let storyScreen = document.querySelector('.story-content');
   let typer = storyScreen.querySelector('.typer');
   let skipButton = storyScreen.querySelector('.skip');
   let typingInterval;
@@ -67,67 +67,50 @@ function startStory(finishedCallback) {
   });
 }
 
-function initSound(){
-  let readyScreen = document.querySelector('#ready');
-  SoundManager.init({
-    dontWorryAboutWebAudioAutoplayPolicy: true,
-    progress: function (total, loaded) {
-      document.querySelector('#loading .percent').textContent = Math.floor(loaded/total*100) + '%';
-    }
-  }).then(() => {
+function initStory(){
+  let readyScreen = document.querySelector('.screen.story .ready');
 
-    let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
-    if(isChrome) {
-      document.querySelector(".story").classList.add("is-chrome");
-    } else {
-      document.querySelector(".story").classList.add("not-chrome");
-    }
+  switchScreen('story');
 
-    // A cute way of detecting Electron
-    if (window.process) {
-      Array.prototype.forEach.call(document.querySelectorAll('.in-browser'), (e) => {
-        e.setAttribute('hidden', true);
-      });
-      Array.prototype.forEach.call(document.querySelectorAll('.in-electron'), (e) => {
-        e.removeAttribute('hidden');
-      });
-    }
+  let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
+  if(isChrome) {
+    document.querySelector(".story").classList.add("is-chrome");
+  } else {
+    document.querySelector(".story").classList.add("not-chrome");
+  }
 
-    document.querySelector("#loading").classList.add("hide-loading");
-    readyScreen.classList.add('show');
-
-    readyScreen.querySelector('.ok').addEventListener('click', () => {
-    
-      readyScreen.classList.remove('show');
-      
-      setTimeout(function(){
-        startStory(() => {
-          setTimeout(function(){
-            if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-              window.location.href = "../splash.html";
-            } else {
-              window.location.href = "splash.html";
-            }
-          }, 1000);
-        });
-      }, 750);
-    
+  // A cute way of detecting Electron
+  if (window.process) {
+    Array.prototype.forEach.call(document.querySelectorAll('.in-browser'), (e) => {
+      e.setAttribute('hidden', true);
     });
+    Array.prototype.forEach.call(document.querySelectorAll('.in-electron'), (e) => {
+      e.removeAttribute('hidden');
+    });
+  }
 
-    loop();
+  document.querySelector(".screen.story .loading-modal").classList.add('hide-loading');
+  readyScreen.classList.add('show');
 
-    starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
-    startStars(50, window.innerWidth, window.innerHeight);
-
-    // setupInputs();
+  readyScreen.querySelector('.ok').addEventListener('click', () => {
+  
+    readyScreen.classList.remove('show');
+    
+    setTimeout(function(){
+      startStory(() => {
+        setTimeout(function(){
+          initSplash();
+        }, 1000);
+      });
+    }, 750);
+  
   });
+
+  loop();
+
+  starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
+  startStars(50, window.innerWidth, window.innerHeight);
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-  SoundManager.resumeSound().then(() => {
-    initSound();
-  });
-});
 
 function setupInputs() {
   inputManager.resetManagedObjects();
@@ -627,5 +610,7 @@ function startCredits(timeoutDelay) {
 
   creditsContainer.classList.add('show');
 }
+
+window.initStory = initStory;
 
 })();
