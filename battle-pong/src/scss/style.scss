@@ -25,6 +25,11 @@ html, body {
   &.show {
     display: block;
   }
+
+  &.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
 }
 
 body {

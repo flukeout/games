@@ -39,6 +39,8 @@ ScreenManager.addScreen('splash', {
   start: () => {
     return new Promise((resolve, reject) => {
       timeoutAccumulator = 0;
+
+      document.querySelector(".screen.splash").classList.remove("transition-out");
       document.querySelector(".content").classList.remove("transition-out");
       document.querySelector(".paddle-guy").classList.remove("transition-out");
       document.querySelector(".surface").classList.remove("transition-out");
@@ -197,6 +199,7 @@ function fadeOutScene(){
   timeoutClass(".large-moon", "transition-out", 200);
   timeoutClass(".sky", "transition-out", 200);
   timeoutClass(".canvas-stars", "transition-out", 200);
+  timeoutClass(".screen.splash", "transition-out", 1000);
 }
 
 

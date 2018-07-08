@@ -28,6 +28,7 @@ ScreenManager.addScreen('rules', {
     return new Promise((resolve, reject) => {
       timeoutAccumulator = 0;
 
+      document.querySelector(".screen.rules").classList.remove("transition-out");
       document.querySelector(".rules-nav").classList.remove("transition-out");
       document.querySelector(".rules").classList.remove("transition-out");
       document.querySelector(".buttons").classList.remove("transition-out");
@@ -328,6 +329,7 @@ function fadeOutScene(){
   timeoutClass(".buttons", "transition-out", 100);
   timeoutClass(".sky", "transition-out", 200);
   timeoutClass(".canvas-stars", "transition-out", 200);
+  timeoutClass(".screen.rules", "transition-out", 1200);
 }
 
 function setupNavButtons(){
