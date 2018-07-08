@@ -73,7 +73,11 @@ ScreenManager.addScreen('story', {
   },
   start: () => {
     return new Promise((resolve, reject) => {
+      let storyScreen = document.querySelector(".screen.story");
+      // storyScreen.classList.add
+
       let readyScreen = document.querySelector('.screen.story .ready');
+
       let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
       if(isChrome) {
         document.querySelector(".story").classList.add("is-chrome");
@@ -142,13 +146,7 @@ function timeoutClass(selector, className, timeout){
 
 function fadeOutScene(){
   console.log('fadeoutscene');
-  // timeoutClass(".content", "transition-out", 100)
-  // timeoutClass(".paddle-guy", "transition-out", 250);
-  // timeoutClass(".surface", "transition-out", 200);
-  // timeoutClass(".overlay", "transition-out");
-  // timeoutClass(".credits", "transition-out");
-  // timeoutClass(".large-moon", "transition-out", 200);
-  // timeoutClass(".sky", "transition-out", 200);
+  timeoutClass(".copyright", "transition-out", 200);
   timeoutClass(".canvas-stars", "transition-out", 200);
 }
 

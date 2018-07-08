@@ -58,7 +58,7 @@
       stop: () => {
         return new Promise((resolve, reject) => {
           screens['loading'].element.querySelector(".loading-modal").classList.add('hide-loading');
-          resolve();
+          setTimeout(resolve, 1000);
         });
       }
     });

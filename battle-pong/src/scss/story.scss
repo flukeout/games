@@ -5,6 +5,19 @@
   transform-style: preserve-3d;
   perspective: 1000px;
 
+  .scene {
+    animation: sceneappear 1s ease-out;
+
+    @keyframes sceneappear {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  }
+
   .is-chrome, .not-chrome {
     display: none;
   }
@@ -30,6 +43,12 @@
     text-align: center;
     opacity: .5;
     width: 100%;
+
+    transition: opacity 1s ease-out;
+    
+    &.transition-out {
+      opacity: 0;
+    }
   }
 
   .loading-modal {
@@ -76,7 +95,7 @@
 
 
   .ready {
-    z-index:101;
+    z-index: 101;
     display: flex;
     justify-content: center;
     align-items: center;
