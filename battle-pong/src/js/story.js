@@ -9,6 +9,8 @@ let bestOfEls,
 
 let timeoutAccumulator = 0;
 
+let starsManager;
+
 let story = [
   '22,018 Galactic Era',
   'Long since humanity\'s ascent to hyper-cybernetics, Earth\'s descendants have achieved their optimal form.',
@@ -27,7 +29,6 @@ function startStory(finishedCallback) {
 
   function finished() {
     storyScreen.classList.remove('show');
-    fadeOutScene();
     finishedCallback();
   }
 
@@ -67,123 +68,70 @@ function startStory(finishedCallback) {
   });
 }
 
-function initStory(){
-  let readyScreen = document.querySelector('.screen.story .ready');
+ScreenManager.addScreen('story', {
+  init: () => {
+  },
+  start: () => {
+    return new Promise((resolve, reject) => {
+      let readyScreen = document.querySelector('.screen.story .ready');
+      let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
+      if(isChrome) {
+        document.querySelector(".story").classList.add("is-chrome");
+      } else {
+        document.querySelector(".story").classList.add("not-chrome");
+      }
 
-  switchScreen('story');
+      // A cute way of detecting Electron
+      if (window.process) {
+        Array.prototype.forEach.call(document.querySelectorAll('.in-browser'), (e) => {
+          e.setAttribute('hidden', true);
+        });
+        Array.prototype.forEach.call(document.querySelectorAll('.in-electron'), (e) => {
+          e.removeAttribute('hidden');
+        });
+      }
 
-  let isChrome = navigator.userAgent.toLowerCase().includes("chrome") || false;
-  if(isChrome) {
-    document.querySelector(".story").classList.add("is-chrome");
-  } else {
-    document.querySelector(".story").classList.add("not-chrome");
-  }
+      readyScreen.classList.add('show');
 
-  // A cute way of detecting Electron
-  if (window.process) {
-    Array.prototype.forEach.call(document.querySelectorAll('.in-browser'), (e) => {
-      e.setAttribute('hidden', true);
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('.in-electron'), (e) => {
-      e.removeAttribute('hidden');
-    });
-  }
-
-  readyScreen.classList.add('show');
-
-  readyScreen.querySelector('.ok').addEventListener('click', () => {
-  
-    readyScreen.classList.remove('show');
-    
-    setTimeout(function(){
-      startStory(() => {
+      readyScreen.querySelector('.ok').addEventListener('click', () => {
+      
+        readyScreen.classList.remove('show');
+        
         setTimeout(function(){
-          initSplash();
-        }, 1000);
+          startStory(() => {
+            ScreenManager.transitionToScreen('splash');
+          });
+        }, 750);
+      
       });
-    }, 750);
-  
-  });
 
-  loop();
+      loop();
 
-  startStars('.screen.story', 50, window.innerWidth, window.innerHeight);
-}
+      starsManager = startStars('.screen.story', 50, window.innerWidth, window.innerHeight);
 
-function setupInputs() {
-  inputManager.resetManagedObjects();
-  inputManager.forgetManagedObjects();
+      resolve();
+    });
+  },
+  stop: () => {
+    return new Promise((resolve, reject) => {
+      fadeOutScene();
+      setTimeout(function () {
+        starsManager.stop();
 
-  if (Settings.player1Control !== 'AI') {
-    inputManager.setupInputForObject(paddles[0]);
+        // An odd place for this, but this is the best place to boot up the menu music for the splash+rules pages
+        SoundManager.musicEngine.cueSong('menu');
+        if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+
+        resolve();
+      }, 1000);
+    });
   }
-  if (Settings.player2Control !== 'AI') {
-    inputManager.setupInputForObject(paddles[1]);
-  }
-}
+});
 
 function loop(){
   drawParticles();
   requestAnimationFrame(loop);
 }
-
-// Sets up the music & sound toggle click handlers
-function setupPlayerOptionss(els){
-  els.forEach(function(el){
-    el.addEventListener("click",function(el){
-      var playerNum = this.getAttribute("player");
-      addTemporaryClassName(this, "poke", 250); 
-      SoundManager.playSound("Menu_Select");
-      var key = "player" + playerNum + "Control";
-      var currentSetting = window.Settings[key];
-      if(currentSetting === "player") {
-        saveSetting(key, "AI");
-      } else {
-        saveSetting(key, "player");
-      }
-      setupInputs();
-      
-      updatePlayerOptions(els);
-      buttonGleam(el.target);
-    });
-  });
-  updatePlayerOptions(els);
-}
-// Updates state of the music & sound toggles
-function updatePlayerOptions(els){
-  els.forEach(function(el){
-    var playerNum = el.getAttribute("player");
-    var key = "player" + playerNum + "Control";
-    var setting =window.Settings[key];
-
-    el.classList.remove('ai');
-    el.classList.remove('keyboard');
-    el.classList.remove('gamepad');
-
-    if(setting === "AI") {
-      el.classList.add('ai');
-      el.innerHTML = "CPU";
-    } else {
-      if (paddles[playerNum - 1].inputComponent) {
-        if (paddles[playerNum - 1].inputComponent.type === 'gamepad') el.classList.add('gamepad');
-        else el.classList.add('keyboard');
-      }
-      else {
-        console.warn('Paddle ' + playerNum + ' has no input component. Can\'t perform detection.');
-      }
-      
-      el.innerHTML = "&nbsp;";
-    }
-  });
-}
-
-// Saves an individual setting
-// and pushes it to localStorage as well
-function saveSetting(setting, value){
-  window.Settings[setting] = value;
-  window.localStorage.setItem("settings", JSON.stringify(window.Settings));
-}
-
 
 function timeoutClass(selector, className, timeout){
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
@@ -191,7 +139,6 @@ function timeoutClass(selector, className, timeout){
     document.querySelector(selector).classList.add(className);
   },timeoutAccumulator)
 }
-
 
 function fadeOutScene(){
   console.log('fadeoutscene');
@@ -203,238 +150,6 @@ function fadeOutScene(){
   // timeoutClass(".large-moon", "transition-out", 200);
   // timeoutClass(".sky", "transition-out", 200);
   timeoutClass(".canvas-stars", "transition-out", 200);
-}
-
-
-function setupStartButton(){
-  
-  var button = document.querySelector(".start-game");
-  
-  button.addEventListener("click", function(e){
-    var button = e.target;
-    var buttonPosition = button.getBoundingClientRect();
-
-    var options = {
-      x : buttonPosition.x,
-      y : buttonPosition.y,
-      zR : getRandom(-8,8),
-      xRv : getRandom(12,20),
-      yV : 7,
-      zV : -40,
-      xV : getRandom(-5,5),
-      oV: -.02,
-      width : 20,
-      height: 50,
-      className : 'start-game-particle',
-      lifespan: 1000
-    }
-
-    makeParticle(options);
-
-    SoundManager.playSound("Menu_Start&Blastoff");
-    button.style.opacity = 0;
-
-    fadeOutScene();
-
-    buttonGleam(button);
-
-    e.preventDefault();
-
-    SoundManager.musicEngine.fadeOut(2);
-    setTimeout(function(){
-      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../rules.html";
-      }
-      else {
-        window.location.href = "rules.html";
-      }
-    }, 4000);
-  })
-}
-
-function setupRulesButton(){
-  return;
-  var button = document.querySelector(".rules-button");
-  
-  button.addEventListener("click", function(e){
-    addTemporaryClassName(e.target, "poke", 250);
-    fadeOutScene();
-    buttonGleam(e.target);
-    SoundManager.playSound("Menu_Select");
-    SoundManager.musicEngine.fadeOut(2);
-    setTimeout(function(){
-      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../rules.html";
-      }
-      else {
-        window.location.href = "rules.html";
-      }
-    }, 4000);
-  })
-}
-
-
-// Sets up the music & sound toggle click handlers
-function setupToggles(els){
-  els.forEach(function(el){
-    el.querySelector(".value").addEventListener("click",function(el){
-      addTemporaryClassName(this, "poke", 250); 
-      var toggle = this.parentNode;
-      var toggleType = toggle.getAttribute("data-type");
-      var settingEnabled = window.Settings[toggleType];
-      addTemporaryClassName(this, "pokoe", 250);
-      if(settingEnabled) {
-        saveSetting(toggleType, false);
-      } else {
-        saveSetting(toggleType, true);
-        buttonGleam(this);
-      }
-      updateToggles(els);
-      SoundManager.playSound("Menu_Select");
-
-      if (toggleType === 'music') {
-        if (Settings[toggleType]) {
-          SoundManager.musicEngine.fadeIn(2, {loop: true});
-        }
-        else {
-          SoundManager.musicEngine.stop();
-        }
-      }
-    });
-  });
-  updateToggles(els);
-}
-
-// Updates state of the music & sound toggles
-function updateToggles(els){
-  els.forEach(function(el){
-    var toggleType = el.getAttribute("data-type");
-    var settingEnabled = window.Settings[toggleType];
-    if(settingEnabled) {
-      el.classList.add("enabled");
-    } else {
-      el.classList.remove("enabled");
-    }
-  });
-}
-
-const powerupOn = {
-  clone: 'Powerup_Bones_Score',
-  grow: 'Powerup_Enhance_Score',
-  spin: 'Powerup_Spin_Score',
-  mine: 'Bomb_Spawn',
-  noclip: 'Powerup_Ghost_Score',
-  magnet: 'Powerup_Sticky_Score'
-};
-
-const powerupOff = {
-  clone: 'Powerup_Bones_Deselect',
-  grow: 'Powerup_Enhance_WareOff',
-  spin: 'Powerup_Spin_WareOff',
-  noclip: 'Powerup_Ghost_WareOff',
-  magnet: 'Powerup_Sticky_WareOff',
-  mine: 'Bomb_Disable'
-};
-
-
-// Best Of Options
-function setupPowerups(els){
-  els.forEach(function(el){
-    el.addEventListener("click",function(){
-      var powerupType = this.getAttribute("data-powerup");
-      var isEnabled = this.classList.contains("enabled");
-
-      if(isEnabled){
-        powerupToggle(powerupType, "disable");
-        let soundName = powerupOff[powerupType] || "Menu_Select";
-        SoundManager.playSound(soundName);
-      } else {
-        let soundName = powerupOn[powerupType] || "Menu_Select";
-        SoundManager.playSound(soundName);
-        powerupToggle(powerupType, "enable");
-      }
-      addTemporaryClassName(this, "poke", 250);
-      updatePowerups(els);
-    });
-  });
-  updatePowerups(els);
-}
-
-
-function powerupToggle(type, action) {
-  if(action === "disable"){
-    var itemIndex = window.Settings.powerUpTypes.indexOf(type);
-    if(itemIndex > -1) {
-      window.Settings.powerUpTypes.splice(itemIndex, 1);
-    }
-  } else if (action == "enable") {
-    if(window.Settings.powerUpTypes.indexOf(type) === -1) {
-      window.Settings.powerUpTypes.push(type);
-    }
-  }
-  window.localStorage.setItem("settings", JSON.stringify(window.Settings));
-}
-
-
-// Update display of powerup items
-function updatePowerups(els){
-  var enabledPowerups = window.Settings.powerUpTypes;
-  els.forEach(function(el){
-    var powerupType = el.getAttribute("data-powerup");
-    if(enabledPowerups.indexOf(powerupType) > -1){
-      el.classList.add("enabled");
-    } else {
-      el.classList.remove("enabled");
-    }
-  });
-}
-
-// Best Of Options
-function setupBestOf(){
-  bestOfEls.forEach(function(option){
-    option.addEventListener("click",function(){
-      addTemporaryClassName(option, "poke", 250);
-      buttonGleam(option);
-      var value = parseInt(this.getAttribute("data-value"));
-      saveSetting("playTo", value);
-      updateBestOf();
-      SoundManager.playSound("Menu_Select");
-    });
-  });
-  updateBestOf();
-}
-
-// Updates the selected state for the best of options
-function updateBestOf(){  
-  var currentBestOf = parseInt(window.Settings.playTo) || 2;  
-  bestOfEls.forEach(function(option){
-    var value = parseInt(option.getAttribute("data-value"));
-    value === currentBestOf ? option.classList.add("selected") : option.classList.remove("selected");
-  });
-}
-
-// Separates the letters in the title into individual elements
-// to be animated.
-function prepTitle(){
-  // return;
-  var titleEl = document.querySelector(".game-title .actual-title")
-  var titleString = titleEl.innerText;
-  titleEl.innerText = "";
-
-  var animationDelay = .1;
-
-  for(var i = 0; i < titleString.length; i++) {
-    var letterText = titleString.charAt(i);
-    if(letterText == " ") {
-      letterText = "&nbsp;&nbsp;";
-    }
-    var letterEl = document.createElement("span");
-    letterEl.classList.add("letter");
-    letterEl.innerHTML = letterText;
-    letterEl.style.animationDelay = animationDelay + "s";
-    animationDelay = animationDelay + .1;
-    titleEl.append(letterEl);
-  }
 }
 
 // This shouldn't be in here, we should just import it from effects.js
@@ -605,7 +320,5 @@ function startCredits(timeoutDelay) {
 
   creditsContainer.classList.add('show');
 }
-
-window.initStory = initStory;
 
 })();

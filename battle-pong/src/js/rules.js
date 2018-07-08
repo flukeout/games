@@ -3,109 +3,145 @@ const rulenames = [];
 let ruleNavEls;
 
 let menuControls;
+let starsManager;
+let inputManager;
 
-window.initRules = function () {
-  switchScreen('rules');
- 
-  let leftPaddle = createObject({noBody: true});
-  let rightPaddle = createObject({noBody: true});
+let timeoutAccumulator = 0;
 
-  var inputManager = new InputManager((paddle) => {
-    let selector = (paddle === leftPaddle ? '.player-one-controls' : '.player-two-controls')
-    let displayType = paddle.inputComponent.type;
-    if(paddle.inputComponent.type === "keyboard") {
-      displayType = paddle.inputComponent.inputToActionMapping.KeyA ? "keyboard-left" : "keyboard-right";
-    }
-    document.querySelector(selector).setAttribute('data-type', displayType);
+// A quick and super dirty way to get rid of all of the event listeners on objects--instead of making this whole codebase horrible.
+function refreshElements (selector) {
+  Array.prototype.forEach.call(document.querySelectorAll(selector), element => {
+    let clone = element.cloneNode(true);
+    element.parentNode.replaceChild(clone, element);
   });
 
-  if (Settings.player1Control === 'AI') {
-    document.querySelector('.player-one-controls').setAttribute('data-type', 'ai');
-  }
-  else {
-    inputManager.setupInputForObject(leftPaddle);
-  }
+  return document.querySelectorAll(selector);
+}
 
-  if (Settings.player2Control === 'AI') {
-    document.querySelector('.player-two-controls').setAttribute('data-type', 'ai');
-  }
-  else {
-    inputManager.setupInputForObject(rightPaddle);
-  }
+function refreshElement (selector) {
+  return refreshElements(selector)[0];
+}
 
-  document.querySelector(".screen.rules").classList.add("ready");
+ScreenManager.addScreen('rules', {
+  init: () => {},
+  start: () => {
+    return new Promise((resolve, reject) => {
+      timeoutAccumulator = 0;
 
-  setupNavButtons();
+      document.querySelector(".rules-nav").classList.remove("transition-out");
+      document.querySelector(".rules").classList.remove("transition-out");
+      document.querySelector(".buttons").classList.remove("transition-out");
+      document.querySelector(".sky").classList.remove("transition-out");
+      document.querySelector(".canvas-stars").classList.remove("transition-out");
 
-  ruleNavEls = document.querySelectorAll(".rules-nav a");
-  ruleNavEls.forEach(function(el){
-    let type = el.getAttribute("nav");
-    rulenames.push(type);
+      let leftPaddle = createObject({noBody: true});
+      let rightPaddle = createObject({noBody: true});
 
-    el.addEventListener("click",function(e){
-      let type = this.getAttribute("nav");
-      showRule(type);
-      SoundManager.playSound("Menu_Select");
-      addTemporaryClassName(e.target, "poke", 250);
-      e.preventDefault();
-    })
-  });
+      inputManager = new InputManager((paddle) => {
+        let selector = (paddle === leftPaddle ? '.player-one-controls' : '.player-two-controls')
+        let displayType = paddle.inputComponent.type;
+        if(paddle.inputComponent.type === "keyboard") {
+          displayType = paddle.inputComponent.inputToActionMapping.KeyA ? "keyboard-left" : "keyboard-right";
+        }
+        document.querySelector(selector).setAttribute('data-type', displayType);
+      });
 
-  ruleEls = document.querySelectorAll(".rule-box");
+      if (Settings.player1Control === 'AI') {
+        document.querySelector('.player-one-controls').setAttribute('data-type', 'ai');
+      }
+      else {
+        inputManager.setupInputForObject(leftPaddle);
+      }
 
-  document.querySelector(".button.previous").addEventListener("click",function(){
-    previousRule();
-    SoundManager.playSound("Menu_Select");
-    addTemporaryClassName(this, "poke", 250);
-  })
-  
-  document.querySelector(".button.next").addEventListener("click",function(){
-    addTemporaryClassName(this, "poke", 250);
-    SoundManager.playSound("Menu_Select");
-    nextRule();
-  })
+      if (Settings.player2Control === 'AI') {
+        document.querySelector('.player-two-controls').setAttribute('data-type', 'ai');
+      }
+      else {
+        inputManager.setupInputForObject(rightPaddle);
+      }
 
-  numRules = ruleEls.length;
+      document.querySelector(".screen.rules").classList.add("ready");
 
-  powerupEls = document.querySelectorAll(".powerup-row .icon");
+      setupNavButtons();
 
-  powerupEls.forEach(function(el){
-    let type = el.getAttribute("type");
-    powerupnames.push(type);
-    el.addEventListener("click", function(el){
-      let type = this.getAttribute("type");
-      showPowerup(type);
-      SoundManager.playSound("Menu_Select");
+      ruleNavEls = refreshElements(".rules-nav a");
+      ruleNavEls.forEach(function(el){
+        let type = el.getAttribute("nav");
+        rulenames.push(type);
+
+        el.addEventListener("click",function(e){
+          let type = this.getAttribute("nav");
+          showRule(type);
+          SoundManager.playSound("Menu_Select");
+          addTemporaryClassName(e.target, "poke", 250);
+          e.preventDefault();
+        })
+      });
+
+      ruleEls = refreshElements(".rule-box");
+
+      refreshElement(".button.previous").addEventListener("click",function(){
+        previousRule();
+        SoundManager.playSound("Menu_Select");
+        addTemporaryClassName(this, "poke", 250);
+      })
+      
+      refreshElement(".button.next").addEventListener("click",function(){
+        addTemporaryClassName(this, "poke", 250);
+        SoundManager.playSound("Menu_Select");
+        nextRule();
+      })
+
+      numRules = ruleEls.length;
+
+      powerupEls = refreshElements(".powerup-row .icon");
+      powerupEls.forEach(function(el){
+        let type = el.getAttribute("type");
+        powerupnames.push(type);
+        el.addEventListener("click", function(el){
+          let type = this.getAttribute("type");
+          showPowerup(type);
+          SoundManager.playSound("Menu_Select");
+        });
+      })
+
+      showPowerup(powerupnames[0]);
+      
+      currentRule = rulenames[0];
+      
+      if (window.location.hash) {
+        let prospectiveRule = window.location.hash.substr(1);
+        if (rulenames.indexOf(prospectiveRule) > -1) {
+          currentRule = prospectiveRule;
+        }
+      }
+      showRule(currentRule);
+
+      menuControls = setupInputButtons();
+      menuControls.connect();
+
+      selectButtonByIndex(12);
+
+      initParticleEngine(".scene", 5);
+      loop();
+
+      starsManager = startStars('.screen.rules', 50, window.innerWidth, window.innerHeight);
+
+      resolve();
     });
-  })
-
-  showPowerup(powerupnames[0]);
-  
-  currentRule = rulenames[0];
-  
-  if (window.location.hash) {
-    let prospectiveRule = window.location.hash.substr(1);
-    if (rulenames.indexOf(prospectiveRule) > -1) {
-      currentRule = prospectiveRule;
-    }
+  },
+  stop: () => {
+    return new Promise((resolve, reject) => {
+      inputManager.destroy();
+      menuControls.disconnect();
+      fadeOutScene();
+      setTimeout(function () {
+        starsManager.stop();
+        resolve();
+      }, 2500);
+    });
   }
-  showRule(currentRule);
-
-  menuControls = setupInputButtons();
-  menuControls.connect();
-
-  selectButtonByIndex(12);
-
-  if (Settings.music) {
-    SoundManager.musicEngine.cueSong('menu');
-    SoundManager.musicEngine.fadeIn( 2, {loop: true} );
-  }
-
-  initParticleEngine(".scene", 5);
-  loop();
-
-  startStars('.screen.rules', 50, window.innerWidth, window.innerHeight);
-};
+});
 
 const showPowerup = type => {
   currentPowerup = type;
@@ -117,15 +153,17 @@ const showPowerup = type => {
   // Select the icon
   document.querySelector(".powerup-row .icon[type="+type+"]").classList.add("selected");
 
-  // Hide all videos
-  document.querySelectorAll(".powerups video").forEach(function(el){
-    el.style.display = "none";
-    el.pause();
-    el.currentTime = 0;
-  });
-
   // Show the proper video
   let video = document.querySelector("video." + type);
+
+  // Hide all videos
+  document.querySelectorAll(".powerups video").forEach(function(el){
+    if (video !== el) {
+      el.style.display = "none";
+      el.pause();
+      el.currentTime = 0;
+    }
+  });
 
   video.style.display = "block";
 
@@ -277,8 +315,6 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-let timeoutAccumulator = 0;
-
 function timeoutClass(selector, className, timeout){
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
   setTimeout(function(){
@@ -295,52 +331,40 @@ function fadeOutScene(){
 }
 
 function setupNavButtons(){
-  var buttons = document.querySelectorAll(".nav-button");
+  var buttons = refreshElements(".nav-button");
   buttons.forEach(function(el){
     el.addEventListener("click", function(e){
       
       SoundManager.playSound("Menu_Select");
       let navTo = this.getAttribute("to");
       addTemporaryClassName(this, "poke", 250);
-      if(navTo === "game") {
+      if (navTo === "game") {
         buttonGleam(e.target);
+        SoundManager.musicEngine.fadeOut(2);
         startGame();
-
-      } else if(navTo === "splash"){
-        goBack();
+      }
+      else if (navTo === "splash") {
+        ScreenManager.transitionToScreen('splash');
       }
     })
   });
 }
 
-function goBack(){
-  initSplash();
+// function startGame(){
+//   let url = "game.html";
+//   fadeOutScene();
+//   if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
+//     url = "../" + url;
+//   }
 
-  SoundManager.musicEngine.fadeOut(2);
+//   SoundManager.musicEngine.fadeOut(2);
   
-  menuControls.disconnect();
+//   menuControls.disconnect();
 
-  setTimeout(function(){
-    window.location.href = url;
-  }, 2500);
-}
-
-
-function startGame(){
-  let url = "game.html";
-  fadeOutScene();
-  if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-    url = "../" + url;
-  }
-
-  SoundManager.musicEngine.fadeOut(2);
-  
-  menuControls.disconnect();
-
-  setTimeout(function(){
-    window.location.href = url;
-  }, 2500);
-}
+//   setTimeout(function(){
+//     window.location.href = url;
+//   }, 2500);
+// }
 
 
 // Separates the letters in the title into individual elements

@@ -5,6 +5,7 @@ let maxStarsRadiusModifier = 1;
 
 
 function startStars(parentSelector, starCount, width, height){
+  stars = [];
 
   canvas = document.querySelector(parentSelector + " .canvas-stars canvas");
 
@@ -17,7 +18,18 @@ function startStars(parentSelector, starCount, width, height){
     resizeStarsCanvas();
   });
   
-  window.requestAnimationFrame(drawStars);
+  let stopFlag = false;
+
+  (function loop () {
+    drawStars();
+    if (!stopFlag) window.requestAnimationFrame(loop);
+  })();
+
+  return {
+    stop: () => {
+      stopFlag = true;
+    }
+  }
 }
 
 function resizeStarsCanvas(){
@@ -80,6 +92,4 @@ function drawStars() {
       star.y = 0;
     }
   }
-
-  window.requestAnimationFrame(drawStars);
 }

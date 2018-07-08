@@ -1,32 +1,82 @@
 (function () {
 
-	document.addEventListener('DOMContentLoaded', (e) => {
-    let storyScreen = document.querySelector('.screen.story');
-    let currentScreen = null;
-
-    storyScreen.classList.add('show');
-
-    window.switchScreen = function (nextScreenName) {
-      let nextScreen = document.querySelector('.screen.' + nextScreenName)
-
-      if (currentScreen) {
-        currentScreen.classList.remove('show');
+  const screens = {};
+  let currentScreen = null;
+  window.ScreenManager = {
+    initScreens: () => {
+      for (let screenName in screens) {
+        screens[screenName].element = document.querySelector('.screen.' + screenName);
+        screens[screenName].init && screens[screenName].init(screens[screenName]);
       }
+    },
+    addScreen: (name, screenDefinition) => {
+      screens[name] = screenDefinition;
+    },
+    transitionToScreen: (name) => {
+      return new Promise((transitionPromiseResolve, transitionPromiseReject) => {
+        if (screens[name]) {
 
-      nextScreen.classList.add('show');
+          function goToNextScreen () {
+            if (currentScreen) {
+              currentScreen.element.classList.remove('show');
+            }
 
-      currentScreen = nextScreen;
-    };
+            currentScreen = screens[name];
+            currentScreen.element.classList.add('show');
+            if (currentScreen.start) {
+              currentScreen.start().then(() => {
+                transitionPromiseResolve();
+              });
+            }
+            else {
+              transitionPromiseResolve();
+            }
+          }
 
-	  SoundManager.init({
-	    dontWorryAboutWebAudioAutoplayPolicy: true,
-	    progress: function (total, loaded) {
-	      storyScreen.querySelector('.loading-modal .percent').textContent = Math.floor(loaded/total*100) + '%';
-	    }
-	  }).then(() => {
-      document.querySelector(".screen.story .loading-modal").classList.add('hide-loading');
-	  	initStory();
-	  });
+          if (currentScreen) {
+            if (currentScreen.stop) {
+              currentScreen.stop().then(goToNextScreen);
+            }
+            else {
+              goToNextScreen();
+            }
+          }
+          else {
+            goToNextScreen();
+          }
+
+        }
+        else {
+          throw new Error('No screen with name "' + name + '".');
+        }
+      });
+    }
+  };
+
+	document.addEventListener('DOMContentLoaded', (e) => {
+    ScreenManager.addScreen('loading', {
+      stop: () => {
+        return new Promise((resolve, reject) => {
+          screens['loading'].element.querySelector(".loading-modal").classList.add('hide-loading');
+          resolve();
+        });
+      }
+    });
+
+    ScreenManager.initScreens();
+
+    ScreenManager.transitionToScreen('loading').then(() => {
+      SoundManager.init({
+        dontWorryAboutWebAudioAutoplayPolicy: true,
+        progress: function (total, loaded) {
+          screens['loading'].element.querySelector('.loading-modal .percent').textContent = Math.floor(loaded/total*100) + '%';
+        }
+      }).then(() => {
+        ScreenManager.transitionToScreen('story').then(() => {
+          screens['loading'].element.querySelector(".loading-modal").classList.add('hide-loading');
+        });
+      });
+    });
 	});
 
 })();

@@ -11,53 +11,99 @@ let timeoutAccumulator = 0;
 
 let menuControls;
 
-function initSplash(){
-  switchScreen('splash');
+let inputManager;
+let starsManager;
+let realCredits;
+let creditsManager;
 
-  document.querySelector(".screen.splash").classList.add("appear");
-
-  SoundManager.musicEngine.cueSong('menu');
-  if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
-  startCredits(CREDITS_DELAY);
-
-  menuControls = setupInputButtons();
-  menuControls.connect();
-
-  selectButtonBySelector(".start-game");
-
-  inputManager = new InputManager((paddle) => {
-    updatePlayerOptions(playerOptionEls);
+// A quick and super dirty way to get rid of all of the event listeners on objects--instead of making this whole codebase horrible.
+function refreshElements (selector) {
+  Array.prototype.forEach.call(document.querySelectorAll(selector), element => {
+    let clone = element.cloneNode(true);
+    element.parentNode.replaceChild(clone, element);
   });
 
-  initParticleEngine(".screen.splash .content .scene", 5);
-  loop();
-
-  prepTitle();
-
-  paddles.push(createObject({noBody: true}));
-  paddles.push(createObject({noBody: true}));
-
-  prepTitle();
-
-  bestOfEls = document.querySelectorAll(".best-of .option");
-  setupBestOf();
-
-  powerupEls = document.querySelectorAll(".powerups .powerup");
-  setupPowerups(powerupEls);
-
-  toggleEls = document.querySelectorAll(".option-toggle");
-  setupToggles(toggleEls);
-
-  playerOptionEls = document.querySelectorAll(".player-options .player-option");
-  setupPlayerOptionss(playerOptionEls);
-
-  setupStartButton();
-  setupRulesButton();
-
-  startStars('.screen.splash', 50, window.innerWidth, window.innerHeight);
-
-  setupInputs();
+  return document.querySelectorAll(selector);
 }
+
+function refreshElement (selector) {
+  return refreshElements(selector)[0];
+}
+
+ScreenManager.addScreen('splash', {
+  init: () => {
+    let creditsContainer = document.querySelector('.screen.splash .credits');
+    realCredits = Array.prototype.slice.call(creditsContainer.querySelectorAll('.credit'));
+    realCredits.forEach(c => { creditsContainer.removeChild(c); });
+  },
+  start: () => {
+    return new Promise((resolve, reject) => {
+      timeoutAccumulator = 0;
+      document.querySelector(".content").classList.remove("transition-out");
+      document.querySelector(".paddle-guy").classList.remove("transition-out");
+      document.querySelector(".surface").classList.remove("transition-out");
+      document.querySelector(".overlay").classList.remove("transition-out");
+      document.querySelector(".credits").classList.remove("transition-out");
+      document.querySelector(".large-moon").classList.remove("transition-out");
+      document.querySelector(".sky").classList.remove("transition-out");
+      document.querySelector(".canvas-stars").classList.remove("transition-out");
+      document.querySelector(".start-game").classList.remove('hidden');
+
+      document.querySelector('.screen.splash').classList.add('appear');
+
+      creditsManager = startCredits(CREDITS_DELAY);
+
+      menuControls = setupInputButtons();
+      menuControls.connect();
+
+      selectButtonBySelector(".start-game");
+
+      inputManager = new InputManager((paddle) => {
+        updatePlayerOptions(playerOptionEls);
+      });
+
+      initParticleEngine(".screen.splash .content .scene", 5);
+      loop();
+
+      prepTitle();
+
+      paddles.push(createObject({noBody: true}));
+      paddles.push(createObject({noBody: true}));
+
+      prepTitle();
+
+      bestOfEls = refreshElements(".best-of .option");
+      setupBestOf();
+
+      powerupEls = refreshElements(".powerups .powerup");
+      setupPowerups(powerupEls);
+
+      toggleEls = refreshElements(".option-toggle");
+      setupToggles(toggleEls);
+
+      playerOptionEls = refreshElements(".player-options .player-option");
+      setupPlayerOptionss(playerOptionEls);
+
+      setupStartButton();
+
+      starsManager = startStars('.screen.splash', 50, window.innerWidth, window.innerHeight);
+
+      setupInputs();
+    });
+  },
+  stop: () => {
+    return new Promise((resolve, reject) => {
+      creditsManager.stop();
+      fadeOutScene();
+      inputManager.destroy();
+      menuControls.disconnect();
+      setTimeout(function(){
+        starsManager.stop();
+        resolve();
+      }, 4000);
+    });
+  }
+});
 
 function setupInputs() {
   inputManager.resetManagedObjects();
@@ -98,6 +144,7 @@ function setupPlayerOptionss(els){
   });
   updatePlayerOptions(els);
 }
+
 // Updates state of the music & sound toggles
 function updatePlayerOptions(els){
   els.forEach(function(el){
@@ -154,8 +201,7 @@ function fadeOutScene(){
 
 
 function setupStartButton(){
-  
-  var button = document.querySelector(".start-game");
+  var button = refreshElement(".start-game");
   
   button.addEventListener("click", function(e){
     var button = e.target;
@@ -180,21 +226,14 @@ function setupStartButton(){
 
     SoundManager.playSound("Menu_Start&Blastoff");
     SoundManager.playSound("Power_Shot_V1");
-    button.style.opacity = 0;
-
-    fadeOutScene();
+    
+    button.classList.add('hidden');
 
     buttonGleam(button);
 
     e.preventDefault();
 
-    SoundManager.musicEngine.fadeOut(2);
-    
-    menuControls.disconnect();
-
-    setTimeout(function(){
-      initRules();
-    }, 4000);
+    ScreenManager.transitionToScreen('rules');
   })
 }
 
@@ -361,7 +400,6 @@ function prepTitle(){
 
 function startCredits(timeoutDelay) {
   let creditsContainer = document.querySelector('.credits');
-  let realCredits = Array.prototype.slice.call(creditsContainer.querySelectorAll('.credit'));
   let creditsToShow = [];
   let lastCredit = null;
   let creditToRemove = null;
@@ -441,7 +479,12 @@ function startCredits(timeoutDelay) {
     'Luke Pacholski'
   ];
 
+  let stopFlag = false;
+  let creditsTimeout = -1;
+
   function creditsLoop() {
+    if (stopFlag) return;
+
     if (creditToRemove) {
       creditsContainer.removeChild(creditToRemove);
       creditToRemove = null;
@@ -508,16 +551,19 @@ function startCredits(timeoutDelay) {
       lastCredit = nextCredit;
     }
 
-    setTimeout(creditsLoop, timeoutDelay);
+    creditsTimeout = setTimeout(creditsLoop, timeoutDelay);
   }
 
   creditsLoop();
 
-  realCredits.forEach(c => { creditsContainer.removeChild(c); });
-
   creditsContainer.classList.add('show');
-}
 
-window.initSplash = initSplash;
+  return {
+    stop: () => {
+      stopFlag = true;
+      if (creditsTimeout > -1) clearTimeout(creditsTimeout);
+    }
+  }
+}
 
 })();

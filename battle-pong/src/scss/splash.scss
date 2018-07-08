@@ -536,6 +536,10 @@
       &.start-game {
         padding: 10px 45px;
         margin-bottom: 20px;
+
+        &.hidden {
+          visibility: hidden;
+        }
       }
 
     }
