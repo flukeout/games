@@ -194,7 +194,7 @@
             line.remove();
           }, 450);
 
-          objectsToRender.forEach((obj) => {
+          game.objectsToRender.forEach((obj) => {
             if (obj === this) return;
 
             var distanceX = obj.physics.position.x - this.physics.position.x;

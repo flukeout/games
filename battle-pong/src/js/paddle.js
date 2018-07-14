@@ -268,7 +268,7 @@ const updateFunctions = {
 
       if(paddle.lifeSpan < 0) {
         popPaddle(paddle.physics);
-        removalList.push(paddle);
+        game.removeObject(paddle);
 
         // If lifeSpan is being used, we're assuming that it's a clone (a bone)
         if (paddle.cloneIndex !== undefined) {

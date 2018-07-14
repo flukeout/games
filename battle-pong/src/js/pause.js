@@ -88,22 +88,11 @@ function PauseManager (game, inputManager, menuControls) {
   }
 
   function navigate(destination){
+    ScreenManager.transitionToScreen(destination);
+  }
+
+  this.destroy = function () {
     menuControls.disconnect();
-
-    let url = destination + ".html";
-    
-    fadeOutScene();
-  
-    if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-      url = "../" + url;
-    }
-  
-    setTimeout(function(){
-      window.location.href = url;
-    }, 1000);
-  }
-
-  function fadeOutScene(){
-    document.querySelector("body").classList.add("fade-out");
-  }
+    gamepadEventManager.pause(); 
+  };
 }

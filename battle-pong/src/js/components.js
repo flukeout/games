@@ -137,20 +137,17 @@ function createObject(options){
 
       if (!options.noBody) {
         // Add it to the World
-        World.add(engine.world, [this.physics]);
+        Matter.World.add(game.engine.world, [this.physics]);
 
-        objectsToRender.push(this);
+        game.addObject(this);
       }
     }
   }
 
   object.init();
 
-
   return object;
 }
-
-
 
 // After we add a physics element to the simulation, we need to strip its original CSS positioning
 // and let the engine handle it all via it's own X,Y coords.

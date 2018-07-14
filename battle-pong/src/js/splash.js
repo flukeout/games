@@ -38,6 +38,11 @@ ScreenManager.addScreen('splash', {
   },
   start: () => {
     return new Promise((resolve, reject) => {
+      if (Settings.music && SoundManager.musicEngine.status === 'stopped') {
+        SoundManager.musicEngine.cueSong('menu');
+        SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+      }
+
       timeoutAccumulator = 0;
 
       document.querySelector(".screen.splash").classList.remove("transition-out");

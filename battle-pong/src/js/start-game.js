@@ -1,4 +1,6 @@
 (function () {
+  let menuControls;
+  let pauseManager;
 
   // Sizes the width of the board to fill up the available
   // space in the window.
@@ -30,18 +32,17 @@
     document.querySelector(".surface").style.top = parseFloat(boardTopPercent) * 100 + "vh";
   }
 
-  let menuControls;
-
   ScreenManager.addScreen('game', {
     init: () => {
 
     },
     start: () => {
       return new Promise((resolve, reject) => {
+        document.querySelector('.screen.game').classList.remove('fade-out');
         window.addEventListener("resize", resizeBoard);
 
         resizeBoard();
-        setupRenderer(".world");
+        game.setupGameEnvironment(".world");
 
         const numPaddles = 2;
 
@@ -135,7 +136,7 @@
           inputManager.setupInputForObject(rightPaddle);
         }
 
-        let pauseManager = new PauseManager(game, inputManager, menuControls);
+        pauseManager = new PauseManager(game, inputManager, menuControls);
 
         // Iterate once to grab the objects, put them in the engine, and place them in the DOM correctly
         game.step();
@@ -154,8 +155,20 @@
     },
     stop: () => {
       return new Promise((resolve, reject) => {
+        pauseManager.destroy();
+        menuControls.disconnect();
+
+        pauseManager = null;
+        menuControls = null;
+
+        game.destroy();
+
+        document.querySelector('.screen.game').classList.add('fade-out');
         window.removeEventListener("resize", resizeBoard);
-        resolve();
+
+        if (Settings.music) SoundManager.musicEngine.fadeOut(2);
+
+        setTimeout(resolve, 2000);
       });
     }
   });
