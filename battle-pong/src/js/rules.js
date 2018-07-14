@@ -343,7 +343,7 @@ function setupNavButtons(){
       if (navTo === "game") {
         buttonGleam(e.target);
         SoundManager.musicEngine.fadeOut(2);
-        startGame();
+        ScreenManager.transitionToScreen('game');
       }
       else if (navTo === "splash") {
         ScreenManager.transitionToScreen('splash');
@@ -351,23 +351,6 @@ function setupNavButtons(){
     })
   });
 }
-
-// function startGame(){
-//   let url = "game.html";
-//   fadeOutScene();
-//   if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-//     url = "../" + url;
-//   }
-
-//   SoundManager.musicEngine.fadeOut(2);
-  
-//   menuControls.disconnect();
-
-//   setTimeout(function(){
-//     window.location.href = url;
-//   }, 2500);
-// }
-
 
 // Separates the letters in the title into individual elements
 // to be animated.

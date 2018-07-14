@@ -296,8 +296,8 @@ var game =  {
 
     this.tiltBoard()
 
-    if(trailStarted) {
-      drawTrail();
+    if(BallTrailManager.trailStarted) {
+      BallTrailManager.drawTrail();
     }
     // Iterate over all of the objects are are updating on screen
     objectsToRender.forEach((obj) => {

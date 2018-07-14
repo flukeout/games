@@ -6,10 +6,12 @@
     <title></title>
     <base href="src/">
     <link rel="stylesheet" href="style.css"/>
+    <script src="js/matter.min.js"></script>   <!-- physics engine -->
+    <script src="js/settings.js"></script>
+
     <script src="js/main.js"></script>
     <script src="js/effects.js"></script>
     <script src="js/particles.js"></script>
-    <script src="js/settings.js"></script>
     <script src="js/canvas-stars.js"></script>
     <script src="js/music.js"></script>
     <script src="js/sounds.js"></script>
@@ -21,6 +23,25 @@
     <script src="js/splash.js"></script>
     <script src="js/story.js"></script>
     <script src="js/rules.js"></script>
+
+    <script src="js/ai.js"></script>
+    <script src="js/title.js"></script>        <!-- animates browser tab -->
+
+    <script src="js/powerups.js"></script>
+    <script src="js/pause.js"></script>
+    <script src="js/game.js"></script>         <!-- main game loop -->
+    <script src="js/collisions.js"></script>   <!-- handles collisions -->
+    <script src="js/convert.js"></script>      <!-- Get DOM elements properties for the engine -->
+    <script src="js/components.js"></script>   <!-- animates browser tab -->
+    <script src="js/paddle.js"></script>       <!-- the paddles -->
+    <script src="js/ball.js"></script>         <!-- the ball -->
+    <script src="js/reactions.js"></script>
+    <script src="js/framerate.js"></script>
+    <script src="js/balltrail.js"></script>
+    <script src="js/start-game.js"></script>   <!-- fires everything up -->
+
+    <script src="js/debug.js"></script>
+
     <!-- insert minified source here -->
   </head>
 
@@ -295,6 +316,147 @@
           <div class="divider"></div>
           <div row="3" col="3" class="gamepad-button button next">Next &rarr;</div>
           <div row="3" col="4" to="game" class="gamepad-button button nav-button start-game green-button">PLAY</div>
+        </div>
+      </div>
+    </div>
+    <div class="game screen">
+      <div class="scene">
+        <div class="sky"></div>
+        
+        <div class="canvas-stars">
+          <canvas />
+        </div>
+
+        <div class="large-moon"></div>
+        <div class="surface">
+          <div class="overlay"></div>
+        </div>
+      </div>
+
+      <div class="score-satellite">
+        <div class="score-screen">
+          <span class="player-1-score">3</span>
+          <span class="player-2-score">2</span>
+        </div>
+      </div>
+
+      <div class="flash team-1-flash"></div>
+      <div class="flash team-2-flash"></div>
+
+      <div class="top-message"></div>
+
+      <div class="board-shadow-wrapper">
+        <div class="board-shadow"></div>
+      </div>
+
+      <div class="board-wrapper hide">
+        <div class="shake-wrapper">
+          <div class="tilt-wrapper">
+            <div class="world">
+
+              <div class="goal one">
+                <div class="bar"></div>
+              </div>
+              <div class="goal two">
+                <div class="bar"></div>
+              </div>
+              <div class="terrain one"></div>
+              <div class="terrain two"></div>
+
+              <div class="bigscore-wrapper one">
+                <div class="bigscore">
+                  <div class="score-number"></div>
+                </div>
+                <div class="bestof">BEST OF</div>
+              </div>
+
+              <div class="bigscore-wrapper two">
+                <div class="bigscore">
+                  <div class="score-number"></div>
+                </div>
+                <div class="bestof"></div>
+              </div>
+
+              <div class="spin-wall top"></div>
+              <div class="spin-wall bottom"></div>
+              <canvas class="particle-canvas"></canvas>
+              <div class="blast-zone"></div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reaction-container one">
+        <div class="emoji"></div>
+        <div class="words"></div>
+      </div>
+      
+      <div class="reaction-container two">
+        <div class="emoji"></div>
+        <div class="words"></div>
+      </div>
+
+      <div class="pause-screen">
+        <div class="content">
+          <div>
+            <div class="paused-title">
+              <span>GAME PAUSED</span>
+            </div>
+
+            <h3 id="pause-pre-title"></h3>
+            <h1>PADDLE FORCE</h1>
+            
+            <div row="1" col="1" nav="splash" class="gamepad-button button pink-button">HOME</div>
+            <div row="1" col="2" nav="rules" class="gamepad-button button pink-button">RULES</div>
+            <div row="1" col="3" class="gamepad-button resume button green-button">RESUME</div>
+
+            <div class="score-wrapper">
+              <h2 class="controls-title">CONTROLS</h2>
+              <div class="input" data-player="1"><div class="help"></div></div>
+              <div class="input" data-player="2"><div class="help"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="menu-toggle">PAUSE</div>
+
+      <div class="between-round-score">
+        <div class="score-wrapper">
+          <div class="wing left-wing"></div>
+          <div class="wing right-wing"></div>
+
+          <div class="satellite-top">
+          
+          </div>
+          
+          <div class="screen-wrapper">
+            <div class="screen">
+              <h2>ROUND OVER</h2>
+              <h1></h1>
+              <div class="scores">
+                <span class="player-1-score">?</span>
+                <span class="divider">:</span>
+                <span class="player-2-score">?</span>
+              </div>
+              
+              <div class="actions">
+                <div row="2" col="1" class="gamepad-button button restart">REMATCH</div><br/>
+                <div row="3" col="1" class="gamepad-button button settings">HOME</div>
+              </div>
+
+              <table class="stats" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td colspan="2">TOTAL WINS</td>
+                </tr>
+                <tr>
+                  <td class="player-1-total-score">?</td>
+                  <td class="player-2-total-score">?</td>
+                </tr>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,15 +1,14 @@
 let effectsElements = {};
-document.addEventListener('DOMContentLoaded', function () {
+
+function initEffects() {
   effectsElements.body = document.querySelector("body");
   effectsElements.world = document.querySelector(".world");
   effectsElements.blastZone = document.querySelector(".blast-zone");
   effectsElements.shakeWrapper = document.querySelector(".shake-wrapper");
   effectsElements.scene = document.querySelector(".scene");
-});
 
-
-function initEffects() {
-  startStars(30, window.innerWidth, 400);
+  startStars('.screen.game', 30, window.innerWidth, 400, true);
+  BallTrailManager.startBallTrail();
 }
 
 // Flashes board border when a powerup scores
@@ -528,12 +527,6 @@ function makeTerrainChunks(terrainLine, modifier, className, boardWidth, boardHe
     makeParticle(options);
   }
 }
-
-document.addEventListener('DOMContentLoaded', e => {
-  if (Settings.showBackground === false) {
-    effectsElements.scene.style.display = 'none';
-  }
-});
 
 function buttonGleam(element) {
   let gleam = document.createElement("div");

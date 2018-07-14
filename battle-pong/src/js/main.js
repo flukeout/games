@@ -10,6 +10,7 @@
       }
     },
     addScreen: (name, screenDefinition) => {
+      console.log('Adding screen', name);
       screens[name] = screenDefinition;
     },
     transitionToScreen: (name) => {
@@ -72,7 +73,11 @@
           screens['loading'].element.querySelector('.loading-modal .percent').textContent = Math.floor(loaded/total*100) + '%';
         }
       }).then(() => {
-        ScreenManager.transitionToScreen('story').then(() => {
+        let nextScreen = document.location.search.substr(1).match(/screen=(.+)/);
+        if (!nextScreen) nextScreen = 'story';
+        else nextScreen = nextScreen[1];
+
+        ScreenManager.transitionToScreen(nextScreen).then(() => {
           screens['loading'].element.querySelector(".loading-modal").classList.add('hide-loading');
         });
       });
