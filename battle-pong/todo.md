@@ -7,10 +7,14 @@
 
 ### Rules
 * Clicking "next" on rules screen in Powerups section cycles through powerups but never goes back to Controls section
+* Stars pulse to the beat, which they should not do
 
 ### Game
-* Unable to use the pause menu because it's somehow z-translated behind the board (I made it translateZ(40px) so I could use it at least...)
 * Fix music on re-entering a game
 * Fix pause menu on re-entering a game (game > pause > rules > game --> :( )
 * Fix background on re-entering splash
-* Game doesn't reset properly (2 balls, fast physics, etc.). Looks like everything is created/connected twice.
+* Game board shadow slices through the board
+* Game stats don't really reset when re-entering game (i.e. you can win a match too quickly)
+* Music stops after match (after re-entering game)
+* Pause button in the bottom left corner doesn't really work sometimes
+* Background and gameboard don't reset properly before fading in on game re-entry

@@ -116,8 +116,11 @@ ScreenManager.addScreen('splash', {
 });
 
 function setupInputs() {
+console.log('Destroying');
   inputManager.resetManagedObjects();
   inputManager.forgetManagedObjects();
+  paddles[0].setInputComponent(null);
+  paddles[1].setInputComponent(null);
 
   if (Settings.player1Control !== 'AI') {
     inputManager.setupInputForObject(paddles[0]);
@@ -170,7 +173,7 @@ function updatePlayerOptions(els){
         else el.classList.add('keyboard');
       }
       else {
-        console.warn('Paddle ' + playerNum + ' has no input component. Can\'t perform detection.');
+        // console.warn('Paddle ' + playerNum + ' has no input component. Can\'t perform detection.');
       }
       
       el.innerHTML = "&nbsp;";

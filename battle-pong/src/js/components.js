@@ -48,6 +48,9 @@ function createObject(options){
         this.inputComponent = inputComponent;
         inputComponent.register(this.actions);
       }
+      else {
+        this.inputComponent = null;
+      }
 
       document.dispatchEvent(new CustomEvent('inputcomponentchanged', {detail: {object: this, inputComponent: inputComponent}}));
     },

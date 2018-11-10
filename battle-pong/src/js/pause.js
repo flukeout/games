@@ -92,6 +92,9 @@ function PauseManager (game, inputManager, menuControls) {
   }
 
   this.destroy = function () {
+    document.querySelector(".pause-screen").classList.remove("visible");
+    displayingRules = false;
+    deselectAllButtons();
     menuControls.disconnect();
     gamepadEventManager.pause(); 
   };

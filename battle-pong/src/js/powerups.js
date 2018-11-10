@@ -31,6 +31,12 @@
       get: () => {return activePowerups;}
     });
 
+    this.destroy = () => {
+      activePowerups.forEach(powerup => {
+        powerup.destroy();
+      });
+    };
+
     this.update = () => {
       if (this.automaticSpawning) {
         let chance = getRandom(0, powerupFrequency);
@@ -266,9 +272,7 @@
           makeParticle(options);
           makeCracks(this.physics.position.x, this.physics.position.y);
 
-          this.destroyed = true;
-          game.removeObject(this);
-          activePowerups.splice(activePowerups.indexOf(this), 1);
+          this.destroy();
         },
 
         hit : function(obj) {
@@ -325,11 +329,14 @@
 
             powerupScored(this.physics.position.x, this.physics.position.y, this.type);
 
-            this.destroyed = true;
-            game.removeObject(this);
-            activePowerups.splice(activePowerups.indexOf(this), 1);
+            this.destroy();
             SoundManager.playSound(powerUpScoreSoundNames[this.type] || "coin");
           }
+        },
+        destroy: function () {
+          this.destroyed = true;
+          game.removeObject(this);
+          activePowerups.splice(activePowerups.indexOf(this), 1);
         }
       });
     };

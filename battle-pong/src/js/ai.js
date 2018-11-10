@@ -83,6 +83,8 @@
     let activeComponents = [];
 
     this.createPaddleAIInputComponent = function (paddle, playerSide) {
+      console.log('%cInitializing AI Input Component', 'color: yellow');
+
       const debugOutput = document.querySelector('#aidebug .' + playerSide);
 
       const directionMultiplier = (playerSide === 'left' ? 1 : -1);

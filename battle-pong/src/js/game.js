@@ -55,6 +55,8 @@
 
     aiManager: null,
 
+    activeSpinPowerups : 0,    
+
     init: function(menuControls){
       this.menuControls = menuControls;
 
@@ -77,6 +79,16 @@
 
       this.boardWidth = this.worldEl.clientWidth;
       this.boardHeight = this.worldEl.clientHeight;
+
+      // Make sure some important things are really reset
+      game.score.player1 = 0;
+      game.score.player2 = 0;
+      game.score.total1 = 0;
+      game.score.total2 = 0;
+      game.score.winner = false;
+      game.score.loser = false;
+      game.terrainLinePercent = 50;
+      game.activeSpinPowerups = 0;
 
       SoundManager.musicEngine.addBeatCallback(() => {
         starsRadiusModifier = maxStarsRadiusModifier;
@@ -110,9 +122,6 @@
       initEffects();
     },
 
-    activeSpinPowerups : 0,
-    
-    
     // Lets the game know someone lost a powerup
     lostPowerup: function(player, type){
       if(type === "spin") {
@@ -252,6 +261,7 @@
     destroy: function () {
       this.mode = 'paused';
       this.destroyGameEnvironment();
+      SoundManager.musicEngine.removeBeatCallbacks();
     },
 
     resume: function () {
@@ -938,6 +948,20 @@
         objectsToRender.splice(objectsToRender.indexOf(obj), 1);
         obj.deleted = true;
       })
+
+      game.balls.forEach(ball => {
+        if (ball.element.parentNode) ball.element.parentNode.removeChild(ball.element);
+      });
+
+      game.paddles.forEach(paddle => {
+        if (paddle.element.parentNode) paddle.element.parentNode.removeChild(paddle.element);
+      });
+
+      game.powerupManager.destroy();
+
+      game.balls = [];
+      game.paddles = [];
+
       game.engine = null;
       game.world = null;
     },
