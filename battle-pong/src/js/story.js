@@ -23,6 +23,7 @@ let story = [
 function startStory(finishedCallback) {
   let storyScreen = document.querySelector('.story-content');
   let typer = storyScreen.querySelector('.typer');
+  let cursor = storyScreen.querySelector('.cursor');
   let skipButton = storyScreen.querySelector('.skip');
   let typingInterval;
   let typingNextTimeout;
@@ -35,18 +36,29 @@ function startStory(finishedCallback) {
   storyScreen.classList.add('show');
 
   function typeNext() {
-    typer.textContent = '';
-
     let currentLine = story.shift();
+
+    let transformedLine = '';
+
+    for (let letter in currentLine) {
+      transformedLine += '<span>' + currentLine[letter] + '</span>';
+    }
+
+    typer.innerHTML = transformedLine;
+
+    let spans = typer.querySelectorAll('span');
 
     if (currentLine) {
       let index = 0;
       typingInterval = setInterval(() => {
-        let letter = currentLine[index++];
+        let letter = spans[index++];
 
         if (letter) {
           SoundManager.playRandomSoundFromBank('type');
-          typer.textContent += letter;
+          letter.classList.add('on');
+          let letterRect = letter.getBoundingClientRect();
+          cursor.style.left = letterRect.right + 'px';
+          cursor.style.top = letterRect.top + 'px';
         }
         else {
           clearInterval(typingInterval);
@@ -55,6 +67,7 @@ function startStory(finishedCallback) {
       }, 25);
     }
     else {
+      cursor.classList.add('off');
       finished();
     }
   }

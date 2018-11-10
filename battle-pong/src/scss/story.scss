@@ -197,13 +197,7 @@
     font-weight: normal;
     font-family: LatoRegular;
 
-    .typer {
-      width: 600px;
-      font-size: 24px;
-      color: rgba(255, 255, 255, 0.6);
-      line-height: 140%;
-      height: 200px;
-
+    .cursor {
       @keyframes typerCursor {
         0% {
           opacity: 0;
@@ -213,9 +207,30 @@
         }
       }
 
-      &::after {
-        content: '_';
-        animation: typerCursor .5s infinite;
+      position: absolute;
+      animation: typerCursor .5s infinite;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 24px;
+
+      &.off {
+        animation: none;
+        opacity: 0;
+      }
+    }
+
+    .typer {
+      width: 600px;
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 140%;
+      height: 200px;
+
+      span {
+        visibility: hidden;
+
+        &.on {
+          visibility: visible;
+        }
       }
     }
 
