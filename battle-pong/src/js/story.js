@@ -122,7 +122,7 @@ ScreenManager.addScreen('story', {
       
       });
 
-      loop();
+      particleLoop = startParticleLoop();
 
       starsManager = startStars('.screen.story', 50, window.innerWidth, window.innerHeight);
 
@@ -134,6 +134,7 @@ ScreenManager.addScreen('story', {
       fadeOutScene();
       setTimeout(function () {
         starsManager.stop();
+        particleLoop.stop();
 
         // An odd place for this, but this is the best place to boot up the menu music for the splash+rules pages
         SoundManager.musicEngine.cueSong('menu');
@@ -144,11 +145,6 @@ ScreenManager.addScreen('story', {
     });
   }
 });
-
-function loop(){
-  drawParticles();
-  requestAnimationFrame(loop);
-}
 
 function timeoutClass(selector, className, timeout){
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);

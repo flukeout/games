@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', e => {
     player2Win: function () {
       game.score.player2 = game.score.max - 1;
       Debug.player2ScoreBig();
+    },
+    fireGun: function () {
+      fireGun(250, 250, 0, 1);
     }
   };
 

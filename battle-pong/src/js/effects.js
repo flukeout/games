@@ -256,7 +256,7 @@ function fireGun(x, y, angle, player) {
     width : 100,
     height: 240,
     oV: -.05,
-    className : 'fire'
+    className : 'fire',
   }
   
   makeParticle(options);

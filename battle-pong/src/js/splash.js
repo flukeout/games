@@ -16,6 +16,8 @@ let starsManager;
 let realCredits;
 let creditsManager;
 
+let particleLoop;
+
 // A quick and super dirty way to get rid of all of the event listeners on objects--instead of making this whole codebase horrible.
 function refreshElements (selector) {
   Array.prototype.forEach.call(document.querySelectorAll(selector), element => {
@@ -70,7 +72,7 @@ ScreenManager.addScreen('splash', {
       });
 
       initParticleEngine(".screen.splash .content .scene", 5);
-      loop();
+      particleLoop = startParticleLoop();
 
       prepTitle();
 
@@ -106,6 +108,7 @@ ScreenManager.addScreen('splash', {
       menuControls.disconnect();
       setTimeout(function(){
         starsManager.stop();
+        particleLoop.stop();
         resolve();
       }, 4000);
     });
@@ -122,11 +125,6 @@ function setupInputs() {
   if (Settings.player2Control !== 'AI') {
     inputManager.setupInputForObject(paddles[1]);
   }
-}
-
-function loop(){
-  drawParticles();
-  requestAnimationFrame(loop);
 }
 
 // Sets up the music & sound toggle click handlers
