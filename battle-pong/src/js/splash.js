@@ -69,7 +69,7 @@ ScreenManager.addScreen('splash', {
 
       inputManager = new InputManager((paddle) => {
         updatePlayerOptions(playerOptionEls);
-      });
+      }, 'splash');
 
       initParticleEngine(".screen.splash .content .scene", 5);
       particleLoop = startParticleLoop();

@@ -52,7 +52,7 @@
             displayType = paddle.inputComponent.inputToActionMapping.KeyA ? "keyboard-left" : "keyboard-right";
           }
           document.querySelector(selector).setAttribute('data-type', displayType);
-        });
+        }, 'rules');
 
         if (Settings.player1Control === 'AI') {
           document.querySelector('.player-one-controls').setAttribute('data-type', 'ai');

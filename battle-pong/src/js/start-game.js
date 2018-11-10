@@ -1,6 +1,7 @@
 (function () {
   let menuControls;
   let pauseManager;
+  let inputManager;
 
   // Sizes the width of the board to fill up the available
   // space in the window.
@@ -88,7 +89,7 @@
           var frameRateMonitor  = new FrameRateMonitor();
         }
 
-        var inputManager = new InputManager((paddle) => {
+        inputManager = new InputManager((paddle) => {
           var playerNumber = game.paddles.indexOf(paddle);
           var inputDisplayElement = document.querySelector('.score-wrapper .input[data-player="' + (playerNumber + 1) + '"]');
           var helpElement = inputDisplayElement.querySelector('.help');
@@ -111,7 +112,7 @@
           }
 
           console.log('%cInput Changed:', 'color: green', playerNumber, paddle.inputComponent.type);
-        });
+        }, 'game');
         
         if (Settings.music) SoundManager.musicEngine.playSongChain('gameplay');
 
@@ -157,6 +158,7 @@
       return new Promise((resolve, reject) => {
         pauseManager.destroy();
         menuControls.disconnect();
+        inputManager.destroy();
 
         pauseManager = null;
         menuControls = null;

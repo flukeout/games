@@ -376,6 +376,7 @@
           this.actions = actions;
         },
         remove: function () {
+          console.log('%cDestroying AI Input Component', 'color: yellow');
         }
       };
 

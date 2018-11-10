@@ -4,7 +4,9 @@
 var axisThreshold = 0.1;
 
 
-window.InputManager = function (onInputChanged) {
+window.InputManager = function (onInputChanged, inputManagerName) {
+  console.log('Creating Input Manager "' + inputManagerName + '"');
+  
   let maintainedObjects = [];
 
   let savedInputLabelToActionMappings = localStorage.getItem('inputLabelToActionMappings');
@@ -105,6 +107,7 @@ window.InputManager = function (onInputChanged) {
   window.addEventListener("gamepaddisconnected", onGamepadDisconnected);
 
   this.destroy = function () {
+    console.log('Destroying Input Manager "' + inputManagerName + '"');
     clearInterval(gamepadCheckInterval);
     window.removeEventListener("gamepadconnected", onGamepadConnected);
     window.removeEventListener("gamepaddisconnected", onGamepadDisconnected);
