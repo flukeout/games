@@ -128,7 +128,7 @@
         menuControls = setupInputButtons();
         menuControls.connect();
 
-        selectButtonByIndex(12);
+        selectButtonBySelector(".rules-start");
 
         initParticleEngine(".rules .scene", 5);
         particleLoop = startParticleLoop();
@@ -177,7 +177,7 @@
     video.style.display = "block";
 
     addTemporaryClassName(video, "videoPop", 250); 
-    
+
     video.play();
 
     // Display the rule text

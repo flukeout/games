@@ -62,9 +62,6 @@ ScreenManager.addScreen('splash', {
 
       creditsManager = startCredits(CREDITS_DELAY);
 
-
-      
-
       inputManager = new InputManager((paddle) => {
         updatePlayerOptions(playerOptionEls);
       }, 'splash');
@@ -119,7 +116,6 @@ ScreenManager.addScreen('splash', {
 });
 
 function setupInputs() {
-console.log('Destroying');
   inputManager.resetManagedObjects();
   inputManager.forgetManagedObjects();
   paddles[0].setInputComponent(null);

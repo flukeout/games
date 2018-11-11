@@ -2,9 +2,23 @@ let buttons;
 let selectedButton;
 let selectedIndex;
 
+const keyDownListener = e => {
+
+  let map = {
+    ArrowRight: 'right',
+    ArrowLeft: 'left',
+    ArrowUp: 'up',
+    ArrowDown: 'down',
+    Enter: 'go',
+  };
+
+  map[e.key] && moveCursor(map[e.key]);
+}
+
 const setupInputButtons = (ignoreStartButton) => {
-  
+
   buttons = Array.prototype.slice.call(document.querySelectorAll('.gamepad-button'));
+
   buttons.forEach(button => {
     button.onmouseover = e => {
       buttons.forEach(otherButton => {
@@ -40,17 +54,9 @@ const setupInputButtons = (ignoreStartButton) => {
   // Pause right away to prevent this from interfering with anything else
   gamepadManager.pause();
 
-  window.addEventListener("keydown", function(e){
-    let map = {
-      ArrowRight: 'right',
-      ArrowLeft: 'left',
-      ArrowUp: 'up',
-      ArrowDown: 'down',
-      Enter: 'go',
-    };
-
-    map[e.key] && moveCursor(map[e.key]);
-  });
+  // Remove any previous keydown listeners we have attached
+  window.removeEventListener("keydown", keyDownListener);
+  window.addEventListener("keydown", keyDownListener);
 
   return {
     clearSelectedButton: () => {
@@ -98,91 +104,116 @@ const selectButtonByDirection = (thisButton, direction) => {
   let thisButtonCenter = getCenter(thisButton);
   let col = parseInt(thisButton.getAttribute("col"));
   let row = parseInt(thisButton.getAttribute("row"));
+  let nextRow, nextCol;
 
 
-  let nextSelector = false;
+  let allButtons = []; // Visible buttons
+  let allButtonEls = document.querySelectorAll("[row][col]");
 
-  let allButtons = document.querySelectorAll("[row][col]");
+  allButtonEls.forEach( el => {
+    if(el.offsetParent) {
+      allButtons.push(el);
+    }
+  });
 
   // Get the number of rows
   let rows = [];
+
   allButtons.forEach( el => { 
-    if(el.offsetParent) {
-      let row = parseInt(el.getAttribute("row"));
-      if(rows.indexOf(row) < 0) {
-        rows.push(row);
-      }
+    let row = parseInt(el.getAttribute("row"));
+    if(rows.indexOf(row) < 0) {
+      rows.push(row);
     }
   });
 
   let numRows = Math.max(...rows);
 
-  let rowButtons = document.querySelectorAll(`[row="${row}"]`);
-  if(direction === "right") {
-    if(col < rowButtons.length) {
-      nextSelector =`[row="${row}"][col="${col+1}"]`;
-    } else {
-      nextSelector =`[row="${row}"][col="1"]`;
-    }
-  }
+  let rowButtons = [];
 
-  if(direction === "left") {
-    if(col > 1) {
-      nextSelector =`[row="${row}"][col="${col-1}"]`;
-    } else {
-      nextSelector =`[row="${row}"][col="${rowButtons.length}"]`;
+  allButtons.forEach(el => {
+    if(parseInt(el.getAttribute("row")) === row) {
+      rowButtons.push(el);
     }
-  }
+  });
+
+  if(direction == "right" || direction == "left") {
+    if(direction === "right") {
+      if(col < rowButtons.length) {
+        nextRow = row;
+        nextCol = col + 1;
+      } else {
+        nextRow = row;
+        nextCol = 1;
+      }
+    }
+
+    if(direction === "left") {
+      if(col > 1) {
+        nextRow = row;
+        nextCol = col - 1;
+      } else {
+        nextRow = row;
+        nextCol = rowButtons.length;
+      }
+    }
+
+    allButtons.forEach(el => {
+      if(parseInt(el.getAttribute("row")) === nextRow
+      && parseInt(el.getAttribute("col")) === nextCol) {
+          selectButtonEl(el);
+      }
+    });
+
+  } // End of "left" & "right" directions
+
+  if(direction === "up" || direction === "down") {
+
+    let thisIndex = rows.indexOf(row);
+
+    if(direction === "down") {
+      if(rows.indexOf(row) + 1 < rows.length) {
+        row = rows[thisIndex + 1];
+      } else {
+        row = rows[0];
+      }
+    }
+
+    if(direction === "up") {
+      if(rows.indexOf(row) === 0) {
+        row = rows[rows.length - 1];
+      } else {
+        row = rows[thisIndex - 1];
+      }
+    }
+
+    let nextRowButtons = []
+
+    allButtons.forEach(el => {
+      if(parseInt(el.getAttribute("row")) === row) {
+        nextRowButtons.push(el);
+      }
+    });
+
+    let closestButton = false;
+    let delta = 9999999;
+
+    nextRowButtons.forEach(button => {
+      let xDelta = Math.abs(thisButtonCenter.x - getCenter(button).x)
+      if( xDelta < delta) {
+        closestButton = button;
+        delta = xDelta;
+      }
+    });
+
+    selectButtonEl(closestButton);
+  } // End of "up" & "down" directions
   
-  if(nextSelector) { 
-    let nextOption = document.querySelector(nextSelector);
-
-    if(nextOption){
-      selectButtonEl(nextOption);
-      return;
-    }
-  }
-
-  let thisIndex = rows.indexOf(row);
-  
-  if(direction === "down") {
-    if(rows.indexOf(row) + 1 < rows.length) {
-      row = rows[thisIndex + 1];
-    } else {
-      row = rows[0];
-    }
-  }
-
-  if(direction === "up") {
-    if(rows.indexOf(row) === 0) {
-      row = rows[rows.length - 1];
-    } else {
-      row = rows[thisIndex - 1];
-    }
-  }
-
-  let nextRowButtons = document.querySelectorAll(`[row="${row}"]`);
-  let closestButton = false;
-  
-  let delta = 9999999;
-  nextRowButtons.forEach(button => {
-    let xDelta = Math.abs(thisButtonCenter.x - getCenter(button).x)
-    if( xDelta < delta) {
-      closestButton = button;
-      delta = xDelta;
-    }
-  })
-
-  selectButtonEl(closestButton);
 }
 
 const selectButtonEl = el => {
   deselectAllButtons();
-  selectedIndex = buttons.indexOf(el);
   selectedButton = el;
-  if (el) {
-    el.classList.add('input-selected');
-  }
+  el.classList.add('input-selected');
 }
 
 const selectButtonByRowCol = (row,col) => {
