@@ -62,9 +62,6 @@ ScreenManager.addScreen('splash', {
 
       creditsManager = startCredits(CREDITS_DELAY);
 
-
-      
-
       inputManager = new InputManager((paddle) => {
         updatePlayerOptions(playerOptionEls);
       }, 'splash');

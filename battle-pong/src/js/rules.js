@@ -177,8 +177,8 @@
     video.style.display = "block";
 
     addTemporaryClassName(video, "videoPop", 250); 
-    
-    // video.play();
+
+    video.play();
 
     // Display the rule text
     let ruletext = powerupExplanations[type];

@@ -2,8 +2,21 @@ let buttons;
 let selectedButton;
 let selectedIndex;
 
+const keyDownListener = e => {
+
+  let map = {
+    ArrowRight: 'right',
+    ArrowLeft: 'left',
+    ArrowUp: 'up',
+    ArrowDown: 'down',
+    Enter: 'go',
+  };
+
+  map[e.key] && moveCursor(map[e.key]);
+}
+
 const setupInputButtons = (ignoreStartButton) => {
-  
+
   buttons = Array.prototype.slice.call(document.querySelectorAll('.gamepad-button'));
 
   buttons.forEach(button => {
@@ -41,17 +54,9 @@ const setupInputButtons = (ignoreStartButton) => {
   // Pause right away to prevent this from interfering with anything else
   gamepadManager.pause();
 
-  window.addEventListener("keydown", function(e){
-    let map = {
-      ArrowRight: 'right',
-      ArrowLeft: 'left',
-      ArrowUp: 'up',
-      ArrowDown: 'down',
-      Enter: 'go',
-    };
-
-    map[e.key] && moveCursor(map[e.key]);
-  });
+  // Remove any previous keydown listeners we have attached
+  window.removeEventListener("keydown", keyDownListener);
+  window.addEventListener("keydown", keyDownListener);
 
   return {
     clearSelectedButton: () => {
@@ -95,14 +100,12 @@ const getCenter = el => {
 
 // Selects a button closest to thisButton for a given Direction
 const selectButtonByDirection = (thisButton, direction) => {
+
   let thisButtonCenter = getCenter(thisButton);
   let col = parseInt(thisButton.getAttribute("col"));
   let row = parseInt(thisButton.getAttribute("row"));
   let nextRow, nextCol;
 
-  let nextSelector = false;
-
-  let selected = false;
 
   let allButtons = []; // Visible buttons
   let allButtonEls = document.querySelectorAll("[row][col]");
@@ -115,6 +118,7 @@ const selectButtonByDirection = (thisButton, direction) => {
 
   // Get the number of rows
   let rows = [];
+
   allButtons.forEach( el => { 
     let row = parseInt(el.getAttribute("row"));
     if(rows.indexOf(row) < 0) {
@@ -152,7 +156,6 @@ const selectButtonByDirection = (thisButton, direction) => {
         nextCol = rowButtons.length;
       }
     }
-
 
     allButtons.forEach(el => {
       if(parseInt(el.getAttribute("row")) === nextRow
