@@ -128,7 +128,7 @@
         menuControls = setupInputButtons();
         menuControls.connect();
 
-        selectButtonByIndex(12);
+        selectButtonBySelector(".rules-start");
 
         initParticleEngine(".rules .scene", 5);
         particleLoop = startParticleLoop();
@@ -178,7 +178,7 @@
 
     addTemporaryClassName(video, "videoPop", 250); 
     
-    video.play();
+    // video.play();
 
     // Display the rule text
     let ruletext = powerupExplanations[type];

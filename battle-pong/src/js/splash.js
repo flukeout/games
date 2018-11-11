@@ -119,7 +119,6 @@ ScreenManager.addScreen('splash', {
 });
 
 function setupInputs() {
-console.log('Destroying');
   inputManager.resetManagedObjects();
   inputManager.forgetManagedObjects();
   paddles[0].setInputComponent(null);
