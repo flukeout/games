@@ -40,7 +40,7 @@ ScreenManager.addScreen('splash', {
   },
   start: () => {
     return new Promise((resolve, reject) => {
-      if (Settings.music && SoundManager.musicEngine.status === 'stopped') {
+      if (Settings.music && (SoundManager.musicEngine.status === 'stopped' || SoundManager.musicEngine.status === 'ready')) {
         SoundManager.musicEngine.cueSong('menu');
         SoundManager.musicEngine.fadeIn( 2, {loop: true} );
       }
