@@ -62,10 +62,8 @@ ScreenManager.addScreen('splash', {
 
       creditsManager = startCredits(CREDITS_DELAY);
 
-      menuControls = setupInputButtons();
-      menuControls.connect();
 
-      selectButtonBySelector(".start-game");
+      
 
       inputManager = new InputManager((paddle) => {
         updatePlayerOptions(playerOptionEls);
@@ -94,6 +92,11 @@ ScreenManager.addScreen('splash', {
       setupPlayerOptionss(playerOptionEls);
 
       setupStartButton();
+
+      menuControls = setupInputButtons();
+      menuControls.connect();
+
+      selectButtonBySelector(".start-game");
 
       starsManager = startStars('.screen.splash', 50, window.innerWidth, window.innerHeight);
 
