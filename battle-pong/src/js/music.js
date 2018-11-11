@@ -124,6 +124,8 @@
 
     let globalGainNode = audioContext.createGain();
     let duckingNode = audioContext.createGain();
+
+    let rawAudioBuffers = {};
     
     globalGainNode.gain.setValueAtTime(defaultGlobalGainValue, audioContext.currentTime);
 
@@ -149,6 +151,13 @@
     this.getLayers = () => { if (currentSong) return currentSong.getLayers(); };
     this.getContext = () => { if (currentSong) return currentSong.getContext(); };
     this.addIntensity = (newIntensity) => { if (currentSong) return currentSong.addIntensity(newIntensity); };
+
+    this.reset = function () {
+      duckingNode.gain.cancelScheduledValues(audioContext.currentTime);
+      globalGainNode.gain.cancelScheduledValues(audioContext.currentTime);
+      globalGainNode.gain.setValueAtTime(defaultGlobalGainValue, audioContext.currentTime);
+      duckingNode.gain.setValueAtTime(1, audioContext.currentTime);
+    };
 
     Object.defineProperties(this, {
       currentIntensity: {
@@ -192,11 +201,29 @@
       return files.length;
     };
 
+    this.prepareSong = function (name) {
+      preparedSongs[name] = new Song(name, audioContext, rawAudioBuffers, songs[name], globalGainNode, duckingNode);
+      return preparedSongs[name].load();
+    };
+
+    this.prepareSongs = function (songsToPrepare) {
+      return new Promise((resolve, reject) => {
+        let songPromises = [];
+        songsToPrepare.forEach(songName => {
+          songPromises.push(this.prepareSong(songName));
+        })
+
+        Promise.all(songPromises).then(() => {
+          this.status = 'ready';
+          resolve();
+        });
+      });
+    };
+
     this.load = function (options) {
       options = options || {};
 
       return new Promise(async (resolve, reject) => {
-        let buffers = {};
         let bufferPromises = [];
 
         let loaded = 0;
@@ -206,7 +233,7 @@
             request.open('GET', file, true);
             request.responseType = 'arraybuffer';
             request.onload = () => audioContext.decodeAudioData(request.response, buffer => {
-              buffers[file] = buffer;
+              rawAudioBuffers[file] = buffer;
               ++loaded;
               options.progress && options.progress(files.length, loaded);
               requestResolve(buffer);
@@ -214,16 +241,7 @@
             request.send();
           });
         })).then(() => {
-          let songPromises = [];
-          for (let songName in songs) {
-            preparedSongs[songName] = new Song(songName, audioContext, buffers, songs[songName], globalGainNode, duckingNode);
-            songPromises.push(preparedSongs[songName].load());
-          }
-
-          Promise.all(songPromises).then(() => {
-            this.status = 'ready';
-            resolve();
-          });
+          this.prepareSongs(Object.keys(songs)).then(resolve);
         });
       });
     };
@@ -235,7 +253,14 @@
     this.playSongChain = function (name) {
       // TODO: uncouple this stuff a bit so that you can hit playSongChain more than once...
 
+      // Cheating a bit here because you might not always want to reset before setting up a song chain, but ... meh.
+      this.reset();
+
       let songChain = songChains[name].slice();
+
+      for (let song in songChain) {
+        this.prepareSongs(songChain.map(song => {return song.name }));
+      }
 
       if (currentSong) {
         currentSong.stop();
@@ -260,7 +285,6 @@
 
         currentSong.setMood(oldMood, 0);
         currentSong.setIntensity(oldIntensity, true);
-
         this.start({ loop: nextSong.loop });
         songChainListeners.forEach(l => l());
       };
@@ -576,9 +600,8 @@
       let endedLayers = 0;
       let numLayers = Object.keys(layers).length;
 
-      loop = options.loop;
-
       options = options || {};
+      loop = options.loop;
 
       for (let layer in layers) {
         layers[layer].start();

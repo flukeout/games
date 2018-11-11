@@ -1,9 +1,22 @@
-.story {
+.screen.story {
   position: absolute;
   width: 100vw;
   height: 100vh;
   transform-style: preserve-3d;
   perspective: 1000px;
+
+  .scene {
+    animation: sceneappear 1s ease-out;
+
+    @keyframes sceneappear {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  }
 
   .is-chrome, .not-chrome {
     display: none;
@@ -30,9 +43,15 @@
     text-align: center;
     opacity: .5;
     width: 100%;
+
+    transition: opacity 1s ease-out;
+    
+    &.transition-out {
+      opacity: 0;
+    }
   }
 
-  #loading {
+  .loading-modal {
     z-index: 100;
 
     flex-direction: column;
@@ -75,8 +94,8 @@
   }
 
 
-  #ready {
-    z-index:101;
+  .ready {
+    z-index: 101;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -160,7 +179,7 @@
     }
   }
 
-  #story {
+  .story-content {
     z-index: 200;
     display: flex;
     justify-content: center;
@@ -178,13 +197,7 @@
     font-weight: normal;
     font-family: LatoRegular;
 
-    .typer {
-      width: 600px;
-      font-size: 24px;
-      color: rgba(255, 255, 255, 0.6);
-      line-height: 140%;
-      height: 200px;
-
+    .cursor {
       @keyframes typerCursor {
         0% {
           opacity: 0;
@@ -194,9 +207,30 @@
         }
       }
 
-      &::after {
-        content: '_';
-        animation: typerCursor .5s infinite;
+      position: absolute;
+      animation: typerCursor .5s infinite;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 24px;
+
+      &.off {
+        animation: none;
+        opacity: 0;
+      }
+    }
+
+    .typer {
+      width: 600px;
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 140%;
+      height: 200px;
+
+      span {
+        visibility: hidden;
+
+        &.on {
+          visibility: visible;
+        }
       }
     }
 

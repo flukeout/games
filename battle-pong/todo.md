@@ -1,83 +1,18 @@
-### WORKING On
-
-**BEFORE DEMOS**
-* Make powerups slightly easier to score with?
-  * Reduce friction or mass a tiny bit
-* Make it best of 3
-* Make board a bit narrower
-
-* Press both spin buttons at once...
-  * Could do some kind of action?
-  * Shoot a projectile?
-
-* Wind
-  * How to implement visuals?
-  * What elements to affect?
-  * Force vs manual velocity udpates
-
-* Multiball - figure out the best way to do this
-  * Should clone balls look differently?
-  * Should they disappear after scoring once?
-
-* Mines?
-  * Make them a bit smaller
-  * Make them be able to shoot farter
-  * Make them slow down faster
-
-### BUGS
-
-*
-
-### TO-DO
-
-* Change game to have player 1, 2, 3, 4 and Team 1, 2
-* Make board width & height variables that can be set in game.js
+# To Do
 
 
-### Ball options to implement
+### Splash
+* 3D transform on splash page looks pretty broken on fade-out. Credits fold down weirdly
+* Cursor on splash page is very broken
 
-* Max speed
-* Slow ball down after certain condition met?
-  * Duration of time spent above certain speed limit
-  * Number of endzone hits?
+### Rules
+* Clicking "next" on rules screen in Powerups section cycles through powerups but never goes back to Controls section
+* Stars pulse to the beat, which they should not do
 
-
-### Reactions
-
-* Better reaction for winning around
-* Multiple reactions at once for one player
-  * Bunch of sad faces at once etc.
-* Ability to 'hold' a reaction longer
-*
-
-
-### Nice-to-have
-
-* Add 'flawless win' indicator
-* Once we have this, add a reaction too
-* System for tracking actions and displaying kudos, ex
-  * Show "nice stall" when you slow down a ball from a high speed to a low speed
-  * Can do this by putting actions into an array and parsing them out
-* Track stats
-  * Average shot speed
-  * Fastest shot
-  * Total rotations
-  * Own goals
-
-
-
-
-
-
-### To think about
-
-* Powerups
-  * Should we change when / how they go away?
-  * Right now there's an issue where you can get a powerup but it expires before you get a chance to use it...
-  * Is it really an issue?
-
-* Right now we have a weird thing where sometimes there are more than one in play
-  * Why is this happening?
-  * Since it's unintentional, but fun, what are the rules?
-
-
+### Game
+* Fix pause menu on re-entering a game (game > pause > rules > game --> :( )
+* Fix background on re-entering splash
+* Game board shadow slices through the board
+* Game stats don't really reset when re-entering game (i.e. you can win a match too quickly)
+* Pause button in the bottom left corner doesn't really work sometimes
+* Background and gameboard don't reset properly before fading in on game re-entry

@@ -4,7 +4,9 @@
 var axisThreshold = 0.1;
 
 
-window.InputManager = function (onInputChanged) {
+window.InputManager = function (onInputChanged, inputManagerName) {
+  console.log('Creating Input Manager "' + inputManagerName + '"');
+  
   let maintainedObjects = [];
 
   let savedInputLabelToActionMappings = localStorage.getItem('inputLabelToActionMappings');
@@ -35,6 +37,9 @@ window.InputManager = function (onInputChanged) {
     maintainedObjects.forEach(o => {
       o.setInputComponent(null);
     });
+
+    // GamepadManager.report();
+    // KeyboardManager.report();
   };
 
   this.forgetManagedObjects = function () {
@@ -62,6 +67,23 @@ window.InputManager = function (onInputChanged) {
     checkForNewGamepads();
   }
 
+  function onGamepadDisconnected(e) {
+    console.log('Gamepad Disconnected');
+    // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
+    for (let objectIndex in maintainedObjects) {
+      let object = maintainedObjects[objectIndex];
+      if (object.inputComponent.type === 'gamepad') {
+        let gamepadId = e.gamepad.id + e.gamepad.index;
+        if (object.inputComponent.config.id === gamepadId) {
+          object.setInputComponent(this.getComponentForNextAvailableInput());
+          onInputChanged(object);
+          this.refreshGamepadComponentsInMaintainedObjects(object);
+          return;
+        }
+      }
+    }
+  }
+
   function checkForNewGamepads() {
     if (maintainedObjects.length === 0) return;
     var unusedGamepad = GamepadManager.getUnusedGamepad();
@@ -77,27 +99,21 @@ window.InputManager = function (onInputChanged) {
     }
   }
 
-  setInterval(function () {
+  let gamepadCheckInterval = setInterval(function () {
     checkForNewGamepads();
   }, 500);
 
   window.addEventListener("gamepadconnected", onGamepadConnected);
-  window.addEventListener("gamepaddisconnected", (e) => {
-    console.log('Gamepad Disconnected');
-    // If one of the controllers was connected to paddle, we have to remove it and use the keyboard instead
-    for (let objectIndex in maintainedObjects) {
-      let object = maintainedObjects[objectIndex];
-      if (object.inputComponent.type === 'gamepad') {
-        let gamepadId = e.gamepad.id + e.gamepad.index;
-        if (object.inputComponent.config.id === gamepadId) {
-          object.setInputComponent(this.getComponentForNextAvailableInput());
-          onInputChanged(object);
-          this.refreshGamepadComponentsInMaintainedObjects(object);
-          return;
-        }
-      }
-    }
-  });
+  window.addEventListener("gamepaddisconnected", onGamepadDisconnected);
+
+  this.destroy = function () {
+    console.log('Destroying Input Manager "' + inputManagerName + '"');
+    clearInterval(gamepadCheckInterval);
+    window.removeEventListener("gamepadconnected", onGamepadConnected);
+    window.removeEventListener("gamepaddisconnected", onGamepadDisconnected);
+    this.resetManagedObjects();
+    this.forgetManagedObjects();
+  }; 
 };
 
 window.KeyboardManager = (function() {
@@ -131,6 +147,9 @@ window.KeyboardManager = (function() {
   }
 
   return {
+    report: function () {
+      console.log('Keyboard Manager Report: ' + configsInUse.length + ' in use.')
+    },
     getAllConfigs: function () {
       return configs;
     },
@@ -383,6 +402,9 @@ window.GamepadManager = (function () {
   }
 
   return {
+    report: function () {
+      console.log('Gamepad Manager Report: ' + gamepadsInUse.length + ' in use.')
+    },
     refreshGamepads: refreshGamepads,
     getGamepads: getGamepads,
     getConfigs: function (leaveUnused) {

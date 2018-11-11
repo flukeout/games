@@ -1,4 +1,4 @@
-.rules-page {
+.screen.rules {
   .content {
     display: none;
   } 
@@ -12,7 +12,6 @@
   .rules.transition-out {
     transition: opacity .5s ease-out;
     opacity: 0;
-    
   }
 
   .sky.transition-out {
@@ -332,194 +331,194 @@
     }
   }
 
-}
-
-.rules-page .rules {
-  position: relative;
-  perspective: 1200px;
-  width: 100vw;
-  height: 90vh;
-  box-sizing: border-box;
-  z-index: 4;
-  text-align: center;
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  animation: rulesAppear 1s ease-out;
-
-  @keyframes rulesAppear {
-    0% {
-      opacity: 0;
-      transform: scale(1.1);
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  img, video {
-    width: 550px;
-    border: solid 15px rgba(255,255,255,.05);
-    border-radius: 5px;
-  }
-  
-  .rule-box {
-    display: none;
-  }
-  
-  .rules-1 {
-    display: block;
-  }
-
-  &.visible {
-    display: block;
-  }
-  
-  p {
-    color: rgba(255,255,255,.7);
-    font-size: 30px;
-    margin: 0 0 30px 0; 
-  }
-
-  li {
-    color: rgba(255,255,255,.7);
-    font-size: 22px;
-    margin: 10px 0;
+  .rules {
     position: relative;
-    
-    &:after {
-      position: absolute;
-      color: white;
-      height: 2px;
-      background: rgba(255,255,255,.3);
-      bottom: -4px;
-      left: calc(50% - 100px);
-      width: 200px;
-    }
-    
-    &:last-child {
-      &:after {
-        display: none;
+    perspective: 1200px;
+    width: 100vw;
+    height: 90vh;
+    box-sizing: border-box;
+    z-index: 4;
+    text-align: center;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    animation: rulesAppear 1s ease-out;
+
+    @keyframes rulesAppear {
+      0% {
+        opacity: 0;
+        transform: scale(1.1);
+      }
+      100% {
+        opacity: 1;
       }
     }
-  }
-  
-  .row {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 40px;
-    
-    .col {
-      flex: 1;
-    }
-  }
 
-  .mines {
-    img {
-      width: 500px;
+    img, video {
+      width: 550px;
+      border: solid 15px rgba(255,255,255,.05);
+      border-radius: 5px;
     }
-  }
-
-  [rule="controls"] {
-    width: 80%;
-  }
- 
-  .player-control-diagrams {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    transform: rotateX(10deg);
     
-    .diagram {
-      width: 50%;
-      border: solid 6px rgba(255,255,255,.2);
+    .rule-box {
+      display: none;
+    }
+    
+    .rules-1 {
+      display: block;
+    }
+
+    &.visible {
+      display: block;
+    }
+    
+    p {
+      color: rgba(255,255,255,.7);
+      font-size: 30px;
+      margin: 0 0 30px 0; 
+    }
+
+    li {
+      color: rgba(255,255,255,.7);
+      font-size: 22px;
+      margin: 10px 0;
       position: relative;
-      margin: 0 20px;
-      padding: 55px 0 25px 0;
       
-      h2 {
-        color: black;
-        text-align: center;
-        background: #444;
-        display: inline-block;
-        padding: 12px 12px;
-        border-radius: 50%;
-        font-size: 28px;
-        margin: 0 0 30px 0;
+      &:after {
         position: absolute;
-        top: -40px;
-        left: calc(50% - 35px);
-        border: solid 6px black;
+        color: white;
+        height: 2px;
+        background: rgba(255,255,255,.3);
+        bottom: -4px;
+        left: calc(50% - 100px);
+        width: 200px;
       }
-
-      .control-diagram {
-        width: 80%;
-        margin: 0 auto;
-        height: 265px;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-      }
-
-      .ai-notice {
-        strong {
-          color: rgba(255,255,255,1);
-          font-size: 26px;
-        }
-        p {
-          margin-top: 10px;
-          color: rgba(255,255,255,.5);
-          font-size: 22px;
+      
+      &:last-child {
+        &:after {
+          display: none;
         }
       }
-
-      &[data-type="keyboard-left"] {
-        .control-diagram {
-          background-image: url(assets/images/control-keyboard-left.svg);
-          .ai-notice {
-            display: none;
-          }
-        }
+    }
+    
+    .row {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 40px;
+      
+      .col {
+        flex: 1;
       }
-
-      &[data-type="keyboard-right"] {
-        .control-diagram {
-          background-image: url(assets/images/control-keyboard-right.svg);
-          .ai-notice {
-            display: none;
-          }
-        }
-      }
-
-
-      &[data-type="gamepad"] {
-        .control-diagram {
-          background-image: url(assets/images/control-gamepad.svg);
-          .ai-notice {
-            display: none;
-          }
-        }
-      }
-
-      &[data-type="ai"] {
-        .control-diagram {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          .ai-notice {
-            display: block;
-          }
-
-        }
-      }
-
     }
 
+    .mines {
+      img {
+        width: 500px;
+      }
+    }
+
+    [rule="controls"] {
+      width: 80%;
+    }
+   
+    .player-control-diagrams {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      transform: rotateX(10deg);
+      
+      .diagram {
+        width: 50%;
+        border: solid 6px rgba(255,255,255,.2);
+        position: relative;
+        margin: 0 20px;
+        padding: 55px 0 25px 0;
+        
+        h2 {
+          color: black;
+          text-align: center;
+          background: #444;
+          display: inline-block;
+          padding: 12px 12px;
+          border-radius: 50%;
+          font-size: 28px;
+          margin: 0 0 30px 0;
+          position: absolute;
+          top: -40px;
+          left: calc(50% - 35px);
+          border: solid 6px black;
+        }
+
+        .control-diagram {
+          width: 80%;
+          margin: 0 auto;
+          height: 265px;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+
+        .ai-notice {
+          strong {
+            color: rgba(255,255,255,1);
+            font-size: 26px;
+          }
+          p {
+            margin-top: 10px;
+            color: rgba(255,255,255,.5);
+            font-size: 22px;
+          }
+        }
+
+        &[data-type="keyboard-left"] {
+          .control-diagram {
+            background-image: url(assets/images/control-keyboard-left.svg);
+            .ai-notice {
+              display: none;
+            }
+          }
+        }
+
+        &[data-type="keyboard-right"] {
+          .control-diagram {
+            background-image: url(assets/images/control-keyboard-right.svg);
+            .ai-notice {
+              display: none;
+            }
+          }
+        }
+
+
+        &[data-type="gamepad"] {
+          .control-diagram {
+            background-image: url(assets/images/control-gamepad.svg);
+            .ai-notice {
+              display: none;
+            }
+          }
+        }
+
+        &[data-type="ai"] {
+          .control-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .ai-notice {
+              display: block;
+            }
+
+          }
+        }
+
+      }
+
+
+    }
+    
 
   }
-  
 
 }
 

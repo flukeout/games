@@ -1,4 +1,25 @@
-#loading {
+.screen.loading {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.loading-modal {
+  z-index: 100;
+
+  flex-direction: column;
+
+  .percent {
+    margin-top: 1em;
+  }
+
+  .text {
+    text-align: center;
+    margin-top: 40px;
+  }
+
   display: flex;
   justify-content: center;
   align-items: center;

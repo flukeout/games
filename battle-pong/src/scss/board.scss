@@ -1,5 +1,17 @@
 // Animations that build the game screen
 
+.screen.game {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  transform-style: preserve-3d;
+  transition: opacity 1s ease-out;
+  
+  &.fade-out {
+    opacity: 0;
+  }
+}
+
 .game.loading {
   .surface {
     visibility: hidden;
@@ -45,11 +57,6 @@
   
   .board-shadow {
     animation: shadowAppear 2s ease-out;
-  }
-
-
-  #loading {
-    display: none;
   }
 }
 
@@ -578,7 +585,7 @@
 }
 
 .winner-two .between-round-score {
-   .screen {
+   .satellite-screen {
     background: $green;
   }
   .restart {
@@ -588,7 +595,7 @@
 }
 
 .winner-one .between-round-score {
-  .screen {
+  .satellite-screen {
     background: $pink;
   }
   .restart {
@@ -721,7 +728,7 @@
       border-radius: 0 0 3px 3px;
     }
 
-    .screen {
+    .satellite-screen {
       border: solid 10px #1F2235;
       border-width: 5px 10px 14px 10px;
       border-radius: 20px;

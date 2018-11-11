@@ -1010,24 +1010,12 @@ window.SoundManager = {
   temporaryLowPassSettings: temporaryLowPassSettings,
   localStorageStatus: 'Empty',
   sequences: sequenceManagers,
-  resumeSound : function(options) {
-
-    return new Promise((resolve, reject) => {
-      soundContext = new AudioContext();
-      if (soundContext.state === 'suspended') {
-        soundContext.resume().then(function(){
-          resolve();
-        });
-      } else {
-        resolve();
-      }
-    });
-
-  },
 
   init: function (options) {
     options = options || {};
     
+    soundContext = new AudioContext();
+
     return new Promise((resolve, reject) => {
 
       if (!options.dontWorryAboutWebAudioAutoplayPolicy) {
@@ -1121,10 +1109,8 @@ window.SoundManager = {
   },
   loadSoundSettingsFile: function () {
     let baseUrl = window.location.href.substr(0,window.location.href.lastIndexOf('/')+1);
-
     return new Promise((yay, nay) => {
       fetch(baseUrl + '/sound-settings.json', {
-        cache: 'no-cache',
         method: 'GET',
         headers: {
           'content-type': 'application/json'

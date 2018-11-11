@@ -98,11 +98,11 @@ function createPhysicsForElement(element, options) {
   var physics = false;
 
   if(props.bodyType == "rectangle") {
-    physics = Bodies.rectangle(props.x, props.y, props.width, props.height, finalOptions);
+    physics = Matter.Bodies.rectangle(props.x, props.y, props.width, props.height, finalOptions);
   }
 
   if(props.bodyType == "circle") {
-    physics = Bodies.circle(props.x, props.y, props.width/2, finalOptions);
+    physics = Matter.Bodies.circle(props.x, props.y, props.width/2, finalOptions);
   }
 
   physics.guid = guid;

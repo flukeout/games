@@ -19,16 +19,24 @@ html, body {
   margin: 0;
 }
 
+.screen {
+  display: none;
+
+  &.show {
+    display: block;
+  }
+
+  &.transition-out {
+    transition: opacity .5s ease-out;
+    opacity: 0;
+  }
+}
+
 body {
   perspective: 1200px;
   overflow: hidden;
   background: black;
   user-select: none;
-}
-
-body.fade-out {
-  transition: opacity 1s ease-out;
-  opacity: 0;
 }
 
 .world .board-canvas {

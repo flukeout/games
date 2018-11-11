@@ -4,6 +4,12 @@ var blankParticles = [];    // Holdes reference to pre-appended particle element
 function initParticleEngine(selector, maxParticleCount) {
   var maxParticleCount = maxParticleCount || 50;
 
+  while (particles.length) {
+    particles.shift().dismantle();
+  }
+
+  blankParticles = [];
+
   for(var i = 0; i < maxParticleCount; i++){
 
     var blankParticle = document.createElement("div");
@@ -16,6 +22,8 @@ function initParticleEngine(selector, maxParticleCount) {
       el: blankParticle
     });
   }
+
+  console.log('INITIALIZING PARTICLE ENGINE ON ' + selector + ' with ' + blankParticles.length + ' BLANK PARTICLES');
 }
 
 
@@ -91,9 +99,13 @@ function makeParticle(options){
     }
   }
 
+  // debugger;
+
   if(!particle.el){
     return;
   }
+
+  // debugger;
 
   // Grabs an available particle from the blankParticles array
   particle.referenceParticle = blankParticle;
@@ -112,6 +124,20 @@ function makeParticle(options){
     particle.el.innerText = options.text;
   }
 
+  particle.dismantle = function () {
+    this.referenceParticle.active = false;
+    this.el.removeAttribute("style");
+    this.el.removeAttribute("class");
+    this.el.classList.add("blank-particle");
+    this.el.style.display = "none";
+    this.el.innerText = "";
+
+    for(var i = 0; i < particles.length; i++){
+      if(this == particles[i]){
+        particles.splice(i, 1);
+      }
+    }
+  };
 
   particle.move = function(){
     var p = this;
@@ -124,18 +150,7 @@ function makeParticle(options){
     p.lifespan--;
 
     if(p.lifespan < 0 || p.o < 0) {
-      p.referenceParticle.active = false;
-      p.el.removeAttribute("style");
-      p.el.removeAttribute("class");
-      p.el.classList.add("blank-particle");
-      p.el.style.display = "none";
-      p.el.innerText = "";
-
-      for(var i = 0; i < particles.length; i++){
-        if(p == particles[i]){
-          particles.splice(i, 1);
-        }
-      }
+      particle.dismantle();
     }
 
     p.x = p.x + p.xV;
@@ -215,6 +230,21 @@ function drawParticles(){
     var p = particles[i];
     p.move();
   }
+}
+
+function startParticleLoop() {
+  let stopFlag = false;
+
+  (function loop() {
+    drawParticles();
+    if (!stopFlag) requestAnimationFrame(loop);
+  })();
+
+  return {
+    stop: () => {
+      stopFlag = true;
+    }
+  };
 }
 
 

@@ -1,4 +1,19 @@
-.splash {
+.screen.splash {
+
+  > .content {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: all .5s ease-out;
+    text-align: center;
+
+    &.transition-out {
+      opacity: 0;
+      transform: scale(.95);
+    }
+  }
 
   .canvas-stars {
     position: absolute;
@@ -24,13 +39,13 @@
   perspective: 1000px;
   
   &.appear {
-    #content {
+    > .content {
       display: block;
       animation: splashAppear 1s ease-out;
     }
   }
 
-  #ready {
+  .ready {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -57,72 +72,6 @@
     }
   }
 
-  #story {
-    z-index: 10;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: rgba(255, 255, 255, 0.4);
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    perspective: 1200px;
-    transition: opacity .5s ease-out, visibility .5s ease-out;
-    flex-direction: column;
-    visibility: hidden;
-    opacity: 0;
-
-    .typer {
-      width: 600px;
-
-      @keyframes typerCursor {
-        0% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
-      }
-
-      &::after {
-        content: '_';
-        animation: typerCursor .5s infinite;
-      }
-    }
-
-    .skip {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      bottom: 5em;
-    }
-
-    &.show {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-
-  #content {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    transform-style: preserve-3d;
-    perspective: 1000px;
-    display: none;
-  
-    @keyframes splashAppear {
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-  }
-
   .paddle-guy.transition-out {
     animation: guyFly 1s ease-in;
     animation-fill-mode: forwards;
@@ -138,7 +87,7 @@
       transform: translateY(0px) scaleY(1);
     }
     100% {
-      transform: translateY(-800px) scaleY(1.2) scaleX(.9);
+      transform: translateY(-1000px) scaleY(1.2) scaleX(.9);
     }
   }  
 
@@ -353,21 +302,24 @@
     display: flex;
     z-index: 5;
     align-items: center;
-    
-  }
+   
+    .content {  
+      margin: 0 auto;
+      padding-bottom: 90px;
+      position: relative;
+      z-index: 5;
+      perspective: 1200px;
+      transition: all .5s ease-out;
+      text-align: center;
 
-  .content {
-    margin: 0 auto;
-    padding-bottom: 90px;
-    position: relative;
-    z-index: 5;
-    perspective: 1200px;
-    transition: all .5s ease-out;
-    text-align: center;
-
-    &.transition-out {
-      opacity: 0;
-      transform: scale(.95);
+      @keyframes splashAppear {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
     }
   }
   
@@ -584,6 +536,10 @@
       &.start-game {
         padding: 10px 45px;
         margin-bottom: 20px;
+
+        &.hidden {
+          visibility: hidden;
+        }
       }
 
     }
@@ -593,7 +549,7 @@
     color: white;
     z-index: 1;
     padding: 10px 20px;
-    transform: rotateX(10deg);
+    transform: rotateX(0deg);
     background: $green;
   }
 

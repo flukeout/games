@@ -11,77 +11,119 @@ let timeoutAccumulator = 0;
 
 let menuControls;
 
+let inputManager;
+let starsManager;
+let realCredits;
+let creditsManager;
 
-function initSound(){
-  SoundManager.init().then(() => {
+let particleLoop;
 
-    document.querySelector("#loading").classList.add("hide-loading");
-
-    SoundManager.resumeAudioContext();
-    console.log(SoundManager);
-    document.querySelector(".splash").classList.add("appear");
-    SoundManager.musicEngine.cueSong('menu');
-    if (Settings.music) SoundManager.musicEngine.fadeIn( 2, {loop: true} );
-    startCredits(CREDITS_DELAY);
-
-    menuControls = setupInputButtons();
-    menuControls.connect();
-
-    selectButtonBySelector(".start-game");
-
-    inputManager = new InputManager((paddle) => {
-      updatePlayerOptions(playerOptionEls);
-    });
-
-    initParticleEngine("#content .scene", 5);
-    loop();
-
-    prepTitle();
-
-    paddles.push(createObject({noBody: true}));
-    paddles.push(createObject({noBody: true}));
-
-    prepTitle();
-
-    bestOfEls = document.querySelectorAll(".best-of .option");
-    setupBestOf();
-
-    powerupEls = document.querySelectorAll(".powerups .powerup");
-    setupPowerups(powerupEls);
-
-    toggleEls = document.querySelectorAll(".option-toggle");
-    setupToggles(toggleEls);
-
-    playerOptionEls = document.querySelectorAll(".player-options .player-option");
-    setupPlayerOptionss(playerOptionEls);
-
-    setupStartButton();
-    setupRulesButton();
-
-    starsHeight = document.querySelector(".canvas-stars").getBoundingClientRect().height;
-    startStars(50, window.innerWidth, window.innerHeight);
-
-    setupInputs();
-  }).catch(() => {
-    // We need to go back to index.html to capture a user gesture because Chrome has an autoplay policy...
-    // See https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio for more
-    if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-      window.location.href = "../index.html";
-    } else {
-      window.location.href = "index.html";
-    }
+// A quick and super dirty way to get rid of all of the event listeners on objects--instead of making this whole codebase horrible.
+function refreshElements (selector) {
+  Array.prototype.forEach.call(document.querySelectorAll(selector), element => {
+    let clone = element.cloneNode(true);
+    element.parentNode.replaceChild(clone, element);
   });
+
+  return document.querySelectorAll(selector);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  SoundManager.resumeSound().then(() => {
-    initSound();
-  })
+function refreshElement (selector) {
+  return refreshElements(selector)[0];
+}
+
+ScreenManager.addScreen('splash', {
+  init: () => {
+    let creditsContainer = document.querySelector('.screen.splash .credits');
+    realCredits = Array.prototype.slice.call(creditsContainer.querySelectorAll('.credit'));
+    realCredits.forEach(c => { creditsContainer.removeChild(c); });
+  },
+  start: () => {
+    return new Promise((resolve, reject) => {
+      if (Settings.music && SoundManager.musicEngine.status === 'stopped') {
+        SoundManager.musicEngine.cueSong('menu');
+        SoundManager.musicEngine.fadeIn( 2, {loop: true} );
+      }
+
+      timeoutAccumulator = 0;
+
+      document.querySelector(".screen.splash").classList.remove("transition-out");
+      document.querySelector(".content").classList.remove("transition-out");
+      document.querySelector(".paddle-guy").classList.remove("transition-out");
+      document.querySelector(".surface").classList.remove("transition-out");
+      document.querySelector(".overlay").classList.remove("transition-out");
+      document.querySelector(".credits").classList.remove("transition-out");
+      document.querySelector(".large-moon").classList.remove("transition-out");
+      document.querySelector(".sky").classList.remove("transition-out");
+      document.querySelector(".canvas-stars").classList.remove("transition-out");
+      document.querySelector(".start-game").classList.remove('hidden');
+
+      document.querySelector('.screen.splash').classList.add('appear');
+
+      creditsManager = startCredits(CREDITS_DELAY);
+
+
+      
+
+      inputManager = new InputManager((paddle) => {
+        updatePlayerOptions(playerOptionEls);
+      }, 'splash');
+
+      initParticleEngine(".screen.splash .content .scene", 5);
+      particleLoop = startParticleLoop();
+
+      prepTitle();
+
+      paddles.push(createObject({noBody: true}));
+      paddles.push(createObject({noBody: true}));
+
+      prepTitle();
+
+      bestOfEls = refreshElements(".best-of .option");
+      setupBestOf();
+
+      powerupEls = refreshElements(".powerups .powerup");
+      setupPowerups(powerupEls);
+
+      toggleEls = refreshElements(".option-toggle");
+      setupToggles(toggleEls);
+
+      playerOptionEls = refreshElements(".player-options .player-option");
+      setupPlayerOptionss(playerOptionEls);
+
+      setupStartButton();
+
+      menuControls = setupInputButtons();
+      menuControls.connect();
+
+      selectButtonBySelector(".start-game");
+
+      starsManager = startStars('.screen.splash', 50, window.innerWidth, window.innerHeight);
+
+      setupInputs();
+    });
+  },
+  stop: () => {
+    return new Promise((resolve, reject) => {
+      creditsManager.stop();
+      fadeOutScene();
+      inputManager.destroy();
+      menuControls.disconnect();
+      setTimeout(function(){
+        starsManager.stop();
+        particleLoop.stop();
+        resolve();
+      }, 4000);
+    });
+  }
 });
 
 function setupInputs() {
+console.log('Destroying');
   inputManager.resetManagedObjects();
   inputManager.forgetManagedObjects();
+  paddles[0].setInputComponent(null);
+  paddles[1].setInputComponent(null);
 
   if (Settings.player1Control !== 'AI') {
     inputManager.setupInputForObject(paddles[0]);
@@ -89,11 +131,6 @@ function setupInputs() {
   if (Settings.player2Control !== 'AI') {
     inputManager.setupInputForObject(paddles[1]);
   }
-}
-
-function loop(){
-  drawParticles();
-  requestAnimationFrame(loop);
 }
 
 // Sets up the music & sound toggle click handlers
@@ -118,6 +155,7 @@ function setupPlayerOptionss(els){
   });
   updatePlayerOptions(els);
 }
+
 // Updates state of the music & sound toggles
 function updatePlayerOptions(els){
   els.forEach(function(el){
@@ -138,7 +176,7 @@ function updatePlayerOptions(els){
         else el.classList.add('keyboard');
       }
       else {
-        console.warn('Paddle ' + playerNum + ' has no input component. Can\'t perform detection.');
+        // console.warn('Paddle ' + playerNum + ' has no input component. Can\'t perform detection.');
       }
       
       el.innerHTML = "&nbsp;";
@@ -161,7 +199,6 @@ function timeoutClass(selector, className, timeout){
   },timeoutAccumulator)
 }
 
-
 function fadeOutScene(){
   timeoutClass(".content", "transition-out", 100)
   timeoutClass(".paddle-guy", "transition-out", 250);
@@ -171,12 +208,12 @@ function fadeOutScene(){
   timeoutClass(".large-moon", "transition-out", 200);
   timeoutClass(".sky", "transition-out", 200);
   timeoutClass(".canvas-stars", "transition-out", 200);
+  timeoutClass(".screen.splash", "transition-out", 1000);
 }
 
 
 function setupStartButton(){
-  
-  var button = document.querySelector(".start-game");
+  var button = refreshElement(".start-game");
   
   button.addEventListener("click", function(e){
     var button = e.target;
@@ -201,52 +238,16 @@ function setupStartButton(){
 
     SoundManager.playSound("Menu_Start&Blastoff");
     SoundManager.playSound("Power_Shot_V1");
-    button.style.opacity = 0;
-
-    fadeOutScene();
+    
+    button.classList.add('hidden');
 
     buttonGleam(button);
 
     e.preventDefault();
 
-    SoundManager.musicEngine.fadeOut(2);
-    
-    menuControls.disconnect();
-
-    setTimeout(function(){
-      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../rules.html";
-      }
-      else {
-        window.location.href = "rules.html";
-      }
-    }, 4000);
+    ScreenManager.transitionToScreen('rules');
   })
 }
-
-function setupRulesButton(){
-  return;
-  var button = document.querySelector(".rules-button");
-  
-  button.addEventListener("click", function(e){
-    menuControls.disconnect();
-
-    addTemporaryClassName(e.target, "poke", 250);
-    fadeOutScene();
-    buttonGleam(e.target);
-    SoundManager.playSound("Menu_Select");
-    SoundManager.musicEngine.fadeOut(2);
-    setTimeout(function(){
-      if (document.baseURI.indexOf('src/') === document.baseURI.length - 4) {
-        window.location.href = "../rules.html";
-      }
-      else {
-        window.location.href = "rules.html";
-      }
-    }, 4000);
-  })
-}
-
 
 // Sets up the music & sound toggle click handlers
 function setupToggles(els){
@@ -389,7 +390,6 @@ function updateBestOf(){
 // Separates the letters in the title into individual elements
 // to be animated.
 function prepTitle(){
-  // return;
   var titleEl = document.querySelector(".game-title .actual-title")
   var titleString = titleEl.innerText;
   titleEl.innerText = "";
@@ -410,12 +410,8 @@ function prepTitle(){
   }
 }
 
-// Variables for the particle loop
-var starsHeight;
-
 function startCredits(timeoutDelay) {
   let creditsContainer = document.querySelector('.credits');
-  let realCredits = Array.prototype.slice.call(creditsContainer.querySelectorAll('.credit'));
   let creditsToShow = [];
   let lastCredit = null;
   let creditToRemove = null;
@@ -495,7 +491,12 @@ function startCredits(timeoutDelay) {
     'Luke Pacholski'
   ];
 
+  let stopFlag = false;
+  let creditsTimeout = -1;
+
   function creditsLoop() {
+    if (stopFlag) return;
+
     if (creditToRemove) {
       creditsContainer.removeChild(creditToRemove);
       creditToRemove = null;
@@ -562,14 +563,19 @@ function startCredits(timeoutDelay) {
       lastCredit = nextCredit;
     }
 
-    setTimeout(creditsLoop, timeoutDelay);
+    creditsTimeout = setTimeout(creditsLoop, timeoutDelay);
   }
 
   creditsLoop();
 
-  realCredits.forEach(c => { creditsContainer.removeChild(c); });
-
   creditsContainer.classList.add('show');
+
+  return {
+    stop: () => {
+      stopFlag = true;
+      if (creditsTimeout > -1) clearTimeout(creditsTimeout);
+    }
+  }
 }
 
 })();

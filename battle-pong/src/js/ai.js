@@ -83,6 +83,8 @@
     let activeComponents = [];
 
     this.createPaddleAIInputComponent = function (paddle, playerSide) {
+      console.log('%cInitializing AI Input Component', 'color: yellow');
+
       const debugOutput = document.querySelector('#aidebug .' + playerSide);
 
       const directionMultiplier = (playerSide === 'left' ? 1 : -1);
@@ -376,6 +378,7 @@
           this.actions = actions;
         },
         remove: function () {
+          console.log('%cDestroying AI Input Component', 'color: yellow');
         }
       };
 
