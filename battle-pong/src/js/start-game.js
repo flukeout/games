@@ -30,7 +30,7 @@
     var boardTop = boardPosition.top;
     var boardTopPercent =  (boardTop /  window.innerHeight) + .1;
     
-    document.querySelector(".surface").style.top = parseFloat(boardTopPercent) * 100 + "vh";
+    document.querySelector(".screen.game .surface").style.top = parseFloat(boardTopPercent) * 100 + "vh";
   }
 
   ScreenManager.addScreen('game', {
