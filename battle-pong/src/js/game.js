@@ -273,14 +273,14 @@
       var g = this;
       (function loop() {
 
+        if (g.mode === 'paused') {
+          return;
+        }
+
         if(g.freezeFrames === 0) {
           g.step();
         } else {
           g.freezeFrames--;
-        }
-
-        if (g.mode === 'paused') {
-          return;
         }
 
         requestAnimationFrame(loop);
