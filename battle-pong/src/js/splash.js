@@ -35,8 +35,10 @@ function refreshElement (selector) {
 ScreenManager.addScreen('splash', {
   init: () => {
     let creditsContainer = document.querySelector('.screen.splash .credits');
-    realCredits = Array.prototype.slice.call(creditsContainer.querySelectorAll('.credit'));
-    realCredits.forEach(c => { creditsContainer.removeChild(c); });
+    if (!realCredits) {
+      realCredits = Array.prototype.slice.call(creditsContainer.querySelectorAll('.credit'));
+      realCredits.forEach(c => { creditsContainer.removeChild(c); });
+    }
   },
   start: () => {
     return new Promise((resolve, reject) => {
@@ -48,15 +50,15 @@ ScreenManager.addScreen('splash', {
       timeoutAccumulator = 0;
 
       document.querySelector(".screen.splash").classList.remove("transition-out");
-      document.querySelector(".content").classList.remove("transition-out");
-      document.querySelector(".paddle-guy").classList.remove("transition-out");
-      document.querySelector(".surface").classList.remove("transition-out");
-      document.querySelector(".overlay").classList.remove("transition-out");
-      document.querySelector(".credits").classList.remove("transition-out");
-      document.querySelector(".large-moon").classList.remove("transition-out");
-      document.querySelector(".sky").classList.remove("transition-out");
-      document.querySelector(".canvas-stars").classList.remove("transition-out");
-      document.querySelector(".start-game").classList.remove('hidden');
+      document.querySelector(".screen.splash .content .content").classList.remove("transition-out"); //Yes, this is a hack to get at the right ".content".
+      document.querySelector(".screen.splash .paddle-guy").classList.remove("transition-out");
+      document.querySelector(".screen.splash .surface").classList.remove("transition-out");
+      document.querySelector(".screen.splash .overlay").classList.remove("transition-out");
+      document.querySelector(".screen.splash .credits").classList.remove("transition-out");
+      document.querySelector(".screen.splash .large-moon").classList.remove("transition-out");
+      document.querySelector(".screen.splash .sky").classList.remove("transition-out");
+      document.querySelector(".screen.splash .canvas-stars").classList.remove("transition-out");
+      document.querySelector(".screen.splash .start-game").classList.remove('hidden');
 
       document.querySelector('.screen.splash').classList.add('appear');
 
@@ -189,24 +191,24 @@ function saveSetting(setting, value){
 
 
 function timeoutClass(selector, className, timeout){
+  console.log('time', timeoutAccumulator);
   timeoutAccumulator = timeoutAccumulator + (timeout || 0);
   setTimeout(function(){
     document.querySelector(selector).classList.add(className);
-  },timeoutAccumulator)
+  },timeoutAccumulator);
 }
 
 function fadeOutScene(){
-  timeoutClass(".content", "transition-out", 100)
-  timeoutClass(".paddle-guy", "transition-out", 250);
-  timeoutClass(".surface", "transition-out", 200);
-  timeoutClass(".overlay", "transition-out");
-  timeoutClass(".credits", "transition-out");
-  timeoutClass(".large-moon", "transition-out", 200);
-  timeoutClass(".sky", "transition-out", 200);
-  timeoutClass(".canvas-stars", "transition-out", 200);
+  timeoutClass(".screen.splash .content .content", "transition-out", 100); //Yes, this is a hack to get at the right ".content".
+  timeoutClass(".screen.splash .paddle-guy", "transition-out", 250);
+  timeoutClass(".screen.splash .surface", "transition-out", 200);
+  timeoutClass(".screen.splash .overlay", "transition-out");
+  timeoutClass(".screen.splash .credits", "transition-out");
+  timeoutClass(".screen.splash .large-moon", "transition-out", 200);
+  timeoutClass(".screen.splash .sky", "transition-out", 200);
+  timeoutClass(".screen.splash .canvas-stars", "transition-out", 200);
   timeoutClass(".screen.splash", "transition-out", 1000);
 }
-
 
 function setupStartButton(){
   var button = refreshElement(".start-game");
@@ -561,6 +563,8 @@ function startCredits(timeoutDelay) {
 
     creditsTimeout = setTimeout(creditsLoop, timeoutDelay);
   }
+
+  creditsContainer.innerHTML = '';
 
   creditsLoop();
 

@@ -63,7 +63,7 @@
       this.worldEl = document.querySelector(".world");
       this.tiltEl = document.querySelector(".tilt-wrapper");
       this.bodyEl = document.querySelector("body");
-      this.surfaceOverlayEl = document.querySelector(".surface .overlay");
+      this.surfaceOverlayEl = document.querySelector(".screen.game .surface .overlay");
 
       this.messageEl = document.querySelector(".top-message");
 
