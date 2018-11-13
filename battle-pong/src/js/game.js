@@ -949,6 +949,8 @@
         obj.deleted = true;
       })
 
+      objectsToRender = [];
+
       game.balls.forEach(ball => {
         if (ball.element.parentNode) ball.element.parentNode.removeChild(ball.element);
       });

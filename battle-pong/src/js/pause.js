@@ -4,6 +4,8 @@ function PauseManager (game, inputManager, menuControls) {
   gamepadEventManager.addButtonListener(['start', 'home'], 'down', toggleRules);
   gamepadEventManager.start();
 
+  let listeners = [];
+
   let preTitles = [
     'Watch out for',
     'You can rely on',
@@ -16,48 +18,83 @@ function PauseManager (game, inputManager, menuControls) {
   
   let displayingRules = false;
 
-  window.addEventListener("keydown", function(e){
-    if(e.key === "Escape"){
-      displayingRules ? resumeGame() : pauseGame();
-    }
-  });
 
   function toggleRules () {
     displayingRules ? resumeGame() : pauseGame();
   };
-
-  document.querySelector(".menu-toggle").addEventListener("click",function(){
-    displayingRules ? resumeGame() : pauseGame();
-    SoundManager.playSound("Menu_Select");
+  window.addEventListener("keydown", toggleRules);
+  listeners.push({
+    el : window,
+    type : "keydown",
+    function : toggleRules
   });
 
-  document.querySelector(".button.restart").addEventListener("click",function(e){
+
+  let menuToggleEl = document.querySelector(".menu-toggle")
+  const toggleMenu = () => {
+    displayingRules ? resumeGame() : pauseGame();
+    SoundManager.playSound("Menu_Select");
+  }
+  menuToggleEl.addEventListener("click", toggleMenu);
+  listeners.push({
+    el : menuToggleEl,
+    function : toggleMenu
+  });
+
+
+  let restartButtonEl = document.querySelector(".button.restart");
+  const restartGame = e => {
     menuControls.clearSelectedButton();
     game.rematch();
     addTemporaryClassName(e.target, "poke", 250);
     buttonGleam(e.target);
     SoundManager.playSound("Menu_Select");
+  }
+  restartButtonEl.addEventListener("click", restartGame);
+  listeners.push({
+    el : restartButtonEl,
+    function : restartGame
   });
 
-  document.querySelector(".button.settings").addEventListener("click",function(){
+
+  let settingsButtonEl = document.querySelector(".button.settings")
+  const navigateSplash = () => {
     navigate("splash");
     SoundManager.playSound("Menu_Select");
+  }
+  settingsButtonEl.addEventListener("click", navigateSplash);
+  listeners.push({
+    el : settingsButtonEl,
+    function : navigateSplash
   });
 
+  const clickNav = e => {
+    addTemporaryClassName(e.target, "poke", 250);
+    SoundManager.playSound("Menu_Select");
+    buttonGleam(e.target);
+    navigate(e.target.getAttribute("nav"));
+  }
+
   document.querySelectorAll("[nav]").forEach(function(el){
-    el.addEventListener("click",function(e){
-      addTemporaryClassName(e.target, "poke", 250);
-      SoundManager.playSound("Menu_Select");
-      buttonGleam(e.target);
-      navigate(this.getAttribute("nav"));
+    el.addEventListener("click", clickNav);
+    listeners.push({
+      el : el,
+      function : clickNav
     });
   });
 
-  document.querySelector(".resume").addEventListener("click", function(el){
+  let resumeButtonEl = document.querySelector(".resume");
+
+  const clickResumeButton = e => {
     SoundManager.playSound("Menu_Select");
-    addTemporaryClassName(el.target, "poke", 250);
-    buttonGleam(el.target);
+    addTemporaryClassName(e.target, "poke", 250);
+    buttonGleam(e.target);
     resumeGame();
+  }
+  resumeButtonEl.addEventListener("click", clickResumeButton);
+  listeners.push({
+      el : resumeButtonEl,
+      function : clickResumeButton
   });
 
   function resumeGame(){
@@ -66,7 +103,6 @@ function PauseManager (game, inputManager, menuControls) {
     displayingRules = false;
     game.resume();
     deselectAllButtons();
-
     SoundManager.fireEvent('Resume_Game');
   }
 
@@ -92,6 +128,10 @@ function PauseManager (game, inputManager, menuControls) {
   }
 
   this.destroy = function () {
+    listeners.map(l => {
+      let eventType = l.type || "click";
+      l.el.removeEventListener(eventType, l.function);
+    });
     document.querySelector(".pause-screen").classList.remove("visible");
     displayingRules = false;
     deselectAllButtons();
@@ -99,3 +139,4 @@ function PauseManager (game, inputManager, menuControls) {
     gamepadEventManager.pause(); 
   };
 }
+
