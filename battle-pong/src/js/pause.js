@@ -18,31 +18,23 @@ function PauseManager (game, inputManager, menuControls) {
   
   let displayingRules = false;
 
-
   function toggleRules () {
     displayingRules ? resumeGame() : pauseGame();
   };
-  window.addEventListener("keydown", toggleRules);
-  listeners.push({
-    el : window,
-    type : "keydown",
-    function : toggleRules
-  });
 
+  addFancyListener(window, "keydown", e => {
+    if(e.key === "Escape"){
+      toggleRules();
+    }
+  }, listeners);
+  
 
-  let menuToggleEl = document.querySelector(".menu-toggle")
   const toggleMenu = () => {
     displayingRules ? resumeGame() : pauseGame();
     SoundManager.playSound("Menu_Select");
   }
-  menuToggleEl.addEventListener("click", toggleMenu);
-  listeners.push({
-    el : menuToggleEl,
-    function : toggleMenu
-  });
+  addFancyListener(dQ(".menu-toggle"), "click", toggleMenu, listeners);
 
-
-  let restartButtonEl = document.querySelector(".button.restart");
   const restartGame = e => {
     menuControls.clearSelectedButton();
     game.rematch();
@@ -50,23 +42,13 @@ function PauseManager (game, inputManager, menuControls) {
     buttonGleam(e.target);
     SoundManager.playSound("Menu_Select");
   }
-  restartButtonEl.addEventListener("click", restartGame);
-  listeners.push({
-    el : restartButtonEl,
-    function : restartGame
-  });
-
-
-  let settingsButtonEl = document.querySelector(".button.settings")
+  addFancyListener(dQ(".button.restart"), "click", restartGame, listeners);
+ 
   const navigateSplash = () => {
     navigate("splash");
     SoundManager.playSound("Menu_Select");
   }
-  settingsButtonEl.addEventListener("click", navigateSplash);
-  listeners.push({
-    el : settingsButtonEl,
-    function : navigateSplash
-  });
+  addFancyListener(dQ(".button.settings"), "click", navigateSplash, listeners);
 
   const clickNav = e => {
     addTemporaryClassName(e.target, "poke", 250);
@@ -76,14 +58,10 @@ function PauseManager (game, inputManager, menuControls) {
   }
 
   document.querySelectorAll("[nav]").forEach(function(el){
-    el.addEventListener("click", clickNav);
-    listeners.push({
-      el : el,
-      function : clickNav
-    });
+    addFancyListener(el, "click", clickNav, listeners);
   });
 
-  let resumeButtonEl = document.querySelector(".resume");
+  
 
   const clickResumeButton = e => {
     SoundManager.playSound("Menu_Select");
@@ -91,11 +69,7 @@ function PauseManager (game, inputManager, menuControls) {
     buttonGleam(e.target);
     resumeGame();
   }
-  resumeButtonEl.addEventListener("click", clickResumeButton);
-  listeners.push({
-      el : resumeButtonEl,
-      function : clickResumeButton
-  });
+  addFancyListener(dQ(".resume"), "click", clickResumeButton, listeners);
 
   function resumeGame(){
     menuControls.disconnect();
@@ -132,6 +106,10 @@ function PauseManager (game, inputManager, menuControls) {
       let eventType = l.type || "click";
       l.el.removeEventListener(eventType, l.function);
     });
+
+    destroyFancyListeners(listeners);
+    listeners = [];
+
     document.querySelector(".pause-screen").classList.remove("visible");
     displayingRules = false;
     deselectAllButtons();
@@ -140,3 +118,23 @@ function PauseManager (game, inputManager, menuControls) {
   };
 }
 
+const addFancyListener = (el, type, fn, accumulator) => {
+  el.addEventListener(type, fn);
+  accumulator.push({
+    el: el,
+    type: type,
+    fn: fn
+  });
+}
+
+const destroyFancyListeners = accumulator => {
+  console.log("destroyFancyListeners()");
+  accumulator.map(listener => {
+    let eventType = listener.type || "click";
+    listener.el.removeEventListener(eventType, listener.fn);
+  });
+}
+
+const dQ = selector => {
+  return document.querySelector(selector);
+}
