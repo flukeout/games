@@ -27,7 +27,6 @@ function PauseManager (game, inputManager, menuControls) {
       toggleRules();
     }
   }, listeners);
-  
 
   const toggleMenu = () => {
     displayingRules ? resumeGame() : pauseGame();
@@ -60,8 +59,6 @@ function PauseManager (game, inputManager, menuControls) {
   document.querySelectorAll("[nav]").forEach(function(el){
     addFancyListener(el, "click", clickNav, listeners);
   });
-
-  
 
   const clickResumeButton = e => {
     SoundManager.playSound("Menu_Select");

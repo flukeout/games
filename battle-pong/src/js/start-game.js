@@ -168,9 +168,13 @@
         document.querySelector('.screen.game').classList.add('fade-out');
         window.removeEventListener("resize", resizeBoard);
 
-        if (Settings.music) SoundManager.musicEngine.fadeOut(2).then(() => {
+        if (Settings.music) {
+          SoundManager.musicEngine.fadeOut(2).then(() => {
+            resolve();
+          });
+        } else {
           resolve();
-        });
+        }
       });
     }
   });
